@@ -1,0 +1,27 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {cancelSheet = id; connectSheet = id; hideOptions = id; newServer = id; }; 
+            CLASS = AppController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                box = NSBox; 
+                cacheBitmaps = NSButton; 
+                colorDepth = NSPopUpButton; 
+                drawDesktop = NSButton; 
+                forwardAudio = NSPopUpButton; 
+                forwardDisks = NSButton; 
+                host = NSComboBox; 
+                mainWindow = NSWindow; 
+                newServerSheet = NSWindow; 
+                screenResolution = NSPopUpButton; 
+                themes = NSButton; 
+                windowAnimation = NSButton; 
+                windowDrags = NSButton; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+    ); 
+    IBVersion = 1; 
+}
