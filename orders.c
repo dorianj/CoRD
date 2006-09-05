@@ -720,7 +720,7 @@ process_polyline(rdcConnection conn, STREAM s, POLYLINE_ORDER * os, uint32 prese
 
 /* Process an ellipse order */
 static void
-process_ellipse(STREAM s, ELLIPSE_ORDER * os, uint32 present, RDCRDCBOOL delta)
+process_ellipse(rdcConnection conn, STREAM s, ELLIPSE_ORDER * os, uint32 present, RDCRDCBOOL delta)
 {
 	if (present & 0x01)
 		rdp_in_coord(s, &os->left, delta);
@@ -746,13 +746,13 @@ process_ellipse(STREAM s, ELLIPSE_ORDER * os, uint32 present, RDCRDCBOOL delta)
 	DEBUG(("ELLIPSE(l=%d,t=%d,r=%d,b=%d,op=0x%x,fm=%d,fg=0x%x)\n", os->left, os->top,
 	       os->right, os->bottom, os->opcode, os->fillmode, os->fgcolour));
 
-	ui_ellipse(os->opcode - 1, os->fillmode, os->left, os->top, os->right - os->left,
+	ui_ellipse(conn, os->opcode - 1, os->fillmode, os->left, os->top, os->right - os->left,
 		   os->bottom - os->top, NULL, 0, os->fgcolour);
 }
 
 /* Process an ellipse2 order */
 static void
-process_ellipse2(STREAM s, ELLIPSE2_ORDER * os, uint32 present, RDCRDCBOOL delta)
+process_ellipse2(rdcConnection conn, STREAM s, ELLIPSE2_ORDER * os, uint32 present, RDCRDCBOOL delta)
 {
 	if (present & 0x0001)
 		rdp_in_coord(s, &os->left, delta);
@@ -784,7 +784,7 @@ process_ellipse2(STREAM s, ELLIPSE2_ORDER * os, uint32 present, RDCRDCBOOL delta
 	       os->left, os->top, os->right, os->bottom, os->opcode, os->fillmode, os->brush.style,
 	       os->bgcolour, os->fgcolour));
 
-	ui_ellipse(os->opcode - 1, os->fillmode, os->left, os->top, os->right - os->left,
+	ui_ellipse(conn, os->opcode - 1, os->fillmode, os->left, os->top, os->right - os->left,
 		   os->bottom - os->top, &os->brush, os->bgcolour, os->fgcolour);
 }
 
@@ -1264,11 +1264,11 @@ process_orders(rdcConnection conn, STREAM s, uint16 num_orders)
 					break;
 
 				case RDP_ORDER_ELLIPSE:
-					process_ellipse(s, &os->ellipse, present, delta);
+					process_ellipse(conn, s, &os->ellipse, present, delta);
 					break;
 
 				case RDP_ORDER_ELLIPSE2:
-					process_ellipse2(s, &os->ellipse2, present, delta);
+					process_ellipse2(conn, s, &os->ellipse2, present, delta);
 					break;
 
 				case RDP_ORDER_TEXT2:

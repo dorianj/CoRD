@@ -7,12 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		449305C60AA9A012001C5A8B /* Picture 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305C50AA9A012001C5A8B /* Picture 2.png */; };
+		449305CC0AA9A13C001C5A8B /* Picture 4.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305CB0AA9A13C001C5A8B /* Picture 4.png */; };
+		449305CF0AA9A178001C5A8B /* Picture 5.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305CE0AA9A178001C5A8B /* Picture 5.png */; };
 		44D2ACE00AA73B2A00EA19A1 /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2ACDF0AA73B2A00EA19A1 /* AppController.m */; };
 		44D2AE690AA761C000EA19A1 /* rdp.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4B0AA761C000EA19A1 /* rdp.c */; };
 		44D2AE6A0AA761C000EA19A1 /* rdp5.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4C0AA761C000EA19A1 /* rdp5.c */; };
 		44D2AE6B0AA761C000EA19A1 /* rdpdr.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4D0AA761C000EA19A1 /* rdpdr.c */; };
-		44D2AE6C0AA761C000EA19A1 /* rdpsnd_oss.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4E0AA761C000EA19A1 /* rdpsnd_oss.c */; };
-		44D2AE6D0AA761C000EA19A1 /* rdpsnd.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4F0AA761C000EA19A1 /* rdpsnd.c */; };
 		44D2AE6E0AA761C000EA19A1 /* secure.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE510AA761C000EA19A1 /* secure.c */; };
 		44D2AE6F0AA761C000EA19A1 /* serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE520AA761C000EA19A1 /* serial.c */; };
 		44D2AE700AA761C000EA19A1 /* tcp.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE530AA761C000EA19A1 /* tcp.m */; };
@@ -32,12 +33,13 @@
 		44D2AE7E0AA761C000EA19A1 /* cliprdr.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE680AA761C000EA19A1 /* cliprdr.c */; };
 		44D2AE8C0AA761E700EA19A1 /* stubs.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE8B0AA761E700EA19A1 /* stubs.m */; };
 		44D2AE950AA7621C00EA19A1 /* RDCKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE8E0AA7621C00EA19A1 /* RDCKeyboard.m */; };
-		44D2AE960AA7621C00EA19A1 /* RDCController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE900AA7621C00EA19A1 /* RDCController.m */; };
 		44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE920AA7621C00EA19A1 /* RDCView.m */; };
 		44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE940AA7621C00EA19A1 /* RDCBitmap.m */; };
 		44D2AE9F0AA7624300EA19A1 /* rdesktop.icns in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */; };
 		44D2AEA00AA7624300EA19A1 /* libcrypto.0.9.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 44D2AE9D0AA7624300EA19A1 /* libcrypto.0.9.7.dylib */; };
 		44D2AEA10AA7624300EA19A1 /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9E0AA7624300EA19A1 /* keymap.txt */; };
+		44D2B3060AA8831C00EA19A1 /* TableViewButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2B3050AA8831C00EA19A1 /* TableViewButton.m */; };
+		44E6DDAD0AA915A20009EFE4 /* Picture 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E6DDAC0AA915A20009EFE4 /* Picture 1.png */; };
 		44F9B2100AA3D83F005F0B98 /* RDInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F9B20F0AA3D83F005F0B98 /* RDInstance.m */; };
 		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -54,6 +56,9 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Remote Desktop_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Remote Desktop_Prefix.pch"; sourceTree = "<group>"; };
+		449305C50AA9A012001C5A8B /* Picture 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 2.png"; sourceTree = "<group>"; };
+		449305CB0AA9A13C001C5A8B /* Picture 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 4.png"; sourceTree = "<group>"; };
+		449305CE0AA9A178001C5A8B /* Picture 5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 5.png"; sourceTree = "<group>"; };
 		44D2ACDE0AA73B2A00EA19A1 /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
 		44D2ACDF0AA73B2A00EA19A1 /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AppController.m; sourceTree = "<group>"; };
 		44D2AE4A0AA761C000EA19A1 /* rdesktop.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = rdesktop.h; sourceTree = "<group>"; };
@@ -99,6 +104,9 @@
 		44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rdesktop.icns; sourceTree = "<group>"; };
 		44D2AE9D0AA7624300EA19A1 /* libcrypto.0.9.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcrypto.0.9.7.dylib; sourceTree = "<group>"; };
 		44D2AE9E0AA7624300EA19A1 /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = keymap.txt; sourceTree = "<group>"; };
+		44D2B3040AA8831C00EA19A1 /* TableViewButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewButton.h; sourceTree = "<group>"; };
+		44D2B3050AA8831C00EA19A1 /* TableViewButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewButton.m; sourceTree = "<group>"; };
+		44E6DDAC0AA915A20009EFE4 /* Picture 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 1.png"; sourceTree = "<group>"; };
 		44F9B20E0AA3D83F005F0B98 /* RDInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDInstance.h; sourceTree = "<group>"; };
 		44F9B20F0AA3D83F005F0B98 /* RDInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDInstance.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -133,6 +141,8 @@
 				44F9B20F0AA3D83F005F0B98 /* RDInstance.m */,
 				44D2ACDE0AA73B2A00EA19A1 /* AppController.h */,
 				44D2ACDF0AA73B2A00EA19A1 /* AppController.m */,
+				44D2B3040AA8831C00EA19A1 /* TableViewButton.h */,
+				44D2B3050AA8831C00EA19A1 /* TableViewButton.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -189,7 +199,11 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				44E6DDAC0AA915A20009EFE4 /* Picture 1.png */,
+				449305C50AA9A012001C5A8B /* Picture 2.png */,
 				44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */,
+				449305CB0AA9A13C001C5A8B /* Picture 4.png */,
+				449305CE0AA9A178001C5A8B /* Picture 5.png */,
 				44D2AE9D0AA7624300EA19A1 /* libcrypto.0.9.7.dylib */,
 				44D2AE9E0AA7624300EA19A1 /* keymap.txt */,
 				8D1107310486CEB800E47090 /* Info.plist */,
@@ -291,6 +305,10 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				44D2AE9F0AA7624300EA19A1 /* rdesktop.icns in Resources */,
 				44D2AEA10AA7624300EA19A1 /* keymap.txt in Resources */,
+				44E6DDAD0AA915A20009EFE4 /* Picture 1.png in Resources */,
+				449305C60AA9A012001C5A8B /* Picture 2.png in Resources */,
+				449305CC0AA9A13C001C5A8B /* Picture 4.png in Resources */,
+				449305CF0AA9A178001C5A8B /* Picture 5.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,8 +325,6 @@
 				44D2AE690AA761C000EA19A1 /* rdp.c in Sources */,
 				44D2AE6A0AA761C000EA19A1 /* rdp5.c in Sources */,
 				44D2AE6B0AA761C000EA19A1 /* rdpdr.c in Sources */,
-				44D2AE6C0AA761C000EA19A1 /* rdpsnd_oss.c in Sources */,
-				44D2AE6D0AA761C000EA19A1 /* rdpsnd.c in Sources */,
 				44D2AE6E0AA761C000EA19A1 /* secure.c in Sources */,
 				44D2AE6F0AA761C000EA19A1 /* serial.c in Sources */,
 				44D2AE700AA761C000EA19A1 /* tcp.m in Sources */,
@@ -328,9 +344,9 @@
 				44D2AE7E0AA761C000EA19A1 /* cliprdr.c in Sources */,
 				44D2AE8C0AA761E700EA19A1 /* stubs.m in Sources */,
 				44D2AE950AA7621C00EA19A1 /* RDCKeyboard.m in Sources */,
-				44D2AE960AA7621C00EA19A1 /* RDCController.m in Sources */,
 				44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */,
 				44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */,
+				44D2B3060AA8831C00EA19A1 /* TableViewButton.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -364,6 +380,12 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = "";
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -373,7 +395,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				PRODUCT_NAME = "Remote Desktop";
 				WRAPPER_EXTENSION = app;
-				ZERO_LINK = YES;
+				ZERO_LINK = NO;
 			};
 			name = Debug;
 		};
@@ -386,6 +408,11 @@
 				);
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
@@ -395,6 +422,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				PRODUCT_NAME = "Remote Desktop";
 				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
 			};
 			name = Release;
 		};

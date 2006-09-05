@@ -18,14 +18,12 @@
 - (id)initWithFrame:(NSRect)frame {
     self = [super initWithFrame:frame];
     if (self) {
-		NSSize s = [[NSScreen mainScreen] frame].size;
-		// XXX Find a better way to do this
-		back = [[NSImage alloc] initWithSize:s];
-		// save = [[NSImage alloc] initWithSize:s];
+		back = [[NSImage alloc] initWithSize:frame.size];
 		[self resetClip];
-		// [back setCacheMode:NSImageCacheAlways];
-		[back retain];
-		//[self translateOriginToPoint:NSMakePoint(-0.5, -0.5)];
+		[back lockFocus];
+		[[NSColor blackColor] set];
+		[NSBezierPath fillRect:frame];
+		[back unlockFocus];
 		
 		attributes = [[NSMutableDictionary alloc] init];
 		[attributes setValue:[NSColor whiteColor] forKey:NSForegroundColorAttributeName];
@@ -48,15 +46,20 @@
 }
 
 #pragma mark NSObject functions
--(void)awakeFromNib {
-	[controller retain];
-}
 
 -(void)dealloc {
 	[super dealloc];
 }
 
 #pragma mark Remote Desktop methods
+-(void)ellipse:(NSRect)r color:(NSColor *)c {
+	[back lockFocus];
+	NSRectClip(clipRect);
+	[c set];
+	[[NSBezierPath bezierPathWithOvalInRect:r] fill];
+	[back unlockFocus];
+}
+
 -(void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c  winding:(NSWindingRule)winding {
 	NSBezierPath *bp = [NSBezierPath bezierPath];
 	int i;
@@ -70,7 +73,7 @@
 	[back lockFocus];
 	NSRectClip(clipRect);
 	[c set];
-	[bp stroke];
+	[bp fill];
 	[back unlockFocus];
 }
 

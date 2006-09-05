@@ -111,6 +111,10 @@ void rdp_main_loop(RDCRDCBOOL * deactivated, uint32 * ext_disc_reason);
 RDCRDCBOOL rdp_connect(rdcConnection conn, char *server, uint32 flags, char *domain, char *password, char *command,
 		 char *directory);
 void rdp_disconnect(rdcConnection conn);
+void rdp_process_server_caps(rdcConnection conn, STREAM s, uint16 length);
+void process_demand_active(rdcConnection conn, STREAM s);
+void process_disconnect_pdu(STREAM s, uint32 * ext_disc_reason);
+RDCRDCBOOL process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason);
 /* rdpdr.c */
 int get_device_index(rdcConnection conn, NTHANDLE handle);
 void convert_to_unix_filename(char *filename);
@@ -213,7 +217,7 @@ void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour);
 void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH * brush,
 		int bgcolour, int fgcolour);
 void ui_polyline(rdcConnection conn, uint8 opcode, POINT * point, int npoints, PEN * pen);
-void ui_ellipse(uint8 opcode, uint8 fillmode, int x, int y, int cx, int cy, BRUSH * brush,
+void ui_ellipse(rdcConnection conn, uint8 opcode, uint8 fillmode, int x, int y, int cx, int cy, BRUSH * brush,
 		int bgcolour, int fgcolour);
 void ui_draw_glyph(int mixmode, int x, int y, int cx, int cy, HGLYPH glyph, int srcx, int srcy,
 		   int bgcolour, int fgcolour);
@@ -223,3 +227,4 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 		  uint8 * text, uint8 length);
 void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy);
 void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy);
+void fillDefaultConnection(rdcConnection conn);

@@ -7,11 +7,13 @@
 //
 
 #import <Cocoa/Cocoa.h>
-#import <RDCController.h>;
+#import "RDCController.h"
+
+@class RDInstance;
 @class RDCBitmap;
 
 @interface RDCView : NSView {
-	IBOutlet RDCController *controller;
+	RDInstance *controller;
 	NSArray *colorMap;
 	NSImage *back, *save;
 	NSPoint mouseLoc;
@@ -25,6 +27,7 @@
 -(void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin;
 -(NSArray *)colorMap;
 -(void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
+-(void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c  winding:(NSWindingRule)winding;
 -(int)setColorMap:(NSArray *)map;
 -(void)saveDesktop;
 -(void)restoreDesktop:(NSRect)size;
@@ -40,4 +43,6 @@
 -(NSColor *)translateColor:(int)col;
 -(void)setForeground:(NSColor *)color;
 -(void)setBackground:(NSColor *)color;
+-(void)swapRect:(NSRect)r;
+-(void)ellipse:(NSRect)r color:(NSColor *)c;
 @end

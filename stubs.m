@@ -29,7 +29,7 @@
 #import <sys/times.h>
 
 #define UNIMPL NSLog(@"Unimplemented: %s", __func__)
-#define CHECKOPCODE(x) if ((x != 0) && (x != 12) && (x != 6) && (x != 255)) {NSLog(@"Unimplemented opcode %d in function %s", x, __func__);}
+#define CHECKOPCODE(x) if ((x != 12) && (x < 16)) {NSLog(@"Unimplemented opcode %d in function %s", x, __func__);}
 	
 int ui_select(int socket) {
 	return 1;
@@ -94,7 +94,11 @@ void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, H
 	NSRect r = NSMakeRect(x, y, cx, cy);
 	NSPoint p = NSMakePoint(srcx, srcy);
 	
-	CHECKOPCODE(opcode);
+	if (opcode != 0) {
+		/* Treat opcode 0 just like copy */
+		CHECKOPCODE(opcode);
+	}
+	
 	[v memblt:r from:[bmp image] withOrigin:p];
 	[v setNeedsDisplayInRect:r];
 }
@@ -117,6 +121,8 @@ void ui_destroy_glyph(HGLYPH glyph) {
 	id image = glyph;
 	[image release];
 }
+
+static void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *glyph, int fgcolor, int bgcolor);
 
 void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *glyph, int fgcolor, int bgcolor) {
 	RDCView *v = conn->ui;
@@ -368,6 +374,13 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty,
 	NSPoint start = NSMakePoint(startx + 0.5, starty + 0.5);
 	NSPoint end = NSMakePoint(endx + 0.5, endy + 0.5);
 	
+	[v setForeground:[v translateColor:pen->colour]];
+	
+	if (opcode == 15) {
+		[v drawLineFrom:start to:end color:[NSColor whiteColor] width:pen->width];
+		return;
+	}
+	
 	CHECKOPCODE(opcode);
 	/* XXX better rectangle finding for setneedsdisplay */
 	[v setForeground:[v translateColor:pen->colour]];
@@ -386,7 +399,15 @@ void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy) 
 		return;
 	}
 	
-	CHECKOPCODE(opcode);
+	if (opcode == 15) {
+		[v fillRect:r withColor:[NSColor whiteColor]];
+		[v setNeedsDisplayInRect:r];
+		return;
+	}
+	
+	if (opcode != 0) {
+		CHECKOPCODE(opcode);
+	}
 	
 	[v fillRect:r];
 	[v setNeedsDisplayInRect:r];
@@ -425,6 +446,7 @@ void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point,
 	
 	switch(style) {
 		case 0:
+			[v setForeground:[v translateColor:fgcolour]];
 			[v polygon:point npoints:npoints color:[v translateColor:fgcolour]  winding:r];
 			break;
 		default:
@@ -458,12 +480,13 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 	NSColor *fillColor;
 	uint8 i, ipattern[8];
 	
-	CHECKOPCODE(opcode);
 	if(opcode == 6) {
 		[v swapRect:dest];
 		[v setNeedsDisplayInRect:dest];
 		return;
 	}
+	
+	CHECKOPCODE(opcode);
 	
 	switch (brush->style) {
 		case 0: /* Solid */
@@ -842,12 +865,33 @@ void ui_triblt(uint8 opcode,
 	UNIMPL;
 }
 
-void ui_ellipse(uint8 opcode,
+void ui_ellipse(rdcConnection conn,
+				uint8 opcode,
 				uint8 fillmode,
 				int x, int y, int cx, int cy,
 				BRUSH *brush, int bgcolour, int fgcolour) {
+	RDCView *v = conn->ui;
+	NSRect r = NSMakeRect(x + 0.5, y + 0.5, cx, cy);
+	int style;
 	CHECKOPCODE(opcode);
-	UNIMPL;
+	
+	if (brush) {
+		style = brush->style;
+	} else {
+		style = 0;
+	}
+	
+	switch(style) {
+		case 0:
+			[v setForeground:[v translateColor:fgcolour]];
+			[v ellipse:r color:[v translateColor:fgcolour]];
+			break;
+		default:
+			UNIMPL;
+			break;
+	}
+	
+	[v setNeedsDisplay:YES];
 }
 
 void save_licence(unsigned char *data, int length) {

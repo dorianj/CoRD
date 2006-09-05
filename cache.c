@@ -34,8 +34,8 @@
  */
 #define BUMP_COUNT 40
 
-
-
+static void cache_bump_bitmap(rdcConnection conn, uint8 id, uint16 idx, int bump);
+static void cache_evict_bitmap(rdcConnection conn, uint8 id);
 /* Setup the bitmap cache lru/mru linked list */
 void
 cache_rebuild_bmpcache_linked_list(rdcConnection conn, uint8 id, sint16 * idx, int count)
@@ -83,7 +83,7 @@ cache_rebuild_bmpcache_linked_list(rdcConnection conn, uint8 id, sint16 * idx, i
 }
 
 /* Move a bitmap to a new position in the linked list. */
-void
+static void
 cache_bump_bitmap(rdcConnection conn, uint8 id, uint16 idx, int bump)
 {
 	int p_idx, n_idx, n;
@@ -149,7 +149,7 @@ cache_bump_bitmap(rdcConnection conn, uint8 id, uint16 idx, int bump)
 }
 
 /* Evict the least-recently used bitmap from the cache */
-void
+static void
 cache_evict_bitmap(rdcConnection conn, uint8 id)
 {
 	uint16 idx;

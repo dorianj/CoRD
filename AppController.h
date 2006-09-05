@@ -7,6 +7,7 @@
 	IBOutlet NSWindow *mainWindow;
     IBOutlet NSWindow *newServerSheet;
 	IBOutlet NSBox *box;
+	IBOutlet NSBox *box2;
 	IBOutlet NSComboBox *host;
 	IBOutlet NSPopUpButton *screenResolution;
 	IBOutlet NSPopUpButton *colorDepth;
@@ -17,8 +18,11 @@
 	IBOutlet NSButton *windowDrags;
 	IBOutlet NSButton *windowAnimation;
 	IBOutlet NSButton *themes;
-	NSArrayController *arr;
+	IBOutlet NSTabView *tabView;
+	IBOutlet NSArrayController *arrayController;
+	IBOutlet NSButton *disclosure;
 }
+
 - (IBAction)newServer:(id)sender;
 - (IBAction)hideOptions:(id)sender;
 - (IBAction)connectSheet:(id)sender;

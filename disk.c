@@ -118,7 +118,9 @@ struct dummy_statfs_t
 	int f_namemax;
 };
 
-int
+static int dummy_statfs(struct dummy_statfs_t *buf);
+
+static int
 dummy_statfs(struct dummy_statfs_t *buf)
 {
 	buf->f_blocks = 262144;

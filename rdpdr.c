@@ -60,6 +60,8 @@ extern DEVICE_FNS printer_fns;
 extern DEVICE_FNS parallel_fns;
 extern DEVICE_FNS disk_fns;
 
+static void _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCRDCBOOL timed_out);
+
 /* Return device_id for a given handle */
 int
 get_device_index(rdcConnection conn, NTHANDLE handle)
@@ -900,7 +902,7 @@ rdpdr_remove_iorequest(rdcConnection conn, struct async_iorequest *prev, struct 
 }
 
 /* Check if select() returned with one of the rdpdr file descriptors, and complete io if it did */
-void
+static void
 _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCRDCBOOL timed_out)
 {
 	NTSTATUS status;

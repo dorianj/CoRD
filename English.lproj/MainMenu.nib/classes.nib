@@ -5,9 +5,12 @@
             CLASS = AppController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
+                arrayController = NSArrayController; 
                 box = NSBox; 
+                box2 = NSBox; 
                 cacheBitmaps = NSButton; 
                 colorDepth = NSPopUpButton; 
+                disclosure = NSButton; 
                 drawDesktop = NSButton; 
                 forwardAudio = NSPopUpButton; 
                 forwardDisks = NSButton; 
@@ -15,13 +18,15 @@
                 mainWindow = NSWindow; 
                 newServerSheet = NSWindow; 
                 screenResolution = NSPopUpButton; 
+                tabView = NSTabView; 
                 themes = NSButton; 
                 windowAnimation = NSButton; 
                 windowDrags = NSButton; 
             }; 
             SUPERCLASS = NSObject; 
         }, 
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }
+        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = TableViewButton; LANGUAGE = ObjC; SUPERCLASS = NSButtonCell; }
     ); 
     IBVersion = 1; 
 }

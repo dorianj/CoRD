@@ -92,7 +92,7 @@
 	data = [[NSMutableData alloc] initWithCapacity:(int)s.width * (int)s.height * 4];
 	p = a;
 	end = a + ((int)s.width * (int)s.height * 3);
-	np = [data bytes];
+	np = (uint8 *)[data bytes];
 	int i = 0;
 	while (p < end) {
 		np[0] = p[0];
