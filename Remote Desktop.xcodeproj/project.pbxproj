@@ -40,6 +40,8 @@
 		44D2AEA10AA7624300EA19A1 /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9E0AA7624300EA19A1 /* keymap.txt */; };
 		44D2B3060AA8831C00EA19A1 /* TableViewButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2B3050AA8831C00EA19A1 /* TableViewButton.m */; };
 		44E6DDAD0AA915A20009EFE4 /* Picture 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E6DDAC0AA915A20009EFE4 /* Picture 1.png */; };
+		44F3D5E90AADF89A0054F60C /* RBSplitSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F3D5E70AADF89A0054F60C /* RBSplitSubview.m */; };
+		44F3D5EA0AADF89A0054F60C /* RBSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F3D5E80AADF89A0054F60C /* RBSplitView.m */; };
 		44F9B2100AA3D83F005F0B98 /* RDInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F9B20F0AA3D83F005F0B98 /* RDInstance.m */; };
 		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -107,6 +109,11 @@
 		44D2B3040AA8831C00EA19A1 /* TableViewButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewButton.h; sourceTree = "<group>"; };
 		44D2B3050AA8831C00EA19A1 /* TableViewButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewButton.m; sourceTree = "<group>"; };
 		44E6DDAC0AA915A20009EFE4 /* Picture 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 1.png"; sourceTree = "<group>"; };
+		44F3D5E70AADF89A0054F60C /* RBSplitSubview.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RBSplitSubview.m; sourceTree = "<group>"; };
+		44F3D5E80AADF89A0054F60C /* RBSplitView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RBSplitView.m; sourceTree = "<group>"; };
+		44F3D5EB0AADF8B00054F60C /* RBSplitSubview.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RBSplitSubview.h; path = /Users/craig/Downloads/Programming/RBSplitView/Source/RBSplitSubview.h; sourceTree = "<absolute>"; };
+		44F3D5EC0AADF8B00054F60C /* RBSplitView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RBSplitView.h; path = /Users/craig/Downloads/Programming/RBSplitView/Source/RBSplitView.h; sourceTree = "<absolute>"; };
+		44F3D5EF0AADF8CF0054F60C /* RBSplitViewPrivateDefines.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RBSplitViewPrivateDefines.h; path = /Users/craig/Downloads/Programming/RBSplitView/Source/RBSplitViewPrivateDefines.h; sourceTree = "<absolute>"; };
 		44F9B20E0AA3D83F005F0B98 /* RDInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDInstance.h; sourceTree = "<group>"; };
 		44F9B20F0AA3D83F005F0B98 /* RDInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDInstance.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -176,7 +183,8 @@
 		29B97314FDCFA39411CA2CEA /* Remote Desktop */ = {
 			isa = PBXGroup;
 			children = (
-				44D2AE410AA761C000EA19A1 /* Vendor Sources */,
+				44F3D5E60AADF8880054F60C /* RBSplitView */,
+				44D2AE410AA761C000EA19A1 /* RDesktop */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -222,7 +230,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		44D2AE410AA761C000EA19A1 /* Vendor Sources */ = {
+		44D2AE410AA761C000EA19A1 /* RDesktop */ = {
 			isa = PBXGroup;
 			children = (
 				44D2AE4A0AA761C000EA19A1 /* rdesktop.h */,
@@ -257,7 +265,19 @@
 				44D2AE670AA761C000EA19A1 /* channels.c */,
 				44D2AE680AA761C000EA19A1 /* cliprdr.c */,
 			);
-			name = "Vendor Sources";
+			name = RDesktop;
+			sourceTree = "<group>";
+		};
+		44F3D5E60AADF8880054F60C /* RBSplitView */ = {
+			isa = PBXGroup;
+			children = (
+				44F3D5EF0AADF8CF0054F60C /* RBSplitViewPrivateDefines.h */,
+				44F3D5E70AADF89A0054F60C /* RBSplitSubview.m */,
+				44F3D5E80AADF89A0054F60C /* RBSplitView.m */,
+				44F3D5EB0AADF8B00054F60C /* RBSplitSubview.h */,
+				44F3D5EC0AADF8B00054F60C /* RBSplitView.h */,
+			);
+			name = RBSplitView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -347,6 +367,8 @@
 				44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */,
 				44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */,
 				44D2B3060AA8831C00EA19A1 /* TableViewButton.m in Sources */,
+				44F3D5E90AADF89A0054F60C /* RBSplitSubview.m in Sources */,
+				44F3D5EA0AADF89A0054F60C /* RBSplitView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,6 +398,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
@@ -391,8 +420,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "";
+				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)\"";
 				PRODUCT_NAME = "Remote Desktop";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
@@ -406,6 +441,13 @@
 					ppc,
 					i386,
 				);
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/RBSplitView/build/Debug\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/RBSplitView/build/Release\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -418,8 +460,14 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
+					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
 				);
 				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/RBSplitView/build/Debug\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/RBSplitView/build/Release\"";
+				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)\"";
 				PRODUCT_NAME = "Remote Desktop";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;

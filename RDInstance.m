@@ -3,8 +3,24 @@
 //  Remote Desktop
 //
 //  Created by Craig Dooley on 8/28/06.
-//  Copyright 2006 __MyCompanyName__. All rights reserved.
+
+//  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+//  Permission is hereby granted, free of charge, to any person obtaining a 
+//  copy of this software and associated documentation files (the "Software"), 
+//  to deal in the Software without restriction, including without limitation 
+//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+//  and/or sell copies of the Software, and to permit persons to whom the 
+//  Software is furnished to do so, subject to the following conditions:
 //
+//  The above copyright notice and this permission notice shall be included in 
+//  all copies or substantial portions of the Software.
+//  
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+//  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "RDInstance.h"
 #import "RDCKeyboard.h"
@@ -13,6 +29,7 @@
 - (id)init {
 	if (self = [super init]) {
 		cDomain = cPassword = cCommand = cDirectory = cHost = @"";
+		hostColor = [NSColor grayColor];
 		[[RDCKeyboard alloc] init];
 		fillDefaultConnection(&conn);
 	}
@@ -59,6 +76,17 @@
     return;
 }
 
+- (void) parseResolution {
+	int x, y;
+	NSScanner *scan = [NSScanner scannerWithString:screenResolution];
+	[scan setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"x"]];
+	[scan scanInt:&x];
+	[scan scanInt:&y];
+	
+	conn.screenWidth=x;
+	conn.screenHeight=y;
+}
+
 - (int) connect {
 	if (name == nil) {
 		NSLog(@"WTF");
@@ -92,6 +120,8 @@
 	
 	conn.rdp5PerformanceFlags = performanceFlags;
 	
+	[self parseResolution];
+	
 	rdpdr_init(&conn);
 	memcpy(&conn.username,"cdooley",8);
 	connected = rdp_connect(&conn, [name UTF8String], 
@@ -105,6 +135,7 @@
 		return connected;
 	}
 	
+	hostColor = [NSColor blackColor];
 	NSStream *is = conn.inputStream;
 	[is setDelegate:self];
 	[is scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
@@ -127,6 +158,7 @@
 	[is removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 	tcp_disconnect(&conn);
 	connected = NO;
+	hostColor = [NSColor grayColor];
 	
 	return connected;
 }

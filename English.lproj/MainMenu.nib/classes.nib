@@ -26,6 +26,7 @@
             SUPERCLASS = NSObject; 
         }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = RDCSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
         {CLASS = TableViewButton; LANGUAGE = ObjC; SUPERCLASS = NSButtonCell; }
     ); 
     IBVersion = 1; 

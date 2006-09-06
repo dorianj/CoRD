@@ -863,7 +863,7 @@ process_cached_pointer_pdu(rdcConnection conn, STREAM s)
 
 /* Process a system pointer PDU */
 void
-process_system_pointer_pdu(STREAM s)
+process_system_pointer_pdu(rdcConnection conn, STREAM s)
 {
 	uint16 system_pointer_type;
 
@@ -871,7 +871,7 @@ process_system_pointer_pdu(STREAM s)
 	switch (system_pointer_type)
 	{
 		case RDP_NULL_POINTER:
-			ui_set_null_cursor();
+			ui_set_null_cursor(conn);
 			break;
 
 		default:
@@ -907,7 +907,7 @@ process_pointer_pdu(rdcConnection conn, STREAM s)
 			break;
 
 		case RDP_POINTER_SYSTEM:
-			process_system_pointer_pdu(s);
+			process_system_pointer_pdu(conn, s);
 			break;
 
 		default:
@@ -1081,6 +1081,7 @@ process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 
 	if (ctype & RDP_MPPC_COMPRESSED)
 	{
+		fprintf(stderr, "RDP conn:%p stream:%s length:%d ctype:%d\n", conn, s, clen, ctype);
 		if (len > RDP_MPPC_DICT_SIZE)
 			error("error decompressed packet size exceeds max\n");
 		if (mppc_expand(conn, s->p, clen, ctype, &roff, &rlen) == -1)

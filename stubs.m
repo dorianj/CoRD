@@ -1,11 +1,27 @@
 /*
  *  stubs.c
- *  Xrdc
+ *  Remote Desktop
  *
  *  Created by Craig Dooley on 5/10/06.
- *  Copyright 2006 __MyCompanyName__. All rights reserved.
- *
  */
+
+ //  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+ //  Permission is hereby granted, free of charge, to any person obtaining a 
+ //  copy of this software and associated documentation files (the "Software"), 
+ //  to deal in the Software without restriction, including without limitation 
+ //  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
+ //  and/or sell copies of the Software, and to permit persons to whom the 
+ //  Software is furnished to do so, subject to the following conditions:
+ //
+ //  The above copyright notice and this permission notice shall be included in 
+ //  all copies or substantial portions of the Software.
+ //  
+ //  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ //  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ //  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
+ //  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
+ //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+ //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
 
@@ -31,6 +47,27 @@
 #define UNIMPL NSLog(@"Unimplemented: %s", __func__)
 #define CHECKOPCODE(x) if ((x != 12) && (x < 16)) {NSLog(@"Unimplemented opcode %d in function %s", x, __func__);}
 	
+/* Opcodes
+    GXclear,			0  0
+    GXnor,				1  !src & !dst
+    GXandInverted,		2  !src & dst
+    GXcopyInverted,		3  !src
+    GXandReverse,		4  src & !dst
+    GXinvert,			5  !dst
+    GXxor,				6  src ^ dst
+    GXnand,				7  !src | !dst
+    GXand,				8  src & dst
+    GXequiv,			9  !src ^ dst
+    GXnoop,				10 dst
+    GXorInverted,		11 !src | dst
+    GXcopy,				12 src
+    GXorReverse,		13 src | !dst
+    GXor,				14 src or dst
+    GXset				15 1
+*/
+
+static RDCBitmap *nullCursor = nil;
+
 int ui_select(int socket) {
 	return 1;
 }
@@ -272,8 +309,12 @@ HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int
 	return cursor;
 }
 
-void ui_set_null_cursor(void) {
-	UNIMPL;
+void ui_set_null_cursor(rdcConnection conn) {
+	if (nullCursor == nil) {
+		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL);
+	}
+	
+	ui_set_cursor(nullCursor);
 }
 
 void ui_set_cursor(HCURSOR cursor) {

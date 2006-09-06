@@ -103,7 +103,7 @@ void rdp_send_input(rdcConnection conn, uint32 time, uint16 message_type, uint16
 		    uint16 param2);
 void process_colour_pointer_pdu(rdcConnection conn, STREAM s);
 void process_cached_pointer_pdu(rdcConnection conn, STREAM s);
-void process_system_pointer_pdu(STREAM s);
+void process_system_pointer_pdu(rdcConnection conn, STREAM s);
 void process_bitmap_updates(rdcConnection conn, STREAM s);
 void process_palette(rdcConnection conn, STREAM s);
 RDCRDCBOOL rdp_loop(RDCRDCBOOL * deactivated, uint32 * ext_disc_reason);
@@ -198,7 +198,7 @@ HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int
 			 uint8 * xormask);
 void ui_set_cursor(HCURSOR cursor);
 void ui_destroy_cursor(HCURSOR cursor);
-void ui_set_null_cursor(void);
+void ui_set_null_cursor(rdcConnection conn);
 HCOLOURMAP ui_create_colourmap(COLOURMAP * colours);
 void ui_destroy_colourmap(HCOLOURMAP map);
 void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map);

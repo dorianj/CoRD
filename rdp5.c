@@ -39,10 +39,10 @@ rdp5_process(rdcConnection conn, STREAM s)
 #endif
 
 	while (s->p < s->end)
-	{
+	{		
 		in_uint8(s, type);
 		if (type & RDP5_COMPRESSED)
-		{
+		{			
 			in_uint8(s, ctype);
 			in_uint16_le(s, length);
 			type ^= RDP5_COMPRESSED;
@@ -56,6 +56,7 @@ rdp5_process(rdcConnection conn, STREAM s)
 
 		if (ctype & RDP_MPPC_COMPRESSED)
 		{
+			fprintf(stderr, "RDP5 conn:%p stream:%s length:%d ctype:%d\n", conn, s, length, ctype);
 			if (mppc_expand(conn, s->p, length, ctype, &roff, &rlen) == -1)
 				error("error while decompressing packet\n");
 
@@ -91,7 +92,7 @@ rdp5_process(rdcConnection conn, STREAM s)
 			case 3:	/* update synchronize */
 				break;
 			case 5: /* null pointer */
-				ui_set_null_cursor();
+				ui_set_null_cursor(conn);
 				break;
 			case 6:	/* default pointer */
 				break;
