@@ -44,16 +44,18 @@
 		
 		while (p < end) {
 			if (bitsPerPixel == 8) {
-				c = [v translateColor:*p];
+				c = [v nscolorForRDCColor:*p];
+				[c getRed:&r green:&g blue:&b alpha:&a];
+				np[0] = r*255.0;
+				np[1] = g*255.0;
+				np[2] = b*255.0;
+				np += 3;
+				p += bytesPerPixel;
 			} else {
-				c = [v translateColor:*(uint16 *)p];
+				c = [v rgbForRDCColor:*(uint16 *)p r:&np[0] g:&np[1] b:&np[2]];
+				np += 3;
+				p += bytesPerPixel;
 			}
-			[c getRed:&r green:&g blue:&b alpha:&a];
-			np[0] = r*255.0;
-			np[1] = g*255.0;
-			np[2] = b*255.0;
-			np += 3;
-			p += bytesPerPixel;
 		}
 	}
 	

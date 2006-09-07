@@ -23,7 +23,6 @@
 	IBOutlet NSWindow *mainWindow;
     IBOutlet NSWindow *newServerSheet;
 	IBOutlet NSBox *box;
-	IBOutlet NSBox *box2;
 	IBOutlet NSComboBox *host;
 	IBOutlet NSPopUpButton *screenResolution;
 	IBOutlet NSPopUpButton *colorDepth;
@@ -37,10 +36,20 @@
 	IBOutlet NSTabView *tabView;
 	IBOutlet NSArrayController *arrayController;
 	IBOutlet NSButton *disclosure;
+	
+	// Toolbar stuff
+	NSToolbar *toolbar;
+	NSMutableDictionary *toolbarItems;
+	IBOutlet NSButton *openButton;
+	IBOutlet NSButton *disconnectButton;
+	IBOutlet NSPopUpButton *serverPopup;
 }
 
+- (IBAction)disconnect:(id)sender;
+- (IBAction)changeSelection:(id)sender;
 - (IBAction)newServer:(id)sender;
 - (IBAction)hideOptions:(id)sender;
 - (IBAction)connectSheet:(id)sender;
 - (IBAction)cancelSheet:(id)sender;
+- (void)resizeToMatchSelection;
 @end

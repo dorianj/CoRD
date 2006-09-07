@@ -26,7 +26,6 @@
 #import "RDCView.h"
 
 @interface RDInstance : NSObject {
-	RDCController *controller;
 	RDCView *view;
 	NSString *name;
 	NSString *displayName;
@@ -51,6 +50,8 @@
 	struct rdcConn conn;
 }
 
+- (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
+- (rdcConnection)conn;
 - (int) connect;
 - (int) disconnect;
 @end

@@ -23,7 +23,17 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
-#import "RDCController.h"
+// #import "RDCController.h"
+
+#import <sys/types.h>
+#import <dirent.h>
+
+#import "constants.h"
+#import "parse.h"
+#import "types.h"
+#import "proto.h"
+#import "rdesktop.h"
+
 
 @class RDInstance;
 @class RDCBitmap;
@@ -36,6 +46,7 @@
 	NSMutableDictionary *attributes;
 	NSRect clipRect;
 	NSColor *foregroundColor, *backgroundColor;
+	int bitdepth;
 }
 
 -(void)fillRect:(NSRect)r;
@@ -56,9 +67,11 @@
 -(void)setClip:(NSRect)r;
 -(void)resetClip;
 -(int)bitsPerPixel;
--(NSColor *)translateColor:(int)col;
+-(NSColor *)nscolorForRDCColor:(int)col;
+-(int)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b;
 -(void)setForeground:(NSColor *)color;
 -(void)setBackground:(NSColor *)color;
 -(void)swapRect:(NSRect)r;
 -(void)ellipse:(NSRect)r color:(NSColor *)c;
+-(void)setController:(RDInstance *)instance;
 @end

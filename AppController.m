@@ -30,7 +30,81 @@
 
 - (void)awakeFromNib {
 	[mainWindow setAcceptsMouseMovedEvents:YES];
+	
+	NSToolbarItem *item;
+	NSString *name = @"New Server";
+	item=[[NSToolbarItem alloc] initWithItemIdentifier:name];
+	
+	[item setPaletteLabel:name];
+	[item setLabel:name];
+	[item setToolTip:@"Connect to a new server"];
+	[item setView:openButton];
+	[item setMinSize:[openButton bounds].size];
+	[item setMaxSize:[openButton bounds].size];
+	
+	toolbarItems = [[[NSMutableDictionary alloc] init] retain];
+	[toolbarItems setObject:item forKey:name]; // add to toolbar list
+	[item release];
+	
+	name = @"Disconnect";
+	item=[[NSToolbarItem alloc] initWithItemIdentifier:name];
+	
+	[item setPaletteLabel:name];
+	[item setLabel:name];
+	[item setToolTip:@"Disconnect from the current server"];
+	[item setView:disconnectButton];
+	[item setMinSize:[disconnectButton bounds].size];
+	[item setMaxSize:[disconnectButton bounds].size];
+	
+	[toolbarItems setObject:item forKey:name]; // add to toolbar list
+	[item release];
+	
+	name = @"Servers";
+	item=[[NSToolbarItem alloc] initWithItemIdentifier:name];
+	
+	[item setPaletteLabel:name];
+	[item setLabel:name];
+	[item setToolTip:@"Connected Servers"];
+	[item setView:serverPopup];
+	[item setMinSize:[serverPopup bounds].size];
+	[item setMaxSize:[serverPopup bounds].size];
+	
+	[toolbarItems setObject:item forKey:name]; // add to toolbar list
+	[item release];
+	
+	toolbar = [[NSToolbar alloc] initWithIdentifier:@"Toolbar"];
+	[toolbar setDelegate:self];
+	[toolbar setDisplayMode:NSToolbarDisplayModeIconOnly];
+	[mainWindow setToolbar:toolbar];
 }
+
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar 
+	 itemForItemIdentifier:(NSString *)itemIdentifier 
+ willBeInsertedIntoToolbar:(BOOL)flag {
+	return [toolbarItems objectForKey:itemIdentifier];
+	
+}
+
+- (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)tb {
+	return [self toolbarDefaultItemIdentifiers:tb];
+}
+
+- (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)tb {
+	NSMutableArray *ret = [NSMutableArray array];
+	// [ret addObject:NSToolbarFlexibleSpaceItemIdentifier];
+	// [ret addObjectsFromArray:[toolbarItems allKeys]];
+	[ret addObject:@"New Server"];
+	[ret addObject:@"Disconnect"];
+	[ret addObject:NSToolbarFlexibleSpaceItemIdentifier];
+	[ret addObject:@"Servers"];
+	
+	return ret;
+}
+
+- (int)count {
+	return [toolbarItems count];
+}
+
 
 - (IBAction)newServer:(id)sender {
 	[NSApp beginSheet:newServerSheet 
@@ -70,6 +144,11 @@
 }
 
 - (IBAction)connectSheet:(id)sender {
+	if ([[host stringValue] compare:@""] == 0) {
+		[NSApp endSheet:newServerSheet];
+		return;
+	}
+	
 	RDInstance *instance = [[RDInstance alloc] init];
 	[instance setValue:[host stringValue] forKey:@"name"];
 	[instance setValue:[host stringValue] forKey:@"displayName"];
@@ -100,9 +179,9 @@
 	[mainWindow makeFirstResponder:[instance valueForKey:@"view"]];
 	
 	[arrayController addObject:instance];
-	NSSize s = [[instance valueForKey:@"view"] frame].size;
-	NSRect newFrame = NSMakeRect(0, 0, s.width + 251, s.height);
-	[mainWindow setContentMaxSize:newFrame.size];
+	[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
+	
+	[self resizeToMatchSelection];
 	
 	NSMutableArray *recent = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:@"RecentServers"]];
 	if (![recent containsObject:[host stringValue]]) {
@@ -113,8 +192,60 @@
 	[NSApp endSheet:newServerSheet];
 }
 
+- (void)resizeToMatchSelection {
+	int index = [serverPopup indexOfSelectedItem];
+	id selection;
+	NSSize newContentSize;
+	NSString *serverString;
+	
+	if (index != -1) {
+		selection = [[arrayController arrangedObjects] objectAtIndex:index];
+		newContentSize = [[selection valueForKey:@"view"] frame].size;
+		serverString = [NSString stringWithFormat:@" (%@)", [selection valueForKey:@"displayName"]];
+	} else {
+		newContentSize = NSMakeSize(640, 480);
+		serverString = @"";
+	}
+	
+	NSRect windowFrame = [mainWindow frame];
+	float toolbarHeight = windowFrame.size.height - [[mainWindow contentView] frame].size.height;
+	
+	[mainWindow setContentMaxSize:newContentSize];	
+	[mainWindow setFrame:NSMakeRect(windowFrame.origin.x, windowFrame.origin.y + windowFrame.size.height - newContentSize.height - toolbarHeight, 
+								newContentSize.width, newContentSize.height + toolbarHeight)
+				 display:YES
+				 animate:YES];
+	
+	[mainWindow setTitle:[NSString stringWithFormat:@"Remote Desktop%@", serverString]];
+}
+
+- (IBAction)disconnect:(id)sender {
+	int index = [serverPopup indexOfSelectedItem];
+	if (index == -1) {
+		return;
+	}
+	
+	RDInstance *instance = [[arrayController arrangedObjects] objectAtIndex:index];
+	if (instance) {
+		[instance disconnect];
+		[instance release];
+		[tabView removeTabViewItem:[tabView selectedTabViewItem]];
+		[arrayController removeObject:instance];
+		[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
+		[self resizeToMatchSelection];
+		[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
+	}
+}
+
 - (IBAction)cancelSheet:(id)sender {
 	[NSApp endSheet:newServerSheet];
+}
+
+
+- (IBAction)changeSelection:(id)sender {
+	[arrayController setSelectionIndex:[sender indexOfSelectedItem]];
+	NSLog(@"%d", [sender indexOfSelectedItem]);
+	[self resizeToMatchSelection];
 }
 
 - (void)dealloc {

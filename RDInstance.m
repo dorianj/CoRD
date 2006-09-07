@@ -141,7 +141,7 @@
 	[is scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 	
 	view = [[RDCView alloc] initWithFrame:NSMakeRect(0, 0, conn.screenWidth, conn.screenHeight)];
-	[view setValue:self forKey:@"controller"];
+	[view setController:self];
 	[view setNeedsDisplay:YES];
 	conn.ui = view;
 	

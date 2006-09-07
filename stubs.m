@@ -35,7 +35,6 @@
 #import "types.h"
 #import "proto.h"
 
-#import "RDCController.h"
 #import "RDCView.h"
 #import "RDCBitmap.h"
 
@@ -112,7 +111,7 @@ HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data)
 void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour) {
 	RDCView *v = conn->ui;
 	NSRect r = NSMakeRect(x , y, cx, cy);
-	[v setForeground:[v translateColor:colour]];
+	[v setForeground:[v nscolorForRDCColor:colour]];
 	[v fillRect:r];
 	[v setNeedsDisplay:TRUE];
 	
@@ -217,7 +216,7 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 		boxcx = [v width] - boxx;
 	}
 	
-	[v setForeground:[v translateColor:bgcolour]];
+	[v setForeground:[v nscolorForRDCColor:bgcolour]];
 	if (boxcx > 1) {
 			box = NSMakeRect(boxx, boxy, boxcx, boxcy);
 			[v fillRect:box];
@@ -228,8 +227,8 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 			[v setNeedsDisplayInRect:box];
 	}
 	
-	[v setForeground:[v translateColor:fgcolour]];
-	[v setBackground:[v translateColor:bgcolour]];
+	[v setForeground:[v nscolorForRDCColor:fgcolour]];
+	[v setBackground:[v nscolorForRDCColor:bgcolour]];
 		
 	/* Paint text, character by character */
     for (i = 0; i < length;) {                       
@@ -415,7 +414,7 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty,
 	NSPoint start = NSMakePoint(startx + 0.5, starty + 0.5);
 	NSPoint end = NSMakePoint(endx + 0.5, endy + 0.5);
 	
-	[v setForeground:[v translateColor:pen->colour]];
+	[v setForeground:[v nscolorForRDCColor:pen->colour]];
 	
 	if (opcode == 15) {
 		[v drawLineFrom:start to:end color:[NSColor whiteColor] width:pen->width];
@@ -424,8 +423,8 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty,
 	
 	CHECKOPCODE(opcode);
 	/* XXX better rectangle finding for setneedsdisplay */
-	[v setForeground:[v translateColor:pen->colour]];
-	[v drawLineFrom:start to:end color:[v translateColor:pen->colour] width:pen->width];
+	[v setForeground:[v nscolorForRDCColor:pen->colour]];
+	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
 	[v setNeedsDisplay:YES];
 
 }
@@ -457,7 +456,7 @@ void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy) 
 void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, PEN *pen) {
 	RDCView *v = conn->ui;
 	CHECKOPCODE(opcode);
-	[v polyline:points npoints:npoints color:[v translateColor:pen->colour] width:pen->width];
+	[v polyline:points npoints:npoints color:[v nscolorForRDCColor:pen->colour] width:pen->width];
 	[v setNeedsDisplay:YES];
 }
 
@@ -487,8 +486,8 @@ void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point,
 	
 	switch(style) {
 		case 0:
-			[v setForeground:[v translateColor:fgcolour]];
-			[v polygon:point npoints:npoints color:[v translateColor:fgcolour]  winding:r];
+			[v setForeground:[v nscolorForRDCColor:fgcolour]];
+			[v polygon:point npoints:npoints color:[v nscolorForRDCColor:fgcolour]  winding:r];
 			break;
 		default:
 			UNIMPL;
@@ -532,7 +531,7 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 	switch (brush->style) {
 		case 0: /* Solid */
 			NSLog(@"fg %d bg %d opcode %d", fgcolor, bgcolor, opcode);
-			[v fillRect:dest withColor:[v translateColor:fgcolor]];
+			[v fillRect:dest withColor:[v nscolorForRDCColor:fgcolor]];
 			break;
 		case 2: /* Hatch */
 
@@ -542,11 +541,11 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 			[fill lockFocus];
 			
 			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
-			[[v translateColor:fgcolor] set];
+			[[v nscolorForRDCColor:fgcolor] set];
 			[NSBezierPath fillRect:glyphSize];
 			
 			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
-			[[v translateColor:bgcolor] set];
+			[[v nscolorForRDCColor:bgcolor] set];
 			[NSBezierPath fillRect:glyphSize];
 			
 			[fill unlockFocus];
@@ -566,11 +565,11 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 			[fill lockFocus];
 			
 			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
-			[[v translateColor:fgcolor] set];
+			[[v nscolorForRDCColor:fgcolor] set];
 			[NSBezierPath fillRect:glyphSize];
 			
 			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
-			[[v translateColor:bgcolor] set];
+			[[v nscolorForRDCColor:bgcolor] set];
 			[NSBezierPath fillRect:glyphSize];
 			
 			[fill unlockFocus];
@@ -924,8 +923,8 @@ void ui_ellipse(rdcConnection conn,
 	
 	switch(style) {
 		case 0:
-			[v setForeground:[v translateColor:fgcolour]];
-			[v ellipse:r color:[v translateColor:fgcolour]];
+			[v setForeground:[v nscolorForRDCColor:fgcolour]];
+			[v ellipse:r color:[v nscolorForRDCColor:fgcolour]];
 			break;
 		default:
 			UNIMPL;

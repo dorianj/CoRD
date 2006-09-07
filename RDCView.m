@@ -25,6 +25,7 @@
 #import "RDCView.h"
 #import "RDCKeyboard.h"
 #import "RDCBitmap.h"
+#import "RDInstance.h"
 #import "constants.h"
 #import "scancodes.h"
 
@@ -47,6 +48,12 @@
     return self;
 }
 
+-(void)setController:(RDInstance *)instance {
+	[instance retain];
+	[controller release];
+	controller = instance;
+	bitdepth = [instance conn]->serverBpp;
+}
 
 -(BOOL)acceptsFirstResponder {
 	return YES;
@@ -140,8 +147,7 @@
 
 
 
--(NSColor *)translateColor:(int)col {
-	int bitdepth = [controller conn]->serverBpp;
+-(NSColor *)nscolorForRDCColor:(int)col {
 	NSColor *ret;
 	int r, g, b;
 	
@@ -248,8 +254,8 @@
 
 -(void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(int)fgcolor bg:(int)bgcolor {
 	NSColor *fg, *bg;
-	fg = [self translateColor:fgcolor];
-	bg = [self translateColor:bgcolor];
+	fg = [self nscolorForRDCColor:fgcolor];
+	bg = [self nscolorForRDCColor:bgcolor];
 	NSImage *image = [glyph image];
 	
 	if (! [[glyph color] isEqual:fg]) {
@@ -370,7 +376,7 @@
 }
 
 -(int)bitsPerPixel {
-	return [controller conn]->serverBpp;
+	return bitdepth;
 }
 
 -(void)setFrameSize:(NSSize)size {
@@ -408,5 +414,23 @@
 	CGContextFillRect (context, CGRectMake(r.origin.x, r.origin.y, r.size.width, r.size.height));
 	CGContextRestoreGState (context);
 	[back unlockFocus];
+}
+
+-(int)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b {
+	if (bitdepth == 8) {
+		
+	} else if (bitdepth == 16) {
+		*r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
+		*g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
+		*b =((col << 3) & 0xf8) | ((col >> 2) & 0x7);
+	} else if (bitdepth == 24) {
+		*r = (col >> 16) & 0xff;
+		*g = (col >> 8)  & 0xff;
+		*b =  col        & 0xff;
+	} else {
+		NSLog(@"Attempting to convert color in unknown bitdepth");
+	}
+	
+	return 0;
 }
 @end

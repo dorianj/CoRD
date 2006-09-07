@@ -1,23 +1,32 @@
 {
     IBClasses = (
         {
-            ACTIONS = {cancelSheet = id; connectSheet = id; hideOptions = id; newServer = id; }; 
+            ACTIONS = {
+                cancelSheet = id; 
+                changeSelection = id; 
+                connectSheet = id; 
+                disconnect = id; 
+                hideOptions = id; 
+                newServer = id; 
+            }; 
             CLASS = AppController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 arrayController = NSArrayController; 
                 box = NSBox; 
-                box2 = NSBox; 
                 cacheBitmaps = NSButton; 
                 colorDepth = NSPopUpButton; 
                 disclosure = NSButton; 
+                disconnectButton = NSButton; 
                 drawDesktop = NSButton; 
                 forwardAudio = NSPopUpButton; 
                 forwardDisks = NSButton; 
                 host = NSComboBox; 
                 mainWindow = NSWindow; 
                 newServerSheet = NSWindow; 
+                openButton = NSButton; 
                 screenResolution = NSPopUpButton; 
+                serverPopup = NSPopUpButton; 
                 tabView = NSTabView; 
                 themes = NSButton; 
                 windowAnimation = NSButton; 

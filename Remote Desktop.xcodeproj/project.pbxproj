@@ -38,10 +38,9 @@
 		44D2AE9F0AA7624300EA19A1 /* rdesktop.icns in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */; };
 		44D2AEA00AA7624300EA19A1 /* libcrypto.0.9.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 44D2AE9D0AA7624300EA19A1 /* libcrypto.0.9.7.dylib */; };
 		44D2AEA10AA7624300EA19A1 /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9E0AA7624300EA19A1 /* keymap.txt */; };
-		44D2B3060AA8831C00EA19A1 /* TableViewButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2B3050AA8831C00EA19A1 /* TableViewButton.m */; };
 		44E6DDAD0AA915A20009EFE4 /* Picture 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E6DDAC0AA915A20009EFE4 /* Picture 1.png */; };
-		44F3D5E90AADF89A0054F60C /* RBSplitSubview.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F3D5E70AADF89A0054F60C /* RBSplitSubview.m */; };
-		44F3D5EA0AADF89A0054F60C /* RBSplitView.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F3D5E80AADF89A0054F60C /* RBSplitView.m */; };
+		44E804D90AAF265C005EFCAE /* Connect.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E804D70AAF265C005EFCAE /* Connect.png */; };
+		44E804DA0AAF265C005EFCAE /* Remove.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E804D80AAF265C005EFCAE /* Remove.png */; };
 		44F9B2100AA3D83F005F0B98 /* RDInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F9B20F0AA3D83F005F0B98 /* RDInstance.m */; };
 		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -97,8 +96,6 @@
 		44D2AE8B0AA761E700EA19A1 /* stubs.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = stubs.m; sourceTree = "<group>"; };
 		44D2AE8D0AA7621C00EA19A1 /* RDCKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDCKeyboard.h; sourceTree = "<group>"; };
 		44D2AE8E0AA7621C00EA19A1 /* RDCKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDCKeyboard.m; sourceTree = "<group>"; };
-		44D2AE8F0AA7621C00EA19A1 /* RDCController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDCController.h; sourceTree = "<group>"; };
-		44D2AE900AA7621C00EA19A1 /* RDCController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDCController.m; sourceTree = "<group>"; };
 		44D2AE910AA7621C00EA19A1 /* RDCView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDCView.h; sourceTree = "<group>"; };
 		44D2AE920AA7621C00EA19A1 /* RDCView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDCView.m; sourceTree = "<group>"; };
 		44D2AE930AA7621C00EA19A1 /* RDCBitmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDCBitmap.h; sourceTree = "<group>"; };
@@ -106,14 +103,9 @@
 		44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rdesktop.icns; sourceTree = "<group>"; };
 		44D2AE9D0AA7624300EA19A1 /* libcrypto.0.9.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcrypto.0.9.7.dylib; sourceTree = "<group>"; };
 		44D2AE9E0AA7624300EA19A1 /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = keymap.txt; sourceTree = "<group>"; };
-		44D2B3040AA8831C00EA19A1 /* TableViewButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewButton.h; sourceTree = "<group>"; };
-		44D2B3050AA8831C00EA19A1 /* TableViewButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewButton.m; sourceTree = "<group>"; };
 		44E6DDAC0AA915A20009EFE4 /* Picture 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 1.png"; sourceTree = "<group>"; };
-		44F3D5E70AADF89A0054F60C /* RBSplitSubview.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RBSplitSubview.m; sourceTree = "<group>"; };
-		44F3D5E80AADF89A0054F60C /* RBSplitView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RBSplitView.m; sourceTree = "<group>"; };
-		44F3D5EB0AADF8B00054F60C /* RBSplitSubview.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RBSplitSubview.h; path = /Users/craig/Downloads/Programming/RBSplitView/Source/RBSplitSubview.h; sourceTree = "<absolute>"; };
-		44F3D5EC0AADF8B00054F60C /* RBSplitView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RBSplitView.h; path = /Users/craig/Downloads/Programming/RBSplitView/Source/RBSplitView.h; sourceTree = "<absolute>"; };
-		44F3D5EF0AADF8CF0054F60C /* RBSplitViewPrivateDefines.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RBSplitViewPrivateDefines.h; path = /Users/craig/Downloads/Programming/RBSplitView/Source/RBSplitViewPrivateDefines.h; sourceTree = "<absolute>"; };
+		44E804D70AAF265C005EFCAE /* Connect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Connect.png; sourceTree = "<group>"; };
+		44E804D80AAF265C005EFCAE /* Remove.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Remove.png; sourceTree = "<group>"; };
 		44F9B20E0AA3D83F005F0B98 /* RDInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDInstance.h; sourceTree = "<group>"; };
 		44F9B20F0AA3D83F005F0B98 /* RDInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDInstance.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
@@ -138,8 +130,6 @@
 			children = (
 				44D2AE8D0AA7621C00EA19A1 /* RDCKeyboard.h */,
 				44D2AE8E0AA7621C00EA19A1 /* RDCKeyboard.m */,
-				44D2AE8F0AA7621C00EA19A1 /* RDCController.h */,
-				44D2AE900AA7621C00EA19A1 /* RDCController.m */,
 				44D2AE910AA7621C00EA19A1 /* RDCView.h */,
 				44D2AE920AA7621C00EA19A1 /* RDCView.m */,
 				44D2AE930AA7621C00EA19A1 /* RDCBitmap.h */,
@@ -148,8 +138,6 @@
 				44F9B20F0AA3D83F005F0B98 /* RDInstance.m */,
 				44D2ACDE0AA73B2A00EA19A1 /* AppController.h */,
 				44D2ACDF0AA73B2A00EA19A1 /* AppController.m */,
-				44D2B3040AA8831C00EA19A1 /* TableViewButton.h */,
-				44D2B3050AA8831C00EA19A1 /* TableViewButton.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -183,7 +171,6 @@
 		29B97314FDCFA39411CA2CEA /* Remote Desktop */ = {
 			isa = PBXGroup;
 			children = (
-				44F3D5E60AADF8880054F60C /* RBSplitView */,
 				44D2AE410AA761C000EA19A1 /* RDesktop */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -207,6 +194,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				44E804D70AAF265C005EFCAE /* Connect.png */,
+				44E804D80AAF265C005EFCAE /* Remove.png */,
 				44E6DDAC0AA915A20009EFE4 /* Picture 1.png */,
 				449305C50AA9A012001C5A8B /* Picture 2.png */,
 				44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */,
@@ -268,18 +257,6 @@
 			name = RDesktop;
 			sourceTree = "<group>";
 		};
-		44F3D5E60AADF8880054F60C /* RBSplitView */ = {
-			isa = PBXGroup;
-			children = (
-				44F3D5EF0AADF8CF0054F60C /* RBSplitViewPrivateDefines.h */,
-				44F3D5E70AADF89A0054F60C /* RBSplitSubview.m */,
-				44F3D5E80AADF89A0054F60C /* RBSplitView.m */,
-				44F3D5EB0AADF8B00054F60C /* RBSplitSubview.h */,
-				44F3D5EC0AADF8B00054F60C /* RBSplitView.h */,
-			);
-			name = RBSplitView;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -329,6 +306,8 @@
 				449305C60AA9A012001C5A8B /* Picture 2.png in Resources */,
 				449305CC0AA9A13C001C5A8B /* Picture 4.png in Resources */,
 				449305CF0AA9A178001C5A8B /* Picture 5.png in Resources */,
+				44E804D90AAF265C005EFCAE /* Connect.png in Resources */,
+				44E804DA0AAF265C005EFCAE /* Remove.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,9 +345,6 @@
 				44D2AE950AA7621C00EA19A1 /* RDCKeyboard.m in Sources */,
 				44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */,
 				44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */,
-				44D2B3060AA8831C00EA19A1 /* TableViewButton.m in Sources */,
-				44F3D5E90AADF89A0054F60C /* RBSplitSubview.m in Sources */,
-				44F3D5EA0AADF89A0054F60C /* RBSplitView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
