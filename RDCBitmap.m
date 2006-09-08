@@ -44,15 +44,11 @@
 		
 		while (p < end) {
 			if (bitsPerPixel == 8) {
-				c = [v nscolorForRDCColor:*p];
-				[c getRed:&r green:&g blue:&b alpha:&a];
-				np[0] = r*255.0;
-				np[1] = g*255.0;
-				np[2] = b*255.0;
+				[v rgbForRDCColor:*p r:&np[0] g:&np[1] b:&np[2]];
 				np += 3;
 				p += bytesPerPixel;
 			} else {
-				c = [v rgbForRDCColor:*(uint16 *)p r:&np[0] g:&np[1] b:&np[2]];
+				[v rgbForRDCColor:*(uint16 *)p r:&np[0] g:&np[1] b:&np[2]];
 				np += 3;
 				p += bytesPerPixel;
 			}
@@ -111,15 +107,23 @@
 	p = a;
 	end = a + ((int)s.width * (int)s.height * 3);
 	np = (uint8 *)[data bytes];
-	int i = 0;
+	int i = 0, bit;
 	while (p < end) {
 		np[0] = p[0];
 		np[1] = p[1];
 		np[2] = p[2];
-		if (d[i / 8] & (0x80 >> (i % 8))) {
-			np[3] = 0x00;
-		} else {
+		bit = d[i / 8] & (0x80 >> (i % 8));
+		if (np[0] || np[1] || np[2]) {
+			if (bit) {
+				np[0] = np[1] = np[2] = 0;
+			}
 			np[3] = 0xff;
+		} else {
+			if (!bit) {
+				np[3] = 0xff;
+			} else {
+				np[3] = 0;
+			}
 		}
 		i++;
 		p += 3;
