@@ -49,8 +49,6 @@
 }
 
 -(void)setController:(RDInstance *)instance {
-	[instance retain];
-	[controller release];
 	controller = instance;
 	bitdepth = [instance conn]->serverBpp;
 }
@@ -75,6 +73,14 @@
 }
 
 #pragma mark Remote Desktop methods
+-(void)startUpdate {
+	[back lockFocus];
+}
+
+-(void)stopUpdate {
+	[back unlockFocus];
+}
+
 -(void)ellipse:(NSRect)r color:(NSColor *)c {
 	[back lockFocus];
 	NSRectClip(clipRect);
@@ -149,10 +155,17 @@
 
 -(NSColor *)nscolorForRDCColor:(int)col {
 	NSColor *ret;
-	int r, g, b;
+	int r, g, b, t;
 	
 	if (bitdepth == 8) {
-		ret = [colorMap objectAtIndex:col];
+		t = [[colorMap objectAtIndex:col] intValue];
+		r = (t >> 16) & 0xff;
+		g = (t >> 8)  & 0xff;
+		b = t & 0xff;
+		ret = [NSColor colorWithDeviceRed:(float)r / 255.0
+									green:(float)g / 255.0
+									 blue:(float)b / 255.0
+									alpha:1.0];
 	} else if (bitdepth == 16) {
 		r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
 		g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
@@ -267,13 +280,13 @@
 		[glyph setColor:fg];
 	}
 	
-	[back lockFocus];
+	// [back lockFocus];
 	NSRectClip(clipRect);
 	[image drawInRect:r
 			 fromRect:NSMakeRect(0, 0, r.size.width, r.size.height)
 			operation:NSCompositeSourceOver
 			 fraction:1.0];
-	[back unlockFocus];
+	// [back unlockFocus];
 }
 
 -(void)setClip:(NSRect)r {
@@ -417,8 +430,13 @@
 }
 
 -(int)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b {
+	int t;
+	
 	if (bitdepth == 8) {
-		
+		t = [[colorMap objectAtIndex:col] intValue];
+		*r = (t >> 16) & 0xff;
+		*g = (t >> 8)  & 0xff;
+		*b =  t        & 0xff;
 	} else if (bitdepth == 16) {
 		*r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
 		*g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
@@ -433,4 +451,9 @@
 	
 	return 0;
 }
+
+-(void)setBitdepth:(int)depth {
+	bitdepth = depth;
+}
+
 @end
