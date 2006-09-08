@@ -49,6 +49,8 @@
         s = rdp_recv(&conn, &type);
         if (s == NULL) {
 			[self disconnect];
+			[appController removeItem:self];
+			[self autorelease];
 			return;
 		}
         switch (type)
@@ -68,7 +70,10 @@
                 unimpl("PDU %d\n", type);
         }
         if (disc) {
+			NSLog(@"Disconnection");
 			[self disconnect];
+			[appController removeItem:self];
+			[self autorelease];
 			return;
 		}
         cont = conn.nextPacket < s->end;
@@ -135,7 +140,6 @@
 		return connected;
 	}
 	
-	hostColor = [NSColor blackColor];
 	NSStream *is = conn.inputStream;
 	[is setDelegate:self];
 	[is scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
@@ -150,15 +154,10 @@
 }
 
 - (int) disconnect {
-	[view fillRect:[view frame] withColor:[NSColor whiteColor]];
-	[view setNeedsDisplay:YES];
-	
-	NSStream *is = conn.inputStream;
-	NSLog(@"disconnect");
+	NSStream *is = conn.inputStream;	
 	[is removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 	tcp_disconnect(&conn);
 	connected = NO;
-	hostColor = [NSColor grayColor];
 	
 	return connected;
 }
@@ -173,9 +172,8 @@
 }
 
 - (void)dealloc {
-	[name dealloc];
-	[displayName dealloc];
-	[screenResolution dealloc];
+	NSLog(@"deallocing");
+	[view dealloc];
 	[super dealloc];
 }
 @end
