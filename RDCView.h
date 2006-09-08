@@ -49,6 +49,8 @@
 	int bitdepth;
 }
 
+-(void)startUpdate;
+-(void)stopUpdate;
 -(void)fillRect:(NSRect)r;
 -(void)fillRect:(NSRect)rect withColor:(NSColor *) color;
 -(void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin;
@@ -74,4 +76,5 @@
 -(void)swapRect:(NSRect)r;
 -(void)ellipse:(NSRect)r color:(NSColor *)c;
 -(void)setController:(RDInstance *)instance;
+-(void)setBitdepth:(int)depth;
 @end
