@@ -51,5 +51,6 @@
 - (IBAction)hideOptions:(id)sender;
 - (IBAction)connectSheet:(id)sender;
 - (IBAction)cancelSheet:(id)sender;
+- (void)removeItem:(id)sender;
 - (void)resizeToMatchSelection;
 @end
