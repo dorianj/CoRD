@@ -80,19 +80,17 @@ unsigned short ui_get_numlock_state(unsigned int state) {
 	return 0;
 }
 
+#pragma mark Colormap functions
+
 HCOLOURMAP ui_create_colourmap(COLOURMAP * colors) {
 	NSMutableArray *array;
-	NSColor *color;
-	int i;
+	int i, color;
 	
 	array = [[NSMutableArray alloc] init];
 	for (i = 0; i < colors->ncolours; i++) {
 		COLOURENTRY centry = colors->colours[i];
-		color = [NSColor colorWithDeviceRed:(centry.red / 255.0)
-									  green:(centry.green / 255.0)
-									   blue:(centry.blue / 255.0)
-									  alpha:1.0];
-		[array insertObject:color atIndex:i];
+		color = (centry.red << 16) | (centry.green << 8) | (centry.blue);
+		[array insertObject:[NSNumber numberWithInt:color] atIndex:i];
 	}
 	return array;
 }
@@ -102,20 +100,15 @@ void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map) {
 	[v setColorMap:(NSArray *)map];
 }
 
+#pragma mark Bitmap functions
+
 HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data) {
 	RDCBitmap *bitmap = [[RDCBitmap alloc] init];
 	[bitmap bitmapWithData:data size:NSMakeSize(width, height) view:conn->ui];
 	return bitmap;
 }
 
-void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour) {
-	RDCView *v = conn->ui;
-	NSRect r = NSMakeRect(x , y, cx, cy);
-	[v setForeground:[v nscolorForRDCColor:colour]];
-	[v fillRect:r];
-	[v setNeedsDisplay:TRUE];
-	
-}
+
 
 void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width, int height, uint8 * data) {
 	RDCBitmap *bitmap = [[RDCBitmap alloc] init];
@@ -139,9 +132,54 @@ void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, H
 	[v setNeedsDisplayInRect:r];
 }
 
+void ui_destroy_bitmap(HBITMAP bmp) {
+	id image = bmp;
+	[image release];
+}
+
+# pragma mark Drawing functions
+
+void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour) {
+	RDCView *v = conn->ui;
+	NSRect r = NSMakeRect(x , y, cx, cy);
+	[v setForeground:[v nscolorForRDCColor:colour]];
+	[v fillRect:r];
+	[v setNeedsDisplayInRect:r];
+	
+}
+
+void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, 
+			 int endx, int endy, PEN * pen) {
+	RDCView *v = conn->ui;
+	NSPoint start = NSMakePoint(startx + 0.5, starty + 0.5);
+	NSPoint end = NSMakePoint(endx + 0.5, endy + 0.5);
+	
+	[v setForeground:[v nscolorForRDCColor:pen->colour]];
+	
+	if (opcode == 15) {
+		[v drawLineFrom:start to:end color:[NSColor whiteColor] width:pen->width];
+		return;
+	}
+	
+	CHECKOPCODE(opcode);
+	/* XXX better rectangle finding for setneedsdisplay */
+	[v setForeground:[v nscolorForRDCColor:pen->colour]];
+	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
+	[v setNeedsDisplay:YES];
+	
+}
+
+#pragma mark Desktop functions
+
 void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
 	RDCView *v = conn->ui;
 	[v saveDesktop];
+}
+
+void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
+	RDCView *v = conn->ui;
+	[v restoreDesktop:NSMakeRect(x, y, cx, cy)];
+	[v setNeedsDisplayInRect:NSMakeRect(x, y, cx, cy)];
 }
 
 #pragma mark Text functions
@@ -229,7 +267,8 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 	
 	[v setForeground:[v nscolorForRDCColor:fgcolour]];
 	[v setBackground:[v nscolorForRDCColor:bgcolour]];
-		
+	[v startUpdate];
+	
 	/* Paint text, character by character */
     for (i = 0; i < length;) {                       
         switch (text[i]) {           
@@ -276,7 +315,9 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
                 i++;
                 break;
         }
-    }   
+    }  
+	
+	[v stopUpdate];
 }
 
 #pragma mark Clipping functions
@@ -386,11 +427,7 @@ void toupper_str(char *p)
     }
 }
 
-void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
-	RDCView *v = conn->ui;
-	[v restoreDesktop:NSMakeRect(x, y, cx, cy)];
-	[v setNeedsDisplayInRect:NSMakeRect(x, y, cx, cy)];
-}
+
 
 
 void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, int srcx, int srcy) {
@@ -403,31 +440,8 @@ void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy
 	[v setNeedsDisplayInRect:NSMakeRect(x, y, cx, cy)];
 }
 
-void ui_destroy_bitmap(HBITMAP bmp) {
-	id image = bmp;
-	[image release];
-}
 
-void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, 
-						   int endx, int endy, PEN * pen) {
-	RDCView *v = conn->ui;
-	NSPoint start = NSMakePoint(startx + 0.5, starty + 0.5);
-	NSPoint end = NSMakePoint(endx + 0.5, endy + 0.5);
-	
-	[v setForeground:[v nscolorForRDCColor:pen->colour]];
-	
-	if (opcode == 15) {
-		[v drawLineFrom:start to:end color:[NSColor whiteColor] width:pen->width];
-		return;
-	}
-	
-	CHECKOPCODE(opcode);
-	/* XXX better rectangle finding for setneedsdisplay */
-	[v setForeground:[v nscolorForRDCColor:pen->colour]];
-	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
-	[v setNeedsDisplay:YES];
 
-}
 
 void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy) {
 	RDCView *v = conn->ui;
