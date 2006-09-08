@@ -38,8 +38,8 @@ rdp5_process(rdcConnection conn, STREAM s)
 	hexdump(s->p, s->end - s->p);
 #endif
 
-	while (s->p < s->end)
-	{		
+	while (s->p + 3 < s->end)
+	{	
 		in_uint8(s, type);
 		if (type & RDP5_COMPRESSED)
 		{			
@@ -53,10 +53,10 @@ rdp5_process(rdcConnection conn, STREAM s)
 			in_uint16_le(s, length);
 		}
 		conn->nextPacket = next = s->p + length;
-
+			
 		if (ctype & RDP_MPPC_COMPRESSED)
 		{
-			fprintf(stderr, "RDP5 conn:%p stream:%s length:%d ctype:%d\n", conn, s, length, ctype);
+			fprintf(stderr, "RDP5 conn:%p stream:%p length:%d ctype:%d\n", conn, s, length, ctype);
 			if (mppc_expand(conn, s->p, length, ctype, &roff, &rlen) == -1)
 				error("error while decompressing packet\n");
 
