@@ -23,6 +23,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
+#import "AppController.h"
 #import "RDCView.h"
 
 @interface RDInstance : NSObject {
@@ -32,6 +33,7 @@
 	NSString *screenResolution;
 	NSString *colorDepth;
 	NSString *forwardAudio;
+	AppController *appController;
 	BOOL forwardDisks;
 	BOOL cacheBitmaps;
 	BOOL drawDesktop;
