@@ -21,13 +21,8 @@
 #import "RDInstance.h"
 
 @implementation AppController
-- (id)init {
-	if (self = [super init]) {
-	}
-	
-	return self;
-}
 
+#pragma mark NSObject methods
 - (void)awakeFromNib {
 	[mainWindow setAcceptsMouseMovedEvents:YES];
 	
@@ -78,6 +73,8 @@
 	[mainWindow setToolbar:toolbar];
 }
 
+#pragma mark Toolbar methods
+
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar 
 	 itemForItemIdentifier:(NSString *)itemIdentifier 
  willBeInsertedIntoToolbar:(BOOL)flag {
@@ -105,6 +102,7 @@
 	return [toolbarItems count];
 }
 
+#pragma mark Action Methods
 
 - (IBAction)newServer:(id)sender {
 	[NSApp beginSheet:newServerSheet 
@@ -112,10 +110,6 @@
 		modalDelegate:self
 	   didEndSelector:@selector(didEndSheet:returnCode:contextInfo:) 
 		  contextInfo:NULL];
-}
-
-- (void)didEndSheet:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
-	[sheet orderOut:self];
 }
 
 - (IBAction)hideOptions:(id)sender {
@@ -161,6 +155,7 @@
 	[instance setValue:[NSNumber numberWithInt:[windowDrags intValue]] forKey:@"windowDrags"];
 	[instance setValue:[NSNumber numberWithInt:[windowAnimation intValue]] forKey:@"windowAnimation"];
 	[instance setValue:[NSNumber numberWithInt:[themes intValue]] forKey:@"themes"];
+	[instance setValue:self forKey:@"appController"];
 	
 	[instance connect];
 	
@@ -179,6 +174,7 @@
 	[mainWindow makeFirstResponder:[instance valueForKey:@"view"]];
 	
 	[arrayController addObject:instance];
+	[instance release];
 	[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
 	
 	[self resizeToMatchSelection];
@@ -190,6 +186,38 @@
 	}
 	
 	[NSApp endSheet:newServerSheet];
+}
+
+- (IBAction)cancelSheet:(id)sender {
+	[NSApp endSheet:newServerSheet];
+}
+
+- (IBAction)disconnect:(id)sender {
+	int index = [serverPopup indexOfSelectedItem];
+	if (index == -1) {
+		return;
+	}
+	
+	RDInstance *instance = [[arrayController arrangedObjects] objectAtIndex:index];
+	if (instance) {
+		[instance disconnect];
+		[tabView removeTabViewItem:[tabView selectedTabViewItem]];
+		[connections removeObject:instance];
+		[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
+		[self resizeToMatchSelection];
+	}
+}
+
+- (IBAction)changeSelection:(id)sender {
+	[arrayController setSelectionIndex:[sender indexOfSelectedItem]];
+	NSLog(@"Selected %d", [sender indexOfSelectedItem]);
+	[self resizeToMatchSelection];
+}
+
+#pragma mark Other methods
+
+- (void)didEndSheet:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
+	[sheet orderOut:self];
 }
 
 - (void)resizeToMatchSelection {
@@ -219,37 +247,30 @@
 	[mainWindow setTitle:[NSString stringWithFormat:@"Remote Desktop%@", serverString]];
 }
 
-- (IBAction)disconnect:(id)sender {
-	int index = [serverPopup indexOfSelectedItem];
-	if (index == -1) {
+- (void)removeItem:(id)sender {
+	NSArray *items = [tabView tabViewItems];
+	NSEnumerator *e = [items objectEnumerator];
+	NSTabViewItem *tabViewItem;
+	
+	NSLog(@"removeItem");
+	
+	while ((tabViewItem = [e nextObject])) {
+		if ([tabViewItem identifier] == [sender valueForKey:@"view"]) {
+			break;
+		}
+	}
+	
+	if (tabViewItem == nil) {
+		NSLog(@"No match found");
 		return;
 	}
 	
-	RDInstance *instance = [[arrayController arrangedObjects] objectAtIndex:index];
-	if (instance) {
-		[instance disconnect];
-		[instance release];
-		[tabView removeTabViewItem:[tabView selectedTabViewItem]];
-		[arrayController removeObject:instance];
-		[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
-		[self resizeToMatchSelection];
-		[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
-	}
-}
-
-- (IBAction)cancelSheet:(id)sender {
-	[NSApp endSheet:newServerSheet];
-}
-
-
-- (IBAction)changeSelection:(id)sender {
-	[arrayController setSelectionIndex:[sender indexOfSelectedItem]];
-	NSLog(@"%d", [sender indexOfSelectedItem]);
+	NSLog(@"%d", [tabView numberOfTabViewItems]);
+	[tabView removeTabViewItem:tabViewItem];
+	NSLog(@"%d", [tabView numberOfTabViewItems]);
+	
+	[tabViewItem release];
+	[arrayController removeObject:sender];
 	[self resizeToMatchSelection];
 }
-
-- (void)dealloc {
-	[super dealloc];
-}
-
 @end
