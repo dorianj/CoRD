@@ -202,7 +202,7 @@
 	if (instance) {
 		[instance disconnect];
 		[tabView removeTabViewItem:[tabView selectedTabViewItem]];
-		[connections removeObject:instance];
+		[arrayController removeObject:instance];
 		[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
 		[self resizeToMatchSelection];
 	}
