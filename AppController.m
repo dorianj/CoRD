@@ -200,11 +200,8 @@
 	
 	RDInstance *instance = [[arrayController arrangedObjects] objectAtIndex:index];
 	if (instance) {
+		[self removeItem:instance];
 		[instance disconnect];
-		[tabView removeTabViewItem:[tabView selectedTabViewItem]];
-		[arrayController removeObject:instance];
-		[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
-		[self resizeToMatchSelection];
 	}
 }
 
@@ -248,12 +245,12 @@
 }
 
 - (void)removeItem:(id)sender {
+	[arrayController removeObject:sender];
+	
 	NSArray *items = [tabView tabViewItems];
 	NSEnumerator *e = [items objectEnumerator];
 	NSTabViewItem *tabViewItem;
-	
-	NSLog(@"removeItem");
-	
+		
 	while ((tabViewItem = [e nextObject])) {
 		if ([tabViewItem identifier] == [sender valueForKey:@"view"]) {
 			break;
@@ -265,12 +262,9 @@
 		return;
 	}
 	
-	NSLog(@"%d", [tabView numberOfTabViewItems]);
 	[tabView removeTabViewItem:tabViewItem];
-	NSLog(@"%d", [tabView numberOfTabViewItems]);
-	
 	[tabViewItem release];
-	[arrayController removeObject:sender];
+		  
 	[self resizeToMatchSelection];
 }
 @end
