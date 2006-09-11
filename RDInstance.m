@@ -29,7 +29,6 @@
 - (id)init {
 	if (self = [super init]) {
 		cDomain = cPassword = cCommand = cDirectory = cHost = @"";
-		[[RDCKeyboard alloc] init];
 		fillDefaultConnection(&conn);
 	}
 	
@@ -47,9 +46,8 @@
     {
         s = rdp_recv(&conn, &type);
         if (s == NULL) {
-			[self disconnect];
 			[appController removeItem:self];
-			[self autorelease];
+			[self disconnect];
 			return;
 		}
         switch (type)
@@ -70,9 +68,8 @@
         }
         if (disc) {
 			NSLog(@"Disconnection");
-			[self disconnect];
 			[appController removeItem:self];
-			[self autorelease];
+			[self disconnect];
 			return;
 		}
         cont = conn.nextPacket < s->end;
@@ -171,8 +168,8 @@
 }
 
 - (void)dealloc {
-	NSLog(@"deallocing");
-	[view dealloc];
+	NSLog(@"instance deallocated");
 	[super dealloc];
 }
+
 @end

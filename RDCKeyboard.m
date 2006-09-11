@@ -29,19 +29,19 @@ static RDCKeyboard *shared = nil;
 
 @implementation RDCKeyboard
 + (RDCKeyboard *)shared {
+	if (!shared) {
+		shared = [[RDCKeyboard alloc] init];
+	}
+	
 	return shared;
 }
 
 - (id) init {
-	if (shared != nil) {
-		return shared;
-	}
 	
 	self = [super init];
 	if (self) {
 		keymap = [[NSMutableDictionary alloc] init];
 		[self readKeymap];
-		shared = self;
 	}
 	
 	return self;
