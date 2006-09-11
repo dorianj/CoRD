@@ -29,7 +29,6 @@
 - (id)init {
 	if (self = [super init]) {
 		cDomain = cPassword = cCommand = cDirectory = cHost = @"";
-		hostColor = [NSColor grayColor];
 		[[RDCKeyboard alloc] init];
 		fillDefaultConnection(&conn);
 	}

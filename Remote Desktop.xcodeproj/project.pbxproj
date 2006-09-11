@@ -36,7 +36,6 @@
 		44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE920AA7621C00EA19A1 /* RDCView.m */; };
 		44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE940AA7621C00EA19A1 /* RDCBitmap.m */; };
 		44D2AE9F0AA7624300EA19A1 /* rdesktop.icns in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */; };
-		44D2AEA00AA7624300EA19A1 /* libcrypto.0.9.7.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 44D2AE9D0AA7624300EA19A1 /* libcrypto.0.9.7.dylib */; };
 		44D2AEA10AA7624300EA19A1 /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9E0AA7624300EA19A1 /* keymap.txt */; };
 		44E6DDAD0AA915A20009EFE4 /* Picture 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E6DDAC0AA915A20009EFE4 /* Picture 1.png */; };
 		44E804D90AAF265C005EFCAE /* Connect.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E804D70AAF265C005EFCAE /* Connect.png */; };
@@ -101,7 +100,6 @@
 		44D2AE930AA7621C00EA19A1 /* RDCBitmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDCBitmap.h; sourceTree = "<group>"; };
 		44D2AE940AA7621C00EA19A1 /* RDCBitmap.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDCBitmap.m; sourceTree = "<group>"; };
 		44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rdesktop.icns; sourceTree = "<group>"; };
-		44D2AE9D0AA7624300EA19A1 /* libcrypto.0.9.7.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcrypto.0.9.7.dylib; sourceTree = "<group>"; };
 		44D2AE9E0AA7624300EA19A1 /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = keymap.txt; sourceTree = "<group>"; };
 		44E6DDAC0AA915A20009EFE4 /* Picture 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 1.png"; sourceTree = "<group>"; };
 		44E804D70AAF265C005EFCAE /* Connect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Connect.png; sourceTree = "<group>"; };
@@ -118,7 +116,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
-				44D2AEA00AA7624300EA19A1 /* libcrypto.0.9.7.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,7 +198,6 @@
 				44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */,
 				449305CB0AA9A13C001C5A8B /* Picture 4.png */,
 				449305CE0AA9A178001C5A8B /* Picture 5.png */,
-				44D2AE9D0AA7624300EA19A1 /* libcrypto.0.9.7.dylib */,
 				44D2AE9E0AA7624300EA19A1 /* keymap.txt */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
@@ -404,6 +400,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "";
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)\"";
+				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = "Remote Desktop";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
@@ -444,6 +441,7 @@
 				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/RBSplitView/build/Debug\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/RBSplitView/build/Release\"";
 				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)\"";
+				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = "Remote Desktop";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;

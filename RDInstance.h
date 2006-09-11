@@ -41,7 +41,6 @@
 	BOOL windowAnimation;
 	BOOL themes;
 	
-	NSColor *hostColor;
 	uint32		cFlags;
 	NSString	*cHost;
 	NSString	*cDomain;
