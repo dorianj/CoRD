@@ -99,7 +99,6 @@
 	int scanline = (int)s.width + 7 / 8;
 	uint8 *np;
 	const uint8 *p, *end;
-	static int offset;
 	
 	data = [[NSMutableData alloc] initWithCapacity:(int)s.width * (int)s.height * 4];
 	p = a;
@@ -148,7 +147,6 @@
 	[image setFlipped:YES];
 	
 	cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
-	offset += 32;
 }
 
 -(NSImage *)image {

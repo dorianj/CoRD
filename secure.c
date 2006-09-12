@@ -215,34 +215,31 @@ sec_update(rdcConnection conn, uint8 * key, uint8 * update_key)
 static void
 sec_encrypt(rdcConnection conn, uint8 * data, int length)
 {
-	static int use_count;
-
-	if (use_count == 4096)
+	if (conn->encUseCount == 4096)
 	{
 		sec_update(conn, conn->secEncryptKey, conn->secEncryptUpdateKey);
 		RC4_set_key(&conn->rc4EncryptKey, conn->rc4KeyLen, conn->secEncryptKey);
-		use_count = 0;
+		conn->encUseCount = 0;
 	}
 
 	RC4(&conn->rc4EncryptKey, length, data, data);
-	use_count++;
+	conn->encUseCount++;
 }
 
 /* Decrypt data using RC4 */
 void
 sec_decrypt(rdcConnection conn, uint8 * data, int length)
 {
-	static int use_count;
-
-	if (use_count == 4096)
+	
+	if (conn->decUseCount == 4096)
 	{
 		sec_update(conn, conn->secDecryptKey, conn->secDecryptUpdateKey);
 		RC4_set_key(&conn->rc4DecryptKey, conn->rc4KeyLen, conn->secDecryptKey);
-		use_count = 0;
+		conn->decUseCount = 0;
 	}
 
 	RC4(&conn->rc4DecryptKey, length, data, data);
-	use_count++;
+	conn->decUseCount++;
 }
 
 static void
@@ -456,7 +453,7 @@ sec_out_mcs_data(rdcConnection conn, STREAM s)
 }
 
 /* Parse a public key structure */
-static RDCRDCBOOL
+static RDCBOOL
 sec_parse_public_key(STREAM s, uint8 ** modulus, uint8 ** exponent)
 {
 	uint32 magic, modulus_len;
@@ -483,7 +480,7 @@ sec_parse_public_key(STREAM s, uint8 ** modulus, uint8 ** exponent)
 	return s_check(s);
 }
 
-static RDCRDCBOOL
+static RDCBOOL
 sec_parse_x509_key(rdcConnection conn, X509 * cert)
 {
 	EVP_PKEY *epk = NULL;
@@ -511,7 +508,7 @@ sec_parse_x509_key(rdcConnection conn, X509 * cert)
 
 
 /* Parse a crypto information structure */
-static RDCRDCBOOL
+static RDCBOOL
 sec_parse_crypt_info(rdcConnection conn, STREAM s, uint32 * rc4_key_size,
 		     uint8 ** server_random, uint8 ** modulus, uint8 ** exponent)
 {
@@ -831,7 +828,7 @@ sec_recv(rdcConnection conn, uint8 * rdpver)
 }
 
 /* Establish a secure connection */
-RDCRDCBOOL
+RDCBOOL
 sec_connect(rdcConnection conn, const char *server, char *username)
 {
 	struct stream mcs_data;

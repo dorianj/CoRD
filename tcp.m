@@ -128,17 +128,31 @@ tcp_recv(rdcConnection conn, STREAM s, uint32 length)
 }
 
 /* Establish a connection on the TCP layer */
-RDCRDCBOOL
+RDCBOOL
 tcp_connect(rdcConnection conn, const char *server)
 {
-	NSInputStream *is;
-	NSOutputStream *os;
-	conn->host = [NSHost hostWithName:[NSString stringWithUTF8String:server]];
-	[NSStream getStreamsToHost:conn->host port:conn->tcpPort inputStream:&is outputStream:&os];
+	NSInputStream *is = nil;
+	NSOutputStream *os = nil;
+	NSHost *host;
+	
+	host = [NSHost hostWithAddress:[NSString stringWithUTF8String:server]];
+	if (!host) {
+		host = [NSHost hostWithName:[NSString stringWithUTF8String:server]];
+		if (!host) {
+			return FALSE;
+		}
+	}
+	
+	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
+	if ((is == nil) || (os == nil)) {
+		return FALSE;
+	}
+	
 	[is open];
 	[os open];
 	[is retain];
 	[os retain];
+	conn->host = host;
 	conn->inputStream = is;
 	conn->outputStream = os;
 	

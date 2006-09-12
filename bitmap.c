@@ -69,7 +69,7 @@
 #ifdef BITMAP_SPEED_OVER_SIZE
 
 /* 1 byte bitmap decompress */
-static RDCRDCBOOL
+static RDCBOOL
 bitmap_decompress1(uint8 * output, int width, int height, uint8 * input, int size)
 {
 	uint8 *end = input + size;
@@ -267,7 +267,7 @@ bitmap_decompress1(uint8 * output, int width, int height, uint8 * input, int siz
 }
 
 /* 2 byte bitmap decompress */
-static RDCRDCBOOL
+static RDCBOOL
 bitmap_decompress2(uint8 * output, int width, int height, uint8 * input, int size)
 {
 	uint8 *end = input + size;
@@ -466,7 +466,7 @@ bitmap_decompress2(uint8 * output, int width, int height, uint8 * input, int siz
 }
 
 /* 3 byte bitmap decompress */
-static RDCRDCBOOL
+static RDCBOOL
 bitmap_decompress3(uint8 * output, int width, int height, uint8 * input, int size)
 {
 	uint8 *end = input + size;
@@ -778,7 +778,7 @@ getli(uint8 *input, int offset, int Bpp)
 	return rv;
 }
 
-static RDCRDCBOOL
+static RDCBOOL
 bitmap_decompressx(uint8 *output, int width, int height, uint8 *input, int size, int Bpp)
 {
 	uint8 *end = input + size;
@@ -994,11 +994,11 @@ bitmap_decompressx(uint8 *output, int width, int height, uint8 *input, int size,
 #endif
 
 /* main decompress function */
-RDCRDCBOOL
+RDCBOOL
 bitmap_decompress(uint8 * output, int width, int height, uint8 * input, int size, int Bpp)
 {
 #ifdef BITMAP_SPEED_OVER_SIZE
-	RDCRDCBOOL rv = False;
+	RDCBOOL rv = False;
 	switch (Bpp)
 	{
 		case 1:
@@ -1012,7 +1012,7 @@ bitmap_decompress(uint8 * output, int width, int height, uint8 * input, int size
 			break;
 	}
 #else
-	RDCRDCBOOL rv;
+	RDCBOOL rv;
   rv = bitmap_decompressx(output, width, height, input, size, Bpp);
 #endif
 	return rv;

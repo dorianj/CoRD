@@ -43,7 +43,7 @@ rdp_recv(rdcConnection conn, uint8 * type)
 	uint16 length, pdu_type;
 	uint8 rdpver;
 
-	if ((rdp_s == NULL) || (conn->nextPacket >= rdp_s->end))
+	if ((rdp_s == NULL) || (conn->nextPacket >= rdp_s->end) || (conn->nextPacket == NULL))
 	{
 		rdp_s = sec_recv(conn, &rdpver);
 		if (rdp_s == NULL)
@@ -368,6 +368,38 @@ rdp_send_input(rdcConnection conn, uint32 time, uint16 message_type, uint16 devi
 
 	s_mark_end(s);
 	rdp_send_data(conn, s, RDP_DATA_PDU_INPUT);
+}
+
+/* Send a client window information PDU */
+void
+rdp_send_client_window_status(rdcConnection conn, int status)
+{
+   STREAM s;
+
+   if (conn->currentStatus == status)
+       return;
+
+   s = rdp_init_data(conn, 12);
+
+   out_uint32_le(s, status);
+
+   switch (status)
+   {
+       case 0: /* shut the server up */
+           break;
+
+       case 1: /* receive data again */
+           out_uint32_le(s, 0);    /* unknown */
+           out_uint16_le(s, conn->screenWidth);
+           out_uint16_le(s, conn->screenHeight);
+           break;
+   }
+
+   s_mark_end(s);
+   
+#define RDP_DATA_PDU_CLIENT_WINDOW_STATUS 35
+   rdp_send_data(conn, s, RDP_DATA_PDU_CLIENT_WINDOW_STATUS);
+   conn->currentStatus = status;
 }
 
 /* Inform the server on the contents of the persistent bitmap cache */
@@ -1064,7 +1096,7 @@ process_disconnect_pdu(STREAM s, uint32 * ext_disc_reason)
 }
 
 /* Process data PDU */
-RDCRDCBOOL
+RDCBOOL
 process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 {
 	uint8 data_pdu_type;
@@ -1135,7 +1167,13 @@ process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 
 		case RDP_DATA_PDU_DISCONNECT:
 			process_disconnect_pdu(s, ext_disc_reason);
-			return True;
+
+         /* We used to return true and disconnect immediately here, but
+            * Windows Vista sends a disconnect PDU with reason 0 when
+            * reconnecting to a disconnected session, and MSTSC doesn't
+            * drop the connection.  I think we should just save the status.
+            */
+			break;
 
 		default:
 			unimpl("data PDU %d\n", data_pdu_type);
@@ -1144,7 +1182,7 @@ process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 }
 
 /* Establish a connection up to the RDP layer */
-RDCRDCBOOL
+RDCBOOL
 rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password,
 	    const char *command, const char *directory)
 {
@@ -1154,6 +1192,18 @@ rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *do
 	rdp_send_logon_info(conn, flags, domain, conn->username, password, command, directory);
 	return True;
 }
+
+/* Establish a reconnection up to the RDP layer */
+/* RDCBOOL
+rdp_reconnect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password,
+			const char *command, const char *directory, char *cookie)
+{
+	if (!sec_reconnect(conn, server))
+		return False;
+	
+	rdp_send_logon_info(conn, flags, domain, conn->username, password, command, directory);
+	return True;
+} */
 
 /* Disconnect from the RDP layer */
 void

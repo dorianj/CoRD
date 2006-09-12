@@ -21,7 +21,7 @@
 #ifndef __ORDERS_H__
 #define __ORDERS_H__
 
-typedef int RDCRDCBOOL;
+typedef int RDCBOOL;
 #ifndef True
 #define True  (1)
 #define False (0)
@@ -220,7 +220,7 @@ typedef struct rdpdr_printer_info
 	char *driver, *printer;
 	uint32 bloblen;
 	uint8 *blob;
-	RDCRDCBOOL default_printer;
+	RDCBOOL default_printer;
 }
 PRINTER;
 
@@ -240,7 +240,7 @@ typedef struct fileinfo
 	DIR *pdir;
 	struct dirent *pdirent;
 	char pattern[64];
-	RDCRDCBOOL delete_on_close;
+	RDCBOOL delete_on_close;
 	NOTIFY notify;
 	uint32 info_class;
 }
@@ -302,6 +302,7 @@ struct rdcConn {
 	
 	// Variables
 	int tcpPort;
+	int currentStatus;
 	int screenWidth;
 	int screenHeight;
 	int serverBpp;
@@ -312,6 +313,8 @@ struct rdcConn {
 	int pstcacheBpp;
 	int pstcacheFd[8];
 	int bmpcacheCount[3];
+	int encUseCount;
+	int decUseCount;
 	unsigned char licenseKey[16];
 	unsigned char licenseSignKey[16];
 	unsigned short mcsUserid;

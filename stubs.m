@@ -849,6 +849,7 @@ void fillDefaultConnection(rdcConnection conn) {
 	conn->isConnected	= 0;
 	conn->useEncryption	= 1;
 	conn->useBitmapCompression	= 1;
+	conn->currentStatus = 1;
 	conn->useRdp5		= 1;
 	conn->serverBpp		= 16;
 	conn->consoleSession	= 0;

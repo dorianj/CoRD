@@ -33,7 +33,7 @@
 
 static VCHANNEL *rdpsnd_channel;
 
-static RDCRDCBOOL device_open;
+static RDCBOOL device_open;
 static WAVEFORMATEX formats[MAX_FORMATS];
 static unsigned int format_count;
 static unsigned int current_format;
@@ -79,7 +79,7 @@ rdpsnd_process_negotiate(STREAM in)
 	unsigned int in_format_count, i;
 	WAVEFORMATEX *format;
 	STREAM out;
-	RDCRDCBOOL device_available = False;
+	RDCBOOL device_available = False;
 	int readcnt;
 	int discardcnt;
 
@@ -181,7 +181,7 @@ rdpsnd_process(STREAM s)
 	uint32 volume;
 	static uint16 tick, format;
 	static uint8 packet_index;
-	static RDCRDCBOOL awaiting_data_packet;
+	static RDCBOOL awaiting_data_packet;
 
 #ifdef RDPSND_DEBUG
 	printf("RDPSND recv:\n");
@@ -254,7 +254,7 @@ rdpsnd_process(STREAM s)
 	}
 }
 
-RDCRDCBOOL
+RDCBOOL
 rdpsnd_init(void)
 {
 	rdpsnd_channel =

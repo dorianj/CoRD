@@ -60,7 +60,7 @@ extern DEVICE_FNS printer_fns;
 extern DEVICE_FNS parallel_fns;
 extern DEVICE_FNS disk_fns;
 
-static void _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCRDCBOOL timed_out);
+static void _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed_out);
 
 /* Return device_id for a given handle */
 int
@@ -87,7 +87,7 @@ convert_to_unix_filename(char *filename)
 	}
 }
 
-static RDCRDCBOOL
+static RDCBOOL
 rdpdr_handle_ok(rdcConnection conn, int device, int handle)
 {
 	switch (conn->rdpdrDevice[device].device_type)
@@ -108,7 +108,7 @@ rdpdr_handle_ok(rdcConnection conn, int device, int handle)
 }
 
 /* Add a new io request to the table containing pending io requests so it won't block rdesktop */
-static RDCRDCBOOL
+static RDCBOOL
 add_async_iorequest(rdcConnection conn, uint32 device, uint32 file, uint32 id, uint32 major, uint32 length,
 		    DEVICE_FNS * fns, uint32 total_timeout, uint32 interval_timeout, uint8 * buffer,
 		    uint32 offset)
@@ -329,7 +329,7 @@ rdpdr_process_irp(rdcConnection conn, STREAM s)
 	uint8 *buffer, *pst_buf;
 	struct stream out;
 	DEVICE_FNS *fns;
-	RDCRDCBOOL rw_blocking = True;
+	RDCBOOL rw_blocking = True;
 	NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
 
 	in_uint32_le(s, device);
@@ -806,7 +806,7 @@ rdpdr_init(rdcConnection conn)
 
 /* Add file descriptors of pending io request to select() */
 void
-rdpdr_add_fds(rdcConnection conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDCRDCBOOL * timeout)
+rdpdr_add_fds(rdcConnection conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDCBOOL * timeout)
 {
 	uint32 select_timeout = 0;	/* Timeout value to be used for select() (in millisecons). */
 	struct async_iorequest *iorq;
@@ -903,7 +903,7 @@ rdpdr_remove_iorequest(rdcConnection conn, struct async_iorequest *prev, struct 
 
 /* Check if select() returned with one of the rdpdr file descriptors, and complete io if it did */
 static void
-_rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCRDCBOOL timed_out)
+_rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed_out)
 {
 	NTSTATUS status;
 	uint32 result = 0;
@@ -1129,7 +1129,7 @@ _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCRDCBOOL ti
 }
 
 void
-rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCRDCBOOL timed_out)
+rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed_out)
 {
 	fd_set dummy;
 
@@ -1147,7 +1147,7 @@ rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCRDCBOOL tim
 
 
 /* Abort a pending io request for a given handle and major */
-RDCRDCBOOL
+RDCBOOL
 rdpdr_abort_io(rdcConnection conn, uint32 fd, uint32 major, NTSTATUS status)
 {
 	uint32 result;

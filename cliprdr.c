@@ -142,7 +142,7 @@ cliprdr_process(rdcConnection conn, STREAM s)
 	}
 }
 
-RDCRDCBOOL
+RDCBOOL
 cliprdr_init(rdcConnection conn)
 {
 	conn->cliprdrChannel =

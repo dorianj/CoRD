@@ -1,5 +1,5 @@
 /* bitmap.c */
-RDCRDCBOOL bitmap_decompress(uint8 * output, int width, int height, uint8 * input, int size, int Bpp);
+RDCBOOL bitmap_decompress(uint8 * output, int width, int height, uint8 * input, int size, int Bpp);
 /* cache.c */
 void cache_rebuild_bmpcache_linked_list(rdcConnection conn, uint8 cache_id, sint16 * cache_idx, int count);
 HBITMAP cache_get_bitmap(rdcConnection conn, uint8 cache_id, uint16 cache_idx);
@@ -26,7 +26,7 @@ void cliprdr_send_blah_format_announce(rdcConnection conn);
 void cliprdr_send_native_format_announce(rdcConnection conn, uint8 * data, uint32 length);
 void cliprdr_send_data_request(rdcConnection conn, uint32 format);
 void cliprdr_send_data(rdcConnection conn, uint8 * data, uint32 length);
-RDCRDCBOOL cliprdr_init(rdcConnection conn);
+RDCBOOL cliprdr_init(rdcConnection conn);
 /* disk.c */
 int disk_enum_devices(rdcConnection conn, uint32 * id, char *optarg);
 NTSTATUS disk_query_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STREAM out);
@@ -43,7 +43,7 @@ int get_current_workarea(uint32 * x, uint32 * y, uint32 * width, uint32 * height
 STREAM iso_init(rdcConnection conn, int length);
 void iso_send(rdcConnection conn, STREAM s);
 STREAM iso_recv(rdcConnection conn, uint8 * rdpver);
-RDCRDCBOOL iso_connect(rdcConnection conn, const char *server, char *username);
+RDCBOOL iso_connect(rdcConnection conn, const char *server, char *username);
 void iso_disconnect(rdcConnection conn);
 /* licence.c */
 void licence_process(rdcConnection conn, STREAM s);
@@ -52,7 +52,7 @@ STREAM mcs_init(rdcConnection conn, int length);
 void mcs_send_to_channel(rdcConnection conn, STREAM s, uint16 channel);
 void mcs_send(rdcConnection conn, STREAM s);
 STREAM mcs_recv(rdcConnection conn, uint16 * channel, uint8 * rdpver);
-RDCRDCBOOL mcs_connect(rdcConnection conn, const char *server, STREAM mcs_data, char *username);
+RDCBOOL mcs_connect(rdcConnection conn, const char *server, STREAM mcs_data, char *username);
 void mcs_disconnect(rdcConnection conn);
 /* orders.c */
 void process_orders(rdcConnection conn, STREAM s, uint16 num_orders);
@@ -66,11 +66,11 @@ int printercache_load_blob(char *printer_name, uint8 ** data);
 void printercache_process(STREAM s);
 /* pstcache.c */
 void pstcache_touch_bitmap(rdcConnection conn, uint8 id, uint16 idx, uint32 stamp);
-RDCRDCBOOL pstcache_load_bitmap(rdcConnection conn, uint8 id, uint16 idx);
-RDCRDCBOOL pstcache_save_bitmap(rdcConnection conn, uint8 id, uint16 idx, uint8 * hash_key, uint16 wd,
+RDCBOOL pstcache_load_bitmap(rdcConnection conn, uint8 id, uint16 idx);
+RDCBOOL pstcache_save_bitmap(rdcConnection conn, uint8 id, uint16 idx, uint8 * hash_key, uint16 wd,
 			  uint16 ht, uint16 len, uint8 * data);
 int pstcache_enumerate(rdcConnection conn, uint8 id, HASH_KEY * keylist);
-RDCRDCBOOL pstcache_init(rdcConnection conn, uint8 id);
+RDCBOOL pstcache_init(rdcConnection conn, uint8 id);
 /* rdesktop.c */
 int main(int argc, char *argv[]);
 void generate_random(uint8 * random);
@@ -86,13 +86,13 @@ void toupper_str(char *p);
 char *l_to_a(long N, int base);
 int load_licence(unsigned char **data);
 void save_licence(unsigned char *data, int length);
-RDCRDCBOOL rd_pstcache_mkdir(void);
+RDCBOOL rd_pstcache_mkdir(void);
 int rd_open_file(char *filename);
 void rd_close_file(int fd);
 int rd_read_file(int fd, void *ptr, int len);
 int rd_write_file(int fd, void *ptr, int len);
 int rd_lseek_file(int fd, int offset);
-RDCRDCBOOL rd_lock_file(int fd, int start, int len);
+RDCBOOL rd_lock_file(int fd, int start, int len);
 /* rdp5.c */
 void rdp5_process(rdcConnection conn, STREAM s);
 /* rdp.c */
@@ -106,32 +106,32 @@ void process_cached_pointer_pdu(rdcConnection conn, STREAM s);
 void process_system_pointer_pdu(rdcConnection conn, STREAM s);
 void process_bitmap_updates(rdcConnection conn, STREAM s);
 void process_palette(rdcConnection conn, STREAM s);
-RDCRDCBOOL rdp_loop(RDCRDCBOOL * deactivated, uint32 * ext_disc_reason);
-void rdp_main_loop(RDCRDCBOOL * deactivated, uint32 * ext_disc_reason);
-RDCRDCBOOL rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password, 
+RDCBOOL rdp_loop(RDCBOOL * deactivated, uint32 * ext_disc_reason);
+void rdp_main_loop(RDCBOOL * deactivated, uint32 * ext_disc_reason);
+RDCBOOL rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password, 
 					   const char *command, const char *directory);
 void rdp_disconnect(rdcConnection conn);
 void rdp_process_server_caps(rdcConnection conn, STREAM s, uint16 length);
 void process_demand_active(rdcConnection conn, STREAM s);
 void process_disconnect_pdu(STREAM s, uint32 * ext_disc_reason);
-RDCRDCBOOL process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason);
+RDCBOOL process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason);
 /* rdpdr.c */
 int get_device_index(rdcConnection conn, NTHANDLE handle);
 void convert_to_unix_filename(char *filename);
-RDCRDCBOOL rdpdr_init(rdcConnection conn);
-void rdpdr_add_fds(rdcConnection conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDCRDCBOOL * timeout);
+RDCBOOL rdpdr_init(rdcConnection conn);
+void rdpdr_add_fds(rdcConnection conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDCBOOL * timeout);
 struct async_iorequest *rdpdr_remove_iorequest(rdcConnection conn, struct async_iorequest *prev,
 					       struct async_iorequest *iorq);
-void rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCRDCBOOL timed_out);
-RDCRDCBOOL rdpdr_abort_io(rdcConnection conn, uint32 fd, uint32 major, NTSTATUS status);
+void rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed_out);
+RDCBOOL rdpdr_abort_io(rdcConnection conn, uint32 fd, uint32 major, NTSTATUS status);
 /* rdpsnd.c */
 void rdpsnd_send_completion(uint16 tick, uint8 packet_index);
-RDCRDCBOOL rdpsnd_init(void);
+RDCBOOL rdpsnd_init(void);
 /* rdpsnd_oss.c */
-RDCRDCBOOL wave_out_open(void);
+RDCBOOL wave_out_open(void);
 void wave_out_close(void);
-RDCRDCBOOL wave_out_format_supported(WAVEFORMATEX * pwfx);
-RDCRDCBOOL wave_out_set_format(WAVEFORMATEX * pwfx);
+RDCBOOL wave_out_format_supported(WAVEFORMATEX * pwfx);
+RDCBOOL wave_out_set_format(WAVEFORMATEX * pwfx);
 void wave_out_volume(uint16 left, uint16 right);
 void wave_out_write(STREAM s, uint16 tick, uint8 index);
 void wave_out_play(void);
@@ -147,17 +147,17 @@ void sec_send_to_channel(rdcConnection conn, STREAM s, uint32 flags, uint16 chan
 void sec_send(rdcConnection conn, STREAM s, uint32 flags);
 void sec_process_mcs_data(rdcConnection conn, STREAM s);
 STREAM sec_recv(rdcConnection conn, uint8 * rdpver);
-RDCRDCBOOL sec_connect(rdcConnection conn, const char *server, char *username);
+RDCBOOL sec_connect(rdcConnection conn, const char *server, char *username);
 void sec_disconnect(rdcConnection conn);
 /* serial.c */
 int serial_enum_devices(rdcConnection conn, uint32 * id, char *optarg);
-RDCRDCBOOL serial_get_timeout(rdcConnection conn, NTHANDLE handle, uint32 length, uint32 * timeout, uint32 * itv_timeout);
-RDCRDCBOOL serial_get_event(rdcConnection conn, NTHANDLE handle, uint32 * result);
+RDCBOOL serial_get_timeout(rdcConnection conn, NTHANDLE handle, uint32 length, uint32 * timeout, uint32 * itv_timeout);
+RDCBOOL serial_get_event(rdcConnection conn, NTHANDLE handle, uint32 * result);
 /* tcp.c */
 STREAM tcp_init(rdcConnection conn, uint32 maxlen);
 void tcp_send(rdcConnection conn, STREAM s);
 STREAM tcp_recv(rdcConnection conn, STREAM s, uint32 length);
-RDCRDCBOOL tcp_connect(rdcConnection conn, const char *server);
+RDCBOOL tcp_connect(rdcConnection conn, const char *server);
 void tcp_disconnect(rdcConnection conn);
 char *tcp_get_address(rdcConnection conn);
 /* xclip.c */
@@ -168,7 +168,7 @@ void ui_clip_sync(void);
 void xclip_init(rdcConnection conn);
 /* xkeymap.c */
 void xkeymap_init(void);
-RDCRDCBOOL handle_special_keys(uint32 keysym, unsigned int state, uint32 ev_time, RDCRDCBOOL pressed);
+RDCBOOL handle_special_keys(uint32 keysym, unsigned int state, uint32 ev_time, RDCBOOL pressed);
 key_translation xkeymap_translate_key(uint32 keysym, unsigned int keycode, unsigned int state);
 uint16 xkeymap_translate_button(unsigned int button);
 char *get_ksname(uint32 keysym);
@@ -180,10 +180,10 @@ uint16 ui_get_numlock_state(unsigned int state);
 void reset_modifier_keys(void);
 void rdp_send_scancode(uint32 time, uint16 flags, uint8 scancode);
 /* xwin.c */
-RDCRDCBOOL get_key_state(unsigned int state, uint32 keysym);
-RDCRDCBOOL ui_init(void);
+RDCBOOL get_key_state(unsigned int state, uint32 keysym);
+RDCBOOL ui_init(void);
 void ui_deinit(void);
-RDCRDCBOOL ui_create_window(void);
+RDCBOOL ui_create_window(void);
 void ui_resize_window(void);
 void ui_destroy_window(void);
 void xwin_toggle_fullscreen(void);

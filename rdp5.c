@@ -39,7 +39,7 @@ rdp5_process(rdcConnection conn, STREAM s)
 #endif
 
 	// crash can be fixed by changing this to (s->p + 3 < s->end)
-	while (s->p + 3 < s->end)
+	while (s->p < s->end)
 	{	
 		in_uint8(s, type);
 		if (type & RDP5_COMPRESSED)

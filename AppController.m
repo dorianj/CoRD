@@ -155,7 +155,10 @@
 	[instance setValue:[NSNumber numberWithInt:[themes intValue]] forKey:@"themes"];
 	[instance setValue:self forKey:@"appController"];
 	
-	[instance connect];
+	if (![instance connect]) {
+		[instance release];
+		return;
+	}
 	
 	NSScrollView *scroll = [[NSScrollView alloc] initWithFrame:[tabView frame]];
 	[scroll setDocumentView:[instance valueForKey:@"view"]];
@@ -181,6 +184,7 @@
 	if (![recent containsObject:[host stringValue]]) {
 		[recent addObject:[host stringValue]];
 		[[NSUserDefaults standardUserDefaults] setObject:recent forKey:@"RecentServers"];
+		[[NSUserDefaults standardUserDefaults] synchronize];
 	}
 	
 	[NSApp endSheet:newServerSheet];

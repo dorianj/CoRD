@@ -72,7 +72,7 @@
 			[self disconnect];
 			return;
 		}
-        cont = conn.nextPacket + 3 < s->end;
+        cont = conn.nextPacket < s->end;
     }
     return;
 }
