@@ -369,7 +369,7 @@ mcs_recv(rdcConnection conn, uint16 * channel, uint8 * rdpver)
 
 /* Establish a connection up to the MCS layer */
 RDCRDCBOOL
-mcs_connect(rdcConnection conn, char *server, STREAM mcs_data, char *username)
+mcs_connect(rdcConnection conn, const char *server, STREAM mcs_data, char *username)
 {
 	unsigned int i;
 

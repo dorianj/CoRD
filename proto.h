@@ -43,7 +43,7 @@ int get_current_workarea(uint32 * x, uint32 * y, uint32 * width, uint32 * height
 STREAM iso_init(rdcConnection conn, int length);
 void iso_send(rdcConnection conn, STREAM s);
 STREAM iso_recv(rdcConnection conn, uint8 * rdpver);
-RDCRDCBOOL iso_connect(rdcConnection conn, char *server, char *username);
+RDCRDCBOOL iso_connect(rdcConnection conn, const char *server, char *username);
 void iso_disconnect(rdcConnection conn);
 /* licence.c */
 void licence_process(rdcConnection conn, STREAM s);
@@ -52,7 +52,7 @@ STREAM mcs_init(rdcConnection conn, int length);
 void mcs_send_to_channel(rdcConnection conn, STREAM s, uint16 channel);
 void mcs_send(rdcConnection conn, STREAM s);
 STREAM mcs_recv(rdcConnection conn, uint16 * channel, uint8 * rdpver);
-RDCRDCBOOL mcs_connect(rdcConnection conn, char *server, STREAM mcs_data, char *username);
+RDCRDCBOOL mcs_connect(rdcConnection conn, const char *server, STREAM mcs_data, char *username);
 void mcs_disconnect(rdcConnection conn);
 /* orders.c */
 void process_orders(rdcConnection conn, STREAM s, uint16 num_orders);
@@ -97,7 +97,7 @@ RDCRDCBOOL rd_lock_file(int fd, int start, int len);
 void rdp5_process(rdcConnection conn, STREAM s);
 /* rdp.c */
 STREAM rdp_recv(rdcConnection conn, uint8 * type);
-void rdp_out_unistr(STREAM s, char *string, int len);
+void rdp_out_unistr(STREAM s, const char *string, int len);
 int rdp_in_unistr(STREAM s, char *string, int uni_len);
 void rdp_send_input(rdcConnection conn, uint32 time, uint16 message_type, uint16 device_flags, uint16 param1,
 		    uint16 param2);
@@ -108,8 +108,8 @@ void process_bitmap_updates(rdcConnection conn, STREAM s);
 void process_palette(rdcConnection conn, STREAM s);
 RDCRDCBOOL rdp_loop(RDCRDCBOOL * deactivated, uint32 * ext_disc_reason);
 void rdp_main_loop(RDCRDCBOOL * deactivated, uint32 * ext_disc_reason);
-RDCRDCBOOL rdp_connect(rdcConnection conn, char *server, uint32 flags, char *domain, char *password, char *command,
-		 char *directory);
+RDCRDCBOOL rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password, 
+					   const char *command, const char *directory);
 void rdp_disconnect(rdcConnection conn);
 void rdp_process_server_caps(rdcConnection conn, STREAM s, uint16 length);
 void process_demand_active(rdcConnection conn, STREAM s);
@@ -147,7 +147,7 @@ void sec_send_to_channel(rdcConnection conn, STREAM s, uint32 flags, uint16 chan
 void sec_send(rdcConnection conn, STREAM s, uint32 flags);
 void sec_process_mcs_data(rdcConnection conn, STREAM s);
 STREAM sec_recv(rdcConnection conn, uint8 * rdpver);
-RDCRDCBOOL sec_connect(rdcConnection conn, char *server, char *username);
+RDCRDCBOOL sec_connect(rdcConnection conn, const char *server, char *username);
 void sec_disconnect(rdcConnection conn);
 /* serial.c */
 int serial_enum_devices(rdcConnection conn, uint32 * id, char *optarg);
@@ -157,7 +157,7 @@ RDCRDCBOOL serial_get_event(rdcConnection conn, NTHANDLE handle, uint32 * result
 STREAM tcp_init(rdcConnection conn, uint32 maxlen);
 void tcp_send(rdcConnection conn, STREAM s);
 STREAM tcp_recv(rdcConnection conn, STREAM s, uint32 length);
-RDCRDCBOOL tcp_connect(rdcConnection conn, char *server);
+RDCRDCBOOL tcp_connect(rdcConnection conn, const char *server);
 void tcp_disconnect(rdcConnection conn);
 char *tcp_get_address(rdcConnection conn);
 /* xclip.c */

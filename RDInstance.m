@@ -27,7 +27,7 @@
 
 @implementation RDInstance
 - (id)init {
-	if (self = [super init]) {
+	if ((self = [super init])) {
 		cDomain = cPassword = cCommand = cDirectory = cHost = @"";
 		fillDefaultConnection(&conn);
 	}
@@ -72,7 +72,7 @@
 			[self disconnect];
 			return;
 		}
-        cont = conn.nextPacket < s->end;
+        cont = conn.nextPacket + 3 < s->end;
     }
     return;
 }
@@ -124,7 +124,9 @@
 	[self parseResolution];
 	
 	rdpdr_init(&conn);
-	memcpy(&conn.username,"cdooley",8);
+	
+	NSString *username = NSUserName();
+	memcpy(&conn.username, [username UTF8String], [username length] + 1);
 	connected = rdp_connect(&conn, [name UTF8String], 
 							0x00000133, /* XXX */ 
 							[cDomain UTF8String], 
@@ -166,10 +168,4 @@
 - (rdcConnection)conn {
 	return &conn;
 }
-
-- (void)dealloc {
-	NSLog(@"instance deallocated");
-	[super dealloc];
-}
-
 @end

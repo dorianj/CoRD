@@ -11,7 +11,7 @@
 		449305CC0AA9A13C001C5A8B /* Picture 4.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305CB0AA9A13C001C5A8B /* Picture 4.png */; };
 		449305CF0AA9A178001C5A8B /* Picture 5.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305CE0AA9A178001C5A8B /* Picture 5.png */; };
 		44D2ACE00AA73B2A00EA19A1 /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2ACDF0AA73B2A00EA19A1 /* AppController.m */; };
-		44D2AE690AA761C000EA19A1 /* rdp.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4B0AA761C000EA19A1 /* rdp.c */; };
+		44D2AE690AA761C000EA19A1 /* rdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4B0AA761C000EA19A1 /* rdp.m */; };
 		44D2AE6A0AA761C000EA19A1 /* rdp5.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4C0AA761C000EA19A1 /* rdp5.c */; };
 		44D2AE6B0AA761C000EA19A1 /* rdpdr.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4D0AA761C000EA19A1 /* rdpdr.c */; };
 		44D2AE6E0AA761C000EA19A1 /* secure.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE510AA761C000EA19A1 /* secure.c */; };
@@ -59,10 +59,11 @@
 		449305C50AA9A012001C5A8B /* Picture 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 2.png"; sourceTree = "<group>"; };
 		449305CB0AA9A13C001C5A8B /* Picture 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 4.png"; sourceTree = "<group>"; };
 		449305CE0AA9A178001C5A8B /* Picture 5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 5.png"; sourceTree = "<group>"; };
+		44BA6AB50AB5D9E000522576 /* rdp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdp.c; sourceTree = "<group>"; };
 		44D2ACDE0AA73B2A00EA19A1 /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
 		44D2ACDF0AA73B2A00EA19A1 /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AppController.m; sourceTree = "<group>"; };
 		44D2AE4A0AA761C000EA19A1 /* rdesktop.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = rdesktop.h; sourceTree = "<group>"; };
-		44D2AE4B0AA761C000EA19A1 /* rdp.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdp.c; sourceTree = "<group>"; };
+		44D2AE4B0AA761C000EA19A1 /* rdp.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = rdp.m; sourceTree = "<group>"; };
 		44D2AE4C0AA761C000EA19A1 /* rdp5.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdp5.c; sourceTree = "<group>"; };
 		44D2AE4D0AA761C000EA19A1 /* rdpdr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdpdr.c; sourceTree = "<group>"; };
 		44D2AE4E0AA761C000EA19A1 /* rdpsnd_oss.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = rdpsnd_oss.c; sourceTree = "<group>"; };
@@ -219,7 +220,8 @@
 			isa = PBXGroup;
 			children = (
 				44D2AE4A0AA761C000EA19A1 /* rdesktop.h */,
-				44D2AE4B0AA761C000EA19A1 /* rdp.c */,
+				44BA6AB50AB5D9E000522576 /* rdp.c */,
+				44D2AE4B0AA761C000EA19A1 /* rdp.m */,
 				44D2AE4C0AA761C000EA19A1 /* rdp5.c */,
 				44D2AE4D0AA761C000EA19A1 /* rdpdr.c */,
 				44D2AE4E0AA761C000EA19A1 /* rdpsnd_oss.c */,
@@ -317,7 +319,7 @@
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				44F9B2100AA3D83F005F0B98 /* RDInstance.m in Sources */,
 				44D2ACE00AA73B2A00EA19A1 /* AppController.m in Sources */,
-				44D2AE690AA761C000EA19A1 /* rdp.c in Sources */,
+				44D2AE690AA761C000EA19A1 /* rdp.m in Sources */,
 				44D2AE6A0AA761C000EA19A1 /* rdp5.c in Sources */,
 				44D2AE6B0AA761C000EA19A1 /* rdpdr.c in Sources */,
 				44D2AE6E0AA761C000EA19A1 /* secure.c in Sources */,
@@ -370,18 +372,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = "";
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;
@@ -389,17 +383,6 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_2 = "";
-				LIBRARY_SEARCH_PATHS_QUOTED_3 = "";
-				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)\"";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = "Remote Desktop";
 				WRAPPER_EXTENSION = app;
@@ -414,13 +397,6 @@
 					ppc,
 					i386,
 				);
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)/RBSplitView/build/Debug\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/RBSplitView/build/Release\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -430,17 +406,6 @@
 				GCC_WARN_UNUSED_VALUE = YES;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_1)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_2)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_3)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_4)",
-				);
-				LIBRARY_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/RBSplitView/build/Debug\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/RBSplitView/build/Release\"";
-				LIBRARY_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)\"";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = "Remote Desktop";
 				WRAPPER_EXTENSION = app;

@@ -38,7 +38,7 @@
 	[item setMaxSize:[openButton bounds].size];
 	
 	toolbarItems = [[[NSMutableDictionary alloc] init] retain];
-	[toolbarItems setObject:item forKey:name]; // add to toolbar list
+	[toolbarItems setObject:item forKey:name];
 	[item release];
 	
 	name = @"Disconnect";
@@ -51,7 +51,7 @@
 	[item setMinSize:[disconnectButton bounds].size];
 	[item setMaxSize:[disconnectButton bounds].size];
 	
-	[toolbarItems setObject:item forKey:name]; // add to toolbar list
+	[toolbarItems setObject:item forKey:name];
 	[item release];
 	
 	name = @"Servers";
@@ -64,7 +64,7 @@
 	[item setMinSize:[serverPopup bounds].size];
 	[item setMaxSize:[serverPopup bounds].size];
 	
-	[toolbarItems setObject:item forKey:name]; // add to toolbar list
+	[toolbarItems setObject:item forKey:name];
 	[item release];
 	
 	toolbar = [[NSToolbar alloc] initWithIdentifier:@"Toolbar"];
@@ -88,8 +88,6 @@
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)tb {
 	NSMutableArray *ret = [NSMutableArray array];
-	// [ret addObject:NSToolbarFlexibleSpaceItemIdentifier];
-	// [ret addObjectsFromArray:[toolbarItems allKeys]];
 	[ret addObject:@"New Server"];
 	[ret addObject:@"Disconnect"];
 	[ret addObject:NSToolbarFlexibleSpaceItemIdentifier];
@@ -207,7 +205,6 @@
 
 - (IBAction)changeSelection:(id)sender {
 	[arrayController setSelectionIndex:[sender indexOfSelectedItem]];
-	NSLog(@"Selected %d", [sender indexOfSelectedItem]);
 	[self resizeToMatchSelection];
 }
 
@@ -246,6 +243,9 @@
 
 - (void)removeItem:(id)sender {
 	[arrayController removeObject:sender];
+	
+	int index = [arrayController selectionIndex];
+	[serverPopup selectItemAtIndex:index];
 	
 	NSArray *items = [tabView tabViewItems];
 	NSEnumerator *e = [items objectEnumerator];

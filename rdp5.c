@@ -38,6 +38,7 @@ rdp5_process(rdcConnection conn, STREAM s)
 	hexdump(s->p, s->end - s->p);
 #endif
 
+	// crash can be fixed by changing this to (s->p + 3 < s->end)
 	while (s->p + 3 < s->end)
 	{	
 		in_uint8(s, type);

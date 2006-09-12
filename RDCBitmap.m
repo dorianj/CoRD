@@ -29,10 +29,8 @@
 -(void)bitmapWithData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v {
 	int bitsPerPixel = [v bitsPerPixel];
 	int bytesPerPixel = bitsPerPixel / 8;
-	float r, g, b, a;
 	uint8 *np;
 	const uint8 *p, *end;
-	NSColor *c;
 	
 	if (bitsPerPixel == 24) {
 		data = [[NSData alloc] initWithBytes:d length:s.width * s.height];

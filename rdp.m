@@ -23,6 +23,8 @@
 #include <unistd.h>
 #include "rdesktop.h"
 
+#import "RDCView.h"
+
 #ifdef HAVE_ICONV
 #ifdef HAVE_ICONV_H
 #include <iconv.h>
@@ -126,7 +128,7 @@ rdp_send_data(rdcConnection conn, STREAM s, uint8 data_pdu_type)
 
 /* Output a string in Unicode */
 void
-rdp_out_unistr(STREAM s, char *string, int len)
+rdp_out_unistr(STREAM s, const char *string, int len)
 {
 	{
 		int i = 0, j = 0;
@@ -166,8 +168,8 @@ rdp_in_unistr(STREAM s, char *string, int uni_len)
 
 /* Parse a logon info packet */
 static void
-rdp_send_logon_info(rdcConnection conn, uint32 flags, char *domain, char *user,
-		    char *password, char *program, char *directory)
+rdp_send_logon_info(rdcConnection conn, uint32 flags, const char *domain, char *user,
+		    const char *password, const char *program, const char *directory)
 {
 	char *ipaddr = tcp_get_address(conn);
 	int len_domain = 2 * strlen(domain);
@@ -739,9 +741,10 @@ rdp_process_bitmap_caps(rdcConnection conn, STREAM s)
 	 */
 	if (conn->serverBpp != bpp)
 	{
+		RDCView *view = conn->ui;
 		warning("colour depth changed from %d to %d\n", conn->serverBpp, bpp);
 		conn->serverBpp = bpp;
-		[conn->ui setBitdepth:bpp];
+		[view setBitdepth:bpp];
 	}
 	if (conn->screenWidth != width || conn->screenHeight != height)
 	{
@@ -1142,8 +1145,8 @@ process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 
 /* Establish a connection up to the RDP layer */
 RDCRDCBOOL
-rdp_connect(rdcConnection conn, char *server, uint32 flags, char *domain, char *password,
-	    char *command, char *directory)
+rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password,
+	    const char *command, const char *directory)
 {
 	if (!sec_connect(conn, server, conn->username))
 		return False;

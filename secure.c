@@ -832,7 +832,7 @@ sec_recv(rdcConnection conn, uint8 * rdpver)
 
 /* Establish a secure connection */
 RDCRDCBOOL
-sec_connect(rdcConnection conn, char *server, char *username)
+sec_connect(rdcConnection conn, const char *server, char *username)
 {
 	struct stream mcs_data;
 
