@@ -55,3 +55,12 @@
 007d d0 # down arrow
 007b cb # left arrow
 007c cd # right arrow
+0038 2a # left shift
+003c 36 # right shift
+003b 1d # left control
+003e 9d # right control
+003a 38 # left alt
+003d b8 # right alt
+0037 dd # windows key
+
+

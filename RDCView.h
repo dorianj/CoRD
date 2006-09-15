@@ -47,6 +47,7 @@
 	NSRect clipRect;
 	NSColor *foregroundColor, *backgroundColor;
 	int bitdepth;
+	int modifiers;
 }
 
 -(void)startUpdate;

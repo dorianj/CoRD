@@ -271,4 +271,10 @@
 		  
 	[self resizeToMatchSelection];
 }
+
+- (BOOL)windowShouldClose:(id)sender {
+	[[NSApplication sharedApplication] hide:self];
+	return NO;
+}
+
 @end

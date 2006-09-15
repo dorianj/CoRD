@@ -190,45 +190,6 @@
 	return ret;
 }
 
--(void)send_modifiers:(NSEvent *)ev enable:(BOOL)en {
-	int NSFlags = [ev modifierFlags];
-	int flag;
-	
-	if (en == YES) {
-		flag = RDP_KEYPRESS;
-	} else {
-		flag = RDP_KEYRELEASE;
-	}
-	
-	if (NSFlags & NSAlphaShiftKeyMask) {
-		[controller sendInput:RDP_INPUT_SCANCODE flags:flag param1:SCANCODE_CHAR_CAPSLOCK param2:0];
-	}
-	
-	if (NSFlags & NSShiftKeyMask) {
-		[controller sendInput:RDP_INPUT_SCANCODE flags:flag param1:SCANCODE_CHAR_LSHIFT param2:0];
-	}
-	
-	if (NSFlags & NSControlKeyMask) {
-		[controller sendInput:RDP_INPUT_SCANCODE flags:flag param1:SCANCODE_CHAR_LCTRL param2:0];
-	}
-	
-	if (NSFlags & NSAlternateKeyMask) {
-		[controller sendInput:RDP_INPUT_SCANCODE flags:flag param1:SCANCODE_CHAR_LALT param2:0];
-	}
-	
-	if (NSFlags & NSCommandKeyMask) {
-		[controller sendInput:RDP_INPUT_SCANCODE flags:flag param1:SCANCODE_CHAR_LWIN param2:0];
-	}
-}
-
--(void)set_remote_modifiers:(NSEvent *)ev {
-	[self send_modifiers:ev enable:YES];
-}
-
--(void)restore_remote_modifiers:(NSEvent *)ev {
-	[self send_modifiers:ev enable:NO];
-}
-
 -(void)saveDesktop {
 	[save release];
 	save = [back copy];
@@ -305,9 +266,9 @@
 -(void)keyDown:(NSEvent *)ev {
 	int key = [ev keyCode];
 	unsigned char scancode = [[RDCKeyboard shared] scancodeForKeycode:key];
-	[self set_remote_modifiers:ev];
+	// [self set_remote_modifiers:ev];
 	[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:scancode param2:0];
-	[self restore_remote_modifiers:ev];
+	// [self restore_remote_modifiers:ev];
 }
 
 -(void)keyUp:(NSEvent *)ev {
@@ -316,12 +277,96 @@
 	[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:scancode param2:0];
 }
 
+-(void)flagsChanged:(NSEvent *)ev {
+	[self send_modifiers:ev enable:YES];
+}
+
+-(void)send_modifiers:(NSEvent *)ev enable:(BOOL)en {
+	int newflags = [ev modifierFlags];
+	int flag = newflags ^ modifiers;
+	
+	// Caps lock only gets sent once, so send double send it for each event
+	if (flag & NSAlphaShiftKeyMask) {
+		if (newflags & NSAlphaShiftKeyMask) {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:0x3a param2:0];
+
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:0x3a param2:0];
+		} else {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:0x3a param2:0];
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:0x3a param2:0];
+
+		}
+	}
+	
+	if (flag & NSShiftKeyMask) {
+		if (newflags & NSShiftKeyMask) {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LSHIFT param2:0];
+		} else {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LSHIFT param2:0];
+		}
+	}
+
+	if (flag & NSControlKeyMask) {
+		if (newflags & NSControlKeyMask) {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LCTRL param2:0];
+		} else {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LCTRL param2:0];
+		}
+	}
+	
+	if (flag & NSAlternateKeyMask) {
+		if (newflags & NSAlternateKeyMask) {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LALT param2:0];
+		} else {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LALT param2:0];
+		}
+	}
+	
+	if (flag & NSCommandKeyMask) {
+		if (newflags & NSCommandKeyMask) {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LWIN param2:0];
+		} else {
+			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LWIN param2:0];
+		}
+	}
+	
+	modifiers = newflags;
+}
+
+-(void)set_remote_modifiers:(NSEvent *)ev {
+	[self send_modifiers:ev enable:YES];
+}
+
+-(void)restore_remote_modifiers:(NSEvent *)ev {
+	[self send_modifiers:ev enable:NO];
+}
+
 -(void)mouseDown:(NSEvent *)ev {
+	int flags = [ev modifierFlags];
+	if ((flags & NSShiftKeyMask) && (flags & NSControlKeyMask)) {
+		[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LSHIFT param2:0];
+		[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LCTRL param2:0];
+		[self rightMouseDown:ev];
+		[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LSHIFT param2:0];
+		[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LCTRL param2:0];
+		return;
+	}
+	
 	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
 	[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON1 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
 }
 
 -(void)mouseUp:(NSEvent *)ev {
+	int flags = [ev modifierFlags];
+	if ((flags & NSShiftKeyMask) && (flags & NSControlKeyMask)) {
+		[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LSHIFT param2:0];
+		[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LCTRL param2:0];
+		[self rightMouseUp:ev];
+		[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LSHIFT param2:0];
+		[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LCTRL param2:0];
+		return;
+	}
+	
 	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
 	[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_BUTTON1 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
 }
