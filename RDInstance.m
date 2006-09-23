@@ -123,6 +123,11 @@
 	
 	[self parseResolution];
 	
+	conn.tcpPort = [port intValue];
+	if (conn.tcpPort == 0) {
+		conn.tcpPort = 3389;
+	}
+	
 	rdpdr_init(&conn);
 	
 	NSString *username = NSUserName();

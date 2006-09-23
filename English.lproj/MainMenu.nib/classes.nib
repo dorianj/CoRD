@@ -8,6 +8,9 @@
                 disconnect = id; 
                 hideOptions = id; 
                 newServer = id; 
+                removeItem = id; 
+                selectNext = id; 
+                selectPrevious = id; 
             }; 
             CLASS = AppController; 
             LANGUAGE = ObjC; 
@@ -25,6 +28,7 @@
                 mainWindow = NSWindow; 
                 newServerSheet = NSWindow; 
                 openButton = NSButton; 
+                port = NSTextField; 
                 screenResolution = NSPopUpButton; 
                 serverPopup = NSPopUpButton; 
                 tabView = NSTabView; 
@@ -36,6 +40,12 @@
         }, 
         {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
         {CLASS = RDCSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
+        {
+            ACTIONS = {checkForUpdates = id; }; 
+            CLASS = SUUpdater; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
         {CLASS = TableViewButton; LANGUAGE = ObjC; SUPERCLASS = NSButtonCell; }
     ); 
     IBVersion = 1; 

@@ -144,6 +144,7 @@
 	RDInstance *instance = [[RDInstance alloc] init];
 	[instance setValue:[host stringValue] forKey:@"name"];
 	[instance setValue:[host stringValue] forKey:@"displayName"];
+	[instance setValue:[port stringValue] forKey:@"port"];
 	[instance setValue:[screenResolution titleOfSelectedItem] forKey:@"screenResolution"];
 	[instance setValue:[colorDepth titleOfSelectedItem] forKey:@"colorDepth"];
 	[instance setValue:[NSNumber numberWithInt:[forwardDisks intValue]] forKey:@"forwardDisks"];
@@ -219,13 +220,11 @@
 }
 
 - (void)resizeToMatchSelection {
-	int index = [serverPopup indexOfSelectedItem];
-	id selection;
+	id selection = [arrayController selection];
 	NSSize newContentSize;
 	NSString *serverString;
 	
-	if (index != -1) {
-		selection = [[arrayController arrangedObjects] objectAtIndex:index];
+	if ([serverPopup indexOfSelectedItem] != -1) {
 		newContentSize = [[selection valueForKey:@"view"] frame].size;
 		serverString = [NSString stringWithFormat:@" (%@)", [selection valueForKey:@"displayName"]];
 	} else {
@@ -275,6 +274,20 @@
 - (BOOL)windowShouldClose:(id)sender {
 	[[NSApplication sharedApplication] hide:self];
 	return NO;
+}
+
+- (IBAction)selectNext:(id) sender {
+	int index = [serverPopup indexOfSelectedItem];
+	[arrayController setSelectionIndex:index + 1];
+	[serverPopup selectItemAtIndex:index + 1];
+	[self resizeToMatchSelection];
+}
+
+- (IBAction)selectPrevious:(id) sender {
+	int index = [serverPopup indexOfSelectedItem];
+	[arrayController setSelectionIndex:index - 1];
+	[serverPopup selectItemAtIndex:index - 1];
+	[self resizeToMatchSelection];
 }
 
 @end

@@ -142,7 +142,7 @@ tcp_connect(rdcConnection conn, const char *server)
 			return FALSE;
 		}
 	}
-	
+ 
 	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
 	if ((is == nil) || (os == nil)) {
 		return FALSE;

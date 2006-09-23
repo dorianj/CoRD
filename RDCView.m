@@ -66,6 +66,10 @@
 	return YES;
 }
 
+-(BOOL)isOpaque {
+	return YES;
+}
+
 #pragma mark NSObject functions
 
 -(void)dealloc {
@@ -384,8 +388,10 @@
 -(void)scrollWheel:(NSEvent *)ev {
 	if ([ev deltaY] > 0) {
 		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON4 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
-	} else {
+		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_BUTTON4 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	} else if ([ev deltaY] < 0) {
 		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON5 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_BUTTON5 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
 	}
 }
 
@@ -500,5 +506,4 @@
 -(void)setBitdepth:(int)depth {
 	bitdepth = depth;
 }
-
 @end

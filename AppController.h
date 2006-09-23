@@ -33,6 +33,7 @@
 	IBOutlet NSButton *windowDrags;
 	IBOutlet NSButton *windowAnimation;
 	IBOutlet NSButton *themes;
+	IBOutlet NSTextField *port;
 	IBOutlet NSTabView *tabView;
 	IBOutlet NSArrayController *arrayController;
 	IBOutlet NSButton *disclosure;
@@ -51,6 +52,8 @@
 - (IBAction)hideOptions:(id)sender;
 - (IBAction)connectSheet:(id)sender;
 - (IBAction)cancelSheet:(id)sender;
+- (IBAction)selectNext:(id)sender;
+- (IBAction)selectPrevious:(id)sender;
 - (void)removeItem:(id)sender;
 - (void)resizeToMatchSelection;
 @end

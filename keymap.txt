@@ -64,3 +64,7 @@
 0037 dd # windows key
 
 
+0073 c7 # Home
+0077 cf # End
+0074 c9 # Page Up
+0079 d1 # Page Down

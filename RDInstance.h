@@ -29,6 +29,7 @@
 @interface RDInstance : NSObject {
 	RDCView *view;
 	NSString *name;
+	NSString *port;
 	NSString *displayName;
 	NSString *screenResolution;
 	NSString *colorDepth;
