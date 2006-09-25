@@ -23,6 +23,19 @@
 @implementation AppController
 
 #pragma mark NSObject methods
+- (id)init {
+	self = [super init];
+	if (self) {
+		NSMutableDictionary *defaultValues = [NSMutableDictionary dictionary];
+		[defaultValues setObject:@"1024x768" forKey:@"defaultResolution"];
+		[defaultValues setObject:@"Thousands" forKey:@"defaultColorDepth"];
+	
+		[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
+	}
+	
+	return self;
+}
+
 - (void)awakeFromNib {
 	[mainWindow setAcceptsMouseMovedEvents:YES];
 	
@@ -71,6 +84,9 @@
 	[toolbar setDelegate:self];
 	[toolbar setDisplayMode:NSToolbarDisplayModeIconOnly];
 	[mainWindow setToolbar:toolbar];
+	
+	[screenResolution selectItemWithTitle:[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultResolution"]];	
+	[colorDepth selectItemWithTitle:[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultColorDepth"]];
 }
 
 #pragma mark Toolbar methods
@@ -181,11 +197,15 @@
 	
 	[self resizeToMatchSelection];
 	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	[defaults setObject:[screenResolution titleOfSelectedItem] forKey:@"defaultResolution"];
+	[defaults setObject:[colorDepth titleOfSelectedItem] forKey:@"defaultColorDepth"];
+	
 	NSMutableArray *recent = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:@"RecentServers"]];
 	if (![recent containsObject:[host stringValue]]) {
 		[recent addObject:[host stringValue]];
-		[[NSUserDefaults standardUserDefaults] setObject:recent forKey:@"RecentServers"];
-		[[NSUserDefaults standardUserDefaults] synchronize];
+		[defaults setObject:recent forKey:@"RecentServers"];
+		[defaults synchronize];
 	}
 	
 	[NSApp endSheet:newServerSheet];
