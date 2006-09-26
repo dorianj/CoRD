@@ -12,6 +12,7 @@
 		449305C60AA9A012001C5A8B /* Picture 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305C50AA9A012001C5A8B /* Picture 2.png */; };
 		449305CC0AA9A13C001C5A8B /* Picture 4.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305CB0AA9A13C001C5A8B /* Picture 4.png */; };
 		449305CF0AA9A178001C5A8B /* Picture 5.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305CE0AA9A178001C5A8B /* Picture 5.png */; };
+		44C296030AC9768F000FD8FB /* iso.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C296020AC9768F000FD8FB /* iso.m */; };
 		44D2ACE00AA73B2A00EA19A1 /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2ACDF0AA73B2A00EA19A1 /* AppController.m */; };
 		44D2AE690AA761C000EA19A1 /* rdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4B0AA761C000EA19A1 /* rdp.m */; };
 		44D2AE6A0AA761C000EA19A1 /* rdp5.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4C0AA761C000EA19A1 /* rdp5.c */; };
@@ -20,7 +21,6 @@
 		44D2AE6F0AA761C000EA19A1 /* serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE520AA761C000EA19A1 /* serial.c */; };
 		44D2AE700AA761C000EA19A1 /* tcp.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE530AA761C000EA19A1 /* tcp.m */; };
 		44D2AE710AA761C000EA19A1 /* disk.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE570AA761C000EA19A1 /* disk.c */; };
-		44D2AE720AA761C000EA19A1 /* iso.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE590AA761C000EA19A1 /* iso.c */; };
 		44D2AE730AA761C000EA19A1 /* licence.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE5A0AA761C000EA19A1 /* licence.c */; };
 		44D2AE740AA761C000EA19A1 /* mcs.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE5B0AA761C000EA19A1 /* mcs.c */; };
 		44D2AE750AA761C000EA19A1 /* mppc.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE5C0AA761C000EA19A1 /* mppc.c */; };
@@ -75,6 +75,7 @@
 		449305C50AA9A012001C5A8B /* Picture 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 2.png"; sourceTree = "<group>"; };
 		449305CB0AA9A13C001C5A8B /* Picture 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 4.png"; sourceTree = "<group>"; };
 		449305CE0AA9A178001C5A8B /* Picture 5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 5.png"; sourceTree = "<group>"; };
+		44C296020AC9768F000FD8FB /* iso.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = iso.m; sourceTree = "<group>"; };
 		44D2ACDE0AA73B2A00EA19A1 /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
 		44D2ACDF0AA73B2A00EA19A1 /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AppController.m; sourceTree = "<group>"; };
 		44D2AE4A0AA761C000EA19A1 /* rdesktop.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = rdesktop.h; sourceTree = "<group>"; };
@@ -92,7 +93,6 @@
 		44D2AE560AA761C000EA19A1 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		44D2AE570AA761C000EA19A1 /* disk.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = disk.c; sourceTree = "<group>"; };
 		44D2AE580AA761C000EA19A1 /* disk.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = disk.h; sourceTree = "<group>"; };
-		44D2AE590AA761C000EA19A1 /* iso.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = iso.c; sourceTree = "<group>"; };
 		44D2AE5A0AA761C000EA19A1 /* licence.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = licence.c; sourceTree = "<group>"; };
 		44D2AE5B0AA761C000EA19A1 /* mcs.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = mcs.c; sourceTree = "<group>"; };
 		44D2AE5C0AA761C000EA19A1 /* mppc.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = mppc.c; sourceTree = "<group>"; };
@@ -236,6 +236,7 @@
 		44D2AE410AA761C000EA19A1 /* RDesktop */ = {
 			isa = PBXGroup;
 			children = (
+				44C296020AC9768F000FD8FB /* iso.m */,
 				44D2AE4A0AA761C000EA19A1 /* rdesktop.h */,
 				44D2AE4B0AA761C000EA19A1 /* rdp.m */,
 				44D2AE4C0AA761C000EA19A1 /* rdp5.c */,
@@ -251,7 +252,6 @@
 				44D2AE560AA761C000EA19A1 /* constants.h */,
 				44D2AE570AA761C000EA19A1 /* disk.c */,
 				44D2AE580AA761C000EA19A1 /* disk.h */,
-				44D2AE590AA761C000EA19A1 /* iso.c */,
 				44D2AE5A0AA761C000EA19A1 /* licence.c */,
 				44D2AE5B0AA761C000EA19A1 /* mcs.c */,
 				44D2AE5C0AA761C000EA19A1 /* mppc.c */,
@@ -343,7 +343,6 @@
 				44D2AE6F0AA761C000EA19A1 /* serial.c in Sources */,
 				44D2AE700AA761C000EA19A1 /* tcp.m in Sources */,
 				44D2AE710AA761C000EA19A1 /* disk.c in Sources */,
-				44D2AE720AA761C000EA19A1 /* iso.c in Sources */,
 				44D2AE730AA761C000EA19A1 /* licence.c in Sources */,
 				44D2AE740AA761C000EA19A1 /* mcs.c in Sources */,
 				44D2AE750AA761C000EA19A1 /* mppc.c in Sources */,
@@ -360,6 +359,7 @@
 				44D2AE950AA7621C00EA19A1 /* RDCKeyboard.m in Sources */,
 				44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */,
 				44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */,
+				44C296030AC9768F000FD8FB /* iso.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -34,6 +34,8 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+@class AppController;
+
 #ifndef INADDR_NONE
 #define INADDR_NONE ((unsigned long) -1)
 #endif
@@ -134,17 +136,22 @@ tcp_connect(rdcConnection conn, const char *server)
 	NSInputStream *is = nil;
 	NSOutputStream *os = nil;
 	NSHost *host;
+	AppController *cont = conn->controller;
 	
+	[cont setStatus:[NSString stringWithFormat:@"Looking up host %s", server]];
 	host = [NSHost hostWithAddress:[NSString stringWithUTF8String:server]];
 	if (!host) {
 		host = [NSHost hostWithName:[NSString stringWithUTF8String:server]];
 		if (!host) {
+			[cont setStatus:[NSString stringWithFormat:@"Failed to get address for %s", server]];
 			return FALSE;
 		}
 	}
  
+	[cont setStatus:[NSString stringWithFormat:@"Connecting to host %s", server]];
 	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
 	if ((is == nil) || (os == nil)) {
+		[cont setStatus:[NSString stringWithFormat:@"Failed to connect to %s", server]];
 		return FALSE;
 	}
 	

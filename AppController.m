@@ -87,6 +87,8 @@
 	
 	[screenResolution selectItemWithTitle:[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultResolution"]];	
 	[colorDepth selectItemWithTitle:[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultColorDepth"]];
+	
+	[progress setUsesThreadedAnimation:YES];
 }
 
 #pragma mark Toolbar methods
@@ -119,6 +121,7 @@
 #pragma mark Action Methods
 
 - (IBAction)newServer:(id)sender {
+	[errorField setStringValue:@""];
 	[NSApp beginSheet:newServerSheet 
 	   modalForWindow:mainWindow
 		modalDelegate:self
@@ -172,10 +175,13 @@
 	[instance setValue:[NSNumber numberWithInt:[themes intValue]] forKey:@"themes"];
 	[instance setValue:self forKey:@"appController"];
 	
+	[progress startAnimation:self];
 	if (![instance connect]) {
 		[instance release];
+		[progress stopAnimation:self];
 		return;
 	}
+	[progress stopAnimation:self];
 	
 	NSScrollView *scroll = [[NSScrollView alloc] initWithFrame:[tabView frame]];
 	[scroll setDocumentView:[instance valueForKey:@"view"]];
@@ -308,6 +314,10 @@
 	[arrayController setSelectionIndex:index - 1];
 	[serverPopup selectItemAtIndex:index - 1];
 	[self resizeToMatchSelection];
+}
+
+- (void)setStatus:(NSString *)status {
+	[errorField setStringValue:status];
 }
 
 @end

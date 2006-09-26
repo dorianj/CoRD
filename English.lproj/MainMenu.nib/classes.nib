@@ -22,6 +22,7 @@
                 disclosure = NSButton; 
                 disconnectButton = NSButton; 
                 drawDesktop = NSButton; 
+                errorField = NSTextField; 
                 forwardAudio = NSPopUpButton; 
                 forwardDisks = NSButton; 
                 host = NSComboBox; 
@@ -29,6 +30,7 @@
                 newServerSheet = NSWindow; 
                 openButton = NSButton; 
                 port = NSTextField; 
+                progress = NSProgressIndicator; 
                 screenResolution = NSPopUpButton; 
                 serverPopup = NSPopUpButton; 
                 tabView = NSTabView; 

@@ -19,6 +19,7 @@
 */
 
 #include "rdesktop.h"
+#import <Foundation/NSString.h>
 
 /* Send a self-contained ISO PDU */
 static void
@@ -178,13 +179,15 @@ iso_connect(rdcConnection conn, const char *server, char *username)
 
 	iso_send_connection_request(conn, username);
 
-	if (iso_recv_msg(conn, &code, NULL) == NULL)
+	if (iso_recv_msg(conn, &code, NULL) == NULL) {
+		[(id)conn->controller setStatus:[NSString stringWithFormat:@"Failed to connect to %s", server]];
 		return False;
+	}
 
 	if (code != ISO_PDU_CC)
 	{
 		error("expected CC, got 0x%x\n", code);
-		tcp_disconnect(conn);
+		tcp_disconnect(conn);		
 		return False;
 	}
 

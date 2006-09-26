@@ -37,6 +37,8 @@
 	IBOutlet NSTabView *tabView;
 	IBOutlet NSArrayController *arrayController;
 	IBOutlet NSButton *disclosure;
+	IBOutlet NSTextField *errorField;
+	IBOutlet NSProgressIndicator *progress;
 	
 	// Toolbar stuff
 	NSToolbar *toolbar;
@@ -56,4 +58,5 @@
 - (IBAction)selectPrevious:(id)sender;
 - (void)removeItem:(id)sender;
 - (void)resizeToMatchSelection;
+- (void)setStatus:(NSString *)status;
 @end

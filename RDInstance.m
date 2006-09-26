@@ -106,6 +106,8 @@
 		return -1;
 	}
 	
+	conn.controller = appController;
+	
 	int performanceFlags = RDP5_DISABLE_NOTHING;
 	if (!windowDrags)
 		performanceFlags |= RDP5_NO_FULLWINDOWDRAG;
@@ -139,7 +141,8 @@
 							[cCommand UTF8String], 
 							[cDirectory UTF8String]);
 	if (!connected) {
-		NSLog(@"failed to connect");
+		// NSLog(@"failed to connect");
+		// [appController setStatus:[NSString stringWithFormat:@"Failed to connect to %@", name]];
 		return connected;
 	}
 	

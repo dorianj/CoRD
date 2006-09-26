@@ -364,6 +364,7 @@ struct rdcConn {
 	
 	// UI
 	void *ui;
+	void *controller;
 };
 
 
