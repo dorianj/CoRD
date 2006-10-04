@@ -267,7 +267,7 @@
 				 display:YES
 				 animate:YES];
 	
-	[mainWindow setTitle:[NSString stringWithFormat:@"Remote Desktop%@", serverString]];
+	[mainWindow setTitle:[NSString stringWithFormat:@"Cord%@", serverString]];
 }
 
 - (void)removeItem:(id)sender {

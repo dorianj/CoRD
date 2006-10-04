@@ -1,11 +1,11 @@
 // !$*UTF8*$!
 {
 	29B97313FDCFA39411CA2CEA /* Project object */ = {
-		activeBuildConfigurationName = Release;
-		activeExecutable = 44F9B1F80AA3D74F005F0B98 /* Remote Desktop */;
-		activeTarget = 8D1107260486CEB800E47090 /* Remote Desktop */;
+		activeBuildConfigurationName = Debug;
+		activeExecutable = 44F9B1F80AA3D74F005F0B98 /* Cord */;
+		activeTarget = 8D1107260486CEB800E47090 /* Cord */;
 		addToTargets = (
-			8D1107260486CEB800E47090 /* Remote Desktop */,
+			8D1107260486CEB800E47090 /* Cord */,
 		);
 		breakpoints = (
 			44F3D2B40AADB8950054F60C /* rdp5.c:62 */,
@@ -15,7 +15,7 @@
 		breakpointsGroup = 44D2AD930AA7526900EA19A1 /* XCBreakpointsBucket */;
 		codeSenseManager = 44F9B20C0AA3D753005F0B98 /* Code sense */;
 		executables = (
-			44F9B1F80AA3D74F005F0B98 /* Remote Desktop */,
+			44F9B1F80AA3D74F005F0B98 /* Cord */,
 		);
 		perUserDictionary = {
 			PBXConfiguration.PBXFileTableDataSource3.PBXExecutablesDataSource = {
@@ -37,7 +37,7 @@
 				PBXFileTableDataSourceColumnSortingKey = PBXFileDataSource_Filename_ColumnID;
 				PBXFileTableDataSourceColumnWidthsKey = (
 					20,
-					410,
+					545,
 					20,
 					48,
 					43,
@@ -92,10 +92,14 @@
 					PBXFileDataSource_Warnings_ColumnID,
 				);
 			};
-			PBXPerProjectTemplateStateSaveDate = 180984698;
-			PBXWorkspaceStateSaveDate = 180984698;
+			PBXPerProjectTemplateStateSaveDate = 181673994;
+			PBXWorkspaceStateSaveDate = 181673994;
 		};
 		perUserProjectItems = {
+			441DA7D20AD41E1C00F11858 /* PBXTextBookmark */ = 441DA7D20AD41E1C00F11858 /* PBXTextBookmark */;
+			441DA7D60AD41E1C00F11858 /* PBXTextBookmark */ = 441DA7D60AD41E1C00F11858 /* PBXTextBookmark */;
+			441DA8350AD41EF200F11858 /* PBXTextBookmark */ = 441DA8350AD41EF200F11858 /* PBXTextBookmark */;
+			441DA8360AD41EF200F11858 /* PBXTextBookmark */ = 441DA8360AD41EF200F11858 /* PBXTextBookmark */;
 			443631E20AC847AA005BDA2A /* PBXTextBookmark */ = 443631E20AC847AA005BDA2A /* PBXTextBookmark */;
 			443631E50AC847AA005BDA2A /* PBXTextBookmark */ = 443631E50AC847AA005BDA2A /* PBXTextBookmark */;
 			443631E60AC847AA005BDA2A /* PBXTextBookmark */ = 443631E60AC847AA005BDA2A /* PBXTextBookmark */;
@@ -120,26 +124,17 @@
 			4472836A0AC9546200AF0FBF /* PBXTextBookmark */ = 4472836A0AC9546200AF0FBF /* PBXTextBookmark */;
 			447283780AC9548D00AF0FBF /* PBXTextBookmark */ = 447283780AC9548D00AF0FBF /* PBXTextBookmark */;
 			4472837C0AC9548D00AF0FBF /* PBXTextBookmark */ = 4472837C0AC9548D00AF0FBF /* PBXTextBookmark */;
-			4472839F0AC9569700AF0FBF /* PBXTextBookmark */ = 4472839F0AC9569700AF0FBF /* PBXTextBookmark */;
 			447283A00AC9569700AF0FBF /* PBXTextBookmark */ = 447283A00AC9569700AF0FBF /* PBXTextBookmark */;
-			447283A80AC956D700AF0FBF /* PBXTextBookmark */ = 447283A80AC956D700AF0FBF /* PBXTextBookmark */;
-			447283A90AC956D700AF0FBF /* PBXTextBookmark */ = 447283A90AC956D700AF0FBF /* PBXTextBookmark */;
-			447283AA0AC956D700AF0FBF /* PBXTextBookmark */ = 447283AA0AC956D700AF0FBF /* PBXTextBookmark */;
-			447283B00AC956E200AF0FBF /* PBXTextBookmark */ = 447283B00AC956E200AF0FBF /* PBXTextBookmark */;
 			447283BA0AC9577B00AF0FBF /* PBXTextBookmark */ = 447283BA0AC9577B00AF0FBF /* PBXTextBookmark */;
 			44A436A30AC894A1005AFDC9 /* PBXTextBookmark */ = 44A436A30AC894A1005AFDC9 /* PBXTextBookmark */;
 			44A436A60AC894A1005AFDC9 /* PBXTextBookmark */ = 44A436A60AC894A1005AFDC9 /* PBXTextBookmark */;
 			44A436A70AC894A1005AFDC9 /* PBXTextBookmark */ = 44A436A70AC894A1005AFDC9 /* PBXTextBookmark */;
 			44A436B70AC894CB005AFDC9 /* PBXTextBookmark */ = 44A436B70AC894CB005AFDC9 /* PBXTextBookmark */;
 			44A436BA0AC894CB005AFDC9 /* PBXTextBookmark */ = 44A436BA0AC894CB005AFDC9 /* PBXTextBookmark */;
-			44C296060AC97693000FD8FB /* PBXTextBookmark */ = 44C296060AC97693000FD8FB /* PBXTextBookmark */;
 			44C296170AC977B1000FD8FB /* PBXTextBookmark */ = 44C296170AC977B1000FD8FB /* PBXTextBookmark */;
 			44C2961B0AC977B1000FD8FB /* PBXTextBookmark */ = 44C2961B0AC977B1000FD8FB /* PBXTextBookmark */;
 			44C296250AC97836000FD8FB /* PBXTextBookmark */ = 44C296250AC97836000FD8FB /* PBXTextBookmark */;
 			44C2962B0AC97A4A000FD8FB /* PBXTextBookmark */ = 44C2962B0AC97A4A000FD8FB /* PBXTextBookmark */;
-			44C296570AC99B83000FD8FB /* PBXTextBookmark */ = 44C296570AC99B83000FD8FB /* PBXTextBookmark */;
-			44C296640AC99BAA000FD8FB /* PBXTextBookmark */ = 44C296640AC99BAA000FD8FB /* PBXTextBookmark */;
-			44C296650AC99BAA000FD8FB /* PBXTextBookmark */ = 44C296650AC99BAA000FD8FB /* PBXTextBookmark */;
 		};
 		sourceControlManager = 44F9B20B0AA3D753005F0B98 /* Source Control */;
 		userBuildSettings = {
@@ -151,6 +146,53 @@
 			sepNavSelRange = "{77, 1154}";
 			sepNavVisRect = "{{0, 0}, {911, 452}}";
 		};
+	};
+	441DA7D20AD41E1C00F11858 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 44D2AE920AA7621C00EA19A1 /* RDCView.m */;
+		name = "RDCView.m: 71";
+		rLen = 0;
+		rLoc = 2292;
+		rType = 0;
+		vrLen = 612;
+		vrLoc = 1832;
+	};
+	441DA7D60AD41E1C00F11858 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 44D2AE920AA7621C00EA19A1 /* RDCView.m */;
+		name = "RDCView.m: 71";
+		rLen = 0;
+		rLoc = 2292;
+		rType = 0;
+		vrLen = 612;
+		vrLoc = 1832;
+	};
+	441DA8340AD41EED00F11858 /* Cord_Prefix.pch */ = {
+		uiCtxt = {
+			sepNavIntBoundsRect = "{{0, 0}, {737, 454}}";
+			sepNavSelRange = "{0, 0}";
+			sepNavVisRect = "{{0, 0}, {737, 454}}";
+		};
+	};
+	441DA8350AD41EF200F11858 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 44D2ACDF0AA73B2A00EA19A1 /* AppController.m */;
+		name = "AppController.m: 254";
+		rLen = 0;
+		rLoc = 8411;
+		rType = 0;
+		vrLen = 1102;
+		vrLoc = 8615;
+	};
+	441DA8360AD41EF200F11858 /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = 32CA4F630368D1EE00C91783 /* Cord_Prefix.pch */;
+		name = "Cord_Prefix.pch: 1";
+		rLen = 0;
+		rLoc = 0;
+		rType = 0;
+		vrLen = 159;
+		vrLoc = 0;
 	};
 	443631E20AC847AA005BDA2A /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -207,7 +249,7 @@
 		functionName = "rdp_connect()";
 		hitCount = 1;
 		lineNumber = 1186;
-		location = "Remote Desktop";
+		location = Cord;
 		modificationTime = 180974616.288686;
 		state = 1;
 	};
@@ -336,7 +378,7 @@
 		fRef = 8D1107310486CEB800E47090 /* Info.plist */;
 		name = "Info.plist: 22";
 		rLen = 0;
-		rLoc = 709;
+		rLoc = 700;
 		rType = 0;
 		vrLen = 939;
 		vrLoc = 0;
@@ -435,16 +477,6 @@
 		path = /Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks/CoreServices.framework/Frameworks/OSServices.framework/Headers/OpenTransportProviders.h;
 		sourceTree = "<absolute>";
 	};
-	4472839F0AC9569700AF0FBF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 44D2AE530AA761C000EA19A1 /* tcp.m */;
-		name = "tcp.m: 154";
-		rLen = 0;
-		rLoc = 4093;
-		rType = 0;
-		vrLen = 1476;
-		vrLoc = 0;
-	};
 	447283A00AC9569700AF0FBF /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
 		fRef = 44D2ACDE0AA73B2A00EA19A1 /* AppController.h */;
@@ -454,43 +486,6 @@
 		rType = 0;
 		vrLen = 1277;
 		vrLoc = 1180;
-	};
-	447283A80AC956D700AF0FBF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 8D1107310486CEB800E47090 /* Info.plist */;
-		name = "Info.plist: 22";
-		rLen = 0;
-		rLoc = 709;
-		rType = 0;
-		vrLen = 939;
-		vrLoc = 0;
-	};
-	447283A90AC956D700AF0FBF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 44D2ACDF0AA73B2A00EA19A1 /* AppController.m */;
-		name = "AppController.m: 120";
-		rLen = 0;
-		rLoc = 4027;
-		rType = 0;
-		vrLen = 1287;
-		vrLoc = 524;
-	};
-	447283AA0AC956D700AF0FBF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 44F9B20F0AA3D83F005F0B98 /* RDInstance.m */;
-		rLen = 17;
-		rLoc = 4055;
-		rType = 0;
-	};
-	447283B00AC956E200AF0FBF /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 44D2ACDF0AA73B2A00EA19A1 /* AppController.m */;
-		name = "AppController.m: 120";
-		rLen = 0;
-		rLoc = 4027;
-		rType = 0;
-		vrLen = 1811;
-		vrLoc = 0;
 	};
 	447283BA0AC9577B00AF0FBF /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -517,7 +512,7 @@
 		fRef = 8D1107310486CEB800E47090 /* Info.plist */;
 		name = "Info.plist: 22";
 		rLen = 0;
-		rLoc = 709;
+		rLoc = 700;
 		rType = 0;
 		vrLen = 939;
 		vrLoc = 0;
@@ -563,7 +558,7 @@
 		functionName = "tcp_connect()";
 		hitCount = 1;
 		lineNumber = 135;
-		location = "Remote Desktop";
+		location = Cord;
 		modificationTime = 180974580.902337;
 		state = 1;
 	};
@@ -573,16 +568,6 @@
 			sepNavSelRange = "{3950, 0}";
 			sepNavVisRect = "{{0, 1978}, {602, 427}}";
 		};
-	};
-	44C296060AC97693000FD8FB /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 44D2AE540AA761C000EA19A1 /* types.h */;
-		name = "types.h: 345";
-		rLen = 0;
-		rLoc = 6576;
-		rType = 0;
-		vrLen = 802;
-		vrLoc = 6202;
 	};
 	44C296170AC977B1000FD8FB /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -624,36 +609,6 @@
 		vrLen = 813;
 		vrLoc = 3518;
 	};
-	44C296570AC99B83000FD8FB /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 44C296020AC9768F000FD8FB /* iso.m */;
-		name = "iso.m: 183";
-		rLen = 0;
-		rLoc = 3950;
-		rType = 0;
-		vrLen = 813;
-		vrLoc = 3518;
-	};
-	44C296640AC99BAA000FD8FB /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 44C296020AC9768F000FD8FB /* iso.m */;
-		name = "iso.m: 183";
-		rLen = 0;
-		rLoc = 3950;
-		rType = 0;
-		vrLen = 727;
-		vrLoc = 3579;
-	};
-	44C296650AC99BAA000FD8FB /* PBXTextBookmark */ = {
-		isa = PBXTextBookmark;
-		fRef = 44C296020AC9768F000FD8FB /* iso.m */;
-		name = "iso.m: 183";
-		rLen = 0;
-		rLoc = 3950;
-		rType = 0;
-		vrLen = 813;
-		vrLoc = 3518;
-	};
 	44D2ACDE0AA73B2A00EA19A1 /* AppController.h */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {739, 756}}";
@@ -665,14 +620,14 @@
 	44D2ACDF0AA73B2A00EA19A1 /* AppController.m */ = {
 		uiCtxt = {
 			sepNavIntBoundsRect = "{{0, 0}, {896, 3888}}";
-			sepNavSelRange = "{4027, 0}";
-			sepNavVisRect = "{{0, 0}, {739, 517}}";
+			sepNavSelRange = "{8411, 0}";
+			sepNavVisRect = "{{0, 3108}, {737, 454}}";
 			sepNavWindowFrame = "{{65, 29}, {1202, 794}}";
 		};
 	};
 	44D2AD930AA7526900EA19A1 /* XCBreakpointsBucket */ = {
 		isa = XCBreakpointsBucket;
-		name = "Remote Desktop";
+		name = Cord;
 		objects = (
 			44F3D2B40AADB8950054F60C /* rdp5.c:62 */,
 			44BA6BD50AB6E34500522576 /* tcp.m:135 */,
@@ -869,11 +824,11 @@
 		functionName = "rdp5_process()";
 		hitCount = 1;
 		lineNumber = 62;
-		location = "Remote Desktop";
+		location = Cord;
 		modificationTime = 180974580.9023;
 		state = 1;
 	};
-	44F9B1F80AA3D74F005F0B98 /* Remote Desktop */ = {
+	44F9B1F80AA3D74F005F0B98 /* Cord */ = {
 		isa = PBXExecutable;
 		activeArgIndex = 2147483647;
 		activeArgIndices = (
@@ -908,7 +863,7 @@
 		executableSystemSymbolLevel = 0;
 		executableUserSymbolLevel = 0;
 		libgmallocEnabled = 0;
-		name = "Remote Desktop";
+		name = Cord;
 		savedGlobals = {
 		};
 		sourceDirectories = (
@@ -948,10 +903,10 @@
 			sepNavWindowFrame = "{{15, 79}, {1202, 794}}";
 		};
 	};
-	8D1107260486CEB800E47090 /* Remote Desktop */ = {
+	8D1107260486CEB800E47090 /* Cord */ = {
 		activeExec = 0;
 		executables = (
-			44F9B1F80AA3D74F005F0B98 /* Remote Desktop */,
+			44F9B1F80AA3D74F005F0B98 /* Cord */,
 		);
 	};
 	8D1107310486CEB800E47090 /* Info.plist */ = {

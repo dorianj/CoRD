@@ -70,7 +70,8 @@
 		29B97319FDCFA39411CA2CEA /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = English.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		32CA4F630368D1EE00C91783 /* Remote Desktop_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Remote Desktop_Prefix.pch"; sourceTree = "<group>"; };
+		32CA4F630368D1EE00C91783 /* Cord_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cord_Prefix.pch; sourceTree = "<group>"; };
+		441DA8340AD41EED00F11858 /* Cord_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cord_Prefix.pch; sourceTree = "<group>"; };
 		446801740ABF9A8900FE4069 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		449305C50AA9A012001C5A8B /* Picture 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 2.png"; sourceTree = "<group>"; };
 		449305CB0AA9A13C001C5A8B /* Picture 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 4.png"; sourceTree = "<group>"; };
@@ -123,7 +124,7 @@
 		44F9B20E0AA3D83F005F0B98 /* RDInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDInstance.h; sourceTree = "<group>"; };
 		44F9B20F0AA3D83F005F0B98 /* RDInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDInstance.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* Remote Desktop.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Remote Desktop.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -178,12 +179,12 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* Remote Desktop.app */,
+				8D1107320486CEB800E47090 /* Cord.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* Remote Desktop */ = {
+		29B97314FDCFA39411CA2CEA /* Cord */ = {
 			isa = PBXGroup;
 			children = (
 				44D2AE410AA761C000EA19A1 /* RDesktop */,
@@ -193,14 +194,15 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
-			name = "Remote Desktop";
+			name = Cord;
 			sourceTree = "<group>";
 		};
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
 				44D2AE8B0AA761E700EA19A1 /* stubs.m */,
-				32CA4F630368D1EE00C91783 /* Remote Desktop_Prefix.pch */,
+				441DA8340AD41EED00F11858 /* Cord_Prefix.pch */,
+				32CA4F630368D1EE00C91783 /* Cord_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 			);
 			name = "Other Sources";
@@ -274,9 +276,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* Remote Desktop */ = {
+		8D1107260486CEB800E47090 /* Cord */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Remote Desktop" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Cord" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -287,10 +289,10 @@
 			);
 			dependencies = (
 			);
-			name = "Remote Desktop";
+			name = Cord;
 			productInstallPath = "$(HOME)/Applications";
-			productName = "Remote Desktop";
-			productReference = 8D1107320486CEB800E47090 /* Remote Desktop.app */;
+			productName = Cord;
+			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -298,12 +300,12 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Remote Desktop" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Cord" */;
 			hasScannedForEncodings = 1;
-			mainGroup = 29B97314FDCFA39411CA2CEA /* Remote Desktop */;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* Cord */;
 			projectDirPath = "";
 			targets = (
-				8D1107260486CEB800E47090 /* Remote Desktop */,
+				8D1107260486CEB800E47090 /* Cord */,
 			);
 		};
 /* End PBXProject section */
@@ -406,7 +408,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "-lcrypto";
-				PRODUCT_NAME = "Remote Desktop";
+				PRODUCT_NAME = Cord;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
@@ -434,7 +436,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "-lcrypto";
-				PRODUCT_NAME = "Remote Desktop";
+				PRODUCT_NAME = Cord;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
@@ -463,7 +465,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Remote Desktop" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Cord" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -472,7 +474,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Remote Desktop" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Cord" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>rdesktop</string>
 	<key>CFBundleIdentifier</key>
-	<string>net.sf.remotedesktop</string>
+	<string>net.sf.cord</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -25,6 +25,6 @@
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>SUFeedURL</key>
-	<string>http://remotedesktop.sourceforge.net/sparkle.xml</string>
+	<string>http://cord.sourceforge.net/sparkle.xml</string>
 </dict>
 </plist>
