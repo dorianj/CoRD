@@ -29,6 +29,11 @@
 #import "constants.h"
 #import "scancodes.h"
 
+@interface RDCView (Private)
+-(void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
+@end
+
+
 @implementation RDCView
 
 #pragma mark NSView functions
@@ -57,9 +62,18 @@
 	return YES;
 }
 
+-(BOOL)wantsDefaultClipping {
+	return NO;
+}
+
 - (void)drawRect:(NSRect)rect {
-	[back drawInRect:rect fromRect:rect operation:NSCompositeCopy fraction:1.0];
-	// [NSStringFromPoint(mouseLoc) drawAtPoint:NSMakePoint(10, 10) withAttributes:attributes];	
+	int nRects;
+	int r;
+	const NSRect *rects;
+	[self getRectsBeingDrawn:&rects count:&nRects];
+	for (r = 0; r < nRects; r++) {
+		[back drawInRect:rects[r] fromRect:rects[r] operation:NSCompositeCopy fraction:1.0f];
+	}
 }
 
 -(BOOL)isFlipped {
@@ -471,6 +485,7 @@
 
 -(void)swapRect:(NSRect)r {
 	[back lockFocus];
+	NSRectClip(clipRect);
 	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
 	CGContextSaveGState(context);
 	CGContextSetBlendMode(context, kCGBlendModeDifference);

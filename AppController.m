@@ -267,7 +267,7 @@
 				 display:YES
 				 animate:YES];
 	
-	[mainWindow setTitle:[NSString stringWithFormat:@"Cord%@", serverString]];
+	[mainWindow setTitle:[NSString stringWithFormat:@"CoRD%@", serverString]];
 }
 
 - (void)removeItem:(id)sender {
