@@ -71,14 +71,11 @@
 }
 
 - (void)drawRect:(NSRect)rect {
-<<<<<<< .mine
-	int nRects, r;
+	int nRects, i;
 	const NSRect* rects;
 	[self getRectsBeingDrawn:&rects count:&nRects];
-	for (r = 0; r < nRects; r++)
-		[back drawInRect:rects[r] fromRect:rects[r] operation:NSCompositeCopy fraction:1.0f];
-		
-	//[back drawInRect:rect fromRect:rect operation:NSCompositeCopy fraction:1.0];
+	for (i = 0; i < nRects; i++)
+		[back drawInRect:rects[i] fromRect:rects[i] operation:NSCompositeCopy fraction:1.0f];
 }
 
 -(BOOL)isFlipped {
@@ -93,10 +90,6 @@
     [self discardCursorRects];
 	NSRect r = [self visibleRect];
     [self addCursorRect:r cursor:cursor]; 
-}
-
--(BOOL)wantsDefaultClipping {
-	return NO;  // we copy backing store into exact update rects
 }
 
 #pragma mark NSObject functions
@@ -284,7 +277,6 @@
 			operation:NSCompositeSourceOver
 			 fraction:1.0];
 	// [back unlockFocus];
-	printf("Drew a glyph of size (%f,%f). %d\n", r.size.width, r.size.height, rand()%2);
 }
 
 -(void)setClip:(NSRect)r {

@@ -582,7 +582,6 @@
 	[self toggleProgressIndicator:currentlyConnecting];
 	
 	NSString *status = (!connectingTo) ? @"" : [NSString stringWithFormat:@"Connecting to %@", connectingTo];
-	NSLog(status);
 	[gui_Status setStringValue:status];
 }
 
@@ -636,7 +635,6 @@
 	keychain_clear_password(
 			safe_string_conv([rdp getStringAttribute:@"full address"]),
 			safe_string_conv([rdp getStringAttribute:@"username"]));
-	return nil;
 }
 
 @end

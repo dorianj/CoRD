@@ -90,7 +90,7 @@
 	if (active != nil)
 		return [active toolbarRepresentation];
 	
-	NSLog(@"AppController: Toolbar requested an unavailable item, '%@', currentConnections:\n%@", itemIdentifier, currentConnections);
+	//NSLog(@"AppController: Toolbar requested an unavailable item, '%@', currentConnections:\n%@", itemIdentifier, currentConnections);
 	return nil;
 }
 
@@ -215,14 +215,30 @@
 	}
 	
 	NSRect windowFrame = [mainWindow frame];
+	NSRect screenRect = [[mainWindow screen] visibleFrame];
+	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = windowFrame.size.height - [[mainWindow contentView] frame].size.height;
 	
 	[mainWindow setContentMaxSize:newContentSize];	
-	[mainWindow setFrame:NSMakeRect(windowFrame.origin.x, windowFrame.origin.y +
-								windowFrame.size.height-newContentSize.height-toolbarHeight, 
-								newContentSize.width, newContentSize.height+toolbarHeight)
-				display:YES
-				animate:YES];
+	
+	NSRect newWindowFrame = NSMakeRect( windowFrame.origin.x, windowFrame.origin.y +
+										windowFrame.size.height-newContentSize.height-toolbarHeight, 
+										newContentSize.width, newContentSize.height + toolbarHeight);
+	if (newWindowFrame.size.height > screenRect.size.height &&
+			newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
+	{
+		newWindowFrame.origin.y = screenRect.origin.y;
+		newWindowFrame.size.height = screenRect.size.height;
+		newWindowFrame.size.width += scrollerWidth;
+	} else if (newWindowFrame.size.width>screenRect.size.width &&
+				newWindowFrame.size.height+scrollerWidth <= screenRect.size.height)
+	{
+		newWindowFrame.origin.x = screenRect.origin.x;
+		newWindowFrame.size.width = screenRect.size.width;
+		newWindowFrame.size.height += scrollerWidth;
+	}
+	
+	[mainWindow setFrame:newWindowFrame display:YES animate:YES];
 }
 
 - (void)removeItem:(id)sender
