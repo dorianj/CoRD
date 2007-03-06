@@ -223,12 +223,6 @@
 								newContentSize.width, newContentSize.height+toolbarHeight)
 				display:YES
 				animate:YES];
-	
-<<<<<<< .mine
-	[mainWindow setTitle:serverString];
-=======
-	[mainWindow setTitle:[NSString stringWithFormat:@"CoRD%@", serverString]];
->>>>>>> .r85
 }
 
 - (void)removeItem:(id)sender

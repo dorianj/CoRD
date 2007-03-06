@@ -79,15 +79,6 @@
 		[back drawInRect:rects[r] fromRect:rects[r] operation:NSCompositeCopy fraction:1.0f];
 		
 	//[back drawInRect:rect fromRect:rect operation:NSCompositeCopy fraction:1.0];
-=======
-	int nRects;
-	int r;
-	const NSRect *rects;
-	[self getRectsBeingDrawn:&rects count:&nRects];
-	for (r = 0; r < nRects; r++) {
-		[back drawInRect:rects[r] fromRect:rects[r] operation:NSCompositeCopy fraction:1.0f];
-	}
->>>>>>> .r85
 }
 
 -(BOOL)isFlipped {
