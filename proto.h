@@ -196,7 +196,7 @@ HGLYPH ui_create_glyph(rdcConnection conn, int width, int height, const uint8 * 
 void ui_destroy_glyph(HGLYPH glyph);
 HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int width, int height, uint8 * andmask,
 			 uint8 * xormask);
-void ui_set_cursor(HCURSOR cursor);
+void ui_set_cursor(rdcConnection,HCURSOR cursor);
 void ui_destroy_cursor(HCURSOR cursor);
 void ui_set_null_cursor(rdcConnection conn);
 HCOLOURMAP ui_create_colourmap(COLOURMAP * colours);

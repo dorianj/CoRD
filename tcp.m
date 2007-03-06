@@ -138,20 +138,20 @@ tcp_connect(rdcConnection conn, const char *server)
 	NSHost *host;
 	AppController *cont = conn->controller;
 	
-	[cont setStatus:[NSString stringWithFormat:@"Looking up host %s", server]];
+	//[cont setStatus:[NSString stringWithFormat:@"Looking up host '%s'", server]];
 	host = [NSHost hostWithAddress:[NSString stringWithUTF8String:server]];
 	if (!host) {
 		host = [NSHost hostWithName:[NSString stringWithUTF8String:server]];
 		if (!host) {
-			[cont setStatus:[NSString stringWithFormat:@"Failed to get address for %s", server]];
+			//[cont setStatus:[NSString stringWithFormat:@"Error: Couldn't resolve '%s'", server]];
 			return FALSE;
 		}
 	}
  
-	[cont setStatus:[NSString stringWithFormat:@"Connecting to host %s", server]];
+	//[cont setStatus:[NSString stringWithFormat:@"Connecting to %s", server]];
 	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
 	if ((is == nil) || (os == nil)) {
-		[cont setStatus:[NSString stringWithFormat:@"Failed to connect to %s", server]];
+		//[cont setStatus:[NSString stringWithFormat:@"Error: couldn't connect to '%s'", server]];
 		return FALSE;
 	}
 	

@@ -22,18 +22,32 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
+// Note from Dorian, 2007-01-02: I changed this so that it no longer takes
+//	"thousands" or "millions" for the color depth, now it simply uses a number.
+//	translating between the string and number doesn't belong here. Also, screen
+//	resolution does the same. I've also added username and password facilities.
+
+
 #import "RDInstance.h"
 #import "RDCKeyboard.h"
 
 @implementation RDInstance
 - (id)init {
 	if ((self = [super init])) {
-		cDomain = cPassword = cCommand = cDirectory = cHost = @"";
+		cDomain = cCommand = cDirectory = @"";
 		fillDefaultConnection(&conn);
 	}
 	
 	return self;
 }
+- (void) dealloc {
+	if (connected)
+		[self disconnect];
+
+	[super dealloc];
+}
+
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)streamEvent {
     uint8 type;
@@ -67,7 +81,7 @@
                 unimpl("PDU %d\n", type);
         }
         if (disc) {
-			NSLog(@"Disconnection");
+			//NSLog(@"Disconnection");
 			[appController removeItem:self];
 			[self disconnect];
 			return;
@@ -77,35 +91,9 @@
     return;
 }
 
-- (void) parseResolution {
-	int x, y;
-	NSScanner *scan = [NSScanner scannerWithString:screenResolution];
-	[scan setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"x"]];
-	[scan scanInt:&x];
-	[scan scanInt:&y];
-	
-	conn.screenWidth=x;
-	conn.screenHeight=y;
-}
-
 - (int) connect {
-	if (name == nil) {
-		NSLog(@"WTF");
-		return -1;
-	}
-	
 	conn.bitmapCache = cacheBitmaps;
-	if ([colorDepth compare:@"256"] == 0) {
-		conn.serverBpp = 8;
-	} else if ([colorDepth compare:@"Thousands"] == 0) {
-		conn.serverBpp = 16;
-	} else if ([colorDepth compare:@"Millions"] == 0) {
-		conn.serverBpp = 24;
-	} else {
-		NSLog(@"WTF");
-		return -1;
-	}
-	
+	conn.serverBpp = screenDepth;	
 	conn.controller = appController;
 	
 	int performanceFlags = RDP5_DISABLE_NOTHING;
@@ -121,50 +109,53 @@
 	if (!windowAnimation)
 		performanceFlags |= RDP5_NO_MENUANIMATIONS;
 	
+	int logonFlags = RDP_LOGON_NORMAL;
+	if (password && username)
+		logonFlags |= RDP_LOGON_AUTO;
+
 	conn.rdp5PerformanceFlags = performanceFlags;
+
+	conn.screenWidth = screenWidth;
+	conn.screenHeight = screenHeight;
 	
-	[self parseResolution];
-	
-	conn.tcpPort = [port intValue];
-	if (conn.tcpPort == 0) {
-		conn.tcpPort = 3389;
-	}
-	
+	conn.tcpPort = (port==0) ? 3389 : port;
+
 	rdpdr_init(&conn);
 	
-	NSString *username = NSUserName();
+	const char *transformedPassword = (password) ? [password UTF8String] : "";
+
 	memcpy(&conn.username, [username UTF8String], [username length] + 1);
-	connected = rdp_connect(&conn, [name UTF8String], 
-							0x00000133, /* XXX */ 
+	connected = rdp_connect(&conn, [hostName UTF8String], 
+							logonFlags, 
 							[cDomain UTF8String], 
-							[cPassword UTF8String], 
+							transformedPassword, 
 							[cCommand UTF8String], 
 							[cDirectory UTF8String]);
 	if (!connected) {
-		// NSLog(@"failed to connect");
-		// [appController setStatus:[NSString stringWithFormat:@"Failed to connect to %@", name]];
-		return connected;
+		//NSLog(@"failed to connect");
+		//[appController setStatus:[NSString stringWithFormat:@"Couldn't connect to '%@'", displayName]];
+	} else {
+	
+		NSStream *is = conn.inputStream;
+		[is setDelegate:self];
+		[is scheduleInRunLoop:runLoop forMode:NSDefaultRunLoopMode];
+		
+		view = [[RDCView alloc] initWithFrame:NSMakeRect(0, 0, conn.screenWidth, conn.screenHeight)];
+		[view setController:self];
+		[view performSelectorOnMainThread:@selector(setNeedsDisplay:)
+						withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
+		conn.ui = view;
 	}
 	
-	NSStream *is = conn.inputStream;
-	[is setDelegate:self];
-	[is scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-	
-	view = [[RDCView alloc] initWithFrame:NSMakeRect(0, 0, conn.screenWidth, conn.screenHeight)];
-	[view setController:self];
-	[view setNeedsDisplay:YES];
-	conn.ui = view;
-	
-	// rdp_main_loop()
 	return connected;
 }
 
 - (int) disconnect {
-	NSStream *is = conn.inputStream;	
-	[is removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+	NSStream *is = conn.inputStream;
+	[is removeFromRunLoop:runLoop forMode:NSDefaultRunLoopMode];
 	tcp_disconnect(&conn);
-	connected = NO;
 	
+	connected = NO;
 	return connected;
 }
 
@@ -176,4 +167,6 @@
 - (rdcConnection)conn {
 	return &conn;
 }
+
+
 @end

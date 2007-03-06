@@ -34,7 +34,6 @@
 #import "proto.h"
 #import "rdesktop.h"
 
-
 @class RDInstance;
 @class RDCBitmap;
 
@@ -46,8 +45,10 @@
 	NSMutableDictionary *attributes;
 	NSRect clipRect;
 	NSColor *foregroundColor, *backgroundColor;
+	NSCursor *cursor;
 	int bitdepth;
 	int modifiers;
+	NSMutableArray *auxiliaryViews;
 }
 
 -(void)startUpdate;
@@ -78,4 +79,10 @@
 -(void)ellipse:(NSRect)r color:(NSColor *)c;
 -(void)setController:(RDInstance *)instance;
 -(void)setBitdepth:(int)depth;
+-(void)setCursor:(NSCursor *)cursor;
+-(void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
+-(void)addAuxiliaryView:(NSView *)view;
+-(NSView *)primaryAuxiliaryView;
+-(void)paintAuxiliaryViews; 
+
 @end

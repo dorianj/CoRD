@@ -18,45 +18,52 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class ConnectionsController;
+@class RDInstance;
+
+
 @interface AppController : NSObject
 {
 	IBOutlet NSWindow *mainWindow;
-    IBOutlet NSWindow *newServerSheet;
-	IBOutlet NSBox *box;
-	IBOutlet NSComboBox *host;
-	IBOutlet NSPopUpButton *screenResolution;
-	IBOutlet NSPopUpButton *colorDepth;
-	IBOutlet NSButton *forwardDisks;
-	IBOutlet NSPopUpButton *forwardAudio;
-	IBOutlet NSButton *cacheBitmaps;
-	IBOutlet NSButton *drawDesktop;
-	IBOutlet NSButton *windowDrags;
-	IBOutlet NSButton *windowAnimation;
-	IBOutlet NSButton *themes;
-	IBOutlet NSTextField *port;
+    IBOutlet NSWindow *serversWindow;
 	IBOutlet NSTabView *tabView;
-	IBOutlet NSArrayController *arrayController;
-	IBOutlet NSButton *disclosure;
+	IBOutlet ConnectionsController *serversManager;
+	IBOutlet NSMenuItem *previewToggleMenu;
+	IBOutlet NSMenu *quickConnectMenu;
 	IBOutlet NSTextField *errorField;
-	IBOutlet NSProgressIndicator *progress;
 	
 	// Toolbar stuff
 	NSToolbar *toolbar;
-	NSMutableDictionary *toolbarItems;
-	IBOutlet NSButton *openButton;
-	IBOutlet NSButton *disconnectButton;
-	IBOutlet NSPopUpButton *serverPopup;
+	NSMutableDictionary *staticToolbarItems;
+	NSMutableArray *currentConnections;
+	
+	NSUserDefaults *userDefaults;
+	BOOL previewsEnabled;
 }
 
 - (IBAction)disconnect:(id)sender;
-- (IBAction)changeSelection:(id)sender;
-- (IBAction)newServer:(id)sender;
-- (IBAction)hideOptions:(id)sender;
-- (IBAction)connectSheet:(id)sender;
-- (IBAction)cancelSheet:(id)sender;
+- (void)changeSelection:(id)sender;
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
+- (IBAction)showServerManager:(id)sender;
 - (void)removeItem:(id)sender;
 - (void)resizeToMatchSelection;
 - (void)setStatus:(NSString *)status;
+- (void)connectRDInstance:(id)instance;
+- (void)connectAsync:(id)instance;
+- (void)completeConnection:(id)arg;
+- (id)selectedConnection;
+- (int)selectedConnectionIndex;
+- (id)connectionForLabel:(NSString *)label;
+- (int)connectionIndexForLabel:(NSString *)label;
+- (IBAction)togglePreviews:(id)sender;
+- (IBAction)showQuickConnect:(id)sender;
+- (void)setPreviewsVisible:(BOOL)visible;
+- (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
 @end
+
+
+/* Stubs */
+NSToolbarItem * createStaticToolbarItem(NSView *view, NSString *name,
+		NSString *tooltip, SEL action);
+int wrap_array_index(int start, int count, signed int modifier);

@@ -47,7 +47,11 @@
 		[NSBezierPath fillRect:frame];
 		[back unlockFocus];
 		
-		attributes = [[NSMutableDictionary alloc] init];
+		cursor = [[NSCursor arrowCursor] retain];
+		[self addCursorRect:[self visibleRect] cursor:cursor];
+		
+		auxiliaryViews = [[NSMutableArray alloc] init];
+		
 		[attributes setValue:[NSColor whiteColor] forKey:NSForegroundColorAttributeName];
     }
     return self;
@@ -67,6 +71,15 @@
 }
 
 - (void)drawRect:(NSRect)rect {
+<<<<<<< .mine
+	int nRects, r;
+	const NSRect* rects;
+	[self getRectsBeingDrawn:&rects count:&nRects];
+	for (r = 0; r < nRects; r++)
+		[back drawInRect:rects[r] fromRect:rects[r] operation:NSCompositeCopy fraction:1.0f];
+		
+	//[back drawInRect:rect fromRect:rect operation:NSCompositeCopy fraction:1.0];
+=======
 	int nRects;
 	int r;
 	const NSRect *rects;
@@ -74,6 +87,7 @@
 	for (r = 0; r < nRects; r++) {
 		[back drawInRect:rects[r] fromRect:rects[r] operation:NSCompositeCopy fraction:1.0f];
 	}
+>>>>>>> .r85
 }
 
 -(BOOL)isFlipped {
@@ -84,9 +98,21 @@
 	return YES;
 }
 
+-(void)resetCursorRects {
+    [self discardCursorRects];
+	NSRect r = [self visibleRect];
+    [self addCursorRect:r cursor:cursor]; 
+}
+
+-(BOOL)wantsDefaultClipping {
+	return NO;  // we copy backing store into exact update rects
+}
+
 #pragma mark NSObject functions
 
 -(void)dealloc {
+	[cursor release];
+	[auxiliaryViews release];
 	[super dealloc];
 }
 
@@ -107,7 +133,8 @@
 	[back unlockFocus];
 }
 
--(void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c  winding:(NSWindingRule)winding {
+-(void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c
+		winding:(NSWindingRule)winding {
 	NSBezierPath *bp = [NSBezierPath bezierPath];
 	int i;
 	
@@ -266,6 +293,7 @@
 			operation:NSCompositeSourceOver
 			 fraction:1.0];
 	// [back unlockFocus];
+	printf("Drew a glyph of size (%f,%f). %d\n", r.size.width, r.size.height, rand()%2);
 }
 
 -(void)setClip:(NSRect)r {
@@ -409,15 +437,6 @@
 	}
 }
 
-/* 
--(void)otherMouseDown:(NSEvent *)ev {
-	NSLog(@"other");
-}
-
--(void)otherMouseUp:(NSEvent *)ev {
-	NSLog(@"other");
-} */
-
 -(BOOL)checkMouseInBounds:(NSEvent *)ev {
 	NSRect frame = [self frame];
 	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
@@ -437,6 +456,12 @@
 	if ([self checkMouseInBounds:ev]) {
 		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_MOVE param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
 	}
+}
+-(void)mouseEntered:(NSEvent *)ev {
+	NSLog(@"Mouse entered!");
+}
+-(void)mouseExited:(NSEvent *)ev {
+	NSLog(@"Mouse exited");
 }
 
 #pragma mark Accessor Methods
@@ -491,22 +516,21 @@
 	CGContextSetBlendMode(context, kCGBlendModeDifference);
 	CGContextSetRGBFillColor (context, 1.0, 1.0, 1.0, 1.0);
 	CGContextFillRect (context, CGRectMake(r.origin.x, r.origin.y, r.size.width, r.size.height));
+	CGContextFlush(context);
 	CGContextRestoreGState (context);
 	[back unlockFocus];
 }
 
 -(int)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b {
-	int t;
-	
 	if (bitdepth == 8) {
-		t = [[colorMap objectAtIndex:col] intValue];
+		int t = [[colorMap objectAtIndex:col] intValue];
 		*r = (t >> 16) & 0xff;
 		*g = (t >> 8)  & 0xff;
 		*b =  t        & 0xff;
 	} else if (bitdepth == 16) {
 		*r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
 		*g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
-		*b =((col << 3) & 0xf8) | ((col >> 2) & 0x7);
+		*b = ((col << 3) & 0xf8) | ((col >> 2) & 0x7);
 	} else if (bitdepth == 24) {
 		*r = (col >> 16) & 0xff;
 		*g = (col >> 8)  & 0xff;
@@ -521,4 +545,53 @@
 -(void)setBitdepth:(int)depth {
 	bitdepth = depth;
 }
+
+-(void)setCursor:(NSCursor *)cur {
+	[cur retain];
+	[cursor release];
+	cursor = cur;
+	
+	[[self window] invalidateCursorRectsForView:self];	
+	// this is a hack because the above call isn't reliable...
+	[[self window] resetCursorRects];
+}
+
+-(void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue {
+	[self setNeedsDisplayInRect:[rectValue rectValue]];
+}
+
+
+#pragma mark Auxiliary view functions
+-(void)addAuxiliaryView:(NSView *)view {
+	[auxiliaryViews addObject:view];
+}
+-(NSView *)primaryAuxiliaryView {
+	return [auxiliaryViews objectAtIndex:0];
+}
+-(void)paintAuxiliaryViews {
+	NSImage *img;
+	NSRect bounds, thumbSize;
+	bounds.origin = NSMakePoint(0.0,0.0);
+	thumbSize.origin = NSMakePoint(0.0,0.0);
+	
+	NSEnumerator *enumerator = [auxiliaryViews objectEnumerator];
+	id aView;
+	while ( (aView = [enumerator nextObject]) ) {
+		if ([aView tag] != 0) {
+				img = [aView image];
+				[img lockFocus];
+				bounds.size = [back size];
+				thumbSize.size = [aView frame].size;
+				// using High *kills* performance on all but fast machines,
+				//	and doesn't make it look a ton better
+				[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationLow];
+				[back drawInRect:thumbSize fromRect:bounds operation:NSCompositeCopy fraction:1.0];			
+				[img unlockFocus];
+				/*[aView performSelectorOnMainThread:@selector(setNeedsDisplay:)
+						withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];*/
+		}
+	}
+}
+
+
 @end

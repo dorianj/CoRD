@@ -65,6 +65,9 @@
     GXset				15 1
 */
 
+void schedule_display(NSView *v);
+void schedule_display_in_rect(NSView *v, NSRect r);
+
 static RDCBitmap *nullCursor = nil;
 
 int ui_select(int socket) {
@@ -127,9 +130,10 @@ void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, H
 		/* Treat opcode 0 just like copy */
 		CHECKOPCODE(opcode);
 	}
-	
 	[v memblt:r from:[bmp image] withOrigin:p];
-	[v setNeedsDisplayInRect:r];
+	schedule_display_in_rect(v, r);
+	
+	[v paintAuxiliaryViews];
 }
 
 void ui_destroy_bitmap(HBITMAP bmp) {
@@ -144,8 +148,7 @@ void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour) {
 	NSRect r = NSMakeRect(x , y, cx, cy);
 	[v setForeground:[v nscolorForRDCColor:colour]];
 	[v fillRect:r];
-	[v setNeedsDisplayInRect:r];
-	
+	schedule_display_in_rect(v, r);
 }
 
 void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, 
@@ -165,8 +168,7 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty,
 	/* XXX better rectangle finding for setneedsdisplay */
 	[v setForeground:[v nscolorForRDCColor:pen->colour]];
 	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
-	[v setNeedsDisplay:YES];
-	
+	schedule_display(v);
 }
 
 #pragma mark Desktop functions
@@ -178,8 +180,9 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 
 void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
 	RDCView *v = conn->ui;
-	[v restoreDesktop:NSMakeRect(x, y, cx, cy)];
-	[v setNeedsDisplayInRect:NSMakeRect(x, y, cx, cy)];
+	NSRect r = NSMakeRect(x, y, cx, cy);
+	[v restoreDesktop:r];
+	schedule_display_in_rect(v, r);
 }
 
 #pragma mark Text functions
@@ -202,7 +205,7 @@ void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *gly
 	RDCView *v = conn->ui;
 	NSRect r = NSMakeRect(x, y, w, h);
 	[v drawGlyph:glyph at:r fg:fgcolor bg:bgcolor];
-	[v setNeedsDisplayInRect:r];
+	schedule_display_in_rect(v, r);
 }
 
 #define DO_GLYPH(ttext,idx) \
@@ -258,11 +261,11 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 	if (boxcx > 1) {
 			box = NSMakeRect(boxx, boxy, boxcx, boxcy);
 			[v fillRect:box];
-			[v setNeedsDisplayInRect:box];
+			schedule_display_in_rect(v, box);
 	} else if (mixmode == MIX_OPAQUE) {
 			box = NSMakeRect(clipx, clipy, clipcx, clipcy);
 			[v fillRect:box];
-			[v setNeedsDisplayInRect:box];
+			schedule_display_in_rect(v, box);
 	}
 	
 	[v setForeground:[v nscolorForRDCColor:fgcolour]];
@@ -354,12 +357,12 @@ void ui_set_null_cursor(rdcConnection conn) {
 		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL);
 	}
 	
-	ui_set_cursor(nullCursor);
+	ui_set_cursor(conn, nullCursor);
 }
 
-void ui_set_cursor(HCURSOR cursor) {
+void ui_set_cursor(rdcConnection conn, HCURSOR cursor) {
 	id c = (RDCBitmap *)cursor;
-	[[c cursor] set];
+	[(RDCView *)conn->ui setCursor:[c cursor]];
 }
 
 void ui_destroy_cursor(HCURSOR cursor) {
@@ -437,7 +440,7 @@ void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy
 	
 	CHECKOPCODE(opcode);
 	[v screenBlit:src to:dest];
-	[v setNeedsDisplayInRect:NSMakeRect(x, y, cx, cy)];
+	schedule_display_in_rect(v, NSMakeRect(x, y, cx, cy));
 }
 
 
@@ -447,31 +450,28 @@ void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy) 
 	RDCView *v = conn->ui;
 	NSRect r = NSMakeRect(x, y, cx, cy);
 	/* XXX */
-	if (opcode == 5) {
-		[v swapRect:r];
-		[v setNeedsDisplayInRect:r];
-		return;
+	switch (opcode) {
+		case 0:
+			[v fillRect:r];
+			break;
+		case 5:
+			[v swapRect:r];
+			break;
+		case 15:
+			[v fillRect:r withColor:[NSColor whiteColor]];
+			break;
+		default:
+			CHECKOPCODE(opcode);
 	}
 	
-	if (opcode == 15) {
-		[v fillRect:r withColor:[NSColor whiteColor]];
-		[v setNeedsDisplayInRect:r];
-		return;
-	}
-	
-	if (opcode != 0) {
-		CHECKOPCODE(opcode);
-	}
-	
-	[v fillRect:r];
-	[v setNeedsDisplayInRect:r];
+	schedule_display_in_rect(v, r);
 }
 
 void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, PEN *pen) {
 	RDCView *v = conn->ui;
 	CHECKOPCODE(opcode);
 	[v polyline:points npoints:npoints color:[v nscolorForRDCColor:pen->colour] width:pen->width];
-	[v setNeedsDisplay:YES];
+	schedule_display(v);
 }
 
 void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH *brush, int bgcolour, int fgcolour) {
@@ -507,8 +507,7 @@ void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point,
 			UNIMPL;
 			break;
 	}
-	
-	[v setNeedsDisplay:YES];
+	schedule_display(v);
 }
 
 void ui_move_pointer(int x, int y) {
@@ -536,7 +535,7 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 	
 	if(opcode == 6) {
 		[v swapRect:dest];
-		[v setNeedsDisplayInRect:dest];
+		schedule_display_in_rect(v, dest);
 		return;
 	}
 	
@@ -596,7 +595,7 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 			unimpl("brush %d\n", brush->style);
 			break;
 	}
-	[v setNeedsDisplayInRect:dest];
+	schedule_display_in_rect(v, dest);
 }
 
 
@@ -841,8 +840,7 @@ rd_lock_file(int fd, int start, int len)
 }
 
 void fillDefaultConnection(rdcConnection conn) {
-	NSString *host = [[NSProcessInfo processInfo] hostName];
-	
+	NSString *host = @"localhost";
 	conn->tcpPort		= TCP_PORT_RDP;
 	conn->screenWidth	= 1024;
 	conn->screenHeight	= 768;
@@ -943,10 +941,9 @@ void ui_ellipse(rdcConnection conn,
 			break;
 		default:
 			UNIMPL;
-			break;
+			return;
 	}
-	
-	[v setNeedsDisplay:YES];
+	schedule_display_in_rect(v, r);
 }
 
 void save_licence(unsigned char *data, int length) {
@@ -973,3 +970,22 @@ void ui_clip_request_data(uint32 format) {
 void ui_clip_sync(void) {
 	UNIMPL;
 }
+
+#pragma mark Internal functions
+
+// Functions to comply with documentation's desire for all setNeedsDisplay
+//	calls to be made in the main thread
+void schedule_display(NSView *v) {
+	[v performSelectorOnMainThread:@selector(setNeedsDisplay:)
+			withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
+}
+
+void schedule_display_in_rect(NSView *v, NSRect r) {
+	[v performSelectorOnMainThread:@selector(setNeedsDisplayInRectAsValue:)
+			withObject:[NSValue valueWithRect:r] waitUntilDone:NO];
+}
+
+
+
+
+

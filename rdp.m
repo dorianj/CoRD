@@ -883,7 +883,7 @@ process_colour_pointer_pdu(rdcConnection conn, STREAM s)
 	in_uint8p(s, data, datalen);
 	in_uint8p(s, mask, masklen);
 	cursor = ui_create_cursor(conn, x, y, width, height, mask, data);
-	ui_set_cursor(cursor);
+	ui_set_cursor(conn, cursor);
 	cache_put_cursor(conn, cache_idx, cursor);
 }
 
@@ -894,7 +894,7 @@ process_cached_pointer_pdu(rdcConnection conn, STREAM s)
 	uint16 cache_idx;
 
 	in_uint16_le(s, cache_idx);
-	ui_set_cursor(cache_get_cursor(conn, cache_idx));
+	ui_set_cursor(conn, cache_get_cursor(conn, cache_idx));
 }
 
 /* Process a system pointer PDU */

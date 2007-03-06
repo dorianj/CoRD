@@ -1,10 +1,4 @@
-//
-//  RDInstance.h
-//  Remote Desktop
-//
-//  Created by Craig Dooley on 8/28/06.
-
-//  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+//  Copyright (c) 2006 Dorian Johnson <arcadiclife@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -23,43 +17,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-#import <Cocoa/Cocoa.h>
-#import "AppController.h"
-#import "RDCView.h"
 
-@interface RDInstance : NSObject {
-	RDCView *view;
-	NSString *hostName; 
-	NSString *username; 
-	NSString *password; 
-	NSString *displayName; 
-	NSString *uniqueLabel;
-	AppController *appController;
-	NSRunLoop *runLoop;
-	BOOL forwardDisks; 
-	BOOL cacheBitmaps; 
-	BOOL drawDesktop; 
-	BOOL windowDrags; 
-	BOOL windowAnimation; 
-	BOOL themes; 
-	int forwardAudio; 
-	int screenDepth;
-	int screenWidth;
-	int screenHeight;
-	int port;
-	
-	uint32		cFlags;
-	NSString	*cDomain;
-	NSString	*cCommand;
-	NSString	*cDirectory;
-	BOOL connected;
-	struct rdcConn conn;
-	
-	NSMutableArray *auxiliaryViews;
-}
-
-- (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
-- (rdcConnection)conn;
-- (int) connect;
-- (int) disconnect;
-@end
+const char *keychain_get_password(const char *server, const char *username);
+void keychain_save_password(const char *server, const char *username, const char *password);
+void keychain_clear_password(const char *server, const char *username);

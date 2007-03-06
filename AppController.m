@@ -19,6 +19,9 @@
 
 #import "AppController.h"
 #import "RDInstance.h"
+#import "RDPFile.h"
+#import "ActiveConnection.h"
+#import "Definitions.h"
 
 @implementation AppController
 
@@ -26,78 +29,69 @@
 - (id)init {
 	self = [super init];
 	if (self) {
-		NSMutableDictionary *defaultValues = [NSMutableDictionary dictionary];
-		[defaultValues setObject:@"1024x768" forKey:@"defaultResolution"];
-		[defaultValues setObject:@"Thousands" forKey:@"defaultColorDepth"];
-	
-		[[NSUserDefaults standardUserDefaults] registerDefaults:defaultValues];
+		userDefaults = [[NSUserDefaults standardUserDefaults] retain];
+		currentConnections = [[NSMutableArray alloc] init];
 	}
 	
 	return self;
 }
+- (void) dealloc {
+	[userDefaults release];
+	[currentConnections release];
+	[super dealloc];
+}
 
 - (void)awakeFromNib {
 	[mainWindow setAcceptsMouseMovedEvents:YES];
+
+	staticToolbarItems = [[NSMutableDictionary alloc] init];
+	[staticToolbarItems
+		setObject:createStaticToolbarItem(nil, @"Connect", 
+			@"Quickly connect to a computer", @selector(showQuickConnect:))
+		forKey:@"Connect"];
+	[staticToolbarItems 
+		setObject: createStaticToolbarItem(nil, @"Computers",
+			@"Connect to a computer", @selector(showServerManager:))
+		forKey:@"Computers"];
+	[staticToolbarItems 
+		setObject:createStaticToolbarItem(nil, @"Disconnect",
+			@"Close the selected connection", @selector(disconnect:))
+		forKey:@"Disconnect"];
 	
-	NSToolbarItem *item;
-	NSString *name = @"New Server";
-	item=[[NSToolbarItem alloc] initWithItemIdentifier:name];
+	// however many extra objects there are, add them here. They won't be used,
+	// but will increase the count of staticToolbarItems
+	[staticToolbarItems setObject:NSToolbarFlexibleSpaceItemIdentifier forKey:@"spacer1"];
 	
-	[item setPaletteLabel:name];
-	[item setLabel:name];
-	[item setToolTip:@"Connect to a new server"];
-	[item setView:openButton];
-	[item setMinSize:[openButton bounds].size];
-	[item setMaxSize:[openButton bounds].size];
-	
-	toolbarItems = [[[NSMutableDictionary alloc] init] retain];
-	[toolbarItems setObject:item forKey:name];
-	[item release];
-	
-	name = @"Disconnect";
-	item=[[NSToolbarItem alloc] initWithItemIdentifier:name];
-	
-	[item setPaletteLabel:name];
-	[item setLabel:name];
-	[item setToolTip:@"Disconnect from the current server"];
-	[item setView:disconnectButton];
-	[item setMinSize:[disconnectButton bounds].size];
-	[item setMaxSize:[disconnectButton bounds].size];
-	
-	[toolbarItems setObject:item forKey:name];
-	[item release];
-	
-	name = @"Servers";
-	item=[[NSToolbarItem alloc] initWithItemIdentifier:name];
-	
-	[item setPaletteLabel:name];
-	[item setLabel:name];
-	[item setToolTip:@"Connected Servers"];
-	[item setView:serverPopup];
-	[item setMinSize:[serverPopup bounds].size];
-	[item setMaxSize:[serverPopup bounds].size];
-	
-	[toolbarItems setObject:item forKey:name];
-	[item release];
-	
-	toolbar = [[NSToolbar alloc] initWithIdentifier:@"Toolbar"];
+	toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
 	[toolbar setDelegate:self];
-	[toolbar setDisplayMode:NSToolbarDisplayModeIconOnly];
+	[toolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
+	[toolbar setAutosavesConfiguration:NO];
+	[toolbar setSelectedItemIdentifier:@"Computers"];
 	[mainWindow setToolbar:toolbar];
+
+
+	if (![userDefaults objectForKey:@"LivePreviews"])
+		[userDefaults registerDefaults:[NSDictionary dictionaryWithObject:@"YES" forKey:@"LivePreviews"]];
+	previewsEnabled = [userDefaults boolForKey:@"LivePreviews"];
+	[self setPreviewsVisible:previewsEnabled];
 	
-	[screenResolution selectItemWithTitle:[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultResolution"]];	
-	[colorDepth selectItemWithTitle:[[NSUserDefaults standardUserDefaults] valueForKey:@"defaultColorDepth"]];
-	
-	[progress setUsesThreadedAnimation:YES];
 }
 
 #pragma mark Toolbar methods
 
 - (NSToolbarItem *)toolbar:(NSToolbar *)toolbar 
 	 itemForItemIdentifier:(NSString *)itemIdentifier 
- willBeInsertedIntoToolbar:(BOOL)flag {
-	return [toolbarItems objectForKey:itemIdentifier];
+	willBeInsertedIntoToolbar:(BOOL)flag
+{
+	id staticItem = [staticToolbarItems objectForKey:itemIdentifier];
+	if (staticItem) return staticItem;
 	
+	id active = [self connectionForLabel:itemIdentifier];
+	if (active != nil)
+		return [active toolbarRepresentation];
+	
+	NSLog(@"AppController: Toolbar requested an unavailable item, '%@', currentConnections:\n%@", itemIdentifier, currentConnections);
+	return nil;
 }
 
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)tb {
@@ -105,195 +99,179 @@
 }
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)tb {
-	NSMutableArray *ret = [NSMutableArray array];
-	[ret addObject:@"New Server"];
-	[ret addObject:@"Disconnect"];
-	[ret addObject:NSToolbarFlexibleSpaceItemIdentifier];
-	[ret addObject:@"Servers"];
-	
-	return ret;
+	NSArray *staticItems = [NSArray arrayWithObjects:@"Connect", @"Computers", @"Disconnect",
+			NSToolbarFlexibleSpaceItemIdentifier, nil];
+	return staticItems;
+}
+- (NSArray *)toolbarSelectableItemIdentifiers: (NSToolbar *)toolbar;
+{
+	NSMutableArray *selectableItems = [NSMutableArray arrayWithCapacity:10];
+	@synchronized(currentConnections) 
+	{
+		NSEnumerator *enumerator = [currentConnections objectEnumerator];
+		id obj;
+		while ( (obj = [enumerator nextObject]) )
+			[selectableItems addObject:[obj label]];
+	}
+	return selectableItems;
 }
 
-- (int)count {
-	return [toolbarItems count];
+- (int)count
+{
+	return [staticToolbarItems count];
+}
+
+-(BOOL)validateToolbarItem:(NSToolbarItem *)toolbarItem
+{
+	// Currently, only validating the quickconnect item
+	NSString *itemId = [toolbarItem itemIdentifier];
+	if ([itemId isEqual:@"Connect"])
+	{
+		return [quickConnectMenu numberOfItems] > 0;		
+	} // todo: validate the 'disconnect' button
+	else
+		return YES;
+}
+
+
+#pragma mark NSApplication delegate methods
+- (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
+{
+	[self application:sender openFiles:[NSArray arrayWithObject:filename]];
+	return YES;
+}
+
+- (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames
+{
+	NSEnumerator *enumerator = [filenames objectEnumerator];
+	id file;
+	while ( (file = [enumerator nextObject]) )
+	{
+		RDPFile *details = [RDPFile rdpFromFile:file];
+		[self connectRDInstance:[serversManager rdInstanceFromRDPFile:details]];
+	}
+}
+
+- (BOOL)applicationShouldOpenUntitledFile:(NSApplication *)theApplication
+{
+    return NO;
 }
 
 #pragma mark Action Methods
 
-- (IBAction)newServer:(id)sender {
-	[errorField setStringValue:@""];
-	[NSApp beginSheet:newServerSheet 
-	   modalForWindow:mainWindow
-		modalDelegate:self
-	   didEndSelector:@selector(didEndSheet:returnCode:contextInfo:) 
-		  contextInfo:NULL];
-}
-
-- (IBAction)hideOptions:(id)sender {
-	NSRect windowFrame, boxFrame;
-
-	boxFrame = [box frame];
-	windowFrame = [newServerSheet frame];
-
-	if (![sender state]) {
-		[box setHidden:YES];
-	}
-	
-	if ([sender state]) {
-		windowFrame.size.height += boxFrame.size.height + 5.0;
-		windowFrame.origin.y -= boxFrame.size.height + 5.0;
-	} else {
-		windowFrame.size.height -= boxFrame.size.height + 5.0;
-		windowFrame.origin.y += boxFrame.size.height + 5.0;
-	}
-	
-	[newServerSheet setFrame:windowFrame display:YES animate:YES];
-	
-	if ([sender state]) {
-		[box setHidden:NO];
-	}
-}
-
-- (IBAction)connectSheet:(id)sender {
-	if ([[host stringValue] compare:@""] == 0) {
-		[NSApp endSheet:newServerSheet];
-		return;
-	}
-	
-	RDInstance *instance = [[RDInstance alloc] init];
-	[instance setValue:[host stringValue] forKey:@"name"];
-	[instance setValue:[host stringValue] forKey:@"displayName"];
-	[instance setValue:[port stringValue] forKey:@"port"];
-	[instance setValue:[screenResolution titleOfSelectedItem] forKey:@"screenResolution"];
-	[instance setValue:[colorDepth titleOfSelectedItem] forKey:@"colorDepth"];
-	[instance setValue:[NSNumber numberWithInt:[forwardDisks intValue]] forKey:@"forwardDisks"];
-	[instance setValue:[forwardAudio titleOfSelectedItem] forKey:@"forwardAudio"];
-	[instance setValue:[NSNumber numberWithInt:[cacheBitmaps intValue]] forKey:@"cacheBitmaps"];
-	[instance setValue:[NSNumber numberWithInt:[drawDesktop intValue]] forKey:@"drawDesktop"];
-	[instance setValue:[NSNumber numberWithInt:[windowDrags intValue]] forKey:@"windowDrags"];
-	[instance setValue:[NSNumber numberWithInt:[windowAnimation intValue]] forKey:@"windowAnimation"];
-	[instance setValue:[NSNumber numberWithInt:[themes intValue]] forKey:@"themes"];
-	[instance setValue:self forKey:@"appController"];
-	
-	[progress startAnimation:self];
-	if (![instance connect]) {
-		[instance release];
-		[progress stopAnimation:self];
-		return;
-	}
-	[progress stopAnimation:self];
-	
-	NSScrollView *scroll = [[NSScrollView alloc] initWithFrame:[tabView frame]];
-	[scroll setDocumentView:[instance valueForKey:@"view"]];
-	[scroll setHasVerticalScroller:YES];
-	[scroll setHasHorizontalScroller:YES];
-	[scroll setAutohidesScrollers:YES];
-	[scroll setBorderType:NSNoBorder];
-
-	
-	NSTabViewItem *item = [[NSTabViewItem alloc] initWithIdentifier:[instance valueForKey:@"view"]];	
-	[item setView:scroll];
-	[item setLabel:[instance valueForKey:@"name"]];
-	[tabView addTabViewItem:item];
-	[mainWindow makeFirstResponder:[instance valueForKey:@"view"]];
-	
-	[arrayController addObject:instance];
-	[instance release];
-	[serverPopup selectItemAtIndex:[arrayController selectionIndex]];
-	
-	[self resizeToMatchSelection];
-	
-	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	[defaults setObject:[screenResolution titleOfSelectedItem] forKey:@"defaultResolution"];
-	[defaults setObject:[colorDepth titleOfSelectedItem] forKey:@"defaultColorDepth"];
-	
-	NSMutableArray *recent = [NSMutableArray arrayWithArray:[[NSUserDefaults standardUserDefaults] arrayForKey:@"RecentServers"]];
-	if (![recent containsObject:[host stringValue]]) {
-		[recent addObject:[host stringValue]];
-		[defaults setObject:recent forKey:@"RecentServers"];
-		[defaults synchronize];
-	}
-	
-	[NSApp endSheet:newServerSheet];
-}
-
-- (IBAction)cancelSheet:(id)sender {
-	[NSApp endSheet:newServerSheet];
+- (IBAction)showServerManager:(id)sender {
+	[serversWindow makeKeyAndOrderFront:self];
+	[toolbar validateVisibleItems];
 }
 
 - (IBAction)disconnect:(id)sender {
-	int index = [serverPopup indexOfSelectedItem];
-	if (index == -1) {
-		return;
-	}
-	
-	RDInstance *instance = [[arrayController arrangedObjects] objectAtIndex:index];
-	if (instance) {
-		[self removeItem:instance];
-		[instance disconnect];
+	ActiveConnection *current = [self selectedConnection];
+	if ([current rd]) {
+		[[current rd] disconnect];
+		[self removeItem:current];
 	}
 }
 
-- (IBAction)changeSelection:(id)sender {
-	[arrayController setSelectionIndex:[sender indexOfSelectedItem]];
+- (void)changeSelection:(id)sender {
+	NSString *label;
+	if ([sender isKindOfClass:[ActiveConnection class]])
+		label = [sender label];
+	else if ([sender isKindOfClass:[NSMenuItem class]])
+		label = [sender title];
+	else if ([sender isKindOfClass:[NSButton class]])
+		label = [sender title];
+	
+	[toolbar setSelectedItemIdentifier:label];
+	[tabView selectTabViewItemWithIdentifier:label];
 	[self resizeToMatchSelection];
+}
+
+- (IBAction)togglePreviews:(id)sender
+{
+	previewsEnabled = !previewsEnabled;
+	[self setPreviewsVisible:previewsEnabled];
+	[userDefaults setBool:previewsEnabled forKey:@"LivePreviews"];
+}
+
+- (IBAction)showQuickConnect:(id)sender
+{
+	[NSMenu popUpContextMenu:quickConnectMenu
+				   withEvent:[[NSApplication sharedApplication] currentEvent]
+					 forView:[sender view]];
 }
 
 #pragma mark Other methods
 
-- (void)didEndSheet:(NSWindow *)sheet returnCode:(int)returnCode contextInfo:(void *)contextInfo {
-	[sheet orderOut:self];
-}
-
 - (void)resizeToMatchSelection {
-	id selection = [arrayController selection];
+	id selection = [self selectedConnection];
 	NSSize newContentSize;
 	NSString *serverString;
-	
-	if ([serverPopup indexOfSelectedItem] != -1) {
-		newContentSize = [[selection valueForKey:@"view"] frame].size;
-		serverString = [NSString stringWithFormat:@" (%@)", [selection valueForKey:@"displayName"]];
+	if (selection) {
+		newContentSize = [[[selection rd] valueForKey:@"view"] frame].size;
+		serverString = [selection label];
 	} else {
 		newContentSize = NSMakeSize(640, 480);
-		serverString = @"";
+		serverString = @"CoRD";
 	}
 	
 	NSRect windowFrame = [mainWindow frame];
 	float toolbarHeight = windowFrame.size.height - [[mainWindow contentView] frame].size.height;
 	
 	[mainWindow setContentMaxSize:newContentSize];	
-	[mainWindow setFrame:NSMakeRect(windowFrame.origin.x, windowFrame.origin.y + windowFrame.size.height - newContentSize.height - toolbarHeight, 
-								newContentSize.width, newContentSize.height + toolbarHeight)
-				 display:YES
-				 animate:YES];
+	[mainWindow setFrame:NSMakeRect(windowFrame.origin.x, windowFrame.origin.y +
+								windowFrame.size.height-newContentSize.height-toolbarHeight, 
+								newContentSize.width, newContentSize.height+toolbarHeight)
+				display:YES
+				animate:YES];
 	
+<<<<<<< .mine
+	[mainWindow setTitle:serverString];
+=======
 	[mainWindow setTitle:[NSString stringWithFormat:@"CoRD%@", serverString]];
+>>>>>>> .r85
 }
 
-- (void)removeItem:(id)sender {
-	[arrayController removeObject:sender];
+- (void)removeItem:(id)sender
+{
 	
-	int index = [arrayController selectionIndex];
-	[serverPopup selectItemAtIndex:index];
-	
-	NSArray *items = [tabView tabViewItems];
-	NSEnumerator *e = [items objectEnumerator];
-	NSTabViewItem *tabViewItem;
-		
-	while ((tabViewItem = [e nextObject])) {
-		if ([tabViewItem identifier] == [sender valueForKey:@"view"]) {
-			break;
+	ActiveConnection *ac = nil;
+	if ([sender isKindOfClass:[ActiveConnection class]]) {
+		ac = sender;
+	} else if ([sender isKindOfClass:[RDInstance class]]) {
+		// linear search current connections for the wrapper to this connection.. could be replaced
+		//	with a much easier solution, but I forgot it..
+		NSEnumerator * enumerator = [currentConnections objectEnumerator];
+		id potentialConnection;
+		@synchronized(currentConnections) 
+		{
+			while ( (potentialConnection = [enumerator nextObject]) )
+			{
+				if ([potentialConnection rd] == (RDInstance *)sender) {
+					ac = potentialConnection;
+					break;
+				}
+			}
 		}
 	}
 	
-	if (tabViewItem == nil) {
-		NSLog(@"No match found");
-		return;
-	}
+	if (!ac) return;
+	NSString *label = [ac label];
 	
-	[tabView removeTabViewItem:tabViewItem];
-	[tabViewItem release];
-		  
+	[self selectNext:self];
+	
+	NSArray *toolbarItems = [toolbar items];
+	int i;
+	for (i = 0; i < [toolbarItems count]; i++)
+	{
+		if ([[[toolbarItems objectAtIndex:i] itemIdentifier] isEqual:label])
+			[toolbar removeItemAtIndex:i];
+	}
+
+	[tabView removeTabViewItem:[ac tabViewRepresentation]];
+	[ac disconnect];
+	@synchronized(currentConnections) {
+		[currentConnections removeObject:ac];
+	}
 	[self resizeToMatchSelection];
 }
 
@@ -302,17 +280,25 @@
 	return NO;
 }
 
+
 - (IBAction)selectNext:(id) sender {
-	int index = [serverPopup indexOfSelectedItem];
-	[arrayController setSelectionIndex:index + 1];
-	[serverPopup selectItemAtIndex:index + 1];
+	int index = [self selectedConnectionIndex];
+	if (index < 0) return;
+	
+	@synchronized(currentConnections) {
+		int newIndex = wrap_array_index(index, [currentConnections count], 1);
+		[self changeSelection:[currentConnections objectAtIndex:newIndex]];
+	}
 	[self resizeToMatchSelection];
 }
 
 - (IBAction)selectPrevious:(id) sender {
-	int index = [serverPopup indexOfSelectedItem];
-	[arrayController setSelectionIndex:index - 1];
-	[serverPopup selectItemAtIndex:index - 1];
+	int index = [self selectedConnectionIndex];
+	if (index < 0) return;
+	@synchronized(currentConnections) {
+		int newIndex = wrap_array_index(index, [currentConnections count], -1);
+		[self changeSelection:[currentConnections objectAtIndex:newIndex]];
+	}
 	[self resizeToMatchSelection];
 }
 
@@ -320,4 +306,154 @@
 	[errorField setStringValue:status];
 }
 
+- (void)connectRDInstance:(id)instance
+{
+	[instance retain];
+	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self
+			withObject:instance];
+}
+
+- (void)connectAsync:(id)instance
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	[instance setValue:self forKey:@"appController"];
+	
+	// segmented threading code:
+	[instance setValue:[NSRunLoop currentRunLoop] forKey:@"runLoop"];
+	[serversManager setConnecting:YES to:[instance valueForKey:@"displayName"]];
+	BOOL connected = [instance connect];
+	[serversManager setConnecting:NO to:nil];
+	
+	if (connected) {
+		// Find a label that doesn't already exist
+		int i=0;
+		NSString *displayName = [instance valueForKey:@"displayName"],
+				 *label = displayName;
+		while ([self connectionForLabel:label] != nil && ++i<100)
+			label = [displayName stringByAppendingString:[NSString stringWithFormat:@" %d", i]];
+		[instance setValue:label forKey:@"displayName"];
+
+		NSScrollView *scroll = [[[NSScrollView alloc] initWithFrame:[tabView frame]] autorelease];
+		ActiveConnection *ac = [[ActiveConnection alloc] initFromRDInstance:instance scroll:scroll
+					preview:previewsEnabled target:self];
+		
+		@synchronized(currentConnections) {
+			[currentConnections addObject:ac];
+		}
+		
+		[ac release];
+		[instance release];
+		
+		[serversWindow close];
+		[self performSelectorOnMainThread:@selector(completeConnection:)
+					withObject:ac waitUntilDone:NO];
+		[pool release];
+		
+		[ac startInputRunLoop];
+		
+		pool = [[NSAutoreleasePool alloc] init];
+	} else {
+		[self setStatus:[NSString stringWithFormat:@"Couldn't connect to %@",
+					[instance valueForKey:@"displayName"]]];
+	}
+
+	[pool release];
+}
+
+- (void)completeConnection:(id)arg
+{
+	[toolbar insertItemWithItemIdentifier:[arg label]
+				atIndex:[staticToolbarItems count] + [currentConnections count]-1];
+	[tabView addTabViewItem:[arg tabViewRepresentation]];
+		
+	[mainWindow makeFirstResponder:[[arg rd] valueForKey:@"view"]];
+	[self changeSelection:arg];
+	[self resizeToMatchSelection];
+}
+
+// returns the currently selected tab in the form of an ActiveConnection
+- (id)selectedConnection
+{
+	int index = [self selectedConnectionIndex];
+	if (index > -1)
+		return [currentConnections objectAtIndex:index];
+	else
+		return nil;
+}
+-(int)selectedConnectionIndex
+{
+	return [self connectionIndexForLabel:[toolbar selectedItemIdentifier]];
+}
+
+-(id)connectionForLabel:(NSString *)label
+{
+	@synchronized(currentConnections) 
+	{
+		NSEnumerator *enumerator = [currentConnections objectEnumerator];
+		id obj;
+		while ( (obj = [enumerator nextObject]) )
+			if ([[obj label] isEqual:label]) return obj;
+	}
+	return nil;
+}
+-(int)connectionIndexForLabel:(NSString *)label
+{
+	@synchronized(currentConnections) 
+	{
+		int i, count = [currentConnections count];
+		id obj;
+		for (i = 0; i < count; i++)
+		{
+			obj = [currentConnections objectAtIndex:i];
+			if ([[obj label] isEqual:label]) return i;
+		}
+	}
+	return -1;
+}
+
+-(void)setPreviewsVisible:(BOOL)visible
+{
+	SEL action = (visible) ? @selector(enableThumbnailView) : @selector(disableThumbnailView);
+	// this line might need a lock, but I don't think so
+	[currentConnections makeObjectsPerformSelector:action];
+	NSString *text = (visible) ? @"Hide" : @"Show";
+	[previewToggleMenu setTitle:[text stringByAppendingString:@" Previews"]];
+	
+	if (visible) [toolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
+	else [toolbar setDisplayMode:NSToolbarDisplayModeLabelOnly];
+}
+
 @end
+
+
+
+
+
+#pragma mark Stubs
+
+/* Just a few stubs specific to this module */
+NSToolbarItem * createStaticToolbarItem(NSView *view, NSString *name,
+		NSString *tooltip, SEL action)
+{
+	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
+	[item setPaletteLabel:name];
+	[item setLabel:name];
+	[item setToolTip:tooltip];
+	[item setAction:action];
+	if (view) {
+		[item setView:view];
+		[item setMinSize:[view bounds].size];
+		[item setMaxSize:[view bounds].size];
+	} else
+		[item setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%@.png", name]]];
+		
+	return item;
+}
+
+int wrap_array_index(int start, int count, signed int modifier) {
+	int new = start + modifier;
+	if (new < 0) new = count-1;
+	else if (new >= count) new = 0;
+	return new;
+}

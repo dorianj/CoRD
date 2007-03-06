@@ -22,36 +22,49 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+/*	Notes: This class is a bit unsafe if not used properly: after calling one of
+		bitmapWithData, glyphWithData, or cursorWithData, those methods must not
+		be called again, or data will be leaked. This should be eventually changed
+		to follow a more rigid factory and/or initWith structure.
+*/
+
 #import "RDCBitmap.h"
 
 
 @implementation RDCBitmap
+
 -(void)bitmapWithData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v {
 	int bitsPerPixel = [v bitsPerPixel];
 	int bytesPerPixel = bitsPerPixel / 8;
-	uint8 *np;
+	uint8 *np, *nc;
 	const uint8 *p, *end;
+	unsigned realLength, newLength;
 	
 	if (bitsPerPixel == 24) {
 		data = [[NSData alloc] initWithBytes:d length:s.width * s.height];
 	} else {
-		data = [[NSMutableData dataWithCapacity:s.width * s.height * 3] retain];
+		realLength = (int)s.width * (int)s.height * bytesPerPixel;
+		newLength = (int)s.width * (int)s.height * 3;
 		p = d;
-		end = p + ((int)s.width * (int)s.height * bytesPerPixel);
-		np = (unsigned char *)[data bytes];
+		end = p + realLength;
 		
+		nc = np = malloc(newLength);
 		while (p < end) {
-			if (bitsPerPixel == 8) {
-				[v rgbForRDCColor:*p r:&np[0] g:&np[1] b:&np[2]];
-				np += 3;
+			if (bitsPerPixel != 8) {
+				[v rgbForRDCColor:*(uint16 *)p r:&nc[0] g:&nc[1] b:&nc[2]];
+				nc += 3;
 				p += bytesPerPixel;
 			} else {
-				[v rgbForRDCColor:*(uint16 *)p r:&np[0] g:&np[1] b:&np[2]];
-				np += 3;
+				[v rgbForRDCColor:*p r:&nc[0] g:&nc[1] b:&nc[2]];
+				nc += 3;
 				p += bytesPerPixel;
 			}
 		}
+		
+		data = [[NSData alloc] initWithBytesNoCopy:(void *)np length:newLength];
 	}
+	
+	
 	
 	planes[0] = (unsigned char *)[data bytes];
 	planes[1] = NULL;
@@ -67,7 +80,7 @@
 													bytesPerRow:s.width * 3
 												   bitsPerPixel:0];
 	
-	
+
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
@@ -89,14 +102,15 @@
 												 colorSpaceName:NSDeviceBlackColorSpace
 													bytesPerRow:scanline
 												   bitsPerPixel:0];	
-	
+
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
 	[self setColor:[[NSColor blackColor] retain]];
 }
 
--(void)cursorWithData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(RDCView *)v {
+-(void)cursorWithData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s
+		hotspot:(NSPoint)hotspot view:(RDCView *)v {
 	int scanline = (int)s.width + 7 / 8;
 	uint8 *np;
 	const uint8 *p, *end;
@@ -158,7 +172,7 @@
 	[cursor release];
 	[image release];
 	[bitmap release];
-	[data release];
+	//[data release];
 	[color release];
 	[super dealloc];
 }

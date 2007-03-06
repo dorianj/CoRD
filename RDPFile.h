@@ -1,10 +1,4 @@
-//
-//  RDInstance.h
-//  Remote Desktop
-//
-//  Created by Craig Dooley on 8/28/06.
-
-//  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+//  Copyright (c) 2006 Dorian Johnson <arcadiclife@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -24,42 +18,35 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import "AppController.h"
-#import "RDCView.h"
 
-@interface RDInstance : NSObject {
-	RDCView *view;
-	NSString *hostName; 
-	NSString *username; 
-	NSString *password; 
-	NSString *displayName; 
-	NSString *uniqueLabel;
-	AppController *appController;
-	NSRunLoop *runLoop;
-	BOOL forwardDisks; 
-	BOOL cacheBitmaps; 
-	BOOL drawDesktop; 
-	BOOL windowDrags; 
-	BOOL windowAnimation; 
-	BOOL themes; 
-	int forwardAudio; 
-	int screenDepth;
-	int screenWidth;
-	int screenHeight;
-	int port;
-	
-	uint32		cFlags;
-	NSString	*cDomain;
-	NSString	*cCommand;
-	NSString	*cDirectory;
-	BOOL connected;
-	struct rdcConn conn;
-	
-	NSMutableArray *auxiliaryViews;
+
+@interface RDPFile : NSObject {
+	NSMutableDictionary *attributes;
+	NSString *pathLoadedFrom;
+	NSString *password;
 }
+/* Accessors */
+- (NSString *)label;
+- (void)setLabel:(NSString *)newLabel;
+- (NSString *)filename;
+- (void)setFilename:(NSString *)path;
+- (NSString *)password;
+- (void)setPassword:(NSString *)pass;
 
-- (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
-- (rdcConnection)conn;
-- (int) connect;
-- (int) disconnect;
+/* Accessing data */
+- (NSDictionary *) attributes;
+- (NSString *) getStringAttribute:(NSString *) name;
+- (int) getIntAttribute:(NSString *) name;
+- (BOOL) getBoolAttribute:(NSString *) name;
+- (id) getAttribute:(NSString *)name;
+- (BOOL) hasValueForName:(NSString *)name;
+- (void) setAttributes:(NSDictionary *)newMap;
+
+- (NSString *) descriptionBrief;
+
+- (void) writeToFile:(NSString *)filename;
+
++ (RDPFile *) rdpFromFile:(NSString *) filename;
+
+
 @end

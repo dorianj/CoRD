@@ -9,9 +9,6 @@
 /* Begin PBXBuildFile section */
 		446801880ABF9A8900FE4069 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 446801740ABF9A8900FE4069 /* Sparkle.framework */; };
 		446801900ABF9AD100FE4069 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 446801740ABF9A8900FE4069 /* Sparkle.framework */; };
-		449305C60AA9A012001C5A8B /* Picture 2.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305C50AA9A012001C5A8B /* Picture 2.png */; };
-		449305CC0AA9A13C001C5A8B /* Picture 4.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305CB0AA9A13C001C5A8B /* Picture 4.png */; };
-		449305CF0AA9A178001C5A8B /* Picture 5.png in Resources */ = {isa = PBXBuildFile; fileRef = 449305CE0AA9A178001C5A8B /* Picture 5.png */; };
 		44C296030AC9768F000FD8FB /* iso.m in Sources */ = {isa = PBXBuildFile; fileRef = 44C296020AC9768F000FD8FB /* iso.m */; };
 		44D2ACE00AA73B2A00EA19A1 /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2ACDF0AA73B2A00EA19A1 /* AppController.m */; };
 		44D2AE690AA761C000EA19A1 /* rdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE4B0AA761C000EA19A1 /* rdp.m */; };
@@ -39,14 +36,28 @@
 		44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE940AA7621C00EA19A1 /* RDCBitmap.m */; };
 		44D2AE9F0AA7624300EA19A1 /* rdesktop.icns in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */; };
 		44D2AEA10AA7624300EA19A1 /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44D2AE9E0AA7624300EA19A1 /* keymap.txt */; };
-		44E6DDAD0AA915A20009EFE4 /* Picture 1.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E6DDAC0AA915A20009EFE4 /* Picture 1.png */; };
-		44E804D90AAF265C005EFCAE /* Connect.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E804D70AAF265C005EFCAE /* Connect.png */; };
-		44E804DA0AAF265C005EFCAE /* Remove.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E804D80AAF265C005EFCAE /* Remove.png */; };
+		44E804DA0AAF265C005EFCAE /* Disconnect.png in Resources */ = {isa = PBXBuildFile; fileRef = 44E804D80AAF265C005EFCAE /* Disconnect.png */; };
 		44F9B2100AA3D83F005F0B98 /* RDInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F9B20F0AA3D83F005F0B98 /* RDInstance.m */; };
 		8D11072A0486CEB800E47090 /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 29B97318FDCFA39411CA2CEA /* MainMenu.nib */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		980F31540B49F7A200E01CCA /* minus.png in Resources */ = {isa = PBXBuildFile; fileRef = 980F31520B49F7A100E01CCA /* minus.png */; };
+		980F31550B49F7A200E01CCA /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 980F31530B49F7A100E01CCA /* plus.png */; };
+		980F31870B4A0E1500E01CCA /* RDPFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 980F31850B4A0E1400E01CCA /* RDPFile.m */; };
+		980F31880B4A0E1500E01CCA /* RDPFile.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 980F31860B4A0E1400E01CCA /* RDPFile.h */; };
+		980F31B10B4A11DB00E01CCA /* ConnectionsController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 980F31AF0B4A11DB00E01CCA /* ConnectionsController.h */; };
+		983CCD160B5AE79900B7892B /* ConnectionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 983CCD150B5AE79900B7892B /* ConnectionsController.m */; };
+		987D6E2C0B51DEF3005B8E92 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
+		987D6FCA0B51E520005B8E92 /* keychain.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 987D6FC80B51E520005B8E92 /* keychain.h */; };
+		987D6FCB0B51E520005B8E92 /* keychain.c in Sources */ = {isa = PBXBuildFile; fileRef = 987D6FC90B51E520005B8E92 /* keychain.c */; };
+		988C066A0B61A7ED00AE36A8 /* Computers.png in Resources */ = {isa = PBXBuildFile; fileRef = 988C06690B61A7ED00AE36A8 /* Computers.png */; };
+		988C06760B61B06F00AE36A8 /* Connect.png in Resources */ = {isa = PBXBuildFile; fileRef = 988C06750B61B06F00AE36A8 /* Connect.png */; };
+		98C3B25B0B5C50EE00E7F339 /* ActiveConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98C3B2590B5C50EE00E7F339 /* ActiveConnection.h */; };
+		98C3B25C0B5C50EE00E7F339 /* ActiveConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C3B25A0B5C50EE00E7F339 /* ActiveConnection.m */; };
+		98C3B2600B5C515700E7F339 /* Definitions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98C3B25F0B5C515700E7F339 /* Definitions.h */; };
+		98C6DCCF0B570776005A6638 /* rdp document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98C6DCCE0B570776005A6638 /* rdp document.icns */; };
+		98E488A80B4B439C005D79B3 /* Default.rdp in Resources */ = {isa = PBXBuildFile; fileRef = 98E488A70B4B439C005D79B3 /* Default.rdp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -57,6 +68,11 @@
 			dstSubfolderSpec = 10;
 			files = (
 				446801900ABF9AD100FE4069 /* Sparkle.framework in CopyFiles */,
+				980F31880B4A0E1500E01CCA /* RDPFile.h in CopyFiles */,
+				980F31B10B4A11DB00E01CCA /* ConnectionsController.h in CopyFiles */,
+				987D6FCA0B51E520005B8E92 /* keychain.h in CopyFiles */,
+				98C3B25B0B5C50EE00E7F339 /* ActiveConnection.h in CopyFiles */,
+				98C3B2600B5C515700E7F339 /* Definitions.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -73,9 +89,6 @@
 		32CA4F630368D1EE00C91783 /* Cord_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cord_Prefix.pch; sourceTree = "<group>"; };
 		441DA8340AD41EED00F11858 /* Cord_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cord_Prefix.pch; sourceTree = "<group>"; };
 		446801740ABF9A8900FE4069 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
-		449305C50AA9A012001C5A8B /* Picture 2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 2.png"; sourceTree = "<group>"; };
-		449305CB0AA9A13C001C5A8B /* Picture 4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 4.png"; sourceTree = "<group>"; };
-		449305CE0AA9A178001C5A8B /* Picture 5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 5.png"; sourceTree = "<group>"; };
 		44C296020AC9768F000FD8FB /* iso.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = iso.m; sourceTree = "<group>"; };
 		44D2ACDE0AA73B2A00EA19A1 /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = AppController.h; sourceTree = "<group>"; };
 		44D2ACDF0AA73B2A00EA19A1 /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = AppController.m; sourceTree = "<group>"; };
@@ -118,13 +131,28 @@
 		44D2AE940AA7621C00EA19A1 /* RDCBitmap.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDCBitmap.m; sourceTree = "<group>"; };
 		44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rdesktop.icns; sourceTree = "<group>"; };
 		44D2AE9E0AA7624300EA19A1 /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = keymap.txt; sourceTree = "<group>"; };
-		44E6DDAC0AA915A20009EFE4 /* Picture 1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Picture 1.png"; sourceTree = "<group>"; };
-		44E804D70AAF265C005EFCAE /* Connect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Connect.png; sourceTree = "<group>"; };
-		44E804D80AAF265C005EFCAE /* Remove.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Remove.png; sourceTree = "<group>"; };
+		44E804D80AAF265C005EFCAE /* Disconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Disconnect.png; sourceTree = "<group>"; };
 		44F9B20E0AA3D83F005F0B98 /* RDInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDInstance.h; sourceTree = "<group>"; };
 		44F9B20F0AA3D83F005F0B98 /* RDInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDInstance.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		980F31520B49F7A100E01CCA /* minus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = minus.png; sourceTree = "<group>"; };
+		980F31530B49F7A100E01CCA /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
+		980F31850B4A0E1400E01CCA /* RDPFile.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDPFile.m; sourceTree = "<group>"; };
+		980F31860B4A0E1400E01CCA /* RDPFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDPFile.h; sourceTree = "<group>"; };
+		980F31AF0B4A11DB00E01CCA /* ConnectionsController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ConnectionsController.h; sourceTree = "<group>"; };
+		983CCD150B5AE79900B7892B /* ConnectionsController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ConnectionsController.m; sourceTree = "<group>"; };
+		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
+		987D6FC80B51E520005B8E92 /* keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keychain.h; sourceTree = "<group>"; };
+		987D6FC90B51E520005B8E92 /* keychain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keychain.c; sourceTree = "<group>"; };
+		988C06690B61A7ED00AE36A8 /* Computers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Computers.png; sourceTree = "<group>"; };
+		988C06750B61B06F00AE36A8 /* Connect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Connect.png; sourceTree = "<group>"; };
+		98A5739F0B55EE850082E75E /* Notes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Notes.txt; sourceTree = "<group>"; };
+		98C3B2590B5C50EE00E7F339 /* ActiveConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveConnection.h; sourceTree = "<group>"; };
+		98C3B25A0B5C50EE00E7F339 /* ActiveConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActiveConnection.m; sourceTree = "<group>"; };
+		98C3B25F0B5C515700E7F339 /* Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
+		98C6DCCE0B570776005A6638 /* rdp document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "rdp document.icns"; sourceTree = "<group>"; };
+		98E488A70B4B439C005D79B3 /* Default.rdp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Default.rdp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +162,7 @@
 			files = (
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				446801880ABF9A8900FE4069 /* Sparkle.framework in Frameworks */,
+				987D6E2C0B51DEF3005B8E92 /* Security.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,8 +180,14 @@
 				44D2AE940AA7621C00EA19A1 /* RDCBitmap.m */,
 				44F9B20E0AA3D83F005F0B98 /* RDInstance.h */,
 				44F9B20F0AA3D83F005F0B98 /* RDInstance.m */,
+				980F31860B4A0E1400E01CCA /* RDPFile.h */,
+				980F31850B4A0E1400E01CCA /* RDPFile.m */,
+				98C3B2590B5C50EE00E7F339 /* ActiveConnection.h */,
+				98C3B25A0B5C50EE00E7F339 /* ActiveConnection.m */,
 				44D2ACDE0AA73B2A00EA19A1 /* AppController.h */,
 				44D2ACDF0AA73B2A00EA19A1 /* AppController.m */,
+				980F31AF0B4A11DB00E01CCA /* ConnectionsController.h */,
+				983CCD150B5AE79900B7892B /* ConnectionsController.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -169,6 +204,7 @@
 		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				987D6E2B0B51DEF3005B8E92 /* Security.framework */,
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
 				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
@@ -193,6 +229,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				98A5739F0B55EE850082E75E /* Notes.txt */,
 			);
 			name = Cord;
 			sourceTree = "<group>";
@@ -204,6 +241,9 @@
 				441DA8340AD41EED00F11858 /* Cord_Prefix.pch */,
 				32CA4F630368D1EE00C91783 /* Cord_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
+				987D6FC80B51E520005B8E92 /* keychain.h */,
+				987D6FC90B51E520005B8E92 /* keychain.c */,
+				98C3B25F0B5C515700E7F339 /* Definitions.h */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -211,17 +251,18 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				44E804D70AAF265C005EFCAE /* Connect.png */,
-				44E804D80AAF265C005EFCAE /* Remove.png */,
-				44E6DDAC0AA915A20009EFE4 /* Picture 1.png */,
-				449305C50AA9A012001C5A8B /* Picture 2.png */,
+				988C06750B61B06F00AE36A8 /* Connect.png */,
+				988C06690B61A7ED00AE36A8 /* Computers.png */,
+				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
+				98E488A70B4B439C005D79B3 /* Default.rdp */,
+				980F31520B49F7A100E01CCA /* minus.png */,
+				980F31530B49F7A100E01CCA /* plus.png */,
+				44E804D80AAF265C005EFCAE /* Disconnect.png */,
+				98C6DCCE0B570776005A6638 /* rdp document.icns */,
 				44D2AE9C0AA7624300EA19A1 /* rdesktop.icns */,
-				449305CB0AA9A13C001C5A8B /* Picture 4.png */,
-				449305CE0AA9A178001C5A8B /* Picture 5.png */,
 				44D2AE9E0AA7624300EA19A1 /* keymap.txt */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
-				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -276,9 +317,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* Cord */ = {
+		8D1107260486CEB800E47090 /* CoRD */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Cord" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "CoRD" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -289,7 +330,7 @@
 			);
 			dependencies = (
 			);
-			name = Cord;
+			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
 			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
@@ -305,7 +346,7 @@
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Cord */;
 			projectDirPath = "";
 			targets = (
-				8D1107260486CEB800E47090 /* Cord */,
+				8D1107260486CEB800E47090 /* CoRD */,
 			);
 		};
 /* End PBXProject section */
@@ -319,12 +360,13 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				44D2AE9F0AA7624300EA19A1 /* rdesktop.icns in Resources */,
 				44D2AEA10AA7624300EA19A1 /* keymap.txt in Resources */,
-				44E6DDAD0AA915A20009EFE4 /* Picture 1.png in Resources */,
-				449305C60AA9A012001C5A8B /* Picture 2.png in Resources */,
-				449305CC0AA9A13C001C5A8B /* Picture 4.png in Resources */,
-				449305CF0AA9A178001C5A8B /* Picture 5.png in Resources */,
-				44E804D90AAF265C005EFCAE /* Connect.png in Resources */,
-				44E804DA0AAF265C005EFCAE /* Remove.png in Resources */,
+				44E804DA0AAF265C005EFCAE /* Disconnect.png in Resources */,
+				980F31540B49F7A200E01CCA /* minus.png in Resources */,
+				980F31550B49F7A200E01CCA /* plus.png in Resources */,
+				98E488A80B4B439C005D79B3 /* Default.rdp in Resources */,
+				98C6DCCF0B570776005A6638 /* rdp document.icns in Resources */,
+				988C066A0B61A7ED00AE36A8 /* Computers.png in Resources */,
+				988C06760B61B06F00AE36A8 /* Connect.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,6 +404,10 @@
 				44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */,
 				44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */,
 				44C296030AC9768F000FD8FB /* iso.m in Sources */,
+				980F31870B4A0E1500E01CCA /* RDPFile.m in Sources */,
+				987D6FCB0B51E520005B8E92 /* keychain.c in Sources */,
+				983CCD160B5AE79900B7892B /* ConnectionsController.m in Sources */,
+				98C3B25C0B5C50EE00E7F339 /* ActiveConnection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,8 +442,10 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
+				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 1;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
@@ -426,17 +474,22 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
+				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "-lcrypto";
-				PRODUCT_NAME = Cord;
+				PRODUCT_NAME = CoRD;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
@@ -465,7 +518,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Cord" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "CoRD" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
