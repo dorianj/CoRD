@@ -38,16 +38,46 @@
 {
 	// Use the currently selected server as default. If no server is selected, 
 	//	copy the Default.rdp out of the app resources
-	id selectedServer = [self selectedObject];
-	NSString *baseServerLabel;
-	NSString *baseServerPath;
+	id selectedServer = [self selectedObject], rdpFile;
+	NSString *baseServerLabel,  *baseServerPath, *label;
+	volatile int i, l, j; // for some reason these were getting corrupted in debugger
+	
 	if (selectedServer == nil) {
 		baseServerPath = [resourcePath stringByAppendingPathComponent:@"Default.rdp"];
 		baseServerLabel = @"New server";
 	} else {
 		baseServerPath = [selectedServer filename];
-		baseServerLabel = [[self labelForRow:[gui_serverList selectedRow]] stringByAppendingString:@" Copy"];
+		baseServerLabel = [self labelForRow:[gui_serverList selectedRow]];
+		
+		// chop off the at the end ' #' if it's there. xxx this is hacky.
+		const char *lbl = [baseServerLabel UTF8String];
+		l = [baseServerLabel length];
+		for (i = 0, j = MIN(l, 4); i < j; i++)
+			if (!isdigit(lbl[l-i-1]) && lbl[l-i-1] != ' ') break;
+		baseServerLabel = [baseServerLabel substringToIndex:l-i];
 	}
+
+	
+	// play the 'append numbers until one found that doesn't exist' game
+	BOOL serversContainsLabel;
+	NSEnumerator *enumerator;
+	i = 0;
+	do
+	{	
+		i++;
+		label = [baseServerLabel stringByAppendingFormat:@" %i", i];
+		serversContainsLabel = NO;
+		for (enumerator = [servers objectEnumerator]; (rdpFile = [enumerator nextObject]); )
+		{
+			if ([[rdpFile label] isEqualToString:label]) {
+				serversContainsLabel = YES;
+				break;
+			}			
+		}
+	} while (serversContainsLabel);
+				
+	baseServerLabel = label;
+	
 	
 	NSString *newServerFileName =
 			findAvailableFileName([baseServerPath stringByDeletingLastPathComponent],
@@ -71,9 +101,8 @@
 	
 	[self listUpdated];
 	[gui_serverList
-			selectRowIndexes:
-				[NSIndexSet indexSetWithIndex:[gui_serverList numberOfRows]-1]
-			byExtendingSelection:NO];
+			selectRowIndexes: [NSIndexSet indexSetWithIndex:[gui_serverList numberOfRows]-1]
+		byExtendingSelection:NO];
 }
 
 - (IBAction)cancelChanges:(id)sender
@@ -664,7 +693,7 @@ NSNumber * buttonStateAsNumberInverse(NSButton * button) {
 /* Keeps trying filenames until it finds one that isn't taken.. eg: given "Untitled","rdp", if 
 	'Untitled.rdp' is taken, it will try 'Untitled 1.rdp', 'Untitled 2.rdp', etc until one is found,
 	then it returns the found filename */
-	NSString * findAvailableFileName(NSString *path, NSString *base, NSString *extension) {
+NSString * findAvailableFileName(NSString *path, NSString *base, NSString *extension) {
 	NSString *filename = [base stringByAppendingString:extension];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	int i = 0;

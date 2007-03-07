@@ -26,12 +26,13 @@
 @class AppController;
 // status codes
 
+/* Not currently used, probably won't ever be used 
 typedef enum _ServerManagerStatus {
 	CC_STATUS_NOTHING			= 0,
 	CC_STATUS_CONNECTING		= 1,
 	CC_STATUS_FAILED			= 2,
 	CC_STATUS_SUCCESS			= 3
-} ServerManagerStatus;
+} ServerManagerStatus; */
 
 
 @interface ConnectionsController : NSObject
