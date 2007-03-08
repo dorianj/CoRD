@@ -48,6 +48,7 @@
 	[super init];
 	rd = [inst retain];
 	NSString *label = [rd valueForKey:@"displayName"];
+	
 	SEL action = @selector(changeSelection:);
 	
 	// Create the tab view for it, scroll that surrounds it, add to tabview

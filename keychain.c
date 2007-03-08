@@ -38,15 +38,17 @@ SecKeychainItemRef get_password_details(const char *server, const char *username
 const char *keychain_get_password(const char *server, const char *username) {
 	const char *pass = NULL;
 	SecKeychainItemRef keychainItem;
-	if ((keychainItem = get_password_details(server, username, &pass, 1)) != NULL) {
+	if ((keychainItem = get_password_details(server, username, &pass, 1)))
 		return pass;
-	}
-
-	return "";
+	else
+		return "";
 }
 
 
 void keychain_save_password(const char *server, const char *username, const char *password) {
+	
+	if (!strlen(password) || !strlen(server) || !strlen(username)) return;
+	
 	/*	KeyChain doesn't allow duplicate items to be created, so figure out if 
 		this has to be created or edited, then do the action.
 	*/
@@ -85,6 +87,8 @@ void keychain_clear_password(const char *server, const char *username) {
 
 SecKeychainItemRef get_password_details(const char *server, const char *username, const char **password, int reportErrors) {
 
+	if (!strlen(server) || !strlen(username)) return NULL;
+	  
 	void *passwordBuf = NULL;
 	UInt32 passwordLength;
 	SecKeychainItemRef keychainItem;

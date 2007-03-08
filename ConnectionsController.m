@@ -40,7 +40,7 @@
 	//	copy the Default.rdp out of the app resources
 	id selectedServer = [self selectedObject], rdpFile;
 	NSString *baseServerLabel,  *baseServerPath, *label;
-	volatile int i, l, j; // for some reason these were getting corrupted in debugger
+	volatile int i, l, j; // these were getting corrupted in debugger
 	
 	if (selectedServer == nil) {
 		baseServerPath = [resourcePath stringByAppendingPathComponent:@"Default.rdp"];
@@ -113,10 +113,15 @@
 - (IBAction)connect:(id)sender
 {
 	id server = [self selectedObject];
-	if (server == nil) return;
-	// save current options, then load current options into an RDInstance and connect
-	[self saveServer:[gui_serverList selectedRow]];
-	RDInstance *inst = [self rdInstanceFromRDPFile:server];
+	RDInstance *inst;
+	if (server) {
+		// save current options, then load current options into an RDInstance and connect
+		[self saveServer:[gui_serverList selectedRow]];
+		inst = [self rdInstanceFromRDPFile:server];
+	} else {
+		// connect to current options but don't save any of it
+		inst = [self rdInstanceFromRDPFile:[self currentOptions]];		
+	}
 	[appController connectRDInstance:inst];
 }
 /* Removes the currently selected server, and deletes the file */
@@ -191,7 +196,6 @@
 	{
 		// external drag, make sure there's at least one RDP file in there
 		NSArray *files = [[info draggingPasteboard] propertyListForType:NSFilenamesPboardType];
-		// TODO: logic to detect rdp files lacking the extention (HFS voodoo)
 		NSArray *rdpFiles = filter_filenames(files, [NSArray arrayWithObjects:@"rdp",nil]);
 		return ([rdpFiles count] > 0) ? NSDragOperationCopy : NSDragOperationNone;
 	}	
@@ -209,7 +213,6 @@
 	{
 		// external drag, load all rdp files passed
 		NSArray *files = [[info draggingPasteboard] propertyListForType:NSFilenamesPboardType];
-		// TODO: logic to detect rdp files lacking the extention (HFS voodoo)
 		NSArray *rdpFiles = filter_filenames(files, [NSArray arrayWithObjects:@"rdp",nil]);
 		NSEnumerator *enumerator = [rdpFiles objectEnumerator];
 		id file;
@@ -283,14 +286,14 @@
 {
 	// Set up a temporary dictionary, taking it from the passed attributes if possible
 	NSMutableDictionary *mergeWith =
-			(originalOptions == nil) 
-			? [[NSMutableDictionary alloc] init]
-			: [[originalOptions attributes] mutableCopy];
+			(!originalOptions) 
+				? [[NSMutableDictionary alloc] init]
+				: [[originalOptions attributes] mutableCopy];
 	
 	RDPFile *newRDP =
-			(originalOptions == nil)
-			? [[[RDPFile alloc] init] autorelease]
-			: originalOptions;
+			(!originalOptions)
+				? [[[RDPFile alloc] init] autorelease]
+				: originalOptions;
 	
 	// Set all of the checkbox options
 	[mergeWith setObject:buttonStateAsNumber(gui_cacheBitmaps) forKey:@"bitmapcachepersistenable"];
@@ -341,7 +344,7 @@
 	
 	// Todo: audio popup box
 	
-	// put our temporary dictionary back into the passed rdp file and return
+	// put our temporary dictionary back into the passed rdp file and return 
 	[newRDP setAttributes:[mergeWith copy]];
 	[mergeWith release];
 		
@@ -365,7 +368,6 @@
 	// Set some of the textfield inputs
 	[gui_host setStringValue:[newSettings getStringAttribute:@"full address"]];
 	[gui_username setStringValue:[newSettings getStringAttribute:@"username"]];
-	// todo: password from keychain
 	
 	// Set the color depth
 	int colorDepth = [newSettings getIntAttribute:@"session bpp"];
@@ -482,6 +484,9 @@
 	if ([gui_serverList numberOfRows] > 0) {
 		[gui_serverList selectRowIndexes:[NSIndexSet indexSetWithIndex:0]
 				byExtendingSelection:NO];
+	} else {
+	
+	
 	}
 }
 
@@ -654,8 +659,11 @@
 	const char * pass = keychain_get_password(
 			safe_string_conv([rdp getStringAttribute:@"full address"]), 
 			safe_string_conv([rdp getStringAttribute:@"username"]));
-	NSString *password = [NSString stringWithCString:pass];
-	free((void *)pass);
+	NSString *password= nil;
+	if (pass) {
+		password = [NSString stringWithCString:pass];
+		free((void *)pass);
+	}
 	return password;
 }
 

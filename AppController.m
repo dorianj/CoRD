@@ -47,19 +47,18 @@
 	staticToolbarItems = [[NSMutableDictionary alloc] init];
 	[staticToolbarItems
 		setObject:createStaticToolbarItem(nil, @"Connect", 
-			@"Quickly connect to a computer", @selector(showQuickConnect:))
+			@"Connect to a saved computer", @selector(showQuickConnect:))
 		forKey:@"Connect"];
 	[staticToolbarItems 
 		setObject: createStaticToolbarItem(nil, @"Computers",
-			@"Connect to a computer", @selector(showServerManager:))
+			@"Manage saved computers", @selector(showServerManager:))
 		forKey:@"Computers"];
 	[staticToolbarItems 
 		setObject:createStaticToolbarItem(nil, @"Disconnect",
 			@"Close the selected connection", @selector(disconnect:))
 		forKey:@"Disconnect"];
 	
-	// however many extra objects there are, add them here. They won't be used,
-	// but will increase the count of staticToolbarItems
+	// Separate the static items from the connected servers
 	[staticToolbarItems setObject:NSToolbarFlexibleSpaceItemIdentifier forKey:@"spacer1"];
 	
 	toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
@@ -89,8 +88,7 @@
 	id active = [self connectionForLabel:itemIdentifier];
 	if (active != nil)
 		return [active toolbarRepresentation];
-	
-	//NSLog(@"AppController: Toolbar requested an unavailable item, '%@', currentConnections:\n%@", itemIdentifier, currentConnections);
+		
 	return nil;
 }
 
@@ -123,14 +121,15 @@
 
 -(BOOL)validateToolbarItem:(NSToolbarItem *)toolbarItem
 {
-	// Currently, only validating the quickconnect item
 	NSString *itemId = [toolbarItem itemIdentifier];
-	if ([itemId isEqual:@"Connect"])
+	if ([itemId isEqualToString:@"Connect"])
 	{
 		return [quickConnectMenu numberOfItems] > 0;		
-	} // todo: validate the 'disconnect' button
-	else
-		return YES;
+	}
+	else if ([itemId isEqualToString:@"Disconnect"])
+	{
+		return [self selectedConnection] != nil;
+	} else return YES;
 }
 
 
@@ -191,6 +190,7 @@
 	previewsEnabled = !previewsEnabled;
 	[self setPreviewsVisible:previewsEnabled];
 	[userDefaults setBool:previewsEnabled forKey:@"LivePreviews"];
+	[self resizeToMatchSelection];
 }
 
 - (IBAction)showQuickConnect:(id)sender
@@ -351,17 +351,16 @@
 		@synchronized(currentConnections) {
 			[currentConnections addObject:ac];
 		}
-		
-		[ac release];
-		[instance release];
-		
+				
 		[serversWindow close];
 		[self performSelectorOnMainThread:@selector(completeConnection:)
 					withObject:ac waitUntilDone:NO];
+		[ac release];
+		[instance release];
+		
+		
 		[pool release];
-		
 		[ac startInputRunLoop];
-		
 		pool = [[NSAutoreleasePool alloc] init];
 	} else {
 		[self setStatus:[NSString stringWithFormat:@"Couldn't connect to %@",

@@ -22,13 +22,6 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-// Note from Dorian, 2007-01-02: I changed this so that it no longer takes
-//	"thousands" or "millions" for the color depth, now it simply uses a number.
-//	translating between the string and number doesn't belong here. Also, screen
-//	resolution does the same. I've also added username and password facilities.
-
-
 #import "RDInstance.h"
 #import "RDCKeyboard.h"
 
@@ -92,6 +85,8 @@
 }
 
 - (int) connect {
+	if (!displayName) displayName = [hostName copy];
+
 	conn.bitmapCache = cacheBitmaps;
 	conn.serverBpp = screenDepth;	
 	conn.controller = appController;
@@ -135,7 +130,6 @@
 		//NSLog(@"failed to connect");
 		//[appController setStatus:[NSString stringWithFormat:@"Couldn't connect to '%@'", displayName]];
 	} else {
-	
 		NSStream *is = conn.inputStream;
 		[is setDelegate:self];
 		[is scheduleInRunLoop:runLoop forMode:NSDefaultRunLoopMode];
