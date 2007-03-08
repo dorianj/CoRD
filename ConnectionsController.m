@@ -422,6 +422,10 @@
 	[self saveServer:[gui_serverList selectedRow]];
 }
 
+- (void)windowDidResignKey:(id)sender
+{
+	[self buildServersMenu];
+}
 
 #pragma mark NSObject methods
 - (id) init {
@@ -552,7 +556,6 @@
 
 - (void)buildServersMenu
 {
-	
 	// remove all listed entries
 	while ([gui_quickConnectMenu numberOfItems] > 0)
 		[gui_quickConnectMenu removeItemAtIndex:0];
@@ -623,7 +626,6 @@
 #pragma mark Private methods
 - (void) listUpdated
 {	
-	[self buildServersMenu];
 	[gui_serverList reloadData];
 }
 - (id) selectedRowLabel
