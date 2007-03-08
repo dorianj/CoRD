@@ -626,6 +626,7 @@
 #pragma mark Private methods
 - (void) listUpdated
 {	
+	[self buildServersMenu];
 	[gui_serverList reloadData];
 }
 - (id) selectedRowLabel
