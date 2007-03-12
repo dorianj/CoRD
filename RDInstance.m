@@ -137,7 +137,8 @@
 		view = [[RDCView alloc] initWithFrame:NSMakeRect(0, 0, conn.screenWidth, conn.screenHeight)];
 		[view setController:self];
 		[view performSelectorOnMainThread:@selector(setNeedsDisplay:)
-						withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
+							   withObject:[NSNumber numberWithBool:YES]
+							waitUntilDone:NO];
 		conn.ui = view;
 	}
 	

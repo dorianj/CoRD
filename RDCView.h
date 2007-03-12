@@ -40,7 +40,7 @@
 @interface RDCView : NSView {
 	RDInstance *controller;
 	NSArray *colorMap;
-	NSImage *back, *save;
+	NSImage *back;
 	NSPoint mouseLoc;
 	NSMutableDictionary *attributes;
 	NSRect clipRect;
@@ -60,8 +60,6 @@
 -(void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
 -(void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c  winding:(NSWindingRule)winding;
 -(int)setColorMap:(NSArray *)map;
--(void)saveDesktop;
--(void)restoreDesktop:(NSRect)size;
 -(void)memblt:(NSRect)r from:(NSImage *)src withOrigin:(NSPoint)origin;
 -(void)screenBlit:(NSRect)from to:(NSPoint)to;
 -(void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)w;

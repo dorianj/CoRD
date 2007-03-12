@@ -41,6 +41,7 @@
     self = [super initWithFrame:frame];
     if (self) {
 		back = [[NSImage alloc] initWithSize:frame.size];
+		
 		[self resetClip];
 		[back lockFocus];
 		[[NSColor blackColor] set];
@@ -174,7 +175,7 @@
 	NSRectClip(clipRect);
 	[image drawInRect:to
 			 fromRect:NSMakeRect(origin.x, origin.y, to.size.width, to.size.height)
-			operation:NSCompositeSourceOver
+			operation:NSCompositeCopy
 			 fraction:1.0];
 	[back unlockFocus];
 }
@@ -183,7 +184,6 @@
 
 
 -(NSColor *)nscolorForRDCColor:(int)col {
-	NSColor *ret;
 	int r, g, b, t;
 	
 	if (bitdepth == 8) {
@@ -191,47 +191,22 @@
 		r = (t >> 16) & 0xff;
 		g = (t >> 8)  & 0xff;
 		b = t & 0xff;
-		ret = [NSColor colorWithDeviceRed:(float)r / 255.0
-									green:(float)g / 255.0
-									 blue:(float)b / 255.0
-									alpha:1.0];
 	} else if (bitdepth == 16) {
 		r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
 		g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
 		b =((col << 3) & 0xf8) | ((col >> 2) & 0x7);
-		ret = [NSColor colorWithDeviceRed:(float)r / 255.0
-										green:(float)g / 255.0
-										 blue:(float)b / 255.0
-										alpha:1.0];
 	} else if (bitdepth == 24) {
 		r = (col >> 16) & 0xff;
 		g = (col >> 8)  & 0xff;
 		b = col & 0xff;
-		ret = [NSColor colorWithDeviceRed:(float)r / 255.0
-										green:(float)g / 255.0
-										 blue:(float)b / 255.0
-										alpha:1.0];
 	} else {
 		NSLog(@"Bitdepth = %d", bitdepth);
-		ret = [NSColor blackColor];
+		r = g = b = 0;
 	}
-	
-	return ret;
-}
-
--(void)saveDesktop {
-	[save release];
-	save = [back copy];
-}
-
--(void)restoreDesktop:(NSRect)size {
-	[back lockFocus];
-	NSRectClip(clipRect);
-	[save drawInRect:size
-			fromRect:size
-		   operation:NSCompositeCopy
-			fraction:1.0];
-	[back unlockFocus];
+	return [NSColor colorWithDeviceRed:(float)r / 255.0
+								 green:(float)g / 255.0
+							  	  blue:(float)b / 255.0
+							     alpha:1.0];
 }
 
 -(void)screenBlit:(NSRect)from to:(NSPoint)to {
@@ -270,13 +245,11 @@
 		[glyph setColor:fg];
 	}
 	
-	// [back lockFocus];
 	NSRectClip(clipRect);
 	[image drawInRect:r
 			 fromRect:NSMakeRect(0, 0, r.size.width, r.size.height)
 			operation:NSCompositeSourceOver
 			 fraction:1.0];
-	// [back unlockFocus];
 }
 
 -(void)setClip:(NSRect)r {
@@ -467,7 +440,6 @@
 
 -(void)setFrameSize:(NSSize)size {
 	[back release];
-	[save release];
 	back = [[NSImage alloc] initWithSize:size];
 	[super setFrameSize:size];
 }
@@ -535,7 +507,7 @@
 	cursor = cur;
 	
 	[[self window] invalidateCursorRectsForView:self];	
-	// this is a hack because the above call isn't reliable...
+	// this is a hack because the above call isn't always reliable...
 	[[self window] resetCursorRects];
 }
 
@@ -570,8 +542,8 @@
 				[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationLow];
 				[back drawInRect:thumbSize fromRect:bounds operation:NSCompositeCopy fraction:1.0];			
 				[img unlockFocus];
-				/*[aView performSelectorOnMainThread:@selector(setNeedsDisplay:)
-						withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];*/
+				[aView performSelectorOnMainThread:@selector(setNeedsDisplay:)
+						withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
 		}
 	}
 }

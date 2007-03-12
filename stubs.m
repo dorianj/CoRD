@@ -38,13 +38,14 @@
 #import "RDCView.h"
 #import "RDCBitmap.h"
 
-#import <openssl/md5.h>
 #import <sys/stat.h>
 #import <sys/types.h>
 #import <sys/times.h>
 
 #define UNIMPL NSLog(@"Unimplemented: %s", __func__)
 #define CHECKOPCODE(x) if ((x != 12) && (x < 16)) {NSLog(@"Unimplemented opcode %d in function %s", x, __func__);}
+	
+#define TRACE_FUNC //NSLog(@"%s was called", __func__)	
 	
 /* Opcodes
     GXclear,			0  0
@@ -89,7 +90,7 @@ HCOLOURMAP ui_create_colourmap(COLOURMAP * colors) {
 	NSMutableArray *array;
 	int i, color;
 	
-	array = [[NSMutableArray alloc] init];
+	array = [[[NSMutableArray alloc] init] autorelease];
 	for (i = 0; i < colors->ncolours; i++) {
 		COLOURENTRY centry = colors->colours[i];
 		color = (centry.red << 16) | (centry.green << 8) | (centry.blue);
@@ -111,8 +112,6 @@ HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data)
 	return bitmap;
 }
 
-
-
 void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width, int height, uint8 * data) {
 	RDCBitmap *bitmap = [[RDCBitmap alloc] init];
 	[bitmap bitmapWithData:data size:NSMakeSize(width, height) view:conn->ui];
@@ -133,6 +132,8 @@ void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, H
 	[v memblt:r from:[bmp image] withOrigin:p];
 	schedule_display_in_rect(v, r);
 	
+	// technically this should be called any time anything is drawn, but since aux views 
+	// is only used for the thumbnail, text or other small drawing isn't noticable
 	[v paintAuxiliaryViews];
 }
 
@@ -165,24 +166,101 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty,
 	}
 	
 	CHECKOPCODE(opcode);
-	/* XXX better rectangle finding for setneedsdisplay */
 	[v setForeground:[v nscolorForRDCColor:pen->colour]];
 	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
 	schedule_display(v);
+	// xxx: this should work quicker, but I haven't been able to test it (never called by rdesktop in use)
+	//schedule_display_in_rect(v, NSMakeRect(startx, starty, endx, endy));
 }
 
-#pragma mark Desktop functions
+#pragma mark Desktop cache functions
 
 void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
 	RDCView *v = conn->ui;
-	[v saveDesktop];
+	NSImage *back = [v valueForKey:@"back"];
+	NSBitmapImageRep *deskScrape;
+	NSRect r = NSMakeRect(x,y,cx,cy);	
+	
+	// Get the screen contents into an nsbitmapimagerep so we can get at the pixels
+	deskScrape = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+			  pixelsWide:cx
+			  pixelsHigh:cy
+		   bitsPerSample:8
+		 samplesPerPixel:4
+			    hasAlpha:YES
+			    isPlanar:NO
+		  colorSpaceName:NSDeviceRGBColorSpace
+		     bytesPerRow:cx*4
+			bitsPerPixel:0];
+		
+	[NSGraphicsContext saveGraphicsState];
+	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:deskScrape]];
+	[back drawInRect:NSMakeRect(0,0,cx,cy) fromRect:r operation:NSCompositeCopy fraction:1.0];
+	[NSGraphicsContext restoreGraphicsState];
+	
+	
+	// Now, translate the 32-bit screen dump into RDP colors
+	uint8 *data, *o, *src, *p;
+	uint16 k;
+	int i=0, j, len=cx*cy, bytespp = conn->serverBpp/8;
+	unsigned q;
+	
+	src = p = [deskScrape bitmapData];
+	data = o = malloc(cx*cy*bytespp);
+	
+	while (i++ < len)
+	{
+		if (conn->serverBpp == 16) {
+			k = ((p[0] & 0xF8) << 8) | ((p[1] & 0xFC) << 3) | (p[2] >> 3);
+			o[0] = (uint8)(k & 0xFF);
+			o[1] = (uint8)((k >> 8) & 0xFF);
+		} else if (conn->serverBpp == 8) {
+			// Find color's index on colormap, use that
+			j = (p[0] << 16) | (p[1] << 8) | p[2];
+			q = [[v colorMap] indexOfObject:[NSNumber numberWithInt:j]];
+			o[0] = (q == NSNotFound) ? 0 : q;
+		} else {
+			o[0] = p[0];
+			o[1] = p[1];
+			o[2] = p[2];
+			if (conn->serverBpp == 32)
+				o[3] = p[3];
+		}
+		p += 4;
+		o += bytespp;
+	}
+	
+	// Finally, put our translated screen dump into the rdesktop bitmap cache
+	offset *= bytespp;
+	cache_put_desktop(conn, offset, cx, cy, cx*bytespp, bytespp, data);
+	
+	free(data);
+	[deskScrape release];
 }
 
 void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
 	RDCView *v = conn->ui;
+	NSImage *back = [v valueForKey:@"back"], *img;
+	RDCBitmap *b = [[RDCBitmap alloc] init];
+	uint8 *data;
+	
+	offset *= conn->serverBpp/8;
+	data = cache_get_desktop(conn, offset, cx, cy, conn->serverBpp/8);
+	
+	if (data == NULL)
+		return; 
+	
 	NSRect r = NSMakeRect(x, y, cx, cy);
-	[v restoreDesktop:r];
+	[b bitmapWithData:(const unsigned char *)data size:NSMakeSize(cx, cy) view:v];
+	img = [b image];
+	
+	[img setFlipped:NO];
+	[back lockFocus];
+	[img drawInRect:r fromRect:NSMakeRect(0,0,cx,cy) operation:NSCompositeCopy fraction:1.0];	
+	[back unlockFocus];
+	
 	schedule_display_in_rect(v, r);
+	[b release];
 }
 
 #pragma mark Text functions
@@ -190,7 +268,6 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx,
 HGLYPH ui_create_glyph(rdcConnection conn, int width, int height, const uint8 *data) {
 	RDCBitmap *image = [[RDCBitmap alloc] init];
 	[image glyphWithData:data size:NSMakeSize(width, height) view:conn->ui];
-	
 	return image;
 }
 
@@ -205,7 +282,6 @@ void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *gly
 	RDCView *v = conn->ui;
 	NSRect r = NSMakeRect(x, y, w, h);
 	[v drawGlyph:glyph at:r fg:fgcolor bg:bgcolor];
-	schedule_display_in_rect(v, r);
 }
 
 #define DO_GLYPH(ttext,idx) \
@@ -253,19 +329,17 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 	
 	CHECKOPCODE(opcode);
 	
-	if (boxx + boxcx >= [v width]) {
+	if (boxx + boxcx >= [v width])
 		boxcx = [v width] - boxx;
-	}
 	
+	// Paint background color
 	[v setForeground:[v nscolorForRDCColor:bgcolour]];
 	if (boxcx > 1) {
 			box = NSMakeRect(boxx, boxy, boxcx, boxcy);
 			[v fillRect:box];
-			schedule_display_in_rect(v, box);
 	} else if (mixmode == MIX_OPAQUE) {
 			box = NSMakeRect(clipx, clipy, clipcx, clipcy);
 			[v fillRect:box];
-			schedule_display_in_rect(v, box);
 	}
 	
 	[v setForeground:[v nscolorForRDCColor:fgcolour]];
@@ -321,11 +395,16 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
     }  
 	
 	[v stopUpdate];
+	if (boxcx > 1)
+		schedule_display_in_rect(v, NSMakeRect(boxx, boxy, boxcx, boxcy));
+	else
+		schedule_display_in_rect(v, NSMakeRect(clipx, clipy, clipcx, clipcy));
 }
 
 #pragma mark Clipping functions
 
 void ui_set_clip(rdcConnection conn, int x, int y, int cx, int cy) {
+	TRACE_FUNC;
 	RDCView *v = conn->ui;
 	[v setClip:NSMakeRect(x, y, cx, cy)];
 }
@@ -342,7 +421,8 @@ void ui_bell(void) {
 #pragma mark Cursor functions
 
 
-HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int width, int height, uint8 * andmask, uint8 * xormask) {
+HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int width, int height,
+						 uint8 * andmask, uint8 * xormask) {
 	RDCBitmap *cursor = [[RDCBitmap alloc] init];
 	[cursor cursorWithData:andmask 
 					 alpha:xormask 
@@ -474,7 +554,8 @@ void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, 
 	schedule_display(v);
 }
 
-void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH *brush, int bgcolour, int fgcolour) {
+void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH *brush,
+				int bgcolour, int fgcolour) {
 	RDCView *v = conn->ui;
 	NSWindingRule r;
 	int style;
@@ -707,44 +788,13 @@ hexdump(unsigned char *p, unsigned int len)
 void
 generate_random(uint8 * random)
 {
-    struct stat st;    struct tms tmsbuf;
-    MD5_CTX md5;
-    uint32 *r;
     int fd, n;
-	
-    /* If we have a kernel random device, try that first */
-    if (((fd = open("/dev/urandom", O_RDONLY)) != -1)
-        || ((fd = open("/dev/random", O_RDONLY)) != -1))
+    if ( (fd = open("/dev/urandom", O_RDONLY)) != -1)
     {
         n = read(fd, random, 32);
         close(fd);
-        if (n == 32)
-            return;
+		return;
     }
-	
-#ifdef EGD_SOCKET
-    /* As a second preference use an EGD */
-    if (generate_random_egd(random))
-        return;
-#endif
-	
-    /* Otherwise use whatever entropy we can gather - ideas welcome. */
-    r = (uint32 *) random;
-    r[0] = (getpid()) | (getppid() << 16);
-    r[1] = (getuid()) | (getgid() << 16);
-    r[2] = times(&tmsbuf);  /* system uptime (clocks) */
-    gettimeofday((struct timeval *) &r[3], NULL);   /* sec and usec */
-    stat("/tmp", &st);
-    r[5] = st.st_atime;
-    r[6] = st.st_mtime;
-    r[7] = st.st_ctime;
-	
-    /* Hash both halves with MD5 to obscure possible patterns */
-    MD5_Init(&md5);
-    MD5_Update(&md5, random, 16);
-    MD5_Final(random, &md5);
-    MD5_Update(&md5, random + 16, 16);
-    MD5_Final(random + 16, &md5);
 }
 
 /* Create the bitmap cache directory */
@@ -973,8 +1023,7 @@ void ui_clip_sync(void) {
 
 #pragma mark Internal functions
 
-// Functions to comply with documentation's desire for all setNeedsDisplay
-//	calls to be made in the main thread
+// Convenience functions to make setNeedsDisplay calls run in main thread
 void schedule_display(NSView *v) {
 	[v performSelectorOnMainThread:@selector(setNeedsDisplay:)
 			withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];

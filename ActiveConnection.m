@@ -105,7 +105,7 @@
 			pool = [[NSAutoreleasePool alloc] init];
 		}
 		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode 
-					beforeDate:[NSDate dateWithTimeIntervalSinceNow:10.0]];
+					beforeDate:[NSDate dateWithTimeIntervalSinceNow:3.0]];
 		x++;
 	} while (running && gotInput);
 	[pool release];

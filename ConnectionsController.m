@@ -250,8 +250,7 @@
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
 
-	// Save the current settings into the last selected row. Use mergeWith so
-	//	that any MSTSC-defined keys we don't recognize are preserved
+	// Save the current settings into the last selected row.
 	if (lastRowViewed >= 0 && lastRowViewed < [servers count]) {
 		[self saveServer:lastRowViewed];
 	}	
@@ -356,6 +355,8 @@
 {
 	if (newSettings == nil) return;
 	
+	NSString *t;
+	
 	// Set the checkboxes 
 	[gui_cacheBitmaps		setState:boolAsButtonState([newSettings getBoolAttribute:@"bitmapcachepersistenable"])];
 	[gui_displayDragging	setState:!boolAsButtonState([newSettings getBoolAttribute:@"disable full window drag"])];
@@ -388,13 +389,14 @@
 		[gui_screenResolution addItemWithTitle:resolutionLabel];
 	[gui_screenResolution selectItemWithTitle:resolutionLabel];
 	
-	if ([newSettings getBoolAttribute:@"cord save password"]) {
-		[gui_password setStringValue:[self retrievePassword:newSettings]];
-	} else {
+	// Set password
+	if ([newSettings getBoolAttribute:@"cord save password"] &&
+		(t = [self retrievePassword:newSettings]) != nil)
+	{
+		[gui_password setStringValue:t];
+	} else
 		[gui_password setStringValue:@""];
-	}
-	
-	// Todo: audio routing popup box
+		
 }
 
 /* Merges any settings changes in the gui to a given row */

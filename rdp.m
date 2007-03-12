@@ -775,8 +775,8 @@ rdp_process_bitmap_caps(rdcConnection conn, STREAM s)
 	{
 		RDCView *view = conn->ui;
 		warning("colour depth changed from %d to %d\n", conn->serverBpp, bpp);
-		conn->serverBpp = bpp;
 		[view setBitdepth:bpp];
+		conn->serverBpp = bpp;
 	}
 	if (conn->screenWidth != width || conn->screenHeight != height)
 	{

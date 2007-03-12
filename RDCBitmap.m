@@ -79,7 +79,6 @@
 												 colorSpaceName:NSDeviceRGBColorSpace
 													bytesPerRow:s.width * 3
 												   bitsPerPixel:0];
-	
 
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];

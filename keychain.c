@@ -26,11 +26,20 @@
 #include <Carbon/Carbon.h>
 #include "Security/Security.h"
 #include "keychain.h"
+#include <stdarg.h>
+
+
+
+#define KC_DEBUG_MODE 0
+
+#define STANDARD_KC_ERR(status) keychain_error("%s received error code %i", __func__, (status))
+#define EXTENDED_KC_ERR(status, desc) keychain_error("%s received error code %i while %s.", __func__, (status), (desc))
+
 
 // Private prototypes
 SecKeychainItemRef get_password_details(const char *server, const char *username,
 		const char **password, int reportErrors);
-
+void keychain_error(char *format, ...);
 
 
 // Gets a password for a passed Server/Username. Returns NULL on failure. Caller
@@ -41,13 +50,13 @@ const char *keychain_get_password(const char *server, const char *username) {
 	if ((keychainItem = get_password_details(server, username, &pass, 1)))
 		return pass;
 	else
-		return "";
+		return NULL;
 }
 
 
 void keychain_save_password(const char *server, const char *username, const char *password) {
 	
-	if (!strlen(password) || !strlen(server) || !strlen(username)) return;
+	if (!strlen(server) || !strlen(username)) return;
 	
 	/*	KeyChain doesn't allow duplicate items to be created, so figure out if 
 		this has to be created or edited, then do the action.
@@ -61,7 +70,8 @@ void keychain_save_password(const char *server, const char *username, const char
 		free((void *)oldPass);
 		status = SecKeychainItemModifyAttributesAndData(
 						keychainItem, NULL, strlen(password), password);
-		if (status != 0) printf("keychain_save_password got error code %d while changing an existing password\n", status);				
+		if (status != 0) 
+			EXTENDED_KC_ERR(status, "editing an existing password");
 	} else {
 		// Password doesn't exist, create it
 		status = SecKeychainAddGenericPassword (
@@ -75,7 +85,8 @@ void keychain_save_password(const char *server, const char *username, const char
 					NULL               // the item reference
 		);
 		
-		if (status != 0) printf("keychain_save_password got error code %d while saving a new password\n", status);
+		if (status != 0) 
+			EXTENDED_KC_ERR(status, "saving a new password");
     }	
 }
 
@@ -117,8 +128,22 @@ SecKeychainItemRef get_password_details(const char *server, const char *username
 		if (reportErrors) {
 			// look up at:
 			// file://localhost/Developer/ADC%20Reference%20Library/documentation/Security/Reference/keychainservices/Reference/reference.html#//apple_ref/doc/uid/TP30000898-CH5g-95690
-			printf("get_password_details got error code %d\n", status);
+			STANDARD_KC_ERR(status);
 		}
 		return NULL;
 	}
 }
+
+
+
+void keychain_error(char *format, ...)
+{
+	if (KC_DEBUG_MODE) {
+		va_list ap;
+		va_start(ap, format);
+		printf(format, ap);
+		va_end(ap);
+	}
+}
+
+
