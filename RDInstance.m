@@ -25,10 +25,15 @@
 #import "RDInstance.h"
 #import "RDCKeyboard.h"
 
+
+NSString * resolvePath(NSString *path);
+char **convert_string_array(NSArray *conv);
+
+
 @implementation RDInstance
 - (id)init {
 	if ((self = [super init])) {
-		cDomain = cCommand = cDirectory = @"";
+		cCommand = cDirectory = @"";
 		fillDefaultConnection(&conn);
 	}
 	
@@ -87,10 +92,7 @@
 - (int) connect {
 	if (!displayName) displayName = [hostName copy];
 
-	conn.bitmapCache = cacheBitmaps;
-	conn.serverBpp = screenDepth;	
-	conn.controller = appController;
-	
+	// Set RDP5 performance flags
 	int performanceFlags = RDP5_DISABLE_NOTHING;
 	if (!windowDrags)
 		performanceFlags |= RDP5_NO_FULLWINDOWDRAG;
@@ -107,29 +109,61 @@
 	int logonFlags = RDP_LOGON_NORMAL;
 	if (password && username)
 		logonFlags |= RDP_LOGON_AUTO;
-
 	conn.rdp5PerformanceFlags = performanceFlags;
-
+	
+	
+	// Set some other settings
+	conn.bitmapCache = cacheBitmaps;
+	conn.serverBpp = screenDepth;	
+	conn.controller = appController;
+	conn.consoleSession = consoleSession;
 	conn.screenWidth = screenWidth;
 	conn.screenHeight = screenHeight;
-	
-	conn.tcpPort = (port==0) ? 3389 : port;
+	conn.tcpPort = (port==0 || port>=65536) ? 3389 : port;
 
+
+	// Set up disk redirection
+	if (forwardDisks) {
+		NSArray *localDrives = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
+		NSMutableArray *validDrives = [NSMutableArray arrayWithCapacity:5];
+		NSMutableArray *validNames = [NSMutableArray arrayWithCapacity:5];
+		
+		NSEnumerator *volumeEnumerator = [localDrives objectEnumerator];
+		id anObject;
+		while ( (anObject = [volumeEnumerator nextObject]) )
+		{
+			if ([anObject characterAtIndex:0] != '.') {
+				[validDrives addObject:anObject];
+				[validNames addObject:[anObject lastPathComponent]];
+			}
+		}
+		
+		NSFileManager *fm = [NSFileManager defaultManager];
+		[validDrives addObject:@"/"];
+		[validNames addObject:[fm displayNameAtPath:@"/"]];
+		
+		disk_enum_devices(&conn,convert_string_array(validDrives),
+						  convert_string_array(validNames),[validDrives count]);
+	}
+	
+	
+	
 	rdpdr_init(&conn);
 	
-	const char *transformedPassword = (password) ? [password UTF8String] : "";
-
-	memcpy(&conn.username, [username UTF8String], [username length] + 1);
-	connected = rdp_connect(&conn, [hostName UTF8String], 
+	// Make the connection
+	
+	strncpy(conn.username, safe_string_conv(username), sizeof(conn.username));
+	connected = rdp_connect(&conn, safe_string_conv(hostName), 
 							logonFlags, 
-							[cDomain UTF8String], 
-							transformedPassword, 
-							[cCommand UTF8String], 
-							[cDirectory UTF8String]);
-	if (!connected) {
-		//NSLog(@"failed to connect");
-		//[appController setStatus:[NSString stringWithFormat:@"Couldn't connect to '%@'", displayName]];
-	} else {
+							safe_string_conv(domain), 
+							safe_string_conv(password), 
+							safe_string_conv(cCommand), 
+							safe_string_conv(cDirectory));
+							
+	// Upon success, set up our incoming socket
+	if (connected) {
+		runLoop = [NSRunLoop currentRunLoop];
+	
 		NSStream *is = conn.inputStream;
 		[is setDelegate:self];
 		[is scheduleInRunLoop:runLoop forMode:NSDefaultRunLoopMode];
@@ -162,6 +196,17 @@
 - (rdcConnection)conn {
 	return &conn;
 }
-
-
 @end
+
+char **convert_string_array(NSArray *conv) {
+	int count, i = 0;
+	if (conv != nil && (count = [conv count]) > 0) {
+		char **strings = malloc(sizeof(char *) * count);
+		NSEnumerator *enumerator = [conv objectEnumerator];
+		id o;
+		while ( (o = [enumerator nextObject]) )
+			strings[i++] = (char *)[[o description] UTF8String];
+		return strings;
+	} else
+		return NULL;
+}

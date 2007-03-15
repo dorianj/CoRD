@@ -17,7 +17,7 @@
 		44D2AE6E0AA761C000EA19A1 /* secure.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE510AA761C000EA19A1 /* secure.c */; };
 		44D2AE6F0AA761C000EA19A1 /* serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE520AA761C000EA19A1 /* serial.c */; };
 		44D2AE700AA761C000EA19A1 /* tcp.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE530AA761C000EA19A1 /* tcp.m */; };
-		44D2AE710AA761C000EA19A1 /* disk.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE570AA761C000EA19A1 /* disk.c */; };
+		44D2AE710AA761C000EA19A1 /* disk.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE570AA761C000EA19A1 /* disk.m */; };
 		44D2AE730AA761C000EA19A1 /* licence.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE5A0AA761C000EA19A1 /* licence.c */; };
 		44D2AE740AA761C000EA19A1 /* mcs.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE5B0AA761C000EA19A1 /* mcs.c */; };
 		44D2AE750AA761C000EA19A1 /* mppc.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE5C0AA761C000EA19A1 /* mppc.c */; };
@@ -105,7 +105,7 @@
 		44D2AE540AA761C000EA19A1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
 		44D2AE550AA761C000EA19A1 /* xproto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = xproto.h; sourceTree = "<group>"; };
 		44D2AE560AA761C000EA19A1 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
-		44D2AE570AA761C000EA19A1 /* disk.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = disk.c; sourceTree = "<group>"; };
+		44D2AE570AA761C000EA19A1 /* disk.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = disk.m; sourceTree = "<group>"; };
 		44D2AE580AA761C000EA19A1 /* disk.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = disk.h; sourceTree = "<group>"; };
 		44D2AE5A0AA761C000EA19A1 /* licence.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = licence.c; sourceTree = "<group>"; };
 		44D2AE5B0AA761C000EA19A1 /* mcs.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = mcs.c; sourceTree = "<group>"; };
@@ -135,7 +135,7 @@
 		44F9B20E0AA3D83F005F0B98 /* RDInstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RDInstance.h; sourceTree = "<group>"; };
 		44F9B20F0AA3D83F005F0B98 /* RDInstance.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RDInstance.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		980F31520B49F7A100E01CCA /* minus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = minus.png; sourceTree = "<group>"; };
 		980F31530B49F7A100E01CCA /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
 		980F31850B4A0E1400E01CCA /* RDPFile.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDPFile.m; sourceTree = "<group>"; };
@@ -214,7 +214,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* CoRD.app */,
+				8D1107320486CEB800E47090 /* Cord.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -291,7 +291,7 @@
 				44D2AE540AA761C000EA19A1 /* types.h */,
 				44D2AE550AA761C000EA19A1 /* xproto.h */,
 				44D2AE560AA761C000EA19A1 /* constants.h */,
-				44D2AE570AA761C000EA19A1 /* disk.c */,
+				44D2AE570AA761C000EA19A1 /* disk.m */,
 				44D2AE580AA761C000EA19A1 /* disk.h */,
 				44D2AE5A0AA761C000EA19A1 /* licence.c */,
 				44D2AE5B0AA761C000EA19A1 /* mcs.c */,
@@ -331,7 +331,7 @@
 			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
-			productReference = 8D1107320486CEB800E47090 /* CoRD.app */;
+			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -384,7 +384,7 @@
 				44D2AE6E0AA761C000EA19A1 /* secure.c in Sources */,
 				44D2AE6F0AA761C000EA19A1 /* serial.c in Sources */,
 				44D2AE700AA761C000EA19A1 /* tcp.m in Sources */,
-				44D2AE710AA761C000EA19A1 /* disk.c in Sources */,
+				44D2AE710AA761C000EA19A1 /* disk.m in Sources */,
 				44D2AE730AA761C000EA19A1 /* licence.c in Sources */,
 				44D2AE740AA761C000EA19A1 /* mcs.c in Sources */,
 				44D2AE750AA761C000EA19A1 /* mppc.c in Sources */,

@@ -43,7 +43,9 @@
                 "gui_Throbber" = NSProgressIndicator; 
                 "gui_cacheBitmaps" = NSButton; 
                 "gui_colorCount" = NSPopUpButton; 
+                "gui_consoleSession" = NSButton; 
                 "gui_displayDragging" = NSButton; 
+                "gui_domain" = NSTextField; 
                 "gui_drawDesktop" = NSButton; 
                 "gui_enableAnimations" = NSButton; 
                 "gui_enableThemes" = NSButton; 

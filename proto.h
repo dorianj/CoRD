@@ -28,7 +28,7 @@ void cliprdr_send_data_request(rdcConnection conn, uint32 format);
 void cliprdr_send_data(rdcConnection conn, uint8 * data, uint32 length);
 RDCBOOL cliprdr_init(rdcConnection conn);
 /* disk.c */
-int disk_enum_devices(rdcConnection conn, uint32 * id, char *optarg);
+int disk_enum_devices(rdcConnection conn, char ** paths, char **names, int count);
 NTSTATUS disk_query_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STREAM out);
 NTSTATUS disk_set_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STREAM in, STREAM out);
 NTSTATUS disk_query_volume_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STREAM out);
@@ -230,3 +230,4 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx,
 void fillDefaultConnection(rdcConnection conn);
 void ui_end_update(rdcConnection conn);
 void ui_begin_update(rdcConnection conn);
+const char *safe_string_conv(void *src);

@@ -1035,6 +1035,11 @@ void schedule_display_in_rect(NSView *v, NSRect r) {
 }
 
 
+// other misc functions
+const char *safe_string_conv(void *src) {
+	return (src) ? [(NSString *)src UTF8String] : "";
+}
+
 
 
 

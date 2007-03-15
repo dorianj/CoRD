@@ -147,7 +147,13 @@
 	while ( (file = [enumerator nextObject]) )
 	{
 		RDPFile *details = [RDPFile rdpFromFile:file];
-		[self connectRDInstance:[serversManager rdInstanceFromRDPFile:details]];
+		RDInstance *inst = [serversManager rdInstanceFromRDPFile:details];
+		
+		// xxx: needs to be more unified
+		if ([details getBoolAttribute:@"cord save password"])
+			[inst setValue:[serversManager retrievePassword:details] forKey:@"password"];
+			
+		[self connectRDInstance:inst];
 	}
 }
 
@@ -329,8 +335,6 @@
 	
 	[instance setValue:self forKey:@"appController"];
 	
-	// segmented threading code:
-	[instance setValue:[NSRunLoop currentRunLoop] forKey:@"runLoop"];
 	[serversManager setConnecting:YES to:[instance valueForKey:@"displayName"]];
 	BOOL connected = [instance connect];
 	[serversManager setConnecting:NO to:nil];

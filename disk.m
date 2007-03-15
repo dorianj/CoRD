@@ -32,6 +32,9 @@
 #include <utime.h>
 #include <time.h>		/* ctime */
 
+#import <Cocoa/Cocoa.h>
+#import <CoreFoundation/CoreFoundation.h>
+
 #define DIRFD(a) (dirfd(a))
 
 
@@ -106,6 +109,8 @@
 #ifndef F_NAMELEN
 #define F_NAMELEN(buf) (255)
 #endif
+
+BOOL pathIsHidden(NSString *inURL);
 
 /* Dummy statfs fallback */
 #ifndef STATFS_T
@@ -299,36 +304,28 @@ open_weak_exclusive(const char *pathname, int flags, mode_t mode)
 
 /* Enumeration of devices from rdesktop.c        */
 /* returns numer of units found and initialized. */
-/* optarg looks like ':h=/mnt/floppy,b=/mnt/usbdevice1' */
-/* when it arrives to this function.             */
+// takes an rdcConnection, a character array of paths, and the number of items
+
 int
-disk_enum_devices(rdcConnection conn, uint32 * id, char *optarg)
+disk_enum_devices(rdcConnection conn, char ** paths, char **names, int count)
 {
-	char *pos = optarg;
-	char *pos2;
-	int count = 0;
-
-	/* skip the first colon */
-	optarg++;
-	while ((pos = next_arg(optarg, ',')) && *id < RDPDR_MAX_DEVICES)
-	{
-		pos2 = next_arg(optarg, '=');
-
-		strncpy(conn->rdpdrDevice[*id].name, optarg, sizeof(conn->rdpdrDevice[*id].name) - 1);
-		if (strlen(optarg) > (sizeof(conn->rdpdrDevice[*id].name) - 1))
-			fprintf(stderr, "share name %s truncated to %s\n", optarg,
-				conn->rdpdrDevice[*id].name);
-
-		conn->rdpdrDevice[*id].local_path = xmalloc(strlen(pos2) + 1);
-		strcpy(conn->rdpdrDevice[*id].local_path, pos2);
-		conn->rdpdrDevice[*id].device_type = DEVICE_TYPE_DISK;
-		count++;
-		(*id)++;
-
-		optarg = pos;
+	int i;
+	
+	for (i=0;i<count;i++, conn->numDevices++)
+	{	
+		strncpy(conn->rdpdrDevice[conn->numDevices].name,names[i], sizeof(conn->rdpdrDevice[conn->numDevices].name) -1);
+		if (strlen(names[i]) > (sizeof(conn->rdpdrDevice[conn->numDevices].name) -1 ))
+			fprintf(stderr,"share name %s truncated to %s\n",names[i],
+				conn->rdpdrDevice[conn->numDevices].name);
+		
+		conn->rdpdrDevice[conn->numDevices].local_path = xmalloc(strlen(paths[i]) +1);
+		strcpy(conn->rdpdrDevice[conn->numDevices].local_path,paths[i]);
+		conn->rdpdrDevice[conn->numDevices].device_type = DEVICE_TYPE_DISK;
 	}
-	return count;
+	
+	return i;
 }
+
 
 /* Opens or creates a file or directory */
 static NTSTATUS
@@ -981,7 +978,7 @@ FsVolumeInfo(char *fpath)
 
 	/* initialize */
 	info = malloc(sizeof(FsInfoType));
-	memset(&info, 0, sizeof(info));
+	memset(info, 0, sizeof(info));
 	strcpy(info->label, "RDESKTOP");
 	strcpy(info->type, "RDPFS");
 
@@ -1029,7 +1026,7 @@ FsVolumeInfo(char *fpath)
 	endmntent(fdfs);
 #else
 	/* initialize */
-	memset(&info, 0, sizeof(info));
+	memset(info, 0, sizeof(info));
 	strcpy(info->label, "RDESKTOP");
 	strcpy(info->type, "RDPFS");
 
@@ -1107,7 +1104,8 @@ NTSTATUS
 disk_query_directory(rdcConnection conn, NTHANDLE handle, uint32 info_class, char *pattern, STREAM out)
 {
 	uint32 file_attributes, ft_low, ft_high;
-	char *dirname, fullpath[256];
+	const char *dirname;
+	char fullpath[256];
 	DIR *pdir;
 	struct dirent *pdirent;
 	struct stat fstat;
@@ -1139,7 +1137,7 @@ disk_query_directory(rdcConnection conn, NTHANDLE handle, uint32 info_class, cha
 
 			/* Get information for directory entry */
 			sprintf(fullpath, "%s/%s", dirname, pdirent->d_name);
-
+					
 			if (stat(fullpath, &fstat))
 			{
 				switch (errno)
@@ -1161,7 +1159,7 @@ disk_query_directory(rdcConnection conn, NTHANDLE handle, uint32 info_class, cha
 
 			if (S_ISDIR(fstat.st_mode))
 				file_attributes |= FILE_ATTRIBUTE_DIRECTORY;
-			if (pdirent->d_name[0] == '.')
+			if (pathIsHidden([NSString stringWithUTF8String:fullpath]))
 				file_attributes |= FILE_ATTRIBUTE_HIDDEN;
 			if (!file_attributes)
 				file_attributes |= FILE_ATTRIBUTE_NORMAL;
@@ -1211,8 +1209,6 @@ disk_query_directory(rdcConnection conn, NTHANDLE handle, uint32 info_class, cha
 	return STATUS_SUCCESS;
 }
 
-
-
 static NTSTATUS
 disk_device_control(rdcConnection conn, NTHANDLE handle, uint32 request, STREAM in, STREAM out)
 {
@@ -1244,3 +1240,15 @@ DEVICE_FNS disk_fns = {
 	disk_write,
 	disk_device_control	/* device_control */
 };
+
+BOOL pathIsHidden(NSString *path) 
+{
+	CFURLRef fileURL = CFURLCreateWithString(NULL,(CFStringRef)[@"file://" stringByAppendingString:path],NULL);	
+	if (fileURL) {
+		LSItemInfoRecord itemInfo;
+		LSCopyItemInfoForURL(fileURL, kLSRequestAllFlags, &itemInfo);
+		CFRelease(fileURL);	
+		return itemInfo.flags & kLSItemInfoIsInvisible;
+	} else
+		return False;
+}

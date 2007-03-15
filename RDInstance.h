@@ -27,9 +27,11 @@
 #import "AppController.h"
 #import "RDCView.h"
 
+
 @interface RDInstance : NSObject {
 	RDCView *view;
 	NSString *hostName; 
+	NSString *domain;
 	NSString *username; 
 	NSString *password; 
 	NSString *displayName; 
@@ -42,6 +44,7 @@
 	BOOL windowDrags; 
 	BOOL windowAnimation; 
 	BOOL themes; 
+	BOOL consoleSession;
 	int forwardAudio; 
 	int screenDepth;
 	int screenWidth;
@@ -49,7 +52,7 @@
 	int port;
 	
 	uint32		cFlags;
-	NSString	*cDomain;
+	
 	NSString	*cCommand;
 	NSString	*cDirectory;
 	BOOL connected;

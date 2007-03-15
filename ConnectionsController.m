@@ -302,12 +302,12 @@
 	[mergeWith setObject:buttonStateAsNumberInverse(gui_enableThemes) forKey:@"disable themes"];
 	[mergeWith setObject:buttonStateAsNumber(gui_savePassword) forKey:@"save password"];
 	[mergeWith setObject:buttonStateAsNumber(gui_forwardDisks) forKey:@"redirectdrives"];
-
+	[mergeWith setObject:buttonStateAsNumber(gui_consoleSession) forKey:@"connect to console"];
 	
 	// Set the text fields
 	[mergeWith setObject:[gui_host stringValue] forKey:@"full address"];
 	[mergeWith setObject:[gui_username stringValue] forKey:@"username"];
-	
+	[mergeWith setObject:[gui_domain stringValue] forKey:@"domain"];	
 	
 	// Set screen depth
 	[mergeWith setObject:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8]
@@ -321,20 +321,17 @@
 	[mergeWith setObject:[NSNumber numberWithInt:width] forKey:@"desktopwidth"];
 	[mergeWith setObject:[NSNumber numberWithInt:height] forKey:@"desktopheight"];
 	
-	// Save whether password should be saved to keychain. Actual keychain save
-	//	happens later
-	if ([gui_savePassword state] == NSOnState) {
-		[newRDP setPassword:[gui_password stringValue]];
+	// Save whether password should be saved to keychain. Actual keychain save happens later
+	if ([gui_savePassword state] == NSOnState)
 		[mergeWith setObject:[NSNumber numberWithInt:1] forKey:@"cord save password"];
-	} else {
-		[newRDP setPassword:nil];
+	else
 		[mergeWith setObject:[NSNumber numberWithInt:0] forKey:@"cord save password"];
-	}
+	[newRDP setPassword:[gui_password stringValue]];
 	
 	
 	// Clear the keychain password of the original if needed
-	if (![[newRDP getStringAttribute:@"full address"]
-			isEqualToString:[mergeWith valueForKey:@"full address"]] ||
+	if (![[newRDP getStringAttribute:@"full address"] isEqualToString:[mergeWith valueForKey:@"full address"]] ||
+		![[newRDP getStringAttribute:@"username"] isEqualToString:[mergeWith valueForKey:@"username"]] ||
 		![[mergeWith valueForKey:@"cord save password"] boolValue])
 	{
 		[self clearPassword:originalOptions];
@@ -355,6 +352,8 @@
 {
 	if (newSettings == nil) return;
 	
+	#define SAFE_NSSTR(s) ( (t=(s) ) ? t : @"")
+	
 	NSString *t;
 	
 	// Set the checkboxes 
@@ -369,6 +368,7 @@
 	// Set some of the textfield inputs
 	[gui_host setStringValue:[newSettings getStringAttribute:@"full address"]];
 	[gui_username setStringValue:[newSettings getStringAttribute:@"username"]];
+	[gui_domain setStringValue:SAFE_NSSTR([newSettings getStringAttribute:@"domain"])];
 	
 	// Set the color depth
 	int colorDepth = [newSettings getIntAttribute:@"session bpp"];
@@ -532,6 +532,8 @@
 	[newInstance setValue:[NSNumber numberWithInt:[source getIntAttribute:@"desktopwidth"]] forKey:@"screenWidth"];
 	[newInstance setValue:[NSNumber numberWithInt:[source getIntAttribute:@"desktopheight"]] forKey:@"screenHeight"];
 	[newInstance setValue:[NSNumber numberWithInt:[source getIntAttribute:@"session bpp"]] forKey:@"screenDepth"];
+	[newInstance setValue:[NSNumber numberWithBool:[source getBoolAttribute:@"connect to console"]] forKey:@"consoleSession"];
+	
 	[newInstance setValue:[source label] forKey:@"displayName"];
 	[newInstance setValue:[source getStringAttribute:@"username"] forKey:@"username"];
 	
@@ -722,11 +724,6 @@ void split_hostname(NSString *address, NSString **host, int *port) {
 	[scan setCharactersToBeSkipped:colonSet];
 	if (![scan scanUpToCharactersFromSet:colonSet intoString:host]) *host = @"";
 	if (![scan scanInt:port]) *port = 3389;
-}
-
-
-const char * safe_string_conv(NSString *src) {
-	return (src) ? [src UTF8String] : "";
 }
 
 NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types)
