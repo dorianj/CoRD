@@ -71,7 +71,34 @@ void schedule_display_in_rect(NSView *v, NSRect r);
 
 static RDCBitmap *nullCursor = nil;
 
-int ui_select(int socket) {
+int ui_select(rdcConnection conn) {
+
+	int n = 0, i = 0;
+	fd_set rfds, wfds;
+	struct timeval tv;
+	RDCBOOL s_timeout = False;
+	
+	if (!conn->ioRequest)
+		return 1;
+	
+	FD_ZERO(&rfds);
+	FD_ZERO(&wfds);	
+
+	rdpdr_add_fds(conn, &n, &rfds, &wfds, &tv, &s_timeout);
+	
+	switch (select(n, &rfds, &wfds, NULL, NULL))
+	{
+		case -1:
+			error("select: %s\n", strerror(errno));
+			break;
+		case 0:
+			rdpdr_check_fds(conn, &rfds, &wfds, 1);
+			break;
+		default:
+			rdpdr_check_fds(conn, &rfds, &wfds, 0);
+			break;
+	}
+	
 	return 1;
 }
 

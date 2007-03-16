@@ -111,10 +111,10 @@ rdpdr_handle_ok(rdcConnection conn, int device, int handle)
 static RDCBOOL
 add_async_iorequest(rdcConnection conn, uint32 device, uint32 file, uint32 id, uint32 major, uint32 length,
 		    DEVICE_FNS * fns, uint32 total_timeout, uint32 interval_timeout, uint8 * buffer,
-		    uint32 offset)
+		    uint32 offset) 
 {
 	struct async_iorequest *iorq;
-
+	
 	if (conn->ioRequest == NULL)
 	{
 		conn->ioRequest = (struct async_iorequest *) xmalloc(sizeof(struct async_iorequest));
@@ -574,7 +574,7 @@ rdpdr_process_irp(rdcConnection conn, STREAM s)
 			switch (minor)
 			{
 				case IRP_MN_QUERY_DIRECTORY:
-
+					
 					in_uint32_le(s, info_level);
 					in_uint8s(s, 1);
 					in_uint32_le(s, length);
@@ -598,7 +598,6 @@ rdpdr_process_irp(rdcConnection conn, STREAM s)
 					break;
 
 				case IRP_MN_NOTIFY_CHANGE_DIRECTORY:
-
 					/* JIF
 					   unimpl("IRP major=0x%x minor=0x%x: IRP_MN_NOTIFY_CHANGE_DIRECTORY\n", major, minor);  */
 

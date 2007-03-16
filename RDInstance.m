@@ -128,27 +128,23 @@ char **convert_string_array(NSArray *conv);
 		NSMutableArray *validDrives = [NSMutableArray arrayWithCapacity:5];
 		NSMutableArray *validNames = [NSMutableArray arrayWithCapacity:5];
 		
+		NSFileManager *fm = [NSFileManager defaultManager];
 		NSEnumerator *volumeEnumerator = [localDrives objectEnumerator];
 		id anObject;
 		while ( (anObject = [volumeEnumerator nextObject]) )
 		{
 			if ([anObject characterAtIndex:0] != '.') {
 				[validDrives addObject:anObject];
-				[validNames addObject:[anObject lastPathComponent]];
+				[validNames addObject:[fm displayNameAtPath:anObject]];
 			}
 		}
-		
-		NSFileManager *fm = [NSFileManager defaultManager];
-		[validDrives addObject:@"/"];
-		[validNames addObject:[fm displayNameAtPath:@"/"]];
 		
 		disk_enum_devices(&conn,convert_string_array(validDrives),
 						  convert_string_array(validNames),[validDrives count]);
 	}
 	
-	
-	
 	rdpdr_init(&conn);
+	
 	
 	// Make the connection
 	

@@ -288,7 +288,9 @@
 	@synchronized(currentConnections) {
 		[currentConnections removeObject:ac];
 	}
-	[self resizeToMatchSelection];
+	[self performSelectorOnMainThread:@selector(resizeToMatchSelection)
+						   withObject:nil
+						waitUntilDone:NO];
 }
 
 - (BOOL)windowShouldClose:(id)sender {
