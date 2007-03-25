@@ -19,7 +19,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "rdesktop.h"
+#import "rdesktop.h"
 
 #define MAX_CHANNELS			4
 #define CHANNEL_CHUNK_LENGTH		1600
@@ -150,7 +150,7 @@ channel_process(rdcConnection conn, STREAM s, uint16 mcs_channel)
 	else
 	{
 		/* add fragment to defragmentation buffer */
-		in = &channel->in;
+		in = &channel->input;
 		if (flags & CHANNEL_FLAG_FIRST)
 		{
 			if (length > in->size)

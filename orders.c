@@ -18,8 +18,8 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "rdesktop.h"
-// #include "orders.h"
+#import "rdesktop.h"
+// #import "orders.h"
 
 /* Read field indicating which parameters are present */
 static void

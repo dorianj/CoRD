@@ -19,7 +19,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "rdesktop.h"
+#import "rdesktop.h"
 
 #define CLIPRDR_CONNECT			1
 #define CLIPRDR_FORMAT_ANNOUNCE		2

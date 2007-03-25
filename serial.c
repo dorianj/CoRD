@@ -1,20 +1,20 @@
-#include <unistd.h>
-#include <fcntl.h>
-#include <termios.h>
-#include <strings.h>
-#include <sys/ioctl.h>
+#import <unistd.h>
+#import <fcntl.h>
+#import <termios.h>
+#import <strings.h>
+#import <sys/ioctl.h>
 
 #ifdef HAVE_SYS_MODEM_H
-#include <sys/modem.h>
+#import <sys/modem.h>
 #endif
 #ifdef HAVE_SYS_FILIO_H
-#include <sys/filio.h>
+#import <sys/filio.h>
 #endif
 #ifdef HAVE_SYS_STRTIO_H
-#include <sys/strtio.h>
+#import <sys/strtio.h>
 #endif
 
-#include "rdesktop.h"
+#import "rdesktop.h"
 
 #ifdef WITH_DEBUG_SERIAL
 #define DEBUG_SERIAL(args) printf args;

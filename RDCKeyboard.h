@@ -22,14 +22,34 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 #import <Cocoa/Cocoa.h>
+#import "rdesktop.h"
+
+@class RDInstance;
 
 @interface RDCKeyboard : NSObject {
-	NSMutableDictionary *keymap;
+	
+	@private
+		uint8 virtualKeymap[0xff];
+		void *unicodeKeymap[0xffff];	// really unicodeKeymap *
+		RDInstance *controller;
+		
+		uint16 remoteModiferState;
+		uint16 savedRemoteModiferState;
 }
 
-+ (RDCKeyboard *)shared;
-+ (int)NSEventToRDModifiers:(NSEvent *)ev;
-- (int)scancodeForKeycode:(int)keyCode;
-- (void)readKeymap;
+- (id) initWithKeymap:(NSString *)keymapName;
+- (void)handleKeyEvent:(NSEvent *)ev keyDown:(BOOL)down;
+- (void)handleFlagsChanged:(NSEvent *)ev;
+- (RDInstance *)controller;
+- (void)setController:(RDInstance *)cont;
+- (void)sendScancode:(uint8)scancode flags:(uint16)flags;
+- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down;
+
+
++ (NSString *) isoFileNameForKeymap:(NSString *)keymapName;
++ (NSString *) currentKeymapName;
++ (uint16)modifiersForEvent:(NSEvent *)ev; 
+
 @end

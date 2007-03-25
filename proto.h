@@ -167,18 +167,8 @@ void ui_clip_request_data(uint32 format);
 void ui_clip_sync(void);
 void xclip_init(rdcConnection conn);
 /* xkeymap.c */
-void xkeymap_init(void);
-RDCBOOL handle_special_keys(uint32 keysym, unsigned int state, uint32 ev_time, RDCBOOL pressed);
-key_translation xkeymap_translate_key(uint32 keysym, unsigned int keycode, unsigned int state);
-uint16 xkeymap_translate_button(unsigned int button);
-char *get_ksname(uint32 keysym);
-void save_remote_modifiers(uint8 scancode);
-void restore_remote_modifiers(uint32 ev_time, uint8 scancode);
-void ensure_remote_modifiers(uint32 ev_time, key_translation tr);
 unsigned int read_keyboard_state(void);
 uint16 ui_get_numlock_state(unsigned int state);
-void reset_modifier_keys(void);
-void rdp_send_scancode(uint32 time, uint16 flags, uint8 scancode);
 /* xwin.c */
 RDCBOOL get_key_state(unsigned int state, uint32 keysym);
 RDCBOOL ui_init(void);

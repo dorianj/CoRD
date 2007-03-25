@@ -27,6 +27,7 @@
 #import "AppController.h"
 #import "RDCView.h"
 
+#import "rdesktop.h"
 
 @interface RDInstance : NSObject {
 	RDCView *view;

@@ -18,7 +18,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "rdesktop.h"
+#import "rdesktop.h"
 
 /*
  * I believe this is based on SSLv3 with the following differences:

@@ -18,19 +18,19 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "disk.h"
+#import "disk.h"
 
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <fcntl.h>		/* open, close */
-#include <dirent.h>		/* opendir, closedir, readdir */
-#include <fnmatch.h>
-#include <errno.h>		/* errno */
-#include <stdio.h>
+#import <sys/types.h>
+#import <sys/stat.h>
+#import <unistd.h>
+#import <fcntl.h>		/* open, close */
+#import <dirent.h>		/* opendir, closedir, readdir */
+#import <fnmatch.h>
+#import <errno.h>		/* errno */
+#import <stdio.h>
 
-#include <utime.h>
-#include <time.h>		/* ctime */
+#import <utime.h>
+#import <time.h>		/* ctime */
 
 #import <Cocoa/Cocoa.h>
 #import <CoreFoundation/CoreFoundation.h>
@@ -39,34 +39,34 @@
 
 
 /* TODO: Fix mntent-handling for solaris
- * #include <sys/mntent.h> */
+ * #import <sys/mntent.h> */
 #if (defined(HAVE_MNTENT_H) && defined(HAVE_SETMNTENT))
-#include <mntent.h>
+#import <mntent.h>
 #define MNTENT_PATH "/etc/mtab"
 #define USE_SETMNTENT
 #endif
 
 #ifdef HAVE_SYS_VFS_H
-#include <sys/vfs.h>
+#import <sys/vfs.h>
 #endif
 
 #ifdef HAVE_SYS_STATVFS_H
-#include <sys/statvfs.h>
+#import <sys/statvfs.h>
 #endif
 
 #ifdef HAVE_SYS_STATFS_H
-#include <sys/statfs.h>
+#import <sys/statfs.h>
 #endif
 
 #ifdef HAVE_SYS_PARAM_H
-#include <sys/param.h>
+#import <sys/param.h>
 #endif
 
 #ifdef HAVE_SYS_MOUNT_H
-#include <sys/mount.h>
+#import <sys/mount.h>
 #endif
 
-#include "rdesktop.h"
+#import "rdesktop.h"
 
 #ifdef STAT_STATFS3_OSF1
 #define STATFS_FN(path, buf) (statfs(path,buf,sizeof(buf)))

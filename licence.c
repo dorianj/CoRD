@@ -18,8 +18,8 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "rdesktop.h"
-#include <openssl/rc4.h>
+#import "rdesktop.h"
+#import <openssl/rc4.h>
 
 /* Generate a session key and RC4 keys, given client and server randoms */
 static void

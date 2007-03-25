@@ -19,13 +19,13 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "rdesktop.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <sys/time.h>
-#include <sys/ioctl.h>
-#include <sys/soundcard.h>
+#import "rdesktop.h"
+#import <unistd.h>
+#import <fcntl.h>
+#import <errno.h>
+#import <sys/time.h>
+#import <sys/ioctl.h>
+#import <sys/soundcard.h>
 
 #define MAX_QUEUE	10
 

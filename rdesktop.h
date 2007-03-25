@@ -18,19 +18,18 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <dirent.h>
-#include <sys/time.h>
+#import <stdlib.h>
+#import <stdio.h>
+#import <string.h>
+#import <dirent.h>
+#import <sys/time.h>
+#import <dirent.h>
 #ifdef HAVE_SYS_SELECT_H
-#include <sys/select.h>
+#import <sys/select.h>
 #else
-#include <sys/types.h>
-#include <unistd.h>
+#import <sys/types.h>
+#import <unistd.h>
 #endif
-
-#include <pthread.h>
 
 #define VERSION "1.4.1"
 
@@ -89,10 +88,8 @@
 #endif
 #endif
 
-#include "parse.h"
-#include "constants.h"
-#include "types.h"
+#import "parse.h"
+#import "constants.h"
+#import "types.h"
+#import "proto.h"
 
-#ifndef MAKE_PROTO
-#include "proto.h"
-#endif

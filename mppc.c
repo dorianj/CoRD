@@ -18,10 +18,10 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <stdio.h>
-#include <string.h>
+#import <stdio.h>
+#import <string.h>
 
-#include "rdesktop.h"
+#import "rdesktop.h"
 
 /* mppc decompression                       */
 /* http://www.faqs.org/rfcs/rfc2118.html    */

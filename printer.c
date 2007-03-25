@@ -1,4 +1,4 @@
-#include "rdesktop.h"
+#import "rdesktop.h"
 
 static PRINTER *
 get_printer_data(rdcConnection conn, NTHANDLE handle)

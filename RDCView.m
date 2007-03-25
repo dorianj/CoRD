@@ -26,11 +26,14 @@
 #import "RDCKeyboard.h"
 #import "RDCBitmap.h"
 #import "RDInstance.h"
-#import "constants.h"
+
+#import <sys/types.h>
 #import "scancodes.h"
 
+static inline unsigned int count_bits_set(int);
+
 @interface RDCView (Private)
--(void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
+	-(void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
 @end
 
 
@@ -42,24 +45,28 @@
     if (self) {
 		back = [[NSImage alloc] initWithSize:frame.size];
 		
+		// Fill back with default color
 		[self resetClip];
 		[back lockFocus];
 		[[NSColor blackColor] set];
 		[NSBezierPath fillRect:frame];
 		[back unlockFocus];
 		
+		
+		// Other initializations
 		cursor = [[NSCursor arrowCursor] retain];
 		[self addCursorRect:[self visibleRect] cursor:cursor];
-		
+
 		auxiliaryViews = [[NSMutableArray alloc] init];
-		
-		[attributes setValue:[NSColor whiteColor] forKey:NSForegroundColorAttributeName];
+		keyTranslator = [[RDCKeyboard alloc] init];
+
     }
     return self;
 }
 
 -(void)setController:(RDInstance *)instance {
 	controller = instance;
+	[keyTranslator setController:instance];
 	bitdepth = [instance conn]->serverBpp;
 }
 
@@ -266,81 +273,15 @@
 #pragma mark Event Handling Methods
 
 -(void)keyDown:(NSEvent *)ev {
-	int key = [ev keyCode];
-	unsigned char scancode = [[RDCKeyboard shared] scancodeForKeycode:key];
-	// [self set_remote_modifiers:ev];
-	[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:scancode param2:0];
-	// [self restore_remote_modifiers:ev];
+	[keyTranslator handleKeyEvent:ev keyDown:YES];
 }
 
 -(void)keyUp:(NSEvent *)ev {
-	int key = [ev keyCode];
-	unsigned char scancode = [[RDCKeyboard shared] scancodeForKeycode:key];
-	[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:scancode param2:0];
+	[keyTranslator handleKeyEvent:ev keyDown:NO];
 }
 
--(void)flagsChanged:(NSEvent *)ev {
-	[self send_modifiers:ev enable:YES];
-}
-
--(void)send_modifiers:(NSEvent *)ev enable:(BOOL)en {
-	int newflags = [ev modifierFlags];
-	int flag = newflags ^ modifiers;
-	
-	// Caps lock only gets sent once, so send double send it for each event
-	if (flag & NSAlphaShiftKeyMask) {
-		if (newflags & NSAlphaShiftKeyMask) {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:0x3a param2:0];
-
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:0x3a param2:0];
-		} else {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:0x3a param2:0];
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:0x3a param2:0];
-
-		}
-	}
-	
-	if (flag & NSShiftKeyMask) {
-		if (newflags & NSShiftKeyMask) {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LSHIFT param2:0];
-		} else {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LSHIFT param2:0];
-		}
-	}
-
-	if (flag & NSControlKeyMask) {
-		if (newflags & NSControlKeyMask) {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LCTRL param2:0];
-		} else {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LCTRL param2:0];
-		}
-	}
-	
-	if (flag & NSAlternateKeyMask) {
-		if (newflags & NSAlternateKeyMask) {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LALT param2:0];
-		} else {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LALT param2:0];
-		}
-	}
-	
-	if (flag & NSCommandKeyMask) {
-		if (newflags & NSCommandKeyMask) {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYPRESS param1:SCANCODE_CHAR_LWIN param2:0];
-		} else {
-			[controller sendInput:RDP_INPUT_SCANCODE flags:RDP_KEYRELEASE param1:SCANCODE_CHAR_LWIN param2:0];
-		}
-	}
-	
-	modifiers = newflags;
-}
-
--(void)set_remote_modifiers:(NSEvent *)ev {
-	[self send_modifiers:ev enable:YES];
-}
-
--(void)restore_remote_modifiers:(NSEvent *)ev {
-	[self send_modifiers:ev enable:NO];
+-(void)flagsChanged:(NSEvent *)ev { 		
+	[keyTranslator handleFlagsChanged:ev];
 }
 
 -(void)mouseDown:(NSEvent *)ev {
@@ -550,3 +491,11 @@
 
 
 @end
+
+
+static inline unsigned int count_bits_set(int v) {
+	int c;
+	for (c = 0; v; c++)
+		v &= v-1;
+	return c;
+}

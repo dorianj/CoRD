@@ -18,7 +18,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "rdesktop.h"
+#import "rdesktop.h"
 #import <Foundation/NSString.h>
 
 /* Send a self-contained ISO PDU */

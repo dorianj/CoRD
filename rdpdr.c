@@ -33,13 +33,13 @@
   http://www.osronline.com/
 */
 
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/time.h>
-#include <dirent.h>		/* opendir, closedir, readdir */
-#include <time.h>
-#include <errno.h>
-#include "rdesktop.h"
+#import <unistd.h>
+#import <sys/types.h>
+#import <sys/time.h>
+#import <dirent.h>		/* opendir, closedir, readdir */
+#import <time.h>
+#import <errno.h>
+#import "rdesktop.h"
 
 #define IRP_MJ_CREATE			0x00
 #define IRP_MJ_CLOSE			0x02

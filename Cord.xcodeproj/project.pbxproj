@@ -47,12 +47,15 @@
 		980F31870B4A0E1500E01CCA /* RDPFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 980F31850B4A0E1400E01CCA /* RDPFile.m */; };
 		980F31880B4A0E1500E01CCA /* RDPFile.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 980F31860B4A0E1400E01CCA /* RDPFile.h */; };
 		980F31B10B4A11DB00E01CCA /* ConnectionsController.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 980F31AF0B4A11DB00E01CCA /* ConnectionsController.h */; };
+		981739850BACE45D00EAB48A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 981739840BACE45D00EAB48A /* Carbon.framework */; };
+		98173A940BACFD2000EAB48A /* iso_names.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98173A930BACFD2000EAB48A /* iso_names.txt */; };
 		983CCD160B5AE79900B7892B /* ConnectionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 983CCD150B5AE79900B7892B /* ConnectionsController.m */; };
 		987D6E2C0B51DEF3005B8E92 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
 		987D6FCA0B51E520005B8E92 /* keychain.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 987D6FC80B51E520005B8E92 /* keychain.h */; };
 		987D6FCB0B51E520005B8E92 /* keychain.c in Sources */ = {isa = PBXBuildFile; fileRef = 987D6FC90B51E520005B8E92 /* keychain.c */; };
 		988C066A0B61A7ED00AE36A8 /* Computers.png in Resources */ = {isa = PBXBuildFile; fileRef = 988C06690B61A7ED00AE36A8 /* Computers.png */; };
 		988C06760B61B06F00AE36A8 /* Connect.png in Resources */ = {isa = PBXBuildFile; fileRef = 988C06750B61B06F00AE36A8 /* Connect.png */; };
+		98BAB8D20BB0A9230037A08A /* keymaps in Resources */ = {isa = PBXBuildFile; fileRef = 98BAB8A90BB0A9230037A08A /* keymaps */; };
 		98C3B25B0B5C50EE00E7F339 /* ActiveConnection.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98C3B2590B5C50EE00E7F339 /* ActiveConnection.h */; };
 		98C3B25C0B5C50EE00E7F339 /* ActiveConnection.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C3B25A0B5C50EE00E7F339 /* ActiveConnection.m */; };
 		98C3B2600B5C515700E7F339 /* Definitions.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98C3B25F0B5C515700E7F339 /* Definitions.h */; };
@@ -141,12 +144,15 @@
 		980F31850B4A0E1400E01CCA /* RDPFile.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDPFile.m; sourceTree = "<group>"; };
 		980F31860B4A0E1400E01CCA /* RDPFile.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDPFile.h; sourceTree = "<group>"; };
 		980F31AF0B4A11DB00E01CCA /* ConnectionsController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = ConnectionsController.h; sourceTree = "<group>"; };
+		981739840BACE45D00EAB48A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
+		98173A930BACFD2000EAB48A /* iso_names.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = iso_names.txt; sourceTree = "<group>"; };
 		983CCD150B5AE79900B7892B /* ConnectionsController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ConnectionsController.m; sourceTree = "<group>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		987D6FC80B51E520005B8E92 /* keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keychain.h; sourceTree = "<group>"; };
 		987D6FC90B51E520005B8E92 /* keychain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keychain.c; sourceTree = "<group>"; };
 		988C06690B61A7ED00AE36A8 /* Computers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Computers.png; sourceTree = "<group>"; };
 		988C06750B61B06F00AE36A8 /* Connect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Connect.png; sourceTree = "<group>"; };
+		98BAB8A90BB0A9230037A08A /* keymaps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = keymaps; sourceTree = "<group>"; };
 		98C3B2590B5C50EE00E7F339 /* ActiveConnection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActiveConnection.h; sourceTree = "<group>"; };
 		98C3B25A0B5C50EE00E7F339 /* ActiveConnection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActiveConnection.m; sourceTree = "<group>"; };
 		98C3B25F0B5C515700E7F339 /* Definitions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Definitions.h; sourceTree = "<group>"; };
@@ -162,6 +168,7 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				446801880ABF9A8900FE4069 /* Sparkle.framework in Frameworks */,
 				987D6E2C0B51DEF3005B8E92 /* Security.framework in Frameworks */,
+				981739850BACE45D00EAB48A /* Carbon.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,6 +210,7 @@
 		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				981739840BACE45D00EAB48A /* Carbon.framework */,
 				987D6E2B0B51DEF3005B8E92 /* Security.framework */,
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
 				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
@@ -222,7 +230,7 @@
 		29B97314FDCFA39411CA2CEA /* Cord */ = {
 			isa = PBXGroup;
 			children = (
-				44D2AE410AA761C000EA19A1 /* RDesktop */,
+				44D2AE410AA761C000EA19A1 /* rdesktop */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -249,6 +257,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				98173A930BACFD2000EAB48A /* iso_names.txt */,
+				98BAB8A90BB0A9230037A08A /* keymaps */,
 				988C06750B61B06F00AE36A8 /* Connect.png */,
 				988C06690B61A7ED00AE36A8 /* Computers.png */,
 				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
@@ -274,7 +284,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		44D2AE410AA761C000EA19A1 /* RDesktop */ = {
+		44D2AE410AA761C000EA19A1 /* rdesktop */ = {
 			isa = PBXGroup;
 			children = (
 				44C296020AC9768F000FD8FB /* iso.m */,
@@ -309,7 +319,7 @@
 				44D2AE670AA761C000EA19A1 /* channels.c */,
 				44D2AE680AA761C000EA19A1 /* cliprdr.c */,
 			);
-			name = RDesktop;
+			name = rdesktop;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -365,6 +375,8 @@
 				98C6DCCF0B570776005A6638 /* rdp document.icns in Resources */,
 				988C066A0B61A7ED00AE36A8 /* Computers.png in Resources */,
 				988C06760B61B06F00AE36A8 /* Connect.png in Resources */,
+				98173A940BACFD2000EAB48A /* iso_names.txt in Resources */,
+				98BAB8D20BB0A9230037A08A /* keymaps in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -440,7 +452,8 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
-				GCC_DEBUGGING_SYMBOLS = default;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_DEBUGGING_SYMBOLS = used;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;

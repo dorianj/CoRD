@@ -27,6 +27,7 @@ typedef int RDCBOOL;
 #define False (0)
 #endif
 
+
 typedef unsigned char uint8;
 typedef signed char sint8;
 typedef unsigned short uint16;
@@ -110,12 +111,19 @@ typedef struct _DATABLOB
 }
 DATABLOB;
 
-typedef struct _key_translation
-{
+typedef struct _uni_key_translation
+{	
+	
+	/* For normal scancode translations */
+	uint16 unicode;
 	uint8 scancode;
 	uint16 modifiers;
+	
+	/* For sequences. If keysym is nonzero, the fields above are not used. */
+	uint16 seq_unicode;
+	struct _uni_key_translation *next;
 }
-key_translation;
+uni_key_translation;
 
 typedef struct rdcConn * rdcConnection;
 
@@ -124,7 +132,7 @@ typedef struct _VCHANNEL
 	uint16 mcs_id;
 	char name[8];
 	uint32 flags;
-	struct stream in;
+	struct stream input;
 	void (*process) (rdcConnection, STREAM);
 }
 VCHANNEL;
@@ -262,7 +270,7 @@ struct async_iorequest
 	struct async_iorequest *next;	/* next element in list */
 };
 
-#include "orders.h"
+#import "orders.h"
 
 struct bmpcache_entry
 {
@@ -272,13 +280,12 @@ struct bmpcache_entry
 };
 
 
+#import <openssl/md5.h>
+#import <openssl/sha.h>
+#import <openssl/bn.h>
+#import <openssl/x509v3.h>
 
-#include <openssl/md5.h>
-#include <openssl/sha.h>
-#include <openssl/bn.h>
-#include <openssl/x509v3.h>
-
-#include <openssl/rc4.h>
+#import <openssl/rc4.h>
 
 #define NBITMAPCACHE 3
 #define NBITMAPCACHEENTRIES 0xa00
@@ -347,7 +354,7 @@ struct rdcConn {
 	void *inputStream;
 	void *outputStream;
 	void *host;
-	struct stream in, out;
+	struct stream inStream, outStream;
 	STREAM rdpStream;
 	
 	// Secure

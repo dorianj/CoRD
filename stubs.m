@@ -42,9 +42,12 @@
 #import <sys/types.h>
 #import <sys/times.h>
 
-#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
-#define CHECKOPCODE(x) if ((x != 12) && (x < 16)) {NSLog(@"Unimplemented opcode %d in function %s", x, __func__);}
-	
+
+//#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
+//#define CHECKOPCODE(x) if ((x != 12) && (x < 16)) {NSLog(@"Unimplemented opcode %d in function %s", x, __func__);}
+#define UNIMPL
+#define CHECKOPCODE(x) 
+
 #define TRACE_FUNC //NSLog(@"%s was called", __func__)	
 	
 /* Opcodes

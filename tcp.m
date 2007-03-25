@@ -18,15 +18,15 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <unistd.h>		/* select read write close */
-#include <sys/socket.h>		/* socket connect setsockopt */
-#include <sys/time.h>		/* timeval */
-#include <netdb.h>		/* gethostbyname */
-#include <netinet/in.h>		/* sockaddr_in */
-#include <netinet/tcp.h>	/* TCP_NODELAY */
-#include <arpa/inet.h>		/* inet_addr */
-#include <errno.h>		/* errno */
-#include "rdesktop.h"
+#import <unistd.h>		/* select read write close */
+#import <sys/socket.h>		/* socket connect setsockopt */
+#import <sys/time.h>		/* timeval */
+#import <netdb.h>		/* gethostbyname */
+#import <netinet/in.h>		/* sockaddr_in */
+#import <netinet/tcp.h>	/* TCP_NODELAY */
+#import <arpa/inet.h>		/* inet_addr */
+#import <errno.h>		/* errno */
+#import "rdesktop.h"
 
 #import <Foundation/NSStream.h>
 #import <Foundation/NSString.h>
@@ -44,15 +44,15 @@
 STREAM
 tcp_init(rdcConnection conn, uint32 maxlen)
 {
-	if (maxlen > conn->out.size)
+	if (maxlen > conn->outStream.size)
 	{
-		conn->out.data = (uint8 *) xrealloc(conn->out.data, maxlen);
-		conn->out.size = maxlen;
+		conn->outStream.data = (uint8 *) xrealloc(conn->outStream.data, maxlen);
+		conn->outStream.size = maxlen;
 	}
 
-	conn->out.p = conn->out.data;
-	conn->out.end = conn->out.data + conn->out.size;
-	return &conn->out;
+	conn->outStream.p = conn->outStream.data;
+	conn->outStream.end = conn->outStream.data + conn->outStream.size;
+	return &conn->outStream;
 }
 
 /* Send TCP transport data packet */
@@ -84,13 +84,13 @@ tcp_recv(rdcConnection conn, STREAM s, uint32 length)
 	if (s == NULL)
 	{
 		/* read into "new" stream */
-		if (length > conn->in.size)
+		if (length > conn->inStream.size)
 		{
-			conn->in.data = (uint8 *) xrealloc(conn->in.data, length);
-			conn->in.size = length;
+			conn->inStream.data = (uint8 *) xrealloc(conn->inStream.data, length);
+			conn->inStream.size = length;
 		}
-		conn->in.end = conn->in.p = conn->in.data;
-		s = &conn->in;
+		conn->inStream.end = conn->inStream.p = conn->inStream.data;
+		s = &conn->inStream;
 	}
 	else
 	{
@@ -165,11 +165,11 @@ tcp_connect(rdcConnection conn, const char *server)
 	conn->outputStream = os;
 	
 
-	conn->in.size = 4096;
-	conn->in.data = (uint8 *) xmalloc(conn->in.size);
+	conn->inStream.size = 4096;
+	conn->inStream.data = (uint8 *) xmalloc(conn->inStream.size);
 
-	conn->out.size = 4096;
-	conn->out.data = (uint8 *) xmalloc(conn->out.size);
+	conn->outStream.size = 4096;
+	conn->outStream.data = (uint8 *) xmalloc(conn->outStream.size);
 
 	return True;
 }

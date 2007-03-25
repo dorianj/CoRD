@@ -18,16 +18,16 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include <time.h>
-#include <errno.h>
-#include <unistd.h>
-#include "rdesktop.h"
+#import <time.h>
+#import <errno.h>
+#import <unistd.h>
+#import "rdesktop.h"
 
 #import "RDCView.h"
 
 #ifdef HAVE_ICONV
 #ifdef HAVE_ICONV_H
-#include <iconv.h>
+#import <iconv.h>
 #endif
 
 #ifndef ICONV_CONST

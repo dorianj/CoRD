@@ -28,13 +28,13 @@
  * The data is not interpreted by the client.
  */
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <unistd.h>
-#include <string.h>
-#include "rdesktop.h"
+#import <sys/stat.h>
+#import <sys/types.h>
+#import <errno.h>
+#import <fcntl.h>
+#import <unistd.h>
+#import <string.h>
+#import "rdesktop.h"
 
 static RDCBOOL
 printercache_mkdir(char *base, char *printer)

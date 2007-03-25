@@ -4,14 +4,14 @@
 
 #define IOCTL_PAR_QUERY_RAW_DEVICE_ID	0x0c
 
-#include "rdesktop.h"
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#include <errno.h>
+#import "rdesktop.h"
+#import <unistd.h>
+#import <fcntl.h>
+#import <sys/ioctl.h>
+#import <errno.h>
 
 #if defined(__linux__)
-#include <linux/lp.h>
+#import <linux/lp.h>
 #endif
 
 extern int errno;

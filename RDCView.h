@@ -23,32 +23,26 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
-// #import "RDCController.h"
 
-#import <sys/types.h>
-#import <dirent.h>
+#import "rdesktop.h" // POINT
 
-#import "constants.h"
-#import "parse.h"
-#import "types.h"
-#import "proto.h"
-#import "rdesktop.h"
 
 @class RDInstance;
 @class RDCBitmap;
+@class RDCKeyboard;
 
 @interface RDCView : NSView {
 	RDInstance *controller;
 	NSArray *colorMap;
 	NSImage *back;
 	NSPoint mouseLoc;
-	NSMutableDictionary *attributes;
 	NSRect clipRect;
 	NSColor *foregroundColor, *backgroundColor;
 	NSCursor *cursor;
 	int bitdepth;
 	int modifiers;
 	NSMutableArray *auxiliaryViews;
+	RDCKeyboard *keyTranslator;
 }
 
 -(void)startUpdate;
