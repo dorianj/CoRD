@@ -19,6 +19,8 @@
 #import "ConnectionsController.h"
 #import "RDPFile.h"
 #import "keychain.h"
+#import "miscellany.h"
+
 
 @interface ConnectionsController (PrivateMethods)
 	- (void) listUpdated;
@@ -295,14 +297,14 @@
 				: originalOptions;
 	
 	// Set all of the checkbox options
-	[mergeWith setObject:buttonStateAsNumber(gui_cacheBitmaps) forKey:@"bitmapcachepersistenable"];
-	[mergeWith setObject:buttonStateAsNumberInverse(gui_displayDragging) forKey:@"disable full window drag"];
-	[mergeWith setObject:buttonStateAsNumberInverse(gui_drawDesktop) forKey:@"disable wallpaper"];
-	[mergeWith setObject:buttonStateAsNumberInverse(gui_enableAnimations) forKey:@"disable menu anims"];
-	[mergeWith setObject:buttonStateAsNumberInverse(gui_enableThemes) forKey:@"disable themes"];
-	[mergeWith setObject:buttonStateAsNumber(gui_savePassword) forKey:@"save password"];
-	[mergeWith setObject:buttonStateAsNumber(gui_forwardDisks) forKey:@"redirectdrives"];
-	[mergeWith setObject:buttonStateAsNumber(gui_consoleSession) forKey:@"connect to console"];
+	[mergeWith setObject:BUTTON_STATE_AS_NUMBER(gui_cacheBitmaps) forKey:@"bitmapcachepersistenable"];
+	[mergeWith setObject:BUTTON_STATE_AS_NUMBER_INVERSE(gui_displayDragging) forKey:@"disable full window drag"];
+	[mergeWith setObject:BUTTON_STATE_AS_NUMBER_INVERSE(gui_drawDesktop) forKey:@"disable wallpaper"];
+	[mergeWith setObject:BUTTON_STATE_AS_NUMBER_INVERSE(gui_enableAnimations) forKey:@"disable menu anims"];
+	[mergeWith setObject:BUTTON_STATE_AS_NUMBER_INVERSE(gui_enableThemes) forKey:@"disable themes"];
+	[mergeWith setObject:BUTTON_STATE_AS_NUMBER(gui_savePassword) forKey:@"save password"];
+	[mergeWith setObject:BUTTON_STATE_AS_NUMBER(gui_forwardDisks) forKey:@"redirectdrives"];
+	[mergeWith setObject:BUTTON_STATE_AS_NUMBER(gui_consoleSession) forKey:@"connect to console"];
 	
 	// Set the text fields
 	[mergeWith setObject:[gui_host stringValue] forKey:@"full address"];
@@ -352,18 +354,18 @@
 {
 	if (newSettings == nil) return;
 	
-	#define SAFE_NSSTR(s) ( (t=(s) ) ? t : @"")
+	#define SAFE_NSSTR(s) ((t = (s)) ? t : @"")
 	
 	NSString *t;
 	
 	// Set the checkboxes 
-	[gui_cacheBitmaps		setState:boolAsButtonState([newSettings getBoolAttribute:@"bitmapcachepersistenable"])];
-	[gui_displayDragging	setState:!boolAsButtonState([newSettings getBoolAttribute:@"disable full window drag"])];
-	[gui_drawDesktop		setState:!boolAsButtonState([newSettings getBoolAttribute:@"disable wallpaper"])];
-	[gui_enableAnimations	setState:!boolAsButtonState([newSettings getBoolAttribute:@"disable menu anims"])];
-	[gui_enableThemes		setState:!boolAsButtonState([newSettings getBoolAttribute:@"disable themes"])];
-	[gui_savePassword		setState:boolAsButtonState([newSettings getBoolAttribute:@"save password"])];
-	[gui_forwardDisks		setState:boolAsButtonState([newSettings getBoolAttribute:@"redirectdrives"])];
+	[gui_cacheBitmaps		setState: BOOL_AS_BUTTON_STATE([newSettings getBoolAttribute:@"bitmapcachepersistenable"])];
+	[gui_displayDragging	setState:!BOOL_AS_BUTTON_STATE([newSettings getBoolAttribute:@"disable full window drag"])];
+	[gui_drawDesktop		setState:!BOOL_AS_BUTTON_STATE([newSettings getBoolAttribute:@"disable wallpaper"])];
+	[gui_enableAnimations	setState:!BOOL_AS_BUTTON_STATE([newSettings getBoolAttribute:@"disable menu anims"])];
+	[gui_enableThemes		setState:!BOOL_AS_BUTTON_STATE([newSettings getBoolAttribute:@"disable themes"])];
+	[gui_savePassword		setState: BOOL_AS_BUTTON_STATE([newSettings getBoolAttribute:@"save password"])];
+	[gui_forwardDisks		setState: BOOL_AS_BUTTON_STATE([newSettings getBoolAttribute:@"redirectdrives"])];
 	
 	// Set some of the textfield inputs
 	[gui_host setStringValue:[newSettings getStringAttribute:@"full address"]];
@@ -682,72 +684,3 @@
 }
 
 @end
-
-#pragma mark -
-#pragma mark Convenience stubs
-
-/* Note from Dorian: I'm not really sure where these should go, so I put them here. If there's a 
-	more suitable place, that's fine.
-*/
-void ensureDirectoryExists(NSString *path, NSFileManager *manager) {
-	BOOL isDir;
-	if (![manager fileExistsAtPath:path isDirectory:&isDir])
-		[manager createDirectoryAtPath:path attributes:nil];
-}
-
-int boolAsButtonState(BOOL value) {
-	return (value) ? NSOnState : NSOffState;
-}
-
-NSNumber * buttonStateAsNumber(NSButton * button) {
-	return [NSNumber numberWithInt:(([button state] == NSOnState) ? 1 : 0)];
-}
-NSNumber * buttonStateAsNumberInverse(NSButton * button) {
-	return [NSNumber numberWithInt:(([button state] == NSOnState) ? 0 : 1)];
-}
-/* Keeps trying filenames until it finds one that isn't taken.. eg: given "Untitled","rdp", if 
-	'Untitled.rdp' is taken, it will try 'Untitled 1.rdp', 'Untitled 2.rdp', etc until one is found,
-	then it returns the found filename */
-NSString * findAvailableFileName(NSString *path, NSString *base, NSString *extension) {
-	NSString *filename = [base stringByAppendingString:extension];
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	int i = 0;
-	while ([fileManager fileExistsAtPath:[path stringByAppendingPathComponent:filename]] && ++i<100)
-		filename = [base stringByAppendingString:[NSString stringWithFormat:@"-%d%@", i, extension]];
-		
-	return filename;
-}
-
-void split_hostname(NSString *address, NSString **host, int *port) {
-	NSScanner *scan = [NSScanner scannerWithString:address];
-	NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
-	[scan setCharactersToBeSkipped:colonSet];
-	if (![scan scanUpToCharactersFromSet:colonSet intoString:host]) *host = @"";
-	if (![scan scanInt:port]) *port = 3389;
-}
-
-NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types)
-{
-	NSMutableArray *returnFiles = [NSMutableArray arrayWithCapacity:4];
-	NSEnumerator *fileEnumerator = [unfilteredFiles objectEnumerator];
-	int i, typeCount = [types count];
-	NSString *filename, *type, *extension, *hfsFileType;	
-	while ((filename = [fileEnumerator nextObject]))
-	{
-		hfsFileType = [NSHFSTypeOfFile(filename) stringByTrimmingCharactersInSet:
-					[NSCharacterSet characterSetWithCharactersInString:@" '"]];
-		NSLog(@"hfs type is: '%@'", hfsFileType);
-		extension = [filename pathExtension];
-		for (i = 0; i < typeCount; i++)
-		{
-			type = [types objectAtIndex:i];
-			if ([type caseInsensitiveCompare:extension] == NSOrderedSame ||
-				[type caseInsensitiveCompare:hfsFileType] == NSOrderedSame)
-			{
-				[returnFiles addObject:filename];
-			}
-		}
-	}
-	
-	return ([returnFiles count] > 0) ? [[returnFiles copy] autorelease] : nil;
-}

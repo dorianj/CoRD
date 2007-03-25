@@ -39,12 +39,6 @@
 #define DEBUG(args)
 #endif
 
-#ifdef WITH_DEBUG_KBD
-#define DEBUG_KBD(args) printf args;
-#else
-#define DEBUG_KBD(args)
-#endif
-
 #ifdef WITH_DEBUG_RDP5
 #define DEBUG_RDP5(args) printf args;
 #else

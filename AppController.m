@@ -22,6 +22,7 @@
 #import "RDPFile.h"
 #import "ActiveConnection.h"
 #import "Definitions.h"
+#import "miscellany.h"
 
 @implementation AppController
 
@@ -46,15 +47,15 @@
 
 	staticToolbarItems = [[NSMutableDictionary alloc] init];
 	[staticToolbarItems
-		setObject:createStaticToolbarItem(nil, @"Connect", 
+		setObject:create_static_toolbar_item(nil, @"Connect", 
 			@"Connect to a saved computer", @selector(showQuickConnect:))
 		forKey:@"Connect"];
 	[staticToolbarItems 
-		setObject: createStaticToolbarItem(nil, @"Computers",
+		setObject: create_static_toolbar_item(nil, @"Computers",
 			@"Manage saved computers", @selector(showServerManager:))
 		forKey:@"Computers"];
 	[staticToolbarItems 
-		setObject:createStaticToolbarItem(nil, @"Disconnect",
+		setObject:create_static_toolbar_item(nil, @"Disconnect",
 			@"Close the selected connection", @selector(disconnect:))
 		forKey:@"Disconnect"];
 	
@@ -440,35 +441,3 @@
 }
 
 @end
-
-
-
-
-
-#pragma mark Stubs
-
-/* Just a few stubs specific to this module */
-NSToolbarItem * createStaticToolbarItem(NSView *view, NSString *name,
-		NSString *tooltip, SEL action)
-{
-	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
-	[item setPaletteLabel:name];
-	[item setLabel:name];
-	[item setToolTip:tooltip];
-	[item setAction:action];
-	if (view) {
-		[item setView:view];
-		[item setMinSize:[view bounds].size];
-		[item setMaxSize:[view bounds].size];
-	} else
-		[item setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%@.png", name]]];
-		
-	return item;
-}
-
-int wrap_array_index(int start, int count, signed int modifier) {
-	int new = start + modifier;
-	if (new < 0) new = count-1;
-	else if (new >= count) new = 0;
-	return new;
-}

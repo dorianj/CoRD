@@ -61,9 +61,3 @@
 - (void)setPreviewsVisible:(BOOL)visible;
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
 @end
-
-
-/* Stubs */
-NSToolbarItem * createStaticToolbarItem(NSView *view, NSString *name,
-		NSString *tooltip, SEL action);
-int wrap_array_index(int start, int count, signed int modifier);

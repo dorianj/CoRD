@@ -126,18 +126,4 @@
 	[super dealloc];
 }
 
-/*
--(id)retain
-{
-	NSLog(@"AC was retained, new retain count is %d", [self retainCount]+1);
-	return [super retain];
-}
-
-- (oneway void)release
-{
-	NSLog(@"AC was released, new retain count is %d", [self retainCount]-1);
-	return [super release];
-}*/
-
-
 @end

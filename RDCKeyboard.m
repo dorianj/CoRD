@@ -28,23 +28,10 @@
 #import "RDInstance.h"
 #import "rdesktop.h"
 #import "scancodes.h"
-
-// C function stub prototypes
-static void free_key_translation(uni_key_translation *);
-void print_bitfield(unsigned v, int bits);
-
+#import "miscellany.h"
 
 // Static class variables
 static NSDictionary *isoNameTable = nil;
-
-
-// Function-like macros
-
-// Returns a BOOL representing success, places result into ret.
-//	s is an NSString *, ret is an unsigned *
-#define HEXSTRING_TO_INT(s, ret) [[NSScanner scannerWithString:(s)] scanHexInt:(ret)]
-
-#define DEBUG_KEYBOARD(args) NSLog args 
 
 @interface RDCKeyboard (PrivateMethods)
 	- (BOOL)parse_readKeymap:(NSString *)isoName;
@@ -93,7 +80,8 @@ static NSDictionary *isoNameTable = nil;
 	
 	// Empty the unicodeKeymap table, following sequences
 	uni_key_translation *kt;
-	for (int i = 0; i < 0xffff; i++)
+	int i;
+	for (i = 0; i < 0xffff; i++)
 		free_key_translation(unicodeKeymap[i]);
 	
 	[super dealloc];
@@ -143,7 +131,7 @@ static NSDictionary *isoNameTable = nil;
 		//code1 = (charCode & 0xff0000) >> 16;
 		code2 = (charCode & 0xff); 
 		
-		if (keyTranslateState == 0) {
+		if (keyTranslateState == 0 && code2 != '\0') {
 			// This character is finished composing and should be sent
 			const char chrs[2] = {code2, '\0'}; 
 			uniChar = [[NSString stringWithCString:chrs] characterAtIndex:0];
@@ -467,7 +455,7 @@ static NSDictionary *isoNameTable = nil;
 	NSArray *fileLines = [[NSString stringWithContentsOfFile:filePath] componentsSeparatedByString:@"\n"];
 	
 	if (fileLines == nil) {
-		NSLog(@"Error reading keymap '%@'", isoName);
+		DEBUG_KEYBOARD( (@"Error reading keymap '%@'. File probably doesn't exist.", isoName) );
 		return NO;
 	}
 	
@@ -488,7 +476,7 @@ static NSDictionary *isoNameTable = nil;
 	{
 		lineNumber++;
 		if (!b)
-			DEBUG_KEYBOARD( (@"Uncaught keymap syntax error in '%@' at line %d", isoName, lineNumber - 1) );
+			DEBUG_KEYBOARD( (@"Uncaught keymap syntax error in '%@' at line %d. Ignoring.", isoName, lineNumber - 1) );
 	
 		scanner = [NSScanner scannerWithString:line];
 		b = YES;
@@ -575,15 +563,15 @@ static NSDictionary *isoNameTable = nil;
 					kt->seq_unicode = i;
 					cur = cur->next = kt;
 				} else {
-					DEBUG_KEYBOARD( (@"Syntax error in '%@' keymap on line %d: unrecognized item '%@' in sequence.",
+					DEBUG_KEYBOARD( (@"Syntax error in '%@' keymap on line %d: unrecognized item '%@' in sequence. Ignoring.",
 										isoName, lineNumber, s) );
 				}
 			//	DEBUG_KEYBOARD( (@"Sequence item unicode 0x%x added for '%@'", i, s) );
 			}
 			cur->next = NULL;
-			DEBUG_KEYBOARD( (@"Sequence for unicode 0x%x added .", unicodeValue) );
+		//	DEBUG_KEYBOARD( (@"Sequence for unicode 0x%x added .", unicodeValue) );
 		} else {
-			DEBUG_KEYBOARD( (@"Syntax error in '%@' keymap on line %d: unrecognized directive '%@'",
+			DEBUG_KEYBOARD( (@"Syntax error in '%@' keymap on line %d: unrecognized directive '%@'. Ignoring.",
 								isoName, lineNumber, directive) );
 		}
 	}
@@ -667,7 +655,7 @@ static NSDictionary *isoNameTable = nil;
 												options:NSLiteralSearch];
 			if ([prefix length] >= 4) { 
 				isoName = [isoNameTable objectForKey:potentialKeymapName];
-				DEBUG_KEYBOARD ((@"isoFileNameForKeymap: substituting keymap '%@' for passed '%@', giving iso '%@'",
+				DEBUG_KEYBOARD( (@"isoFileNameForKeymap: substituting keymap '%@' for passed '%@', giving iso '%@'",
 					  potentialKeymapName, keymapName, isoName));
 				break;
 			}
@@ -712,29 +700,3 @@ static NSDictionary *isoNameTable = nil;
 }
 
 @end
-
-
-// Frees a uni_key_translation and its sequences
-static void free_key_translation(uni_key_translation *kt)
-{
-	if (kt == NULL)
-		return;
-		
-	free_key_translation(kt->next);
-	free(kt);
-}
-
-
-void print_bitfield(unsigned v, int bits)
-{
-	int i;
-	for (i = 0; i < bits; i++) {
-		if ((i)%4 == 0)
-			printf(" ");
-		printf("%u", (v << (i + bits)) >> (sizeof(unsigned)*8-1));
-	}
-	printf("\n");
-}
-
-
-

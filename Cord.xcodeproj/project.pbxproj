@@ -30,7 +30,7 @@
 		44D2AE7C0AA761C000EA19A1 /* cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE660AA761C000EA19A1 /* cache.c */; };
 		44D2AE7D0AA761C000EA19A1 /* channels.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE670AA761C000EA19A1 /* channels.c */; };
 		44D2AE7E0AA761C000EA19A1 /* cliprdr.c in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE680AA761C000EA19A1 /* cliprdr.c */; };
-		44D2AE8C0AA761E700EA19A1 /* stubs.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE8B0AA761E700EA19A1 /* stubs.m */; };
+		44D2AE8C0AA761E700EA19A1 /* ui_stubs.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE8B0AA761E700EA19A1 /* ui_stubs.m */; };
 		44D2AE950AA7621C00EA19A1 /* RDCKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE8E0AA7621C00EA19A1 /* RDCKeyboard.m */; };
 		44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE920AA7621C00EA19A1 /* RDCView.m */; };
 		44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 44D2AE940AA7621C00EA19A1 /* RDCBitmap.m */; };
@@ -50,6 +50,8 @@
 		981739850BACE45D00EAB48A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 981739840BACE45D00EAB48A /* Carbon.framework */; };
 		98173A940BACFD2000EAB48A /* iso_names.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98173A930BACFD2000EAB48A /* iso_names.txt */; };
 		983CCD160B5AE79900B7892B /* ConnectionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = 983CCD150B5AE79900B7892B /* ConnectionsController.m */; };
+		984846900BB7153D003947F1 /* miscellany.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9848468E0BB7153D003947F1 /* miscellany.h */; };
+		984846910BB7153D003947F1 /* miscellany.m in Sources */ = {isa = PBXBuildFile; fileRef = 9848468F0BB7153D003947F1 /* miscellany.m */; };
 		987D6E2C0B51DEF3005B8E92 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
 		987D6FCA0B51E520005B8E92 /* keychain.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 987D6FC80B51E520005B8E92 /* keychain.h */; };
 		987D6FCB0B51E520005B8E92 /* keychain.c in Sources */ = {isa = PBXBuildFile; fileRef = 987D6FC90B51E520005B8E92 /* keychain.c */; };
@@ -76,6 +78,7 @@
 				987D6FCA0B51E520005B8E92 /* keychain.h in CopyFiles */,
 				98C3B25B0B5C50EE00E7F339 /* ActiveConnection.h in CopyFiles */,
 				98C3B2600B5C515700E7F339 /* Definitions.h in CopyFiles */,
+				984846900BB7153D003947F1 /* miscellany.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,7 +128,7 @@
 		44D2AE660AA761C000EA19A1 /* cache.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = cache.c; sourceTree = "<group>"; };
 		44D2AE670AA761C000EA19A1 /* channels.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = channels.c; sourceTree = "<group>"; };
 		44D2AE680AA761C000EA19A1 /* cliprdr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = cliprdr.c; sourceTree = "<group>"; };
-		44D2AE8B0AA761E700EA19A1 /* stubs.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = stubs.m; sourceTree = "<group>"; };
+		44D2AE8B0AA761E700EA19A1 /* ui_stubs.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ui_stubs.m; sourceTree = "<group>"; };
 		44D2AE8D0AA7621C00EA19A1 /* RDCKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDCKeyboard.h; sourceTree = "<group>"; };
 		44D2AE8E0AA7621C00EA19A1 /* RDCKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = RDCKeyboard.m; sourceTree = "<group>"; };
 		44D2AE910AA7621C00EA19A1 /* RDCView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = RDCView.h; sourceTree = "<group>"; };
@@ -147,6 +150,8 @@
 		981739840BACE45D00EAB48A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		98173A930BACFD2000EAB48A /* iso_names.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = iso_names.txt; sourceTree = "<group>"; };
 		983CCD150B5AE79900B7892B /* ConnectionsController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = ConnectionsController.m; sourceTree = "<group>"; };
+		9848468E0BB7153D003947F1 /* miscellany.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miscellany.h; sourceTree = "<group>"; };
+		9848468F0BB7153D003947F1 /* miscellany.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = miscellany.m; sourceTree = "<group>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		987D6FC80B51E520005B8E92 /* keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keychain.h; sourceTree = "<group>"; };
 		987D6FC90B51E520005B8E92 /* keychain.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = keychain.c; sourceTree = "<group>"; };
@@ -243,7 +248,9 @@
 		29B97315FDCFA39411CA2CEA /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
-				44D2AE8B0AA761E700EA19A1 /* stubs.m */,
+				9848468E0BB7153D003947F1 /* miscellany.h */,
+				9848468F0BB7153D003947F1 /* miscellany.m */,
+				44D2AE8B0AA761E700EA19A1 /* ui_stubs.m */,
 				441DA8340AD41EED00F11858 /* Cord_Prefix.pch */,
 				32CA4F630368D1EE00C91783 /* Cord_Prefix.pch */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
@@ -409,7 +416,7 @@
 				44D2AE7C0AA761C000EA19A1 /* cache.c in Sources */,
 				44D2AE7D0AA761C000EA19A1 /* channels.c in Sources */,
 				44D2AE7E0AA761C000EA19A1 /* cliprdr.c in Sources */,
-				44D2AE8C0AA761E700EA19A1 /* stubs.m in Sources */,
+				44D2AE8C0AA761E700EA19A1 /* ui_stubs.m in Sources */,
 				44D2AE950AA7621C00EA19A1 /* RDCKeyboard.m in Sources */,
 				44D2AE970AA7621C00EA19A1 /* RDCView.m in Sources */,
 				44D2AE980AA7621C00EA19A1 /* RDCBitmap.m in Sources */,
@@ -418,6 +425,7 @@
 				987D6FCB0B51E520005B8E92 /* keychain.c in Sources */,
 				983CCD160B5AE79900B7892B /* ConnectionsController.m in Sources */,
 				98C3B25C0B5C50EE00E7F339 /* ActiveConnection.m in Sources */,
+				984846910BB7153D003947F1 /* miscellany.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,7 +461,7 @@
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				GCC_C_LANGUAGE_STANDARD = c99;
-				GCC_DEBUGGING_SYMBOLS = used;
+				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;

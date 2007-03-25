@@ -194,15 +194,4 @@ char **convert_string_array(NSArray *conv);
 }
 @end
 
-char **convert_string_array(NSArray *conv) {
-	int count, i = 0;
-	if (conv != nil && (count = [conv count]) > 0) {
-		char **strings = malloc(sizeof(char *) * count);
-		NSEnumerator *enumerator = [conv objectEnumerator];
-		id o;
-		while ( (o = [enumerator nextObject]) )
-			strings[i++] = (char *)[[o description] UTF8String];
-		return strings;
-	} else
-		return NULL;
-}
+

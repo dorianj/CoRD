@@ -30,9 +30,7 @@
 #import <sys/types.h>
 #import "scancodes.h"
 
-static inline unsigned int count_bits_set(int);
-
-@interface RDCView (Private)
+@interface RDCView (PrivateMethods)
 	-(void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
 @end
 
@@ -491,11 +489,3 @@ static inline unsigned int count_bits_set(int);
 
 
 @end
-
-
-static inline unsigned int count_bits_set(int v) {
-	int c;
-	for (c = 0; v; c++)
-		v &= v-1;
-	return c;
-}

@@ -24,32 +24,23 @@
  //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
+#import "rdesktop.h"
 
 #import <sys/types.h>
 #import <sys/time.h>
 #import <dirent.h>
 #import <stdio.h>
 
-#import "constants.h"
-#import "parse.h"
-#import "types.h"
-#import "proto.h"
+// for device redirection code in ui_select
+#import <sys/stat.h>
+#import <sys/times.h>
 
 #import "RDCView.h"
 #import "RDCBitmap.h"
 
-#import <sys/stat.h>
-#import <sys/types.h>
-#import <sys/times.h>
 
+#import "miscellany.h"
 
-//#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
-//#define CHECKOPCODE(x) if ((x != 12) && (x < 16)) {NSLog(@"Unimplemented opcode %d in function %s", x, __func__);}
-#define UNIMPL
-#define CHECKOPCODE(x) 
-
-#define TRACE_FUNC //NSLog(@"%s was called", __func__)	
-	
 /* Opcodes
     GXclear,			0  0
     GXnor,				1  !src & !dst
@@ -69,8 +60,9 @@
     GXset				15 1
 */
 
-void schedule_display(NSView *v);
-void schedule_display_in_rect(NSView *v, NSRect r);
+
+static void schedule_display(NSView *v);
+static void schedule_display_in_rect(NSView *v, NSRect r);
 
 static RDCBitmap *nullCursor = nil;
 
@@ -1051,6 +1043,7 @@ void ui_clip_sync(void) {
 	UNIMPL;
 }
 
+
 #pragma mark Internal functions
 
 // Convenience functions to make setNeedsDisplay calls run in main thread
@@ -1064,11 +1057,6 @@ void schedule_display_in_rect(NSView *v, NSRect r) {
 			withObject:[NSValue valueWithRect:r] waitUntilDone:NO];
 }
 
-
-// other misc functions
-const char *safe_string_conv(void *src) {
-	return (src) ? [(NSString *)src UTF8String] : "";
-}
 
 
 

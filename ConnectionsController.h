@@ -101,12 +101,3 @@ typedef enum _ServerManagerStatus {
 @end
 
 
-// A few methods for code readability and convenience
-void ensureDirectoryExists(NSString *directory, NSFileManager *manager);
-int boolAsButtonState(BOOL value);
-NSNumber * buttonStateAsNumber(NSButton * button);
-NSNumber * buttonStateAsNumberInverse(NSButton * button);
-NSString * findAvailableFileName(NSString *path, NSString *base, NSString *extension);
-void split_hostname(NSString *address, NSString **host, int *port);
-NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
-
