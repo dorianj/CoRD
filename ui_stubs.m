@@ -153,10 +153,6 @@ void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, H
 	}
 	[v memblt:r from:[bmp image] withOrigin:p];
 	schedule_display_in_rect(v, r);
-	
-	// technically this should be called any time anything is drawn, but since aux views 
-	// is only used for the thumbnail, text or other small drawing isn't noticable
-	[v paintAuxiliaryViews];
 }
 
 void ui_destroy_bitmap(HBITMAP bmp) {
@@ -910,37 +906,6 @@ rd_lock_file(int fd, int start, int len)
         return False;
     return True;
 }
-
-void fillDefaultConnection(rdcConnection conn) {
-	NSString *host = @"localhost";
-	conn->tcpPort		= TCP_PORT_RDP;
-	conn->screenWidth	= 1024;
-	conn->screenHeight	= 768;
-	conn->isConnected	= 0;
-	conn->useEncryption	= 1;
-	conn->useBitmapCompression	= 1;
-	conn->currentStatus = 1;
-	conn->useRdp5		= 1;
-	conn->serverBpp		= 16;
-	conn->consoleSession	= 0;
-	conn->bitmapCache	= 1;
-	conn->bitmapCachePersist	= 0;
-	conn->bitmapCachePrecache	= 1;
-	conn->polygonEllipseOrders	= 1;
-	conn->desktopSave	= 1;
-	conn->serverRdpVersion	= 1;
-	conn->keyLayout		= 0x409;
-	conn->packetNumber	= 0;
-	conn->licenseIssued	= 0;
-	conn->pstcacheEnumerated	= 0;
-	conn->rdpdrClientname	= NULL;
-	conn->ioRequest	= NULL;
-	conn->bmpcacheLru[0] = conn->bmpcacheLru[1] = conn->bmpcacheLru[2] = NOT_SET;
-	conn->bmpcacheMru[0] = conn->bmpcacheMru[1] = conn->bmpcacheMru[2] = NOT_SET;
-	memcpy(conn->hostname, [host UTF8String], [host length] + 1);
-	conn->rdp5PerformanceFlags	= RDP5_NO_WALLPAPER | RDP5_NO_FULLWINDOWDRAG | RDP5_NO_MENUANIMATIONS;
-}
-
 
 void ui_resize_window(void) {
 	UNIMPL;

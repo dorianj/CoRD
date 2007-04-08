@@ -16,10 +16,12 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-/*	Just some general UI level (or, more precisely, non-rdesktop) definitions.
-	Might be used in the future, might not. We'll see how it pans out.
-*/
+#import <Cocoa/Cocoa.h>
 
 
-#define THUMBNAIL_WIDTH 128
-#define THUMBNAIL_HEIGHT 96
+@interface CRDLabelCell : NSCell
+{
+	NSAttributedString *label;
+}
+
+@end

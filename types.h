@@ -279,6 +279,14 @@ struct bmpcache_entry
 	sint16 next;
 };
 
+typedef enum _ConnectionErrorCode
+{
+	ConnectionErrorNone = 0,
+	ConnectionErrorTimeOut = 1,
+	ConnectionErrorHostResolution = 2,
+	ConnectionErrorGeneral = 3
+} ConnectionErrorCode;
+
 
 #import <openssl/md5.h>
 #import <openssl/sha.h>
@@ -372,6 +380,8 @@ struct rdcConn {
 	// UI
 	void *ui;
 	void *controller;
+	
+	ConnectionErrorCode errorCode;
 };
 
 

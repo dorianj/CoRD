@@ -30,6 +30,7 @@
 
 #import "RDCBitmap.h"
 
+#import "RDCView.h"
 
 @implementation RDCBitmap
 

@@ -409,3 +409,7 @@ enum RDP_INPUT_DEVICE
 #define exDiscReasonLicenseErrClientEncryption		0x0108
 #define exDiscReasonLicenseCantUpgradeLicense		0x0109
 #define exDiscReasonLicenseNoRemoteConnections		0x010a
+
+// Time to wait for remote host in seconds
+#define TIMOUT_LENGTH 5
+

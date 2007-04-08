@@ -1,10 +1,4 @@
-//
-//  RDCBitmap.h
-//  Remote Desktop
-//
-//  Created by Craig Dooley on 8/28/06.
-
-//  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -24,22 +18,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class RDCView;
 
-@interface RDCBitmap : NSObject {
-	NSImage *image;
-	NSBitmapImageRep *bitmap;
-	NSData *data;
-	NSCursor *cursor;
-	unsigned char *planes[2];
-	NSColor *color;
+@interface CRDServersColumn : NSTableColumn
+{
+
+
 }
 
--(void)bitmapWithData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v;
--(void)glyphWithData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v;
--(void)cursorWithData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(RDCView *)v;
--(NSImage *)image;
--(void)setColor:(NSColor *)color;
--(NSColor *)color;
--(NSCursor *)cursor;
+
 @end

@@ -217,7 +217,6 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 		  uint8 * text, uint8 length);
 void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy);
 void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy);
-void fillDefaultConnection(rdcConnection conn);
 void ui_end_update(rdcConnection conn);
 void ui_begin_update(rdcConnection conn);
-const char *safe_string_conv(void *src);
+void rdp_send_client_window_status(rdcConnection conn, int status);

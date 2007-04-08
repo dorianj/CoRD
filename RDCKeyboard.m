@@ -475,9 +475,10 @@ static NSDictionary *isoNameTable = nil;
 	while ( (line = [enumerator nextObject]) )
 	{
 		lineNumber++;
+		
 		if (!b)
 			DEBUG_KEYBOARD( (@"Uncaught keymap syntax error in '%@' at line %d. Ignoring.", isoName, lineNumber - 1) );
-	
+
 		scanner = [NSScanner scannerWithString:line];
 		b = YES;
 	
@@ -491,9 +492,8 @@ static NSDictionary *isoNameTable = nil;
 			b &= [scanner scanHexInt:&osxVKValue];
 			b &= [scanner scanHexInt:&scancode];
 			
-			if (b && osxVKValue < 256) {
+			if (b && osxVKValue < 256)
 				virtualKeymap[osxVKValue] = scancode;
-			}
 		}
 		else if ([directive isEqualToString:@"char"])
 		{
@@ -538,7 +538,6 @@ static NSDictionary *isoNameTable = nil;
 				unicodeValue = toupper(unicodeValue);
 				[self parse_addUnicodeMapping:unicodeValue scancode:scancode modifiers:modifiers];
 			}
-			
 		}
 		else if ([directive isEqualToString:@"include"])
 		{
@@ -574,6 +573,7 @@ static NSDictionary *isoNameTable = nil;
 			DEBUG_KEYBOARD( (@"Syntax error in '%@' keymap on line %d: unrecognized directive '%@'. Ignoring.",
 								isoName, lineNumber, directive) );
 		}
+	
 	}
 	
 	return YES;

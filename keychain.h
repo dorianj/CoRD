@@ -16,8 +16,8 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-
+void keychain_update_password(const char *origServer, const char *origUser, 
+		const char *server, const char *username, const char *password);
 const char *keychain_get_password(const char *server, const char *username);
 void keychain_save_password(const char *server, const char *username, const char *password);
 void keychain_clear_password(const char *server, const char *username);

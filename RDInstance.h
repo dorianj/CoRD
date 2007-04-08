@@ -24,21 +24,26 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import "AppController.h"
 #import "RDCView.h"
 
 #import "rdesktop.h"
+#import "miscellany.h"
 
-@interface RDInstance : NSObject {
+@class CRDServerCell;
+
+@interface RDInstance : NSObject
+{
 	RDCView *view;
-	NSString *hostName; 
-	NSString *domain;
+	NSRunLoop *inputRunLoop;
+	
+	// All user-settable options
+	NSString *label;
+	NSString *hostName;
 	NSString *username; 
 	NSString *password; 
-	NSString *displayName; 
-	NSString *uniqueLabel;
-	AppController *appController;
-	NSRunLoop *runLoop;
+	NSString *domain;	
+	
+	BOOL savePassword;
 	BOOL forwardDisks; 
 	BOOL cacheBitmaps; 
 	BOOL drawDesktop; 
@@ -46,24 +51,67 @@
 	BOOL windowAnimation; 
 	BOOL themes; 
 	BOOL consoleSession;
+	
+	int startDisplay;
 	int forwardAudio; 
 	int screenDepth;
 	int screenWidth;
 	int screenHeight;
 	int port;
 	
-	uint32		cFlags;
 	
-	NSString	*cCommand;
-	NSString	*cDirectory;
-	BOOL connected;
+	// Used to store attributes that RDP files may define but aren't handled in 
+	//	instance variables so when the file is written out those attributes are
+	//	retained
+	NSMutableDictionary *otherAttributes;
+	
+	// Flags used by ServersManager (and possibly others)
+	BOOL temporary;
+	BOOL modified;
+	CRDConnectionStatus connectionStatus;
+	
+	// Path to the RDP File backing this RDInstance, if any.
+	NSString *rdpFilename;
+	
+	// Some internal stuff
+	uint32 cFlags;
+	NSString *cCommand, *cDirectory;
 	struct rdcConn conn;
-	
-	NSMutableArray *auxiliaryViews;
+
+	// UI elements (only valid if connected)
+	CRDServerCell *cellRepresentation;
+	NSTabViewItem *tabViewRepresentation;
 }
 
+- (id) initWithRDPFile:(NSString *)path;
 - (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
+- (BOOL) connect;
+- (void) disconnect;
+- (void) startInputRunLoop;
+- (void) createGUI:(NSScrollView *)enclosingView;
+
+- (BOOL) readRDPFile:(NSString *)path;
+- (BOOL) writeRDPFile:(NSString *)pathconf;
+
+// Accessors
 - (rdcConnection)conn;
-- (int) connect;
-- (int) disconnect;
+- (NSString *)label;
+- (RDCView *)view;
+- (NSString *)rdpFilename;
+- (void)setRdpFilename:(NSString *)path;
+- (void)setTemporary:(BOOL)temp;
+- (BOOL)temporary;
+- (CRDServerCell *)cellRepresentation;
+- (NSTabViewItem *)tabViewRepresentation;
+- (BOOL)modified;
+- (CRDConnectionStatus)status;
+- (void)setStatusAsNumber:(NSNumber *)status;
+
+
+- (void)setLabel:(NSString *)s;
+- (void)setHostName:(NSString *)s;
+- (void)setUsername:(NSString *)s;
+- (void)setPassword:(NSString *)pass;
+
+
 @end

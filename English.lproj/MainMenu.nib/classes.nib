@@ -2,66 +2,63 @@
     IBClasses = (
         {
             ACTIONS = {
-                changeSelection = id; 
+                addNewSavedServer = id; 
+                connect = id; 
                 disconnect = id; 
-                removeItem = id; 
+                fieldEdited = id; 
+                keepSelectedServer = id; 
+                removeSelectedSavedServer = id; 
                 selectNext = id; 
                 selectPrevious = id; 
-                showQuickConnect = id; 
-                showServerManager = id; 
-                togglePreviews = id; 
+                showOpen = id; 
+                showOpenAndKeep = id; 
+                toggleDrawer = id; 
+                toggleInspector = id; 
+                togglePerformanceDisclosure = id; 
             }; 
             CLASS = AppController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
-                errorField = NSTextField; 
-                mainWindow = NSWindow; 
-                previewToggleMenu = NSMenuItem; 
-                quickConnectMenu = NSMenu; 
-                serversManager = ConnectionsController; 
-                serversWindow = NSWindow; 
-                tabView = NSTabView; 
-            }; 
-            SUPERCLASS = NSObject; 
-        }, 
-        {
-            ACTIONS = {
-                addNewServer = id; 
-                cancelChanges = id; 
-                connect = id; 
-                quickConnectFromMenu = id; 
-                removeServer = id; 
-                showOpen = id; 
-                showOpenAndKeep = id; 
-            }; 
-            CLASS = ConnectionsController; 
-            LANGUAGE = ObjC; 
-            OUTLETS = {
-                appController = AppController; 
-                "gui_Audio" = NSPopUpButton; 
-                "gui_Status" = NSTextField; 
-                "gui_Throbber" = NSProgressIndicator; 
+                "gui_addNewButton" = NSButton; 
                 "gui_cacheBitmaps" = NSButton; 
                 "gui_colorCount" = NSPopUpButton; 
+                "gui_connectButton" = NSButton; 
                 "gui_consoleSession" = NSButton; 
                 "gui_displayDragging" = NSButton; 
                 "gui_domain" = NSTextField; 
                 "gui_drawDesktop" = NSButton; 
+                "gui_drawerToggleMenu" = NSMenuItem; 
                 "gui_enableAnimations" = NSButton; 
                 "gui_enableThemes" = NSButton; 
                 "gui_forwardDisks" = NSButton; 
                 "gui_host" = NSTextField; 
-                "gui_mangerWindow" = NSWindow; 
+                "gui_inspector" = NSWindow; 
+                "gui_inspectorButton" = NSButton; 
+                "gui_inspectorToggleMenu" = NSMenuItem; 
+                "gui_label" = NSTextField; 
+                "gui_mainWindow" = NSWindow; 
                 "gui_password" = NSTextField; 
-                "gui_quickConnectMenu" = NSMenu; 
+                "gui_performanceOptions" = NSBox; 
                 "gui_savePassword" = NSButton; 
                 "gui_screenResolution" = NSPopUpButton; 
-                "gui_serverList" = NSTableView; 
+                "gui_serverList" = CRDServerList; 
+                "gui_serversDrawer" = NSDrawer; 
+                "gui_tabView" = NSTabView; 
                 "gui_username" = NSTextField; 
             }; 
             SUPERCLASS = NSObject; 
         }, 
-        {CLASS = FirstResponder; LANGUAGE = ObjC; SUPERCLASS = NSObject; }, 
+        {CLASS = CRDHeaderCell; LANGUAGE = ObjC; SUPERCLASS = NSTableHeaderCell; }, 
+        {CLASS = CRDLabelCell; LANGUAGE = ObjC; SUPERCLASS = NSCell; }, 
+        {CLASS = CRDServerCell; LANGUAGE = ObjC; SUPERCLASS = NSCell; }, 
+        {CLASS = CRDServerList; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CRDServersColumn; LANGUAGE = ObjC; SUPERCLASS = NSTableColumn; }, 
+        {
+            ACTIONS = {"" = id; }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
         {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {CLASS = RDCSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
         {

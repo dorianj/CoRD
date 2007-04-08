@@ -1,4 +1,4 @@
-//  Copyright (c) 2006 Dorian Johnson <arcadiclife@gmail.com>
+//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -16,37 +16,28 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 #import <Cocoa/Cocoa.h>
+#import "miscellany.h"
+
+#define CELL_IMAGE_HEIGHT 36
+#define CELL_IMAGE_WIDTH  36
 
 
-@interface RDPFile : NSObject {
-	NSMutableDictionary *attributes;
-	NSString *pathLoadedFrom;
-	NSString *password;
+@interface CRDServerCell : NSCell
+{
+	NSMutableAttributedString *label; // First line
+	NSMutableAttributedString *user;  // Second line
+	NSMutableAttributedString *host;  // Third line
+	NSImage *image;
+	BOOL highlighted;
+	CRDConnectionStatus status;
+	NSProgressIndicator *progressIndicator;
+	NSTimer *progressIndicatorTimer;
 }
-/* Accessors */
-- (NSString *)label;
-- (void)setLabel:(NSString *)newLabel;
-- (NSString *)filename;
-- (void)setFilename:(NSString *)path;
-- (NSString *)password;
-- (void)setPassword:(NSString *)pass;
 
-/* Accessing data */
-- (NSDictionary *) attributes;
-- (NSString *) getStringAttribute:(NSString *) name;
-- (int) getIntAttribute:(NSString *) name;
-- (BOOL) getBoolAttribute:(NSString *) name;
-- (id) getAttribute:(NSString *)name;
-- (BOOL) hasValueForName:(NSString *)name;
-- (void) setAttributes:(NSDictionary *)newMap;
+- (void)setDisplayedText:(NSString *)displayName username:(NSString *)username address:(NSString *)address;
 
-- (NSString *) descriptionBrief;
-
-- (void) writeToFile:(NSString *)filename;
-
-+ (RDPFile *) rdpFromFile:(NSString *) filename;
-
+- (void)setStatus:(CRDConnectionStatus)connStatus;
+- (CRDConnectionStatus)status;
 
 @end

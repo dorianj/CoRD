@@ -16,28 +16,28 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-#import <Cocoa/Cocoa.h>
-#import "RDInstance.h"
+#import "CRDServersColumn.h"
+#import "CRDHeaderCell.h"
 
-@interface ActiveConnection : NSObject
+@implementation CRDServersColumn
+
+- (void) awakeFromNib
 {
-	NSToolbarItem *toolbarRepresentation;
-	NSTabViewItem *tabViewRepresentation;
-	NSButton *thumbnailView;
-	RDInstance *rd;
-	BOOL usesThumbnails;
-	BOOL running;
+	[self setHeaderCell:[[CRDHeaderCell alloc] init]]; 
 }
 
--(NSString *)label;
--(void)enableThumbnailView;
--(void)disableThumbnailView;
--(id)initFromRDInstance:(RDInstance *)inst scroll:(NSScrollView *)scroll preview:(BOOL)preview
-		target:(id)controller;
--(NSToolbarItem *)toolbarRepresentation;
--(NSTabViewItem *)tabViewRepresentation;
--(RDInstance *)rd;
--(void)startInputRunLoop;
--(void)disconnect;
+- (id) dataCellForRow:(int)row
+{
+	id delegate = [[self tableView] delegate];
+	
+	if ([delegate respondsToSelector:@selector(tableColumn:inTableView:dataCellForRow:)])
+	{
+		id cell = [delegate tableColumn:self inTableView:[self tableView] dataCellForRow:row];
+		if (cell != nil)
+			return cell;
+	}
+	
+	return [super dataCellForRow:row];
+}
 
 @end

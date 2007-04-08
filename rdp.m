@@ -1117,7 +1117,7 @@ process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 
 	if (ctype & RDP_MPPC_COMPRESSED)
 	{
-		fprintf(stderr, "RDP conn:%p stream:%s length:%d ctype:%d\n", conn, s, clen, ctype);
+		//fprintf(stderr, "RDP conn:%p stream:%s length:%d ctype:%d\n", conn, s, clen, ctype);
 		if (len > RDP_MPPC_DICT_SIZE)
 			error("error decompressed packet size exceeds max\n");
 		if (mppc_expand(conn, s->p, clen, ctype, &roff, &rlen) == -1)

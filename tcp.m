@@ -63,7 +63,7 @@ tcp_send(rdcConnection conn, STREAM s)
 	
 	int length = s->end - s->data;
 	int sent, total = 0;
-	while (total <length) {
+	while (total < length) {
 		sent = [os write:s->data + total  maxLength:length - total];
 		if (sent < 0) {
 			error("send: %s\n", strerror(errno));
@@ -139,27 +139,47 @@ tcp_connect(rdcConnection conn, const char *server)
 	NSHost *host;
 	AppController *cont = conn->controller;
 	
-	//[cont setStatus:[NSString stringWithFormat:@"Looking up host '%s'", server]];
-	host = [NSHost hostWithAddress:[NSString stringWithUTF8String:server]];
-	if (!host) {
-		host = [NSHost hostWithName:[NSString stringWithUTF8String:server]];
-		if (!host) {
-			//[cont setStatus:[NSString stringWithFormat:@"Error: Couldn't resolve '%s'", server]];
-			return FALSE;
+	if ( (host = [NSHost hostWithAddress:[NSString stringWithUTF8String:server]]) == nil)
+	{
+		if ( (host = [NSHost hostWithName:[NSString stringWithUTF8String:server]]) == nil)
+		{
+			conn->errorCode = ConnectionErrorHostResolution;
+			return False;
 		}
 	}
- 
-	//[cont setStatus:[NSString stringWithFormat:@"Connecting to %s", server]];
-	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
-	if ((is == nil) || (os == nil)) {
-		//[cont setStatus:[NSString stringWithFormat:@"Error: couldn't connect to '%s'", server]];
-		return FALSE;
+	
+ 	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
+	
+	if (is == nil || os == nil)
+	{
+		conn->errorCode = ConnectionErrorGeneral;
+		return False;
 	}
 	
 	[is open];
 	[os open];
+	
+	// Wait until the output socket can be written to (this is the alternative to
+	//	letting NSOutputStream block later when we do the first write:)
+	time_t start = time(NULL);
+	int timedOut = False;
+	while (![os hasSpaceAvailable] && !timedOut )
+	{
+		usleep(1000); // sleep for a millisecond
+		timedOut = (time(NULL) - start > TIMOUT_LENGTH);
+	}
+	
+	if (timedOut == True)
+	{
+		conn->errorCode = ConnectionErrorTimeOut;
+		return False;
+	}
+	
 	[is retain];
 	[os retain];
+	
+	
+	
 	conn->host = host;
 	conn->inputStream = is;
 	conn->outputStream = os;

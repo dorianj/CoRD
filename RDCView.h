@@ -31,7 +31,8 @@
 @class RDCBitmap;
 @class RDCKeyboard;
 
-@interface RDCView : NSView {
+@interface RDCView : NSView
+{
 	RDInstance *controller;
 	NSArray *colorMap;
 	NSImage *back;
@@ -40,41 +41,35 @@
 	NSColor *foregroundColor, *backgroundColor;
 	NSCursor *cursor;
 	int bitdepth;
-	int modifiers;
-	NSMutableArray *auxiliaryViews;
 	RDCKeyboard *keyTranslator;
 }
 
--(void)startUpdate;
--(void)stopUpdate;
--(void)fillRect:(NSRect)r;
--(void)fillRect:(NSRect)rect withColor:(NSColor *) color;
--(void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin;
--(NSArray *)colorMap;
--(void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
--(void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c  winding:(NSWindingRule)winding;
--(int)setColorMap:(NSArray *)map;
--(void)memblt:(NSRect)r from:(NSImage *)src withOrigin:(NSPoint)origin;
--(void)screenBlit:(NSRect)from to:(NSPoint)to;
--(void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)w;
--(int)width;
--(int)height;
--(void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(int)fgcolor bg:(int)bgcolor;
--(void)setClip:(NSRect)r;
--(void)resetClip;
--(int)bitsPerPixel;
--(NSColor *)nscolorForRDCColor:(int)col;
--(int)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b;
--(void)setForeground:(NSColor *)color;
--(void)setBackground:(NSColor *)color;
--(void)swapRect:(NSRect)r;
--(void)ellipse:(NSRect)r color:(NSColor *)c;
--(void)setController:(RDInstance *)instance;
--(void)setBitdepth:(int)depth;
--(void)setCursor:(NSCursor *)cursor;
--(void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
--(void)addAuxiliaryView:(NSView *)view;
--(NSView *)primaryAuxiliaryView;
--(void)paintAuxiliaryViews; 
-
+- (void)startUpdate;
+- (void)stopUpdate;
+- (void)fillRect:(NSRect)r;
+- (void)fillRect:(NSRect)rect withColor:(NSColor *) color;
+- (void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin;
+- (NSArray *)colorMap;
+- (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
+- (void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c  winding:(NSWindingRule)winding;
+- (int)setColorMap:(NSArray *)map;
+- (void)memblt:(NSRect)r from:(NSImage *)src withOrigin:(NSPoint)origin;
+- (void)screenBlit:(NSRect)from to:(NSPoint)to;
+- (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)w;
+- (int)width;
+- (int)height;
+- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(int)fgcolor bg:(int)bgcolor;
+- (void)setClip:(NSRect)r;
+- (void)resetClip;
+- (int)bitsPerPixel;
+- (NSColor *)nscolorForRDCColor:(int)col;
+- (int)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b;
+- (void)setForeground:(NSColor *)color;
+- (void)setBackground:(NSColor *)color;
+- (void)swapRect:(NSRect)r;
+- (void)ellipse:(NSRect)r color:(NSColor *)c;
+- (void)setController:(RDInstance *)instance;
+- (void)setBitdepth:(int)depth;
+- (void)setCursor:(NSCursor *)cursor;
+- (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
 @end

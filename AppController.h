@@ -18,46 +18,102 @@
 
 #import <Cocoa/Cocoa.h>
 
-@class ConnectionsController;
+@class CRDLabelCell;
+@class CRDServerList;
 @class RDInstance;
-
 
 @interface AppController : NSObject
 {
-	IBOutlet NSWindow *mainWindow;
-    IBOutlet NSWindow *serversWindow;
-	IBOutlet NSTabView *tabView;
-	IBOutlet ConnectionsController *serversManager;
-	IBOutlet NSMenuItem *previewToggleMenu;
-	IBOutlet NSMenu *quickConnectMenu;
-	IBOutlet NSTextField *errorField;
+	// Inspector elements    
+	IBOutlet NSTextField *gui_label;
+    IBOutlet NSTextField *gui_host;
+	IBOutlet NSTextField *gui_username;
+    IBOutlet NSTextField *gui_password;
+    IBOutlet NSButton *gui_savePassword;
+	IBOutlet NSTextField *gui_domain;
+	IBOutlet NSButton *gui_consoleSession;
+	
+	IBOutlet NSButton *gui_forwardDisks;
+    IBOutlet NSPopUpButton *gui_screenResolution;
+    IBOutlet CRDServerList *gui_serverList;
+    
+	IBOutlet NSButton *gui_cacheBitmaps;
+    IBOutlet NSPopUpButton *gui_colorCount;
+    IBOutlet NSButton *gui_displayDragging;
+    IBOutlet NSButton *gui_drawDesktop;
+    IBOutlet NSButton *gui_enableAnimations;
+    IBOutlet NSButton *gui_enableThemes;
+
+	IBOutlet NSButton *gui_connectButton;
+	IBOutlet NSButton *gui_inspectorButton;
+	IBOutlet NSButton *gui_addNewButton;
+	
+	IBOutlet NSWindow *gui_inspector;
+	IBOutlet NSWindow *gui_mainWindow;
+	
+	IBOutlet NSMenuItem *gui_inspectorToggleMenu;
+	IBOutlet NSMenuItem *gui_drawerToggleMenu;
+	
+	// Other interface elements
+	IBOutlet NSBox *gui_performanceOptions;
+	IBOutlet NSTabView *gui_tabView;
+	IBOutlet NSDrawer *gui_serversDrawer;
+		
+	// The list of connected servers (may contain some saved servers)
+	NSMutableArray *connectedServers;
+	
+	// The list of unconnected saved servers
+	NSMutableArray *savedServers;
+	
+	// Label cells
+	CRDLabelCell *connectedServersLabel;
+	CRDLabelCell *savedServersLabel;
+	
+	// The instance that the inspector is currently viewing/editing
+	RDInstance *inspectedServer;
+	
+	// Some constant file paths
+	NSString *serversDirectory;
+	NSString *resourcePath;
 	
 	// Toolbar stuff
-	NSToolbar *toolbar;
-	NSMutableDictionary *staticToolbarItems;
-	NSMutableArray *currentConnections;
+	NSToolbar *gui_toolbar;
+	NSMutableDictionary *toolbarItems;
 	
 	NSUserDefaults *userDefaults;
-	BOOL previewsEnabled;
 }
 
-- (IBAction)disconnect:(id)sender;
-- (void)changeSelection:(id)sender;
+// Actions
+- (IBAction)addNewSavedServer:(id)sender;
+- (IBAction)removeSelectedSavedServer:(id)sender;
+- (IBAction)keepSelectedServer:(id)sender;
+- (IBAction)toggleInspector:(id)sender;
+- (IBAction)togglePerformanceDisclosure:(id)sender;
+- (IBAction)fieldEdited:(id)sender;
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
-- (IBAction)showServerManager:(id)sender;
-- (void)removeItem:(id)sender;
-- (void)resizeToMatchSelection;
-- (void)setStatus:(NSString *)status;
-- (void)connectRDInstance:(id)instance;
-- (void)connectAsync:(id)instance;
-- (void)completeConnection:(id)arg;
-- (id)selectedConnection;
-- (int)selectedConnectionIndex;
-- (id)connectionForLabel:(NSString *)label;
-- (int)connectionIndexForLabel:(NSString *)label;
-- (IBAction)togglePreviews:(id)sender;
-- (IBAction)showQuickConnect:(id)sender;
-- (void)setPreviewsVisible:(BOOL)visible;
+- (IBAction)disconnect:(id)sender;
+- (IBAction)connect:(id)sender;
+- (IBAction)showOpen:(id)sender;
+- (IBAction)showOpenAndKeep:(id)sender;
+- (IBAction)toggleDrawer:(id)sender;
+- (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
+
+- (void)cellNeedsDisplay:(NSCell *)cell;
+
+- (void)showOpen:(id)sender keepServer:(BOOL)keep;
+
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
+- (BOOL)mainWindowIsFocused;
+
++ (NSImage *)sharedDocumentIcon;
+
+- (void)disconnectInstance:(RDInstance *)inst;
+
+- (RDInstance *)serverInstanceForRow:(int)row;
+
 @end
+
+
+
+
