@@ -411,5 +411,5 @@ enum RDP_INPUT_DEVICE
 #define exDiscReasonLicenseNoRemoteConnections		0x010a
 
 // Time to wait for remote host in seconds
-#define TIMOUT_LENGTH 5
+#define TIMOUT_LENGTH 20
 

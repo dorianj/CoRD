@@ -101,6 +101,11 @@
 	[self setNeedsDisplay:YES];
 }
 
+- (void)selectRow:(int)index
+{
+	[self selectRowIndexes:[NSIndexSet indexSetWithIndex:(unsigned)index] byExtendingSelection:NO];
+}
+
 - (void)deselectRow:(int)rowIndex
 {
 	if (rowIndex != -1)
@@ -111,6 +116,26 @@
 {
 	[self selectRowIndexes:nil byExtendingSelection:NO];
 	[super deselectAll:sender];
+}
+
+- (void)keyUp:(NSEvent *)ev
+{
+	NSString *str = [ev charactersIgnoringModifiers];
+	
+	if ([str length] == 1)
+	{
+		switch ([str characterAtIndex:0])
+		{
+			case NSDeleteFunctionKey:
+				[g_appController removeSelectedSavedServer:self];
+				break;
+			default:
+				break;
+		}
+		
+		
+	}
+
 }
 
 @end

@@ -53,6 +53,7 @@
 	
 	IBOutlet NSMenuItem *gui_inspectorToggleMenu;
 	IBOutlet NSMenuItem *gui_drawerToggleMenu;
+	IBOutlet NSMenuItem *gui_keepServerMenu;
 	
 	// Other interface elements
 	IBOutlet NSBox *gui_performanceOptions;
@@ -95,21 +96,16 @@
 - (IBAction)disconnect:(id)sender;
 - (IBAction)connect:(id)sender;
 - (IBAction)showOpen:(id)sender;
-- (IBAction)showOpenAndKeep:(id)sender;
 - (IBAction)toggleDrawer:(id)sender;
 - (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
 
 - (void)cellNeedsDisplay:(NSCell *)cell;
-
-- (void)showOpen:(id)sender keepServer:(BOOL)keep;
-
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
-- (BOOL)mainWindowIsFocused;
 
+- (BOOL)mainWindowIsFocused;
 + (NSImage *)sharedDocumentIcon;
 
 - (void)disconnectInstance:(RDInstance *)inst;
-
 - (RDInstance *)serverInstanceForRow:(int)row;
 
 @end

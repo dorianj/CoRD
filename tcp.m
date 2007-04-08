@@ -163,7 +163,7 @@ tcp_connect(rdcConnection conn, const char *server)
 	//	letting NSOutputStream block later when we do the first write:)
 	time_t start = time(NULL);
 	int timedOut = False;
-	while (![os hasSpaceAvailable] && !timedOut )
+	while (![os hasSpaceAvailable] && !timedOut && conn->errorCode != ConnectionErrorCanceled)
 	{
 		usleep(1000); // sleep for a millisecond
 		timedOut = (time(NULL) - start > TIMOUT_LENGTH);

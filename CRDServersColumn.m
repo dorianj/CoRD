@@ -17,14 +17,8 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "CRDServersColumn.h"
-#import "CRDHeaderCell.h"
 
 @implementation CRDServersColumn
-
-- (void) awakeFromNib
-{
-	[self setHeaderCell:[[CRDHeaderCell alloc] init]]; 
-}
 
 - (id) dataCellForRow:(int)row
 {

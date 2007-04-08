@@ -11,7 +11,6 @@
                 selectNext = id; 
                 selectPrevious = id; 
                 showOpen = id; 
-                showOpenAndKeep = id; 
                 toggleDrawer = id; 
                 toggleInspector = id; 
                 togglePerformanceDisclosure = id; 
@@ -35,6 +34,7 @@
                 "gui_inspector" = NSWindow; 
                 "gui_inspectorButton" = NSButton; 
                 "gui_inspectorToggleMenu" = NSMenuItem; 
+                "gui_keepServerMenu" = NSMenuItem; 
                 "gui_label" = NSTextField; 
                 "gui_mainWindow" = NSWindow; 
                 "gui_password" = NSTextField; 

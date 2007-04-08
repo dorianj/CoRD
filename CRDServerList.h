@@ -22,5 +22,5 @@
 @interface CRDServerList : NSTableView {
 
 }
-
+- (void)selectRow:(int)index;
 @end

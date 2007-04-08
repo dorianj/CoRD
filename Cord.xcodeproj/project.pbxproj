@@ -66,8 +66,6 @@
 		98B4F0DB0BBECAE7001F499B /* CRDServerList.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B4F0D90BBECAE7001F499B /* CRDServerList.m */; };
 		98BAB8D20BB0A9230037A08A /* keymaps in Resources */ = {isa = PBXBuildFile; fileRef = 98BAB8A90BB0A9230037A08A /* keymaps */; };
 		98C6DCCF0B570776005A6638 /* rdp document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98C6DCCE0B570776005A6638 /* rdp document.icns */; };
-		98DE4A420BBF8953001B6EB7 /* CRDHeaderCell.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98DE4A400BBF8953001B6EB7 /* CRDHeaderCell.h */; };
-		98DE4A430BBF8954001B6EB7 /* CRDHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98DE4A410BBF8953001B6EB7 /* CRDHeaderCell.m */; };
 		98E488A80B4B439C005D79B3 /* Default.rdp in Resources */ = {isa = PBXBuildFile; fileRef = 98E488A70B4B439C005D79B3 /* Default.rdp */; };
 /* End PBXBuildFile section */
 
@@ -85,7 +83,6 @@
 				983E4F5F0BB9FA82009F833D /* CRDLabelCell.h in CopyFiles */,
 				983E4FE00BBA071E009F833D /* CRDServersColumn.h in CopyFiles */,
 				98B4F0DA0BBECAE7001F499B /* CRDServerList.h in CopyFiles */,
-				98DE4A420BBF8953001B6EB7 /* CRDHeaderCell.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,8 +170,6 @@
 		98B4F0D90BBECAE7001F499B /* CRDServerList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDServerList.m; sourceTree = "<group>"; };
 		98BAB8A90BB0A9230037A08A /* keymaps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = keymaps; sourceTree = "<group>"; };
 		98C6DCCE0B570776005A6638 /* rdp document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "rdp document.icns"; sourceTree = "<group>"; };
-		98DE4A400BBF8953001B6EB7 /* CRDHeaderCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRDHeaderCell.h; sourceTree = "<group>"; };
-		98DE4A410BBF8953001B6EB7 /* CRDHeaderCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDHeaderCell.m; sourceTree = "<group>"; };
 		98E488A70B4B439C005D79B3 /* Default.rdp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = Default.rdp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -342,8 +337,6 @@
 		983E4BAE0BB8900D009F833D /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				98DE4A400BBF8953001B6EB7 /* CRDHeaderCell.h */,
-				98DE4A410BBF8953001B6EB7 /* CRDHeaderCell.m */,
 				983E4B5C0BB88821009F833D /* CRDServerCell.h */,
 				983E4B5D0BB88821009F833D /* CRDServerCell.m */,
 				983E4F5D0BB9FA82009F833D /* CRDLabelCell.h */,
@@ -457,7 +450,6 @@
 				983E4F600BB9FA82009F833D /* CRDLabelCell.m in Sources */,
 				983E4FE10BBA071E009F833D /* CRDServersColumn.m in Sources */,
 				98B4F0DB0BBECAE7001F499B /* CRDServerList.m in Sources */,
-				98DE4A430BBF8954001B6EB7 /* CRDHeaderCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

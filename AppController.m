@@ -25,7 +25,7 @@
 static NSImage *shared_documentIcon = nil;
 
 #define TOOLBAR_DISCONNECT	@"Disconnect"
-#define TOOLBAR_DRAWER		@"Servers"
+#define TOOLBAR_DRAWER @"Servers"
 
 @interface AppController (Private)
 	- (void)listUpdated;
@@ -56,7 +56,7 @@ static NSImage *shared_documentIcon = nil;
 	connectedServers = [[NSMutableArray alloc] init];
 	savedServers = [[NSMutableArray alloc] init];
 	
-	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:@"Connected Servers"];
+	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:@"Active sessions"];
 	savedServersLabel = [[CRDLabelCell alloc] initTextCell:@"Saved Servers"];
 
 	inspectedServer = nil;
@@ -81,16 +81,21 @@ static NSImage *shared_documentIcon = nil;
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
 	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	RDInstance *viewedInst = [self viewedServer];
 	SEL action = [item action];
 	
     if (action == @selector(removeSelectedSavedServer:))
-		return ![inst temporary];
+		return (inst != nil) && ![inst temporary] && [inst status] == CRDConnectionClosed;
     else if (action == @selector(connect:))
         return (inst != nil) && [inst status] != CRDConnectionConnected;
     else if (action == @selector(disconnect:))
-		return [inst status] != CRDConnectionConnected;
+		return (inst != nil) && [inst status] != CRDConnectionClosed;
 	else if (action == @selector(keepSelectedServer:))
-		return [inst status] != CRDConnectionConnected;
+		return (inst != nil) && [inst status] == CRDConnectionConnected;
+	else if (action == @selector(selectNext:))
+		return viewedInst != nil;
+	else if (action == @selector(selectPrevious:))
+		return viewedInst != nil;
 	else
 		return YES;
 }
@@ -170,6 +175,8 @@ static NSImage *shared_documentIcon = nil;
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 
+
+	[self validateControls];
 	[self listUpdated];
 }
 
@@ -237,7 +244,13 @@ static NSImage *shared_documentIcon = nil;
 // Toggles whether or not the selected server is kept after disconnect
 - (IBAction)keepSelectedServer:(id)sender
 {
-
+	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	if (inst == nil)
+		return;
+	
+	[inst setTemporary:![inst temporary]];
+	[self validateControls];
+	[self listUpdated];
 }
 
 // Disconnects the currently selected active server
@@ -294,30 +307,41 @@ static NSImage *shared_documentIcon = nil;
 	if (inspectedServer != nil)
 	{
 		[self updateInstToMatchInspector:inspectedServer];
-		[gui_serverList setNeedsDisplay:YES];
+		[self listUpdated];
 	}
 }
 
 - (IBAction)selectNext:(id)sender
 {
-	// Undone
-
+	[gui_tabView selectNextTabViewItem:sender];
+	
+	RDInstance *inst = [self viewedServer];
+	if (inst == nil)
+		return;
+		
+	[gui_serverList selectRow:(1 + [connectedServers indexOfObjectIdenticalTo:inst])];
 }
 
 - (IBAction)selectPrevious:(id)sender
 {
-
-	// Undone
+	[gui_tabView selectPreviousTabViewItem:sender];
+	
+	RDInstance *inst = [self viewedServer];
+	if (inst == nil)
+		return;
+		
+	[gui_serverList selectRow:(1 + [connectedServers indexOfObjectIdenticalTo:inst])];
 }
 
 - (IBAction)showOpen:(id)sender
 {
-	[self showOpen:sender keepServer:NO];
-}
-
-- (IBAction)showOpenAndKeep:(id)sender
-{
-	[self showOpen:sender keepServer:YES];
+	NSOpenPanel *panel = [NSOpenPanel openPanel];
+	[panel setAllowsMultipleSelection:YES];
+	[panel runModalForTypes:[NSArray arrayWithObject:@"rdp"]];
+	NSArray *filenames = [panel filenames];
+	if ([filenames count] <= 0) return;
+	
+	[self application:[NSApplication sharedApplication] openFiles:filenames];
 }
 
 - (IBAction)toggleDrawer:(id)sender
@@ -361,12 +385,13 @@ static NSImage *shared_documentIcon = nil;
 {
 	NSString *itemId = [toolbarItem itemIdentifier];
 	
+	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	RDInstance *viewedInst = [self viewedServer];
+	
 	if ([itemId isEqualToString:TOOLBAR_DRAWER])
-		[toolbarItem setLabel:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Drawer" : @"Show Drawer")];
-	
-	
-	/* xxx: needs to validate for fullscreen, disconnect */
-	
+		[toolbarItem setLabel:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Servers" : @"Show Servers")];
+	else if ([itemId isEqualToString:TOOLBAR_DISCONNECT])
+		return viewedInst != nil;
 	
 	return YES;
 }
@@ -387,15 +412,15 @@ static NSImage *shared_documentIcon = nil;
 	id file;
 	while ( (file = [enumerator nextObject]) )
 	{
-		/* xxx: rewrite
-		RDPFile *details = [RDPFile rdpFromFile:file];
-		RDInstance *inst = [serversManager rdInstanceFromRDPFile:details];
+		RDInstance *inst = [[RDInstance alloc] initWithRDPFile:file];
 		
-		if ([details getBoolAttribute:@"cord save password"])
-			[inst setValue:[serversManager retrievePassword:details] forKey:@"password"];
-			
-		[self connectRDInstance:inst];
-		*/
+		if (inst != nil)
+		{
+			[inst setTemporary:YES];
+			[connectedServers addObject:inst];
+			[self listUpdated];
+			[self connectInstance:inst];	
+		}
 	}
 }
 
@@ -708,16 +733,15 @@ static NSImage *shared_documentIcon = nil;
 	return YES;
 }
 
-- (void)windowWillClose:(id)sender 
+- (void)windowWillClose:(NSNotification *)sender
 {
-	if (sender == gui_inspector)
+	if ([sender object] == gui_inspector)
 	{
 		[self fieldEdited:nil];
-		inspectedServer = nil;
 		[self saveInspectedServer];
+		inspectedServer = nil;
 		[self validateControls];
 	}
-	
 }
 
 
@@ -744,14 +768,8 @@ static NSImage *shared_documentIcon = nil;
 	[self performSelectorOnMainThread:@selector(completeConnection:)
 			withObject:inst waitUntilDone:NO];
 					
-	if (connected)
-	{				
+	if (connected)	
 		[inst startInputRunLoop];
-	}
-	else
-	{
-		
-	}
 
 	[inst release];
 	[pool release];
@@ -763,15 +781,18 @@ static NSImage *shared_documentIcon = nil;
 	if ([inst status] == CRDConnectionConnected)
 	{
 		// Move it into the proper list
-		[inst retain];
-		[savedServers removeObject:inst];
-		[connectedServers addObject:inst];
-		[inst release];
+		if (![inst temporary])
+		{
+			[inst retain];
+			[savedServers removeObject:inst];
+			[connectedServers addObject:inst];
+			[inst release];
+		}
 		
 		NSIndexSet *index = [NSIndexSet indexSetWithIndex:1 + [connectedServers indexOfObject:inst]];
 		[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
 		
-		
+
 		// Create the gui, add to window
 		NSScrollView *scroll = [[[NSScrollView alloc] initWithFrame:[gui_tabView frame]] autorelease];
 		[inst createGUI:scroll];
@@ -787,26 +808,29 @@ static NSImage *shared_documentIcon = nil;
 	else
 	{
 		[self cellNeedsDisplay:(NSCell *)[inst cellRepresentation]];
-		
-		// Show an alert panel describing the error. xxx: main thread?
 		ConnectionErrorCode errorCode = [inst conn]->errorCode;
 		
-		NSString *descs[] = {
-				@"No error",
-				@"The connection timed out.",
-				@"The host name could not be resolved.",
-				@"There was an error connecting." };
-		NSString *detail = descs[errorCode];
-		NSString *title = [NSString stringWithFormat:@"Couldn't connect to %@", [inst label]];
-		
-		NSAlert *alert = [NSAlert alertWithMessageText:title defaultButton:nil
-					alternateButton:@"Retry" otherButton:nil informativeTextWithFormat:detail];
-		[alert setAlertStyle:NSCriticalAlertStyle];
-		
-		if ([alert runModal] == NSAlertAlternateReturn)
-			[self performSelectorOnMainThread:@selector(connectInstance:) withObject:inst waitUntilDone:NO];
-
+		if (errorCode != ConnectionErrorNone && errorCode != ConnectionErrorCanceled)
+		{
+			NSString *descs[] = {
+					@"No error",
+					@"The connection timed out.",
+					@"The host name could not be resolved.",
+					@"There was an error connecting.",
+					@"You canceled the connection." };
+			NSString *title = [NSString stringWithFormat:@"Couldn't connect to %@", [inst label]];
+			
+			NSAlert *alert = [NSAlert alertWithMessageText:title defaultButton:nil
+						alternateButton:@"Retry" otherButton:nil informativeTextWithFormat:descs[errorCode]];
+			[alert setAlertStyle:NSCriticalAlertStyle];
+			
+			// Retry if needed
+			if ([alert runModal] == NSAlertAlternateReturn)
+				[self performSelectorOnMainThread:@selector(connectInstance:) withObject:inst waitUntilDone:NO];
+		}
 	}
+	
+	
 }
 
 // Assures that the connected instance is disconnected and removed from view.
@@ -834,6 +858,7 @@ static NSImage *shared_documentIcon = nil;
 	} 
 	else
 	{
+		// xxx: remove file (gracefully, though. It might not have started as a saved server)
 		[gui_serverList deselectAll:self];
 	}
 	
@@ -932,7 +957,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	int connectedCount = [connectedServers count];
 	int savedCount = [savedServers count];
-	if ( (row < 1) || (row == connectedCount+1) || (row > 1 + connectedCount + savedCount) )
+	if ( (row <= 0) || (row == 1+connectedCount) || (row > 1 + connectedCount + savedCount) )
 		return nil;
 	else if (row <= connectedCount)
 		return [connectedServers objectAtIndex:row-1];
@@ -971,6 +996,9 @@ static NSImage *shared_documentIcon = nil;
 	
 	[gui_connectButton setEnabled:(inst != nil && [inst status] != CRDConnectionConnected)];
 	[gui_inspectorButton setEnabled:(inst != nil)];
+	
+	[gui_keepServerMenu setState:([inst temporary] ? NSOffState : NSOnState)];
+	[[[NSApplication sharedApplication] menu] update];
 }
 
 

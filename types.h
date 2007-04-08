@@ -284,7 +284,8 @@ typedef enum _ConnectionErrorCode
 	ConnectionErrorNone = 0,
 	ConnectionErrorTimeOut = 1,
 	ConnectionErrorHostResolution = 2,
-	ConnectionErrorGeneral = 3
+	ConnectionErrorGeneral = 3,
+	ConnectionErrorCanceled = 4
 } ConnectionErrorCode;
 
 
