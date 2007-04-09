@@ -16,8 +16,6 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// Todo: make sure that all functions in this follow c_style_naming
-
 #include "miscellany.h"
 
 
@@ -86,7 +84,7 @@ BOOL drawer_is_visisble(NSDrawer *drawer)
 
 #pragma mark ServersManager
 // xxx: make this recursive?
-void ensureDirectoryExists(NSString *path, NSFileManager *manager)
+void ensure_directory_exists(NSString *path, NSFileManager *manager)
 {
 	BOOL isDir;
 	if (![manager fileExistsAtPath:path isDirectory:&isDir])

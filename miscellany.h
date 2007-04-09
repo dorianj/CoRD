@@ -38,7 +38,7 @@ NSString *full_host_name(NSString *host, int port);
 NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *tooltip, SEL action);
 int wrap_array_index(int start, int count, signed int modifier);
 BOOL drawer_is_visisble(NSDrawer *drawer);
-void ensureDirectoryExists(NSString *directory, NSFileManager *manager);
+void ensure_directory_exists(NSString *directory, NSFileManager *manager);
 NSNumber *buttonStateAsNumber(NSButton * button);
 NSNumber *buttonStateAsNumberInverse(NSButton * button);
 NSString *increment_file_name(NSString *path, NSString *base, NSString *extension);
@@ -74,6 +74,7 @@ typedef enum _CRDConnectionStatus
 
 /* Evil: global variables */
 AppController *g_appController;
+
 
 /* General mid-level debugging */
 //#define WITH_DEBUG_KEYBOARD 1

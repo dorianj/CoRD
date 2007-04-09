@@ -1,4 +1,4 @@
-//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>, Craig Dooley <xlnxminusx@gmail.com>
+//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -16,34 +16,32 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+// Purpose: Subclass of NSApplication so that command+key can be interpreted
+//			as windows+key and sent to server. This will be enabled in the furture,
+//			some RDCKeyboard modifications are needed and this is low priority
 
-#import <Cocoa/Cocoa.h>
-#import "rdesktop.h"
+#import "CRDApplication.h"
 
-@class RDInstance;
+#import "AppController.h"
+#import "RDInstance.h"
+#import "RDCView.h"
 
-@interface RDCKeyboard : NSObject {
+@implementation CRDApplication
+
+- (void)sendEvent:(NSEvent *)ev
+{
 	
-	@private
-		uint8 virtualKeymap[0xff];
-		NSMutableDictionary *unicodeKeymap;
-		RDInstance *controller;
-		
-		uint16 remoteModiferState;
-		uint16 savedRemoteModiferState;
+	RDCView *v = [[g_appController viewedServer] view];
+	BOOL viewIsFocused = [g_appController mainWindowIsFocused] && 
+			([[g_appController valueForKey:@"gui_mainWindow"] firstResponder] == v);
+			
+	if (viewIsFocused)
+	{
+
+	}
+	
+    [super sendEvent:ev];
 }
 
-- (id) initWithKeymap:(NSString *)keymapName;
-- (void)handleKeyEvent:(NSEvent *)ev keyDown:(BOOL)down;
-- (void)handleFlagsChanged:(NSEvent *)ev;
-- (RDInstance *)controller;
-- (void)setController:(RDInstance *)cont;
-- (void)sendScancode:(uint8)scancode flags:(uint16)flags;
-- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down;
-
-
-+ (NSString *) isoFileNameForKeymap:(NSString *)keymapName;
-+ (NSString *) currentKeymapName;
-+ (uint16)modifiersForEvent:(NSEvent *)ev; 
 
 @end

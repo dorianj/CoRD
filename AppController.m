@@ -1,4 +1,4 @@
-//  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>, Craig Dooley <xlnxminusx@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -38,7 +38,6 @@ static NSImage *shared_documentIcon = nil;
 	- (void)completeConnection:(RDInstance *)inst;
 	- (void)connectAsync:(RDInstance *)inst;
 	- (void)resizeToMatchSelection;
-	- (RDInstance *)viewedServer;
 @end
 
 
@@ -80,7 +79,7 @@ static NSImage *shared_documentIcon = nil;
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
-	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	RDInstance *inst = [self selectedServerInstance];
 	RDInstance *viewedInst = [self viewedServer];
 	SEL action = [item action];
 	
@@ -138,8 +137,8 @@ static NSImage *shared_documentIcon = nil;
 	serversDirectory = [[cordDirectory stringByAppendingPathComponent:@"Servers"] retain];
 	resourcePath = [[NSBundle mainBundle] resourcePath];
 	
-	ensureDirectoryExists(cordDirectory, fileManager);
-	ensureDirectoryExists(serversDirectory, fileManager);
+	ensure_directory_exists(cordDirectory, fileManager);
+	ensure_directory_exists(serversDirectory, fileManager);
 
 	// Get a list of files from the Servers directory, load each
 	RDInstance *rdpinfo;
@@ -186,7 +185,6 @@ static NSImage *shared_documentIcon = nil;
 
 - (IBAction)addNewSavedServer:(id)sender
 {
-	/* todo: create new RDInstance (label 'New Server 1'), add to list */
 	RDInstance *inst = [[[RDInstance alloc] init] autorelease];
 	
 	NSString *path = increment_file_name(serversDirectory, @"New Server", @".rdp");
@@ -210,7 +208,7 @@ static NSImage *shared_documentIcon = nil;
 */
 - (IBAction)removeSelectedSavedServer:(id)sender
 {
-	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	RDInstance *inst = [self selectedServerInstance];
 	
 	if (inst == nil || [inst temporary] || [inst status] != CRDConnectionClosed)
 		return;
@@ -233,7 +231,7 @@ static NSImage *shared_documentIcon = nil;
 // Connects to the currently selected saved server
 - (IBAction)connect:(id)sender
 {
-	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	RDInstance *inst = [self selectedServerInstance];
 	
 	if (inst == nil)
 		return;
@@ -244,7 +242,7 @@ static NSImage *shared_documentIcon = nil;
 // Toggles whether or not the selected server is kept after disconnect
 - (IBAction)keepSelectedServer:(id)sender
 {
-	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	RDInstance *inst = [self selectedServerInstance];
 	if (inst == nil)
 		return;
 	
@@ -385,7 +383,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	NSString *itemId = [toolbarItem itemIdentifier];
 	
-	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	RDInstance *inst = [self selectedServerInstance];
 	RDInstance *viewedInst = [self viewedServer];
 	
 	if ([itemId isEqualToString:TOOLBAR_DRAWER])
@@ -704,8 +702,7 @@ static NSImage *shared_documentIcon = nil;
 	
 	NSString *resolutionLabel = [NSString stringWithFormat:@"%dx%d", screenWidth, screenHeight];
 	// If this resolution doesn't exist in the pop-up box, create it. Either way, select it.
-	id menuItem = [gui_screenResolution itemWithTitle:resolutionLabel];
-	if (!menuItem)
+	if ([gui_screenResolution itemWithTitle:resolutionLabel] == nil)
 		[gui_screenResolution addItemWithTitle:resolutionLabel];
 	[gui_screenResolution selectItemWithTitle:resolutionLabel];
 }
@@ -715,7 +712,6 @@ static NSImage *shared_documentIcon = nil;
 {
 	if ([inspectedServer modified])
 		[inspectedServer writeRDPFile:nil];
-		
 }
 
 
@@ -748,6 +744,7 @@ static NSImage *shared_documentIcon = nil;
 #pragma mark -
 #pragma mark Managing connected servers
 
+// Starting point to connect to a instance. Threading is automatically handled.
 - (void)connectInstance:(RDInstance *)inst
 {
 	if (inst == nil)
@@ -757,12 +754,11 @@ static NSImage *shared_documentIcon = nil;
 	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self withObject:inst];
 }
 
-// Called from a newly created thread dedicated to this connection
+// Should only be called by connectInstance
 - (void)connectAsync:(RDInstance *)inst
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	// todo:status
 	BOOL connected = [inst connect];
 	
 	[self performSelectorOnMainThread:@selector(completeConnection:)
@@ -775,7 +771,7 @@ static NSImage *shared_documentIcon = nil;
 	[pool release];
 }
 
-// Called from main thread
+// Called from main thread in connectAsync
 - (void)completeConnection:(RDInstance *)inst
 {
 	if ([inst status] == CRDConnectionConnected)
@@ -792,7 +788,6 @@ static NSImage *shared_documentIcon = nil;
 		NSIndexSet *index = [NSIndexSet indexSetWithIndex:1 + [connectedServers indexOfObject:inst]];
 		[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
 		
-
 		// Create the gui, add to window
 		NSScrollView *scroll = [[[NSScrollView alloc] initWithFrame:[gui_tabView frame]] autorelease];
 		[inst createGUI:scroll];
@@ -839,11 +834,12 @@ static NSImage *shared_documentIcon = nil;
 	if (inst == nil || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
 		return;
 		
+	if ([inst tabViewRepresentation] != nil)
+		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
+	
 	if ([inst status] == CRDConnectionConnected)
 		[inst disconnect];
-	
-	
-	[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
+		
 	
 	// If it's not temporary, move it to the saved servers list. Update the table view
 	//	and selection as needed.
@@ -889,35 +885,17 @@ static NSImage *shared_documentIcon = nil;
 		[gui_serversDrawer close];
 }
 
-- (void)showOpen:(id)sender keepServer:(BOOL)keep
-{
-	/* xxx: rewrite
-	NSOpenPanel *panel = [NSOpenPanel openPanel];
-	[panel setAllowsMultipleSelection:YES];
-	//[panel setDelegate:self];
-	[panel runModalForTypes:[NSArray arrayWithObject:@"rdp"]];
-	NSArray *filenames = [panel filenames];
-	if ([filenames count] <= 0) return;
-	
-
-	
-	if (keep)
-	{
-		NSEnumerator *enumerator = [filenames objectEnumerator];
-		NSString *file;
-		while ( (file = [enumerator nextObject]) )
-			[self addServer:[RDPFile rdpFromFile:file]];			
-	}*/
-}
-
 - (void)resizeToMatchSelection
 {
-
+	// todo: make this work with drawer
+	
 	RDInstance *inst = [self viewedServer];
 	NSSize newContentSize = (inst != nil) ? [[inst view] frame].size : NSMakeSize(600, 450);
 
+
 	NSRect windowFrame = [gui_mainWindow frame];
 	NSRect screenRect = [[gui_mainWindow screen] visibleFrame];
+
 	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = windowFrame.size.height - [[gui_mainWindow contentView] frame].size.height;
 	
@@ -928,11 +906,12 @@ static NSImage *shared_documentIcon = nil;
 										windowFrame.size.height-newContentSize.height-toolbarHeight, 
 										newContentSize.width, newContentSize.height + toolbarHeight);
 	if (newWindowFrame.size.height > screenRect.size.height &&
-			newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
+		newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
 	{
 		newWindowFrame.origin.y = screenRect.origin.y;
 		newWindowFrame.size.height = screenRect.size.height;
 		newWindowFrame.size.width += scrollerWidth;
+
 	} else if (newWindowFrame.size.width > screenRect.size.width &&
 				newWindowFrame.size.height+scrollerWidth <= screenRect.size.height)
 	{
@@ -940,7 +919,15 @@ static NSImage *shared_documentIcon = nil;
 		newWindowFrame.size.width = screenRect.size.width;
 		newWindowFrame.size.height += scrollerWidth;
 	}
-
+	
+	// Try to make it not outside of the screen
+	if (newWindowFrame.origin.y < screenRect.origin.y)
+		newWindowFrame.origin.y = screenRect.origin.y;
+	
+	if (newWindowFrame.origin.x + newWindowFrame.size.width > screenRect.size.width)
+		newWindowFrame.origin.x -= (newWindowFrame.origin.x + newWindowFrame.size.width) - (screenRect.origin.x + screenRect.size.width);
+	
+	[gui_mainWindow setContentMaxSize:newWindowFrame.size];
 	[gui_mainWindow setFrame:newWindowFrame display:YES animate:YES];
 }
 
@@ -963,6 +950,11 @@ static NSImage *shared_documentIcon = nil;
 		return [connectedServers objectAtIndex:row-1];
 	else 
 		return [savedServers objectAtIndex:row - connectedCount - 2];
+}
+
+- (RDInstance *)selectedServerInstance
+{
+	return [self serverInstanceForRow:[gui_serverList selectedRow]];
 }
 
 // Returns the connected server that the tab view is displaying

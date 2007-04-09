@@ -1,4 +1,4 @@
-//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>, Craig Dooley <xlnxminusx@gmail.com>
+//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -16,34 +16,14 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
 #import <Cocoa/Cocoa.h>
-#import "rdesktop.h"
 
-@class RDInstance;
+#import "miscellany.h"
 
-@interface RDCKeyboard : NSObject {
-	
-	@private
-		uint8 virtualKeymap[0xff];
-		NSMutableDictionary *unicodeKeymap;
-		RDInstance *controller;
-		
-		uint16 remoteModiferState;
-		uint16 savedRemoteModiferState;
+@interface CRDApplication : NSApplication {
+
+
+
 }
-
-- (id) initWithKeymap:(NSString *)keymapName;
-- (void)handleKeyEvent:(NSEvent *)ev keyDown:(BOOL)down;
-- (void)handleFlagsChanged:(NSEvent *)ev;
-- (RDInstance *)controller;
-- (void)setController:(RDInstance *)cont;
-- (void)sendScancode:(uint8)scancode flags:(uint16)flags;
-- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down;
-
-
-+ (NSString *) isoFileNameForKeymap:(NSString *)keymapName;
-+ (NSString *) currentKeymapName;
-+ (uint16)modifiersForEvent:(NSEvent *)ev; 
 
 @end

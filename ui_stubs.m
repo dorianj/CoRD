@@ -451,16 +451,16 @@ HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int
 }
 
 void ui_set_null_cursor(rdcConnection conn) {
-	if (nullCursor == nil) {
+	if (nullCursor == nil)
 		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL);
-	}
 	
 	ui_set_cursor(conn, nullCursor);
 }
 
 void ui_set_cursor(rdcConnection conn, HCURSOR cursor) {
+	RDCView *v = (RDCView *)conn->ui;
 	id c = (RDCBitmap *)cursor;
-	[(RDCView *)conn->ui setCursor:[c cursor]];
+	[v performSelectorOnMainThread:@selector(setCursor:) withObject:[c cursor] waitUntilDone:YES];
 }
 
 void ui_destroy_cursor(HCURSOR cursor) {

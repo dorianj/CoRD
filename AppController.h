@@ -1,4 +1,4 @@
-//  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>, Craig Dooley <xlnxminusx@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -107,6 +107,8 @@
 
 - (void)disconnectInstance:(RDInstance *)inst;
 - (RDInstance *)serverInstanceForRow:(int)row;
+- (RDInstance *)selectedServerInstance;
+- (RDInstance *)viewedServer;
 
 @end
 

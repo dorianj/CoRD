@@ -1,9 +1,3 @@
-//
-//  RDInstance.m
-//  Remote Desktop
-//
-//  Created by Craig Dooley on 8/28/06.
-
 //  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
@@ -63,12 +57,9 @@
 	[domain release];
 	[otherAttributes release];
 	[rdpFilename release];
-	
-	// might be unneeded:
-	[view release];
+
 	
 	[cellRepresentation release];
-	[tabViewRepresentation release];
 	[super dealloc];
 }
 
@@ -267,10 +258,18 @@
 
 - (void) disconnect
 {
+	[self setStatus:CRDConnectionClosed];
+
+	// Low level removal
 	NSStream *is = conn.inputStream;
 	[is removeFromRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
 	tcp_disconnect(&conn);
-	[self setStatus:CRDConnectionClosed];
+	
+	[tabViewRepresentation release];
+	tabViewRepresentation = nil;	
+	[view release];
+	view = nil;
+	conn.ui = NULL;
 }
 
 - (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2
@@ -291,6 +290,7 @@
 	[enclosingView setAutohidesScrollers:YES];
 	[enclosingView setBorderType:NSNoBorder];
 	
+	[tabViewRepresentation release];
 	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];
 	[tabViewRepresentation setView:enclosingView];
 	[tabViewRepresentation setLabel:label];	

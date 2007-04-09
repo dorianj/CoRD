@@ -1,10 +1,4 @@
-//
-//  RDCKeyboard.m
-//  Remote Desktop
-//
-//  Created by Craig Dooley on 8/15/06.
-
-//  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>, Craig Dooley <xlnxminusx@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 
 //  to deal in the Software without restriction, including without limitation 
@@ -33,6 +27,9 @@
 // Static class variables
 static NSDictionary *isoNameTable = nil;
 
+#define UNICODE_ENTRY(n) ((uni_key_translation *)[[unicodeKeymap objectForKey:[NSNumber numberWithInt:(n)]] pointerValue])
+#define SET_UNICODE_ENTRY(n, uk) [unicodeKeymap setObject:[NSValue valueWithPointer:(const void *)(uk)] forKey:[NSNumber numberWithInt:(n)]]
+
 @interface RDCKeyboard (PrivateMethods)
 	- (BOOL)parse_readKeymap:(NSString *)isoName;
 	- (uni_key_translation *)parse_addUnicodeMapping:(uint16)uni scancode:(uint8)scan modifiers:(uint16)mods;
@@ -59,10 +56,10 @@ static NSDictionary *isoNameTable = nil;
 	self = [super init];
 	if (self != nil)
 	{
-		// Initialization stuff
-		memset(unicodeKeymap, 0, 0xffff * sizeof(int *));
+		// Initialization
 		memset(virtualKeymap, 0, 0xff * sizeof(uint8));
-			
+		unicodeKeymap = [[NSMutableDictionary alloc] init];
+		
 		// Load the keymap
 		NSString *isoFileName = [RDCKeyboard isoFileNameForKeymap:keymapName];
 		
@@ -79,10 +76,13 @@ static NSDictionary *isoNameTable = nil;
 	[isoNameTable release];
 	
 	// Empty the unicodeKeymap table, following sequences
-	uni_key_translation *kt;
-	int i;
-	for (i = 0; i < 0xffff; i++)
-		free_key_translation(unicodeKeymap[i]);
+	NSEnumerator *keyEnum = [unicodeKeymap keyEnumerator];
+	id item;
+	while ( (item = [keyEnum nextObject]) )
+		free_key_translation(UNICODE_ENTRY([item intValue]));
+	
+	
+	[unicodeKeymap release];
 	
 	[super dealloc];
 }
@@ -141,7 +141,7 @@ static NSDictionary *isoNameTable = nil;
 	else 
 	{
 		KLGetKeyboardLayoutProperty(keyLayout, kKLuchrData, (const void **)&uchrData);
-		UCKeyTranslate(uchrData, keyCode, kUCKeyActionDown, [ev modifierFlags], 
+		UCKeyTranslate(uchrData, keyCode, kUCKeyActionDown, mods, 
 					   LMGetKbdType(), 0, &deadKeyState,
 					   4, &actualStringLength, unicodeString);
 		if (deadKeyState == 0 || deadKeyState == 65536) {
@@ -152,16 +152,14 @@ static NSDictionary *isoNameTable = nil;
 	}
 	
 	
-	
-	
 	// Try to translate the key to a scancode and send it to the server
 	uint16 rdflags = [RDCKeyboard modifiersForEvent:ev];
 	
 	if (!composing) {
-		DEBUG_KEYBOARD( (@"KeyEvent: '%C' (virtual key 0x%x, unicode 0x%x) %spressed", uniChar, keyCode, uniChar, (down) ? "" : "de") );
+		DEBUG_KEYBOARD( (@"handleKeyEvent: '%C' (virtual key 0x%x, unicode 0x%x) %spressed", uniChar, keyCode, uniChar, (down) ? "" : "de") );
 		[self sendKeys:uniChar keycode:keyCode modifiers:rdflags pressed:down];
 	} else {
-		DEBUG_KEYBOARD( (@"KeyEvent: currently composing, ignoring event") );
+		DEBUG_KEYBOARD( (@"handleKeyEvent: currently composing, ignoring event") );
 	}
 	DEBUG_KEYBOARD( (@"\n") );
 }
@@ -172,7 +170,6 @@ static NSDictionary *isoNameTable = nil;
 	static unsigned lastMods = 0;
 	int newMods = [ev modifierFlags];
 	int changedMods = newMods ^ lastMods;
-	BOOL pressed;
 	
 	#define UP_OR_DOWN(b) ( (b) ? RDP_KEYPRESS : RDP_KEYRELEASE )
 	
@@ -187,15 +184,17 @@ static NSDictionary *isoNameTable = nil;
 	if (changedMods & NSAlternateKeyMask)
 		[self sendScancode:SCANCODE_CHAR_LALT flags:UP_OR_DOWN(newMods & NSAlternateKeyMask)];
 	
+	/* enabling this causes a bug because Command+Key menu shortcuts aren't overriden in CRDApplication yet
 	if (changedMods & NSCommandKeyMask)
-		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NSCommandKeyMask)];
+		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NSCommandKeyMask)];*/
 	
 	lastMods = newMods;
 	
 	#undef UP_OR_DOWN(x)
 }
 
-- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down {
+- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down
+{
 	[self sendKeys:unicode keycode:keyCode modifiers:rdflags pressed:down nesting:0];
 }
 
@@ -210,9 +209,9 @@ static NSDictionary *isoNameTable = nil;
 			
 		return;
 	}
-	else if (unicode && unicodeKeymap[unicode] != NULL)
+	else if (unicode && UNICODE_ENTRY(unicode) != NULL)
 	{
-		uni_key_translation *kt = unicodeKeymap[unicode], *uk;
+		uni_key_translation *kt = UNICODE_ENTRY(unicode), *uk;
 		
 		if (kt->next == NULL) 
 		{
@@ -242,7 +241,7 @@ static NSDictionary *isoNameTable = nil;
 			// part of a sequence
 			while ( (kt = kt->next) != NULL) // && (uk = unicodeKeymap[kt->seq_unicode]) != NULL)
 			{					
-				if ((uk = unicodeKeymap[kt->seq_unicode]) != NULL) {
+				if ((uk = UNICODE_ENTRY(kt->seq_unicode)) != NULL) {
 					[self sendKeys:uk->unicode keycode:0 modifiers:uk->modifiers pressed:YES nesting:nesting];
 					[self sendKeys:uk->unicode keycode:0 modifiers:uk->modifiers pressed:NO  nesting:nesting];
 					
@@ -533,7 +532,8 @@ static NSDictionary *isoNameTable = nil;
 			
 			[self parse_addUnicodeMapping:unicodeValue scancode:scancode modifiers:modifiers];
 			
-			if (addUpper) {
+			if (addUpper)
+			{
 				MASK_ADD_BITS(modifiers, MapLeftShiftMask);
 				unicodeValue = toupper(unicodeValue);
 				[self parse_addUnicodeMapping:unicodeValue scancode:scancode modifiers:modifiers];
@@ -581,8 +581,9 @@ static NSDictionary *isoNameTable = nil;
 
 - (uni_key_translation *) parse_addUnicodeMapping:(uint16)uni scancode:(uint8)scan modifiers:(uint16)mods
 {
-	uni_key_translation *uk = unicodeKeymap[uni];
-	if (uk == NULL) {
+	uni_key_translation *uk = UNICODE_ENTRY(uni);
+	if (uk == NULL)
+	{
 		uk = malloc(sizeof(uni_key_translation));
 		uk->seq_unicode = 0;
 		uk->next = NULL;		
@@ -591,7 +592,8 @@ static NSDictionary *isoNameTable = nil;
 	uk->unicode = uni;
 	uk->scancode = scan;
 	uk->modifiers = mods;
-	return unicodeKeymap[uni] = uk;
+	SET_UNICODE_ENTRY(uni, uk);
+	return uk;
 }
 
 
@@ -599,8 +601,8 @@ static NSDictionary *isoNameTable = nil;
 #pragma mark Finding appropriate keymaps
 
 // This method isn't threadsafe.
-+ (NSString *) isoFileNameForKeymap:(NSString *)keymapName {
-	
++ (NSString *) isoFileNameForKeymap:(NSString *)keymapName
+{
 	// Load 'ISO language name' --> 'OSX keymap name'lookup table if it isn't already loaded
 	if (isoNameTable == nil)
 	{
