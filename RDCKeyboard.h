@@ -22,28 +22,20 @@
 
 @class RDInstance;
 
-@interface RDCKeyboard : NSObject {
-	
+@interface RDCKeyboard : NSObject
+{
 	@private
-		uint8 virtualKeymap[0xff];
-		NSMutableDictionary *unicodeKeymap;
+		NSMutableDictionary *virtualKeymap;
 		RDInstance *controller;
-		
-		uint16 remoteModiferState;
-		uint16 savedRemoteModiferState;
 }
 
-- (id) initWithKeymap:(NSString *)keymapName;
 - (void)handleKeyEvent:(NSEvent *)ev keyDown:(BOOL)down;
 - (void)handleFlagsChanged:(NSEvent *)ev;
 - (RDInstance *)controller;
 - (void)setController:(RDInstance *)cont;
-- (void)sendScancode:(uint8)scancode flags:(uint16)flags;
-- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down;
+- (void)sendKeycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down;
 
 
-+ (NSString *) isoFileNameForKeymap:(NSString *)keymapName;
-+ (NSString *) currentKeymapName;
 + (uint16)modifiersForEvent:(NSEvent *)ev; 
 
 @end

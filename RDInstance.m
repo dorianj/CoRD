@@ -24,8 +24,6 @@
 // for sharedDocumentIcon
 #import "AppController.h"
 
-
-
 @interface RDInstance (Private)
 	- (void)updateCellData;
 	- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword;

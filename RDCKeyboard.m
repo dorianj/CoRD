@@ -18,27 +18,26 @@
 
 #import <Carbon/Carbon.h>
 
+#import <IOKit/hidsystem/IOHIDTypes.h>
+
 #import "RDCKeyboard.h"
 #import "RDInstance.h"
 #import "rdesktop.h"
 #import "scancodes.h"
 #import "miscellany.h"
 
+#define KEYMAP_ENTRY(n) [[virtualKeymap objectForKey:[NSNumber numberWithInt:(n)]] intValue]
+#define SET_KEYMAP_ENTRY(n, v) [virtualKeymap setObject:[NSNumber numberWithInt:(v)] forKey:[NSNumber numberWithInt:(n)]]
+
 // Static class variables
 static NSDictionary *isoNameTable = nil;
 
-#define UNICODE_ENTRY(n) ((uni_key_translation *)[[unicodeKeymap objectForKey:[NSNumber numberWithInt:(n)]] pointerValue])
-#define SET_UNICODE_ENTRY(n, uk) [unicodeKeymap setObject:[NSValue valueWithPointer:(const void *)(uk)] forKey:[NSNumber numberWithInt:(n)]]
 
-@interface RDCKeyboard (PrivateMethods)
-	- (BOOL)parse_readKeymap:(NSString *)isoName;
-	- (uni_key_translation *)parse_addUnicodeMapping:(uint16)uni scancode:(uint8)scan modifiers:(uint16)mods;
+@interface RDCKeyboard (Private)
+	- (BOOL)parse_readKeymap;
 	- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down nesting:(int)nesting;
-	- (void)saveRemoteModifers:(uint8)scancode;
-	- (void)restoreRemoteModifiers:(uint8)scancode;
+	- (void)sendScancode:(uint8)scancode flags:(uint16)flags;
 	- (BOOL)scancodeIsModifier:(uint8)scancode;
-	- (void)ensureRemoteModifiers:(uni_key_translation)kt;
-	- (void)updateModifierState:(uint8)scancode pressed:(BOOL)down;
 @end
 
 #pragma mark -
@@ -48,42 +47,20 @@ static NSDictionary *isoNameTable = nil;
 #pragma mark NSObject methods
 - (id) init
 {
-	return [self initWithKeymap:[RDCKeyboard currentKeymapName]];
-}
-
-- (id) initWithKeymap:(NSString *)keymapName
-{
-	self = [super init];
-	if (self != nil)
-	{
-		// Initialization
-		memset(virtualKeymap, 0, 0xff * sizeof(uint8));
-		unicodeKeymap = [[NSMutableDictionary alloc] init];
-		
-		// Load the keymap
-		NSString *isoFileName = [RDCKeyboard isoFileNameForKeymap:keymapName];
-		
-		if (isoFileName == nil)
-			return nil;
-
-		[self parse_readKeymap:isoFileName];		
-	}
+	if (![super init])
+		return nil;
+	
+	virtualKeymap = [[NSMutableDictionary alloc] init];
+	
+	[self parse_readKeymap];		
+	
 	return self;
 }
 
 - (void)dealloc
 {
+	[virtualKeymap release];
 	[isoNameTable release];
-	
-	// Empty the unicodeKeymap table, following sequences
-	NSEnumerator *keyEnum = [unicodeKeymap keyEnumerator];
-	id item;
-	while ( (item = [keyEnum nextObject]) )
-		free_key_translation(UNICODE_ENTRY([item intValue]));
-	
-	
-	[unicodeKeymap release];
-	
 	[super dealloc];
 }
 
@@ -91,76 +68,13 @@ static NSDictionary *isoNameTable = nil;
 #pragma mark Key event handling
 - (void)handleKeyEvent:(NSEvent *)ev keyDown:(BOOL)down
 {
-	static UInt32 deadKeyState = 0, keyTranslateState = 0, initialized = 0;
-	static SInt32 lastKeyLayoutID = 0;
-	
-	UCKeyboardLayout	*uchrData;
-	void				*KCHRData;
-	SInt32				keyLayoutKind, keyLayoutID;
-	KeyboardLayoutRef	keyLayout;
-	UInt32				charCode;
-	UniCharCount		actualStringLength;
-	UniChar				unicodeString[4];
-	unsigned char code1, code2;
-	uint16 uniChar = 0;
-	BOOL composing = YES;
-	
-	UInt16 keyCode = [ev keyCode], kchrKeyCode;
-	unsigned int mods = [ev modifierFlags];
-	
-	KLGetCurrentKeyboardLayout(&keyLayout);
-	KLGetKeyboardLayoutProperty(keyLayout, kKLKind, (const void **)&keyLayoutKind);
-	KLGetKeyboardLayoutProperty(keyLayout, kKLIdentifier, (const void**)&keyLayoutID);
-	
-	
-	/* if changing keymaps while in use is to be supported, this will be needed
-	if (lastKeyLayoutID != keyLayoutID || !initialized) {
-		deadKeyState = keyTranslateState = 0;
-		initialized = 1;
-		lastKeyLayoutID = keyLayoutID;
-	}*/
-	
-	if (keyLayoutKind == kKLKCHRKind) 
-	{
-		kchrKeyCode = (keyCode & 0x7f) | (mods & 0xffff00ff);
-		kchrKeyCode = (down) ? (kchrKeyCode & 0xff7f) : (kchrKeyCode | 0x80);
-		KLGetKeyboardLayoutProperty(keyLayout, kKLKCHRData, (const void **)&KCHRData);
-		charCode = KeyTranslate(KCHRData, kchrKeyCode, &keyTranslateState);
-		
-		// ignore code1, it's normally gibberish
-		//code1 = (charCode & 0xff0000) >> 16;
-		code2 = (charCode & 0xff); 
-		
-		if (keyTranslateState == 0 && code2 != '\0') {
-			// This character is finished composing and should be sent
-			const char chrs[2] = {code2, '\0'}; 
-			uniChar = [[NSString stringWithCString:chrs] characterAtIndex:0];
-			composing = NO;
-		}
-	}
-	else 
-	{
-		KLGetKeyboardLayoutProperty(keyLayout, kKLuchrData, (const void **)&uchrData);
-		UCKeyTranslate(uchrData, keyCode, kUCKeyActionDown, mods, 
-					   LMGetKbdType(), 0, &deadKeyState,
-					   4, &actualStringLength, unicodeString);
-		if (deadKeyState == 0 || deadKeyState == 65536) {
-			// This character is finished composing and should be sent
-			uniChar = unicodeString[0];	
-			composing = NO;
-		}
-	}
-	
-	
-	// Try to translate the key to a scancode and send it to the server
 	uint16 rdflags = [RDCKeyboard modifiersForEvent:ev];
+	uint16 keycode = [ev keyCode];
 	
-	if (!composing) {
-		DEBUG_KEYBOARD( (@"handleKeyEvent: '%C' (virtual key 0x%x, unicode 0x%x) %spressed", uniChar, keyCode, uniChar, (down) ? "" : "de") );
-		[self sendKeys:uniChar keycode:keyCode modifiers:rdflags pressed:down];
-	} else {
-		DEBUG_KEYBOARD( (@"handleKeyEvent: currently composing, ignoring event") );
-	}
+	DEBUG_KEYBOARD( (@"handleKeyEvent: virtual key 0x%x %spressed", keycode, (down) ? "" : "de") );
+
+	[self sendKeycode:keycode modifiers:rdflags pressed:down];
+
 	DEBUG_KEYBOARD( (@"\n") );
 }
 
@@ -168,94 +82,66 @@ static NSDictionary *isoNameTable = nil;
 - (void)handleFlagsChanged:(NSEvent *)ev
 {
 	static unsigned lastMods = 0;
-	int newMods = [ev modifierFlags];
-	int changedMods = newMods ^ lastMods;
+	int newMods = [ev modifierFlags], changedMods = newMods ^ lastMods;
+	BOOL keySent;
 	
 	#define UP_OR_DOWN(b) ( (b) ? RDP_KEYPRESS : RDP_KEYRELEASE )
 	
-	// Don't need to bother with capslock, it's handled by unicode mapping
-	
-	if (changedMods & NSShiftKeyMask)
+	// Shift key
+	if ( (keySent = changedMods & NX_DEVICELSHIFTKEYMASK) )
+		[self sendScancode:SCANCODE_CHAR_LSHIFT flags:UP_OR_DOWN(newMods & NX_DEVICELSHIFTKEYMASK)];
+	else if ( (keySent |= changedMods & NX_DEVICERSHIFTKEYMASK) )
+		[self sendScancode:SCANCODE_CHAR_RSHIFT flags:UP_OR_DOWN(newMods & NX_DEVICERSHIFTKEYMASK)];
+
+	if (!keySent && (changedMods & NSShiftKeyMask))
 		[self sendScancode:SCANCODE_CHAR_LSHIFT flags:UP_OR_DOWN(newMods & NSShiftKeyMask)];
-		
-	if (changedMods & NSControlKeyMask)
+
+
+	// Control key
+	if ( (keySent = changedMods & NX_DEVICELCTLKEYMASK) )
+		[self sendScancode:SCANCODE_CHAR_LCTRL flags:UP_OR_DOWN(newMods & NX_DEVICELCTLKEYMASK)];
+	else if ( (keySent = changedMods & NX_DEVICERCTLKEYMASK) )
+		[self sendScancode:SCANCODE_CHAR_RCTRL flags:UP_OR_DOWN(newMods & NX_DEVICERCTLKEYMASK)];
+
+	if (!keySent && (changedMods & NSControlKeyMask))
 		[self sendScancode:SCANCODE_CHAR_LCTRL flags:UP_OR_DOWN(newMods & NSControlKeyMask)];
-	
-	if (changedMods & NSAlternateKeyMask)
+
+
+	// Alt key
+	if ( (keySent = changedMods & NX_DEVICELALTKEYMASK) )
+		[self sendScancode:SCANCODE_CHAR_LALT flags:UP_OR_DOWN(newMods & NX_DEVICELALTKEYMASK)];
+	else if ( (keySent = changedMods & NX_DEVICERALTKEYMASK) )
+		[self sendScancode:SCANCODE_CHAR_RALT flags:UP_OR_DOWN(newMods & NX_DEVICERALTKEYMASK)];
+
+	if (!keySent && (changedMods & NSAlternateKeyMask))
 		[self sendScancode:SCANCODE_CHAR_LALT flags:UP_OR_DOWN(newMods & NSAlternateKeyMask)];
+
 	
-	/* enabling this causes a bug because Command+Key menu shortcuts aren't overriden in CRDApplication yet
-	if (changedMods & NSCommandKeyMask)
-		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NSCommandKeyMask)];*/
-	
-	lastMods = newMods;
-	
-	#undef UP_OR_DOWN(x)
+	// Windows key
+	if ( (keySent = changedMods & NX_DEVICELCMDKEYMASK) )
+		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NX_DEVICELCMDKEYMASK)];
+	else if ( (keySent = changedMods & NX_DEVICERCMDKEYMASK) )
+		[self sendScancode:SCANCODE_CHAR_RWIN flags:UP_OR_DOWN(newMods & NX_DEVICERCMDKEYMASK)];
+
+	if (!keySent && (changedMods & NSCommandKeyMask))
+		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NSCommandKeyMask)];
+
+   lastMods = newMods;
+
+   #undef UP_OR_DOWN(x)
 }
 
-- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down
+- (void)sendKeycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down
 {
-	[self sendKeys:unicode keycode:keyCode modifiers:rdflags pressed:down nesting:0];
-}
-
-- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down nesting:(int)nesting
-{
-	if (keyCode && virtualKeymap[keyCode]) {
-		// It's in the virtual key map, use that directly
+	
+	if ([virtualKeymap objectForKey:[NSNumber numberWithInt:keyCode]] != nil)
+	{
 		if (down)
-			[self sendScancode:virtualKeymap[keyCode] flags:rdflags | RDP_KEYPRESS];
+			[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYPRESS)];
 		else
-			[self sendScancode:virtualKeymap[keyCode] flags:rdflags | RDP_KEYRELEASE];
+			[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYRELEASE)];
 			
 		return;
-	}
-	else if (unicode && UNICODE_ENTRY(unicode) != NULL)
-	{
-		uni_key_translation *kt = UNICODE_ENTRY(unicode), *uk;
-		
-		if (kt->next == NULL) 
-		{
-			// single key, send it
-			if (down)
-			{
-				[self saveRemoteModifers:kt->scancode];
-				[self ensureRemoteModifiers:*kt];
-				[self sendScancode:kt->scancode flags:RDP_KEYPRESS];
-				[self restoreRemoteModifiers:kt->scancode];
-			} 
-			else
-			{
-				[self sendScancode:kt->scancode flags:RDP_KEYRELEASE];
-			}
-		}
-		else if (down) 
-		{
-			DEBUG_KEYBOARD( (@"Sending keystroke sequence...") );
-			nesting++;
-				
-			if (nesting >= 32) {
-				DEBUG_KEYBOARD( (@"Too high of nesting: exiting sendKey. Likely culprit is a self-referring sequence (ex 'sequence 0x60 0x60 0x20'") );
-				return;
-			}
-			
-			// part of a sequence
-			while ( (kt = kt->next) != NULL) // && (uk = unicodeKeymap[kt->seq_unicode]) != NULL)
-			{					
-				if ((uk = UNICODE_ENTRY(kt->seq_unicode)) != NULL) {
-					[self sendKeys:uk->unicode keycode:0 modifiers:uk->modifiers pressed:YES nesting:nesting];
-					[self sendKeys:uk->unicode keycode:0 modifiers:uk->modifiers pressed:NO  nesting:nesting];
-					
-				} else {
-					DEBUG_KEYBOARD( (@"Sequence 0x%x specified an unavailable unicode character, 0x%x",
-										unicode, kt->seq_unicode) );
-					break;
-				}
-			}
-			
-			
-		}
-	} else {
-		DEBUG_KEYBOARD( (@"Unicode 0x%x (virt key 0x%x) had no mapping. Ignoring.", unicode, keyCode) );
 	}
 }
 
@@ -271,155 +157,12 @@ static NSDictionary *isoNameTable = nil;
 	return NO;
 }
 
-
-- (void)saveRemoteModifers:(uint8)scancode
-{
-	if ([self scancodeIsModifier:scancode])
-		return;
-	
-	savedRemoteModiferState = remoteModiferState;
-}
-
-- (void)restoreRemoteModifiers:(uint8)scancode
-{
-	uni_key_translation dummy;
-	if ([self scancodeIsModifier:scancode])
-		return;
-	
-	dummy.scancode = 0;
-	dummy.modifiers = savedRemoteModiferState;
-	[self ensureRemoteModifiers:dummy];
-
-}
-
-- (BOOL)scancodeIsModifier:(uint8)scancode
-{
-	switch (scancode)
-	{
-		case SCANCODE_CHAR_LSHIFT:
-		case SCANCODE_CHAR_RSHIFT:
-		case SCANCODE_CHAR_LCTRL:
-		case SCANCODE_CHAR_RCTRL:
-		case SCANCODE_CHAR_LALT:
-		case SCANCODE_CHAR_RALT:
-		case SCANCODE_CHAR_LWIN:
-		case SCANCODE_CHAR_RWIN:
-		case SCANCODE_CHAR_NUMLOCK:
-			return YES;
-		default:
-			break;
-	}
-	return NO;
-}
-
-- (void)ensureRemoteModifiers:(uni_key_translation)kt
-{
-	if ([self scancodeIsModifier:kt.scancode])
-		return;
-
-
-	/* NumLock */
-	if (MASK_HAS_BITS(kt.modifiers, MapNumLockMask) != MASK_HAS_BITS(remoteModiferState, MapNumLockMask))
-	{
-		uint16 newRemoteState;
-		if (MASK_HAS_BITS(kt.modifiers, MapNumLockMask))
-		{
-			newRemoteState = KBD_FLAG_NUMLOCK;
-			remoteModiferState = MapNumLockMask;
-		}
-		else
-		{
-			remoteModiferState = newRemoteState = 0;
-		}
-
-		[controller sendInput:RDP_INPUT_SYNCHRONIZE flags:0 param1:newRemoteState param2:0];
-	}
-	
-	
-	/* Shift */
-	if (MASK_HAS_BITS(kt.modifiers, MapShiftMask) != MASK_HAS_BITS(remoteModiferState, MapShiftMask))
-	{
-		if (MASK_HAS_BITS(kt.modifiers, MapLeftShiftMask))
-			[self sendScancode:SCANCODE_CHAR_LSHIFT flags:RDP_KEYPRESS];
-		else if (MASK_HAS_BITS(kt.modifiers, MapRightShiftMask))
-			[self sendScancode:SCANCODE_CHAR_RSHIFT flags:RDP_KEYPRESS];
-		else
-		{
-			if (MASK_HAS_BITS(remoteModiferState, MapLeftShiftMask))
-				[self sendScancode:SCANCODE_CHAR_LSHIFT flags:RDP_KEYRELEASE];
-			else
-				[self sendScancode:SCANCODE_CHAR_RSHIFT flags:RDP_KEYRELEASE];
-		}
-	}
-	
-	/* AltGr */
-	if (MASK_HAS_BITS(kt.modifiers, MapAltGrMask) != MASK_HAS_BITS(remoteModiferState, MapAltGrMask))
-	{
-		if (MASK_HAS_BITS(kt.modifiers, MapAltGrMask))
-			[self sendScancode:SCANCODE_CHAR_RALT flags:RDP_KEYPRESS];
-		else
-			[self sendScancode:SCANCODE_CHAR_RALT flags:RDP_KEYRELEASE];
-	}
-}
-
-
-- (void)updateModifierState:(uint8)scancode pressed:(BOOL)down
-{
-	switch (scancode)
-	{
-		case SCANCODE_CHAR_LSHIFT:
-			MASK_CHANGE_BIT(remoteModiferState, MapLeftShiftMask, down);
-			break;
-		case SCANCODE_CHAR_RSHIFT:
-			MASK_CHANGE_BIT(remoteModiferState, MapRightShiftMask, down);
-			break;
-		case SCANCODE_CHAR_LCTRL:
-			MASK_CHANGE_BIT(remoteModiferState, MapLeftCtrlMask, down);
-			break;
-		case SCANCODE_CHAR_RCTRL:
-			MASK_CHANGE_BIT(remoteModiferState, MapRightCtrlMask, down);
-			break;
-		case SCANCODE_CHAR_LALT:
-			MASK_CHANGE_BIT(remoteModiferState, MapLeftAltMask, down);
-			break;
-		case SCANCODE_CHAR_RALT:
-			MASK_CHANGE_BIT(remoteModiferState, MapRightAltMask, down);
-			break;
-		case SCANCODE_CHAR_LWIN:
-			MASK_CHANGE_BIT(remoteModiferState, MapLeftWinMask, down);
-			break;
-		case SCANCODE_CHAR_RWIN:
-			MASK_CHANGE_BIT(remoteModiferState, MapRightWinMask, down);
-			break;
-		case SCANCODE_CHAR_NUMLOCK:
-			/* xxx: not handling numlock
-				KeyReleases for NumLocks are sent immediately. Toggle the
-				modifier state only on Keypress 
-			if (down && !g_numlock_sync)
-			{
-				BOOL newNumLockState;
-				newNumLockState =
-					(MASK_HAS_BITS
-					 (remote_modifier_state, MapNumLockMask) == False);
-				MASK_CHANGE_BIT(remote_modifier_state,
-						MapNumLockMask, newNumLockState);
-			}*/
-			break;
-	}
-
-
-}
-
-
-
 - (void)sendScancode:(uint8)scancode flags:(uint16)flags
 {
-	[self updateModifierState:scancode pressed:!(flags & RDP_KEYRELEASE)];
-
 	if (scancode & SCANCODE_EXTENDED)
 	{
 		DEBUG_KEYBOARD((@"Sending extended scancode=0x%x, flags=0x%x\n", scancode & ~SCANCODE_EXTENDED, flags));
-		[controller sendInput:RDP_INPUT_SCANCODE flags:flags | KBD_FLAG_EXT param1:scancode & ~SCANCODE_EXTENDED param2:0];
+		[controller sendInput:RDP_INPUT_SCANCODE flags:(flags | KBD_FLAG_EXT) param1:(scancode & ~SCANCODE_EXTENDED) param2:0];
 	}
 	else
 	{
@@ -441,33 +184,20 @@ static NSDictionary *isoNameTable = nil;
 }
 
 
-
-
 #pragma mark Keymap file parser
-- (BOOL)parse_readKeymap:(NSString *)isoName
+- (BOOL)parse_readKeymap
 {
-	DEBUG_KEYBOARD( (@"Reading keymap '%@'", isoName) );
-	
-	NSString *filePath = [[NSBundle mainBundle] pathForResource:isoName
-														 ofType:nil
-													inDirectory:@"keymaps"];
+	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"keymap" ofType:@"txt"];
 	NSArray *fileLines = [[NSString stringWithContentsOfFile:filePath] componentsSeparatedByString:@"\n"];
-	
-	if (fileLines == nil) {
-		DEBUG_KEYBOARD( (@"Error reading keymap '%@'. File probably doesn't exist.", isoName) );
-		return NO;
-	}
-	
+		
 	NSCharacterSet *whitespaceSet    = [NSCharacterSet whitespaceCharacterSet],
 				   *whiteAndHashSet  = [NSCharacterSet characterSetWithCharactersInString:@" \t#"];
 	NSScanner *scanner;
-	NSString *directive, *s, *name;
-	unsigned int unicodeValue, osxVKValue, scancode, modifiers, i;
-	uni_key_translation *keyTrans, *cur, *kt;
-	
-	
+	NSString *directive;
+	unsigned int osxVKValue, scancode;
+		
 	signed lineNumber = -1;
-	BOOL b = YES, addUpper;
+	BOOL b = YES;
 	id line;
 	NSEnumerator *enumerator = [fileLines objectEnumerator];
 		
@@ -476,7 +206,7 @@ static NSDictionary *isoNameTable = nil;
 		lineNumber++;
 		
 		if (!b)
-			DEBUG_KEYBOARD( (@"Uncaught keymap syntax error in '%@' at line %d. Ignoring.", isoName, lineNumber - 1) );
+			DEBUG_KEYBOARD( (@"Uncaught keymap syntax at line %d. Ignoring.", lineNumber - 1) );
 
 		scanner = [NSScanner scannerWithString:line];
 		b = YES;
@@ -484,191 +214,22 @@ static NSDictionary *isoNameTable = nil;
 		if (![scanner scanUpToCharactersFromSet:whiteAndHashSet intoString:&directive])
 			continue;
 		
-		
 		if ([directive isEqualToString:@"virt"])
 		{
 			// Virtual mapping
 			b &= [scanner scanHexInt:&osxVKValue];
 			b &= [scanner scanHexInt:&scancode];
 			
-			if (b && osxVKValue < 256)
-				virtualKeymap[osxVKValue] = scancode;
-		}
-		else if ([directive isEqualToString:@"char"])
-		{
-			keyTrans = malloc(sizeof(uni_key_translation));
-			
-			// Unicode mapping
-			b &= [scanner scanHexInt:&unicodeValue];
-			b &= [scanner scanHexInt:&scancode];
-			
-			if (!b)
-				continue;
-			
-			modifiers = 0;
-			
-			// read modifiers
-			addUpper = NO;
-			while ([scanner scanUpToCharactersFromSet:whiteAndHashSet intoString:&s])
-			{
-				if ([s isEqualToString:@"addupper"])
-					addUpper = YES;
-			
-				if ([s isEqualToString:@"altgr"])
-					MASK_ADD_BITS(modifiers, MapAltGrMask);
-				
-				if ([s isEqualToString:@"inhibit"])
-					MASK_ADD_BITS(modifiers, MapInhibitMask);
-				
-				if ([s isEqualToString:@"shift"])
-					MASK_ADD_BITS(modifiers, MapLeftShiftMask);
-					
-				if ([s isEqualToString:@"numlock"])
-					MASK_ADD_BITS(modifiers, MapNumLockMask);
-				
-				if ([s isEqualToString:@"localstate"])
-					MASK_ADD_BITS(modifiers, MapLocalStateMask);
-			}
-			
-			[self parse_addUnicodeMapping:unicodeValue scancode:scancode modifiers:modifiers];
-			
-			if (addUpper)
-			{
-				MASK_ADD_BITS(modifiers, MapLeftShiftMask);
-				unicodeValue = toupper(unicodeValue);
-				[self parse_addUnicodeMapping:unicodeValue scancode:scancode modifiers:modifiers];
-			}
-		}
-		else if ([directive isEqualToString:@"include"])
-		{
-			// Include another keymap
-			b &= [scanner scanUpToCharactersFromSet:whitespaceSet intoString:&s];
-			if (b)
-				[self parse_readKeymap:s];
-		}
-		else if ([directive isEqualToString:@"sequence"])
-		{
-			b &= [scanner scanHexInt:&unicodeValue];
-			
-			if (!b)
-				continue;
-			
-			cur = keyTrans = [self parse_addUnicodeMapping:unicodeValue scancode:scancode modifiers:0];
-			while ([scanner scanUpToCharactersFromSet:whiteAndHashSet intoString:&s])
-			{
-				if (HEXSTRING_TO_INT(s, &i)) {
-					kt = malloc(sizeof(uni_key_translation));
-					kt->scancode = kt->unicode = kt->modifiers = 0;
-					kt->seq_unicode = i;
-					cur = cur->next = kt;
-				} else {
-					DEBUG_KEYBOARD( (@"Syntax error in '%@' keymap on line %d: unrecognized item '%@' in sequence. Ignoring.",
-										isoName, lineNumber, s) );
-				}
-			//	DEBUG_KEYBOARD( (@"Sequence item unicode 0x%x added for '%@'", i, s) );
-			}
-			cur->next = NULL;
-		//	DEBUG_KEYBOARD( (@"Sequence for unicode 0x%x added .", unicodeValue) );
-		} else {
-			DEBUG_KEYBOARD( (@"Syntax error in '%@' keymap on line %d: unrecognized directive '%@'. Ignoring.",
-								isoName, lineNumber, directive) );
-		}
-	
+			if (b && osxVKValue)
+				SET_KEYMAP_ENTRY(osxVKValue, scancode);
+		}	
 	}
 	
 	return YES;
 }
 
-- (uni_key_translation *) parse_addUnicodeMapping:(uint16)uni scancode:(uint8)scan modifiers:(uint16)mods
-{
-	uni_key_translation *uk = UNICODE_ENTRY(uni);
-	if (uk == NULL)
-	{
-		uk = malloc(sizeof(uni_key_translation));
-		uk->seq_unicode = 0;
-		uk->next = NULL;		
-	}
-	
-	uk->unicode = uni;
-	uk->scancode = scan;
-	uk->modifiers = mods;
-	SET_UNICODE_ENTRY(uni, uk);
-	return uk;
-}
 
-
-
-#pragma mark Finding appropriate keymaps
-
-// This method isn't threadsafe.
-+ (NSString *) isoFileNameForKeymap:(NSString *)keymapName
-{
-	// Load 'ISO language name' --> 'OSX keymap name'lookup table if it isn't already loaded
-	if (isoNameTable == nil)
-	{
-		NSMutableDictionary *dict = [[NSMutableDictionary dictionaryWithCapacity:30] retain];
-		NSString *filename = [[NSBundle mainBundle] pathForResource:@"iso_names" ofType:@"txt"];
-		NSArray *lines = [[NSString stringWithContentsOfFile:filename] componentsSeparatedByString:@"\n"];
-		NSScanner *scanner;
-		NSString *i, *n;
-		
-		id line;
-		NSEnumerator *enumerator = [lines objectEnumerator];
-		while ( (line = [enumerator nextObject]) )
-		{
-			line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-			scanner = [NSScanner scannerWithString:line];
-			[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@" \t="]];
-			[scanner scanUpToString:@"=" intoString:&i];
-			[scanner scanUpToCharactersFromSet:[NSCharacterSet characterSetWithCharactersInString:@""] intoString:&n];
-			
-			if (i != nil && n != nil) {
-				// store it 'OS X name'=>'iso'
-				[dict setObject:i forKey:n];			
-			}
-		}
-		isoNameTable = dict;
-	}
-	
-	
-	
-	// Look up in table
-	
-	NSString *isoName = nil;
-	
-	// try a direct match
-	isoName = [isoNameTable objectForKey:keymapName];
-	
-	
-	if (isoName == nil)
-	{
-		// try a fuzzy match - if this keymap and one in the table have at least the
-		//	first four characters alike, use it. This allows things like 'Arabic-QWERTY'
-		//	to be implicitly used when only 'Arabic' is in the table
-		
-		NSString *prefix;
-		
-		id potentialKeymapName;
-		NSEnumerator *enumerator = [[isoNameTable allKeys] objectEnumerator];
-		
-		while ( (potentialKeymapName = [enumerator nextObject]) )
-		{
-			prefix = [keymapName commonPrefixWithString:potentialKeymapName
-												options:NSLiteralSearch];
-			if ([prefix length] >= 4) { 
-				isoName = [isoNameTable objectForKey:potentialKeymapName];
-				DEBUG_KEYBOARD( (@"isoFileNameForKeymap: substituting keymap '%@' for passed '%@', giving iso '%@'",
-					  potentialKeymapName, keymapName, isoName));
-				break;
-			}
-		}
-	}
-	
-	return isoName;
-}
-
-
-#pragma mark Other class methods
+#pragma mark Class methods
 + (uint16)modifiersForEvent:(NSEvent *)ev {
 	unsigned int eventFlags = [ev modifierFlags];
 	uint16 rdFlags = 0;
@@ -689,16 +250,6 @@ static NSDictionary *isoNameTable = nil;
 		MASK_CHANGE_BIT(rdFlags, MapLeftWinMask, 1);
 
 	return rdFlags;
-}
-
-+ (NSString *) currentKeymapName
-{
-	CFStringRef *name;
-	KeyboardLayoutRef keyLayout;
-	KLGetCurrentKeyboardLayout(&keyLayout);
-	KLGetKeyboardLayoutProperty(keyLayout, kKLLocalizedName, (const void **)&name);
-	
-	return (NSString *)name;
 }
 
 @end

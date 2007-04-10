@@ -37,7 +37,23 @@
 			
 	if (viewIsFocused)
 	{
-
+		switch ([ev type])
+		{
+			case NSKeyDown:
+				[v keyDown:ev];
+				return;
+				
+			case NSKeyUp:
+				[v keyUp:ev];
+				return;
+				
+			case NSFlagsChanged:
+				[v flagsChanged:ev];
+				return;
+						
+			default:
+				break;
+		}
 	}
 	
     [super sendEvent:ev];

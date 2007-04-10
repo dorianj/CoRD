@@ -44,7 +44,6 @@
 		9801D2650BC6096E0040CB55 /* Arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 9801D2640BC6096D0040CB55 /* Arrow.png */; };
 		980F31550B49F7A200E01CCA /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 980F31530B49F7A100E01CCA /* plus.png */; };
 		981739850BACE45D00EAB48A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 981739840BACE45D00EAB48A /* Carbon.framework */; };
-		98173A940BACFD2000EAB48A /* iso_names.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98173A930BACFD2000EAB48A /* iso_names.txt */; };
 		983E4B5E0BB88821009F833D /* CRDServerCell.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 983E4B5C0BB88821009F833D /* CRDServerCell.h */; };
 		983E4B5F0BB88821009F833D /* CRDServerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 983E4B5D0BB88821009F833D /* CRDServerCell.m */; };
 		983E4C5D0BB89E8E009F833D /* i Button Face.png in Resources */ = {isa = PBXBuildFile; fileRef = 983E4C5C0BB89E8E009F833D /* i Button Face.png */; };
@@ -63,8 +62,8 @@
 		98A96E070BC9C6E8005F217F /* CRDApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 98A96E050BC9C6E8005F217F /* CRDApplication.m */; };
 		98B4F0DA0BBECAE7001F499B /* CRDServerList.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98B4F0D80BBECAE7001F499B /* CRDServerList.h */; };
 		98B4F0DB0BBECAE7001F499B /* CRDServerList.m in Sources */ = {isa = PBXBuildFile; fileRef = 98B4F0D90BBECAE7001F499B /* CRDServerList.m */; };
-		98BAB8D20BB0A9230037A08A /* keymaps in Resources */ = {isa = PBXBuildFile; fileRef = 98BAB8A90BB0A9230037A08A /* keymaps */; };
 		98C6DCCF0B570776005A6638 /* rdp document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98C6DCCE0B570776005A6638 /* rdp document.icns */; };
+		98D8EF9C0BCAFE810052DADE /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98D8EF9B0BCAFE810052DADE /* keymap.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -147,7 +146,6 @@
 		9801D2640BC6096D0040CB55 /* Arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Arrow.png; sourceTree = "<group>"; };
 		980F31530B49F7A100E01CCA /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
 		981739840BACE45D00EAB48A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		98173A930BACFD2000EAB48A /* iso_names.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = iso_names.txt; sourceTree = "<group>"; };
 		983E4B5C0BB88821009F833D /* CRDServerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRDServerCell.h; sourceTree = "<group>"; };
 		983E4B5D0BB88821009F833D /* CRDServerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDServerCell.m; sourceTree = "<group>"; };
 		983E4C5C0BB89E8E009F833D /* i Button Face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "i Button Face.png"; sourceTree = "<group>"; };
@@ -166,8 +164,8 @@
 		98A96E050BC9C6E8005F217F /* CRDApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDApplication.m; sourceTree = "<group>"; };
 		98B4F0D80BBECAE7001F499B /* CRDServerList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRDServerList.h; sourceTree = "<group>"; };
 		98B4F0D90BBECAE7001F499B /* CRDServerList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDServerList.m; sourceTree = "<group>"; };
-		98BAB8A90BB0A9230037A08A /* keymaps */ = {isa = PBXFileReference; lastKnownFileType = folder; path = keymaps; sourceTree = "<group>"; };
 		98C6DCCE0B570776005A6638 /* rdp document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "rdp document.icns"; sourceTree = "<group>"; };
+		98D8EF9B0BCAFE810052DADE /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = keymap.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -259,12 +257,11 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				98D8EF9B0BCAFE810052DADE /* keymap.txt */,
 				98A96AD20BC9A162005F217F /* Servers.png */,
 				9801D2640BC6096D0040CB55 /* Arrow.png */,
 				987BEB6B0BC1B8B800237C81 /* Clock icon.png */,
 				983E4C5C0BB89E8E009F833D /* i Button Face.png */,
-				98173A930BACFD2000EAB48A /* iso_names.txt */,
-				98BAB8A90BB0A9230037A08A /* keymaps */,
 				29B97318FDCFA39411CA2CEA /* MainMenu.nib */,
 				980F31530B49F7A100E01CCA /* plus.png */,
 				44E804D80AAF265C005EFCAE /* Disconnect.png */,
@@ -400,12 +397,11 @@
 				44E804DA0AAF265C005EFCAE /* Disconnect.png in Resources */,
 				980F31550B49F7A200E01CCA /* plus.png in Resources */,
 				98C6DCCF0B570776005A6638 /* rdp document.icns in Resources */,
-				98173A940BACFD2000EAB48A /* iso_names.txt in Resources */,
-				98BAB8D20BB0A9230037A08A /* keymaps in Resources */,
 				983E4C5D0BB89E8E009F833D /* i Button Face.png in Resources */,
 				987BEB6C0BC1B8B800237C81 /* Clock icon.png in Resources */,
 				9801D2650BC6096E0040CB55 /* Arrow.png in Resources */,
 				98A96AD30BC9A162005F217F /* Servers.png in Resources */,
+				98D8EF9C0BCAFE810052DADE /* keymap.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

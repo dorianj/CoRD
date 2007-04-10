@@ -899,7 +899,6 @@ static NSImage *shared_documentIcon = nil;
 	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = windowFrame.size.height - [[gui_mainWindow contentView] frame].size.height;
 	
-	// xxx: find a better way to do this so that unneccessary scrollbars are never seen even after manually resizing
 	[gui_mainWindow setContentMaxSize:newContentSize];	
 	
 	NSRect newWindowFrame = NSMakeRect( windowFrame.origin.x, windowFrame.origin.y +
