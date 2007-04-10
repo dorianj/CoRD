@@ -96,7 +96,12 @@
 #pragma mark NSObject functions
 
 - (void)dealloc {
+	[keyTranslator release];
 	[cursor release];
+	[back release];
+	[colorMap release];
+	[foregroundColor release];
+	[backgroundColor release];
 	[super dealloc];
 }
 

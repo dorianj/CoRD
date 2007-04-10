@@ -70,7 +70,7 @@
 	// Some internal stuff
 	uint32 cFlags;
 	NSString *cCommand, *cDirectory;
-	struct rdcConn conn;
+	rdcConnection conn;
 
 	// UI elements (only valid if connected)
 	CRDServerCell *cellRepresentation;

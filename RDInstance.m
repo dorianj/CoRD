@@ -55,7 +55,9 @@
 	[domain release];
 	[otherAttributes release];
 	[rdpFilename release];
-
+	
+	// Clear out the conn
+	xfree(conn->rdpdrClientname);
 	
 	[cellRepresentation release];
 	[super dealloc];
@@ -65,8 +67,6 @@
 {
 	if (![super init])
 		return nil;
-
-	fill_default_connection(&conn);
 	
 	// Use some safe defaults. The docs say it's fine to release a static string (@"").
 	startDisplay = forwardAudio = screenDepth = screenWidth = screenHeight = port = 0;
@@ -113,7 +113,7 @@
 	
 	do
 	{
-		s = rdp_recv(&conn, &type);
+		s = rdp_recv(conn, &type);
 		if (s == NULL)
 		{
 			[g_appController performSelectorOnMainThread:@selector(disconnectInstance:)
@@ -124,13 +124,13 @@
 		switch (type)
 		{
 			case RDP_PDU_DEMAND_ACTIVE:
-				process_demand_active(&conn, s);
+				process_demand_active(conn, s);
 				break;
 			case RDP_PDU_DEACTIVATE:
 				DEBUG(("RDP_PDU_DEACTIVATE\n"));
 				break;
 			case RDP_PDU_DATA:
-				if (process_data_pdu(&conn, s, &ext_disc_reason))
+				if (process_data_pdu(conn, s, &ext_disc_reason))
 				{
 					[g_appController performSelectorOnMainThread:@selector(disconnectInstance:)
 							withObject:self waitUntilDone:NO];
@@ -143,23 +143,36 @@
 				unimpl("PDU %d\n", type);
 		}
 		
-	} while (conn.nextPacket < s->end);
+	} while (conn->nextPacket < s->end);
 
 }
 
 // Using the current properties, attempt to connect to a server. Blocks until timeout on failure.
 - (BOOL) connect
 {
-
 	// Fail quickly if it's a totally bogus host
 	if ([hostName length] < 2)
 	{
-		conn.errorCode = ConnectionErrorGeneral;
+		conn->errorCode = ConnectionErrorGeneral;
 		return NO;
 	}
 		
 	[self performSelectorOnMainThread:@selector(setStatusAsNumber:)
 			withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
+	
+	if (conn != NULL)
+		free(conn);
+	conn = malloc(sizeof(struct rdcConn));
+	fill_default_connection(conn);
+	
+	// Clear out the bitmap cache
+	int i, k;
+	for (i = 0; i < NBITMAPCACHE; i++)
+	{
+		for (k = 0; k < NBITMAPCACHEENTRIES; k++)
+			conn->bmpcache[i][k].bitmap = NULL;
+	}
+	
 
 	// Set RDP5 performance flags
 	int performanceFlags = RDP5_DISABLE_NOTHING;
@@ -175,7 +188,7 @@
 	if (!windowAnimation)
 		performanceFlags |= RDP5_NO_MENUANIMATIONS;
 	
-	conn.rdp5PerformanceFlags = performanceFlags;
+	conn->rdp5PerformanceFlags = performanceFlags;
 	
 
 	// Set RDP logon flags
@@ -184,13 +197,13 @@
 		logonFlags |= RDP_LOGON_AUTO;
 	
 	// Set some other settings
-	conn.bitmapCache = cacheBitmaps;
-	conn.serverBpp = screenDepth;	
-	conn.controller = g_appController;
-	conn.consoleSession = consoleSession;
-	conn.screenWidth = screenWidth;
-	conn.screenHeight = screenHeight;
-	conn.tcpPort = (port==0 || port>=65536) ? 3389 : port;
+	conn->bitmapCache = cacheBitmaps;
+	conn->serverBpp = screenDepth;	
+	conn->controller = g_appController;
+	conn->consoleSession = consoleSession;
+	conn->screenWidth = screenWidth;
+	conn->screenHeight = screenHeight;
+	conn->tcpPort = (port==0 || port>=65536) ? 3389 : port;
 
 
 	// Set up disk redirection
@@ -212,16 +225,16 @@
 			}
 		}
 		
-		disk_enum_devices(&conn,convert_string_array(validDrives),
+		disk_enum_devices(conn,convert_string_array(validDrives),
 						  convert_string_array(validNames),[validDrives count]);
 	}
 	
-	rdpdr_init(&conn);
+	rdpdr_init(conn);
 	
-	strncpy(conn.username, safe_string_conv(username), sizeof(conn.username));
+	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
 	
 	// Make the connection
-	BOOL connected = rdp_connect(&conn, safe_string_conv(hostName), 
+	BOOL connected = rdp_connect(conn, safe_string_conv(hostName), 
 							logonFlags, 
 							safe_string_conv(domain), 
 							safe_string_conv(password), 
@@ -233,16 +246,16 @@
 	{
 		inputRunLoop = [NSRunLoop currentRunLoop];
 	
-		NSStream *is = conn.inputStream;
+		NSStream *is = conn->inputStream;
 		[is setDelegate:self];
 		[is scheduleInRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
 		
-		view = [[RDCView alloc] initWithFrame:NSMakeRect(0.0, 0.0, conn.screenWidth, conn.screenHeight)];
+		view = [[RDCView alloc] initWithFrame:NSMakeRect(0.0, 0.0, conn->screenWidth, conn->screenHeight)];
 		[view setController:self];
 		[view performSelectorOnMainThread:@selector(setNeedsDisplay:)
 							   withObject:[NSNumber numberWithBool:YES]
 							waitUntilDone:NO];
-		conn.ui = view;
+		conn->ui = view;
 				
 		[self setStatus:CRDConnectionConnected];
 	}
@@ -259,21 +272,36 @@
 	[self setStatus:CRDConnectionClosed];
 
 	// Low level removal
-	NSStream *is = conn.inputStream;
+	NSStream *is = conn->inputStream;
 	[is removeFromRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
-	tcp_disconnect(&conn);
+	tcp_disconnect(conn);
 	
 	[tabViewRepresentation release];
 	tabViewRepresentation = nil;	
 	[view release];
 	view = nil;
-	conn.ui = NULL;
+	conn->ui = NULL;
+	
+	// Clear out the bitmap cache
+	int i, k;
+	for (i = 0; i < NBITMAPCACHE; i++)
+	{
+		for (k = 0; k < NBITMAPCACHEENTRIES; k++)
+		{	
+			ui_destroy_bitmap(conn->bmpcache[i][k].bitmap);
+			conn->bmpcache[i][k].bitmap = NULL;
+		}
+	}
+	
+	
+	free(conn);
+	conn = NULL;
 }
 
 - (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2
 {
 	if (connectionStatus == CRDConnectionConnected)
-		rdp_send_input(&conn, time(NULL), type, flags, param1, param2);
+		rdp_send_input(conn, time(NULL), type, flags, param1, param2);
 }
 
 
@@ -444,7 +472,7 @@
 	
 	NSMutableString *o = [[NSMutableString alloc] init];
 	
-	write_int(@"connect to console", cacheBitmaps);
+	write_int(@"connect to console", consoleSession);
 	write_int(@"bitmapcachepersistenable", cacheBitmaps);
 	write_int(@"redirectdrives", forwardDisks);
 	write_int(@"disable wallpaper", drawDesktop);
@@ -553,7 +581,7 @@
 #pragma mark Accessors
 - (rdcConnection)conn
 {
-	return &conn;
+	return conn;
 }
 
 - (NSString *)label

@@ -29,11 +29,11 @@
 	NSColor *color;
 }
 
--(void)bitmapWithData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v;
--(void)glyphWithData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v;
--(void)cursorWithData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(RDCView *)v;
--(NSImage *)image;
--(void)setColor:(NSColor *)color;
--(NSColor *)color;
--(NSCursor *)cursor;
+- (id)initWithBitmapData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v;
+- (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v;
+- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(RDCView *)v;
+- (NSImage *)image;
+- (void)setColor:(NSColor *)color;
+- (NSColor *)color;
+- (NSCursor *)cursor;
 @end

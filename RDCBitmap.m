@@ -28,7 +28,11 @@
 
 @implementation RDCBitmap
 
--(void)bitmapWithData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v {
+- (id)initWithBitmapData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v
+{
+	if (![super init])
+		return nil;
+
 	int bitsPerPixel = [v bitsPerPixel];
 	int bytesPerPixel = bitsPerPixel / 8;
 	uint8 *np, *nc;
@@ -55,10 +59,8 @@
 				p += bytesPerPixel;
 			}
 		}
-		
 		data = [[NSData alloc] initWithBytesNoCopy:(void *)np length:newLength];
 	}
-	
 	
 	
 	planes[0] = (unsigned char *)[data bytes];
@@ -78,9 +80,15 @@
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
+	
+	return self;
 }
 
--(void)glyphWithData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v {
+- (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v
+{
+	if (![super init])
+		return nil;
+		
 	int scanline = ((int)s.width + 7) / 8;
 	
 	data = [[NSData alloc] initWithBytes:d length:scanline * s.height];
@@ -101,10 +109,16 @@
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
 	[self setColor:[[NSColor blackColor] retain]];
+	
+	return self;
 }
 
--(void)cursorWithData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s
-		hotspot:(NSPoint)hotspot view:(RDCView *)v {
+- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s
+		hotspot:(NSPoint)hotspot view:(RDCView *)v
+{
+	if (![super init])
+		return nil;
+
 	int scanline = (int)s.width + 7 / 8;
 	uint8 *np;
 	const uint8 *p, *end;
@@ -156,32 +170,39 @@
 	[image setFlipped:YES];
 	
 	cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
+	
+	return self;
 }
 
--(NSImage *)image {
+-(NSImage *)image
+{
 	return image;
 }
 
--(void)dealloc {
+-(void)dealloc
+{
 	[cursor release];
 	[image release];
 	[bitmap release];
-	//[data release];
+	[data release];
 	[color release];
 	[super dealloc];
 }
 
--(void)setColor:(NSColor *)c {
+-(void)setColor:(NSColor *)c
+{
 	[c retain];
 	[color release];
 	color = c;
 }
 
--(NSColor *)color {
+-(NSColor *)color
+{
 	return color;
 }
 
--(NSCursor *)cursor {
+-(NSCursor *)cursor
+{
 	return cursor;
 }
 

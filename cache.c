@@ -208,7 +208,7 @@ cache_put_bitmap(rdcConnection conn, uint8 id, uint16 idx, HBITMAP bitmap)
 		if (old != NULL)
 			ui_destroy_bitmap(old);
 		conn->bmpcache[id][idx].bitmap = bitmap;
-
+				
 		if (IS_PERSISTENT(id))
 		{
 			if (old == NULL)
@@ -282,7 +282,7 @@ cache_put_font(rdcConnection conn, uint8 font, uint16 character, uint16 offset,
 		glyph = &conn->fontCache[font][character];
 		if (glyph->pixmap != NULL)
 			ui_destroy_glyph(glyph->pixmap);
-
+				
 		glyph->offset = offset;
 		glyph->baseline = baseline;
 		glyph->width = width;

@@ -129,14 +129,11 @@ void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map) {
 #pragma mark Bitmap functions
 
 HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data) {
-	RDCBitmap *bitmap = [[RDCBitmap alloc] init];
-	[bitmap bitmapWithData:data size:NSMakeSize(width, height) view:conn->ui];
-	return bitmap;
+	return [[RDCBitmap alloc] initWithBitmapData:data size:NSMakeSize(width, height) view:conn->ui];
 }
 
 void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width, int height, uint8 * data) {
-	RDCBitmap *bitmap = [[RDCBitmap alloc] init];
-	[bitmap bitmapWithData:data size:NSMakeSize(width, height) view:conn->ui];
+	RDCBitmap *bitmap = [[RDCBitmap alloc] initWithBitmapData:data size:NSMakeSize(width, height) view:conn->ui];
 	ui_memblt(conn, 0, x, y, cx, cy, bitmap, 0, 0);
 	[bitmap release];
 }
@@ -259,7 +256,6 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
 	RDCView *v = conn->ui;
 	NSImage *back = [v valueForKey:@"back"], *img;
-	RDCBitmap *b = [[RDCBitmap alloc] init];
 	uint8 *data;
 	
 	offset *= conn->serverBpp/8;
@@ -269,7 +265,7 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx,
 		return; 
 	
 	NSRect r = NSMakeRect(x, y, cx, cy);
-	[b bitmapWithData:(const unsigned char *)data size:NSMakeSize(cx, cy) view:v];
+	RDCBitmap *b = [[RDCBitmap alloc] initWithBitmapData:(const unsigned char *)data size:NSMakeSize(cx, cy) view:v];
 	img = [b image];
 	
 	[img setFlipped:NO];
@@ -284,9 +280,7 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx,
 #pragma mark Text functions
 
 HGLYPH ui_create_glyph(rdcConnection conn, int width, int height, const uint8 *data) {
-	RDCBitmap *image = [[RDCBitmap alloc] init];
-	[image glyphWithData:data size:NSMakeSize(width, height) view:conn->ui];
-	return image;
+	return [[RDCBitmap alloc] initWithGlyphData:data size:NSMakeSize(width, height) view:conn->ui];
 }
 
 void ui_destroy_glyph(HGLYPH glyph) {
@@ -440,14 +434,10 @@ void ui_bell(void) {
 
 
 HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int width, int height,
-						 uint8 * andmask, uint8 * xormask) {
-	RDCBitmap *cursor = [[RDCBitmap alloc] init];
-	[cursor cursorWithData:andmask 
-					 alpha:xormask 
-					  size:NSMakeSize(width, height) 
-				   hotspot:NSMakePoint(x, y) 
-					  view:conn->ui];
-	return cursor;
+						 uint8 * andmask, uint8 * xormask)
+{
+	return  [[RDCBitmap alloc] initWithCursorData:andmask alpha:xormask 
+			size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui];
 }
 
 void ui_set_null_cursor(rdcConnection conn) {
