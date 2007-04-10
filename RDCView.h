@@ -28,7 +28,6 @@
 @interface RDCView : NSView
 {
 	RDInstance *controller;
-	NSArray *colorMap;
 	NSImage *back;
 	NSPoint mouseLoc;
 	NSRect clipRect;
@@ -36,6 +35,7 @@
 	NSCursor *cursor;
 	int bitdepth;
 	RDCKeyboard *keyTranslator;
+	unsigned int *colorMap;	// size of 0xff always
 }
 
 - (void)startUpdate;
@@ -43,10 +43,10 @@
 - (void)fillRect:(NSRect)r;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *) color;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin;
-- (NSArray *)colorMap;
 - (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
 - (void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c  winding:(NSWindingRule)winding;
-- (int)setColorMap:(NSArray *)map;
+- (void)setColorMap:(unsigned int *)map;
+- (unsigned int *)colorMap;
 - (void)memblt:(NSRect)r from:(NSImage *)src withOrigin:(NSPoint)origin;
 - (void)screenBlit:(NSRect)from to:(NSPoint)to;
 - (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)w;
@@ -57,7 +57,7 @@
 - (void)resetClip;
 - (int)bitsPerPixel;
 - (NSColor *)nscolorForRDCColor:(int)col;
-- (int)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b;
+- (void)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b;
 - (void)setForeground:(NSColor *)color;
 - (void)setBackground:(NSColor *)color;
 - (void)swapRect:(NSRect)r;

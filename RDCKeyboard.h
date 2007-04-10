@@ -34,7 +34,7 @@
 - (RDInstance *)controller;
 - (void)setController:(RDInstance *)cont;
 - (void)sendKeycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down;
-
+- (void)sendScancode:(uint8)scancode flags:(uint16)flags;
 
 + (uint16)modifiersForEvent:(NSEvent *)ev; 
 

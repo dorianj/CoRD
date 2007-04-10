@@ -32,11 +32,8 @@
 // Static class variables
 static NSDictionary *isoNameTable = nil;
 
-
 @interface RDCKeyboard (Private)
 	- (BOOL)parse_readKeymap;
-	- (void)sendKeys:(uint16)unicode keycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down nesting:(int)nesting;
-	- (void)sendScancode:(uint8)scancode flags:(uint16)flags;
 	- (BOOL)scancodeIsModifier:(uint8)scancode;
 @end
 

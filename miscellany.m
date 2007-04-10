@@ -145,16 +145,6 @@ NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 }
 
 #pragma mark RDCKeyboard
-// Frees a uni_key_translation and its sequences
-void free_key_translation(uni_key_translation *kt)
-{
-	if (kt == NULL)
-		return;
-		
-	free_key_translation(kt->next);
-	free(kt);
-}
-
 void print_bitfield(unsigned v, int bits)
 {
 	int i;

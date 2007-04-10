@@ -109,21 +109,20 @@ unsigned short ui_get_numlock_state(unsigned int state) {
 #pragma mark Colormap functions
 
 HCOLOURMAP ui_create_colourmap(COLOURMAP * colors) {
-	NSMutableArray *array;
-	int i, color;
+	unsigned int *colorMap = malloc(colors->ncolours * sizeof(unsigned));
 	
-	array = [[[NSMutableArray alloc] init] autorelease];
+	int i;
+	
 	for (i = 0; i < colors->ncolours; i++) {
-		COLOURENTRY centry = colors->colours[i];
-		color = (centry.red << 16) | (centry.green << 8) | (centry.blue);
-		[array insertObject:[NSNumber numberWithInt:color] atIndex:i];
+		COLOURENTRY colorEntry = colors->colours[i];
+		colorMap[i] = (colorEntry.red << 16) | (colorEntry.green << 8) | (colorEntry.blue);
 	}
-	return array;
+	return colorMap;
 }
 
 void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map) {
 	RDCView *v = conn->ui;
-	[v setColorMap:(NSArray *)map];
+	[v setColorMap:(unsigned int *)map];
 }
 
 #pragma mark Bitmap functions
@@ -217,11 +216,11 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	// Now, translate the 32-bit screen dump into RDP colors
 	uint8 *data, *o, *src, *p;
 	uint16 k;
-	int i=0, j, len=cx*cy, bytespp = conn->serverBpp/8;
-	unsigned q;
+	int i=0, j, q, len=cx*cy, bytespp = conn->serverBpp/8;
 	
 	src = p = [deskScrape bitmapData];
 	data = o = malloc(cx*cy*bytespp);
+	unsigned int *colorMap = [v colorMap];
 	
 	while (i++ < len)
 	{
@@ -232,8 +231,13 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 		} else if (conn->serverBpp == 8) {
 			// Find color's index on colormap, use that
 			j = (p[0] << 16) | (p[1] << 8) | p[2];
-			q = [[v colorMap] indexOfObject:[NSNumber numberWithInt:j]];
-			o[0] = (q == NSNotFound) ? 0 : q;
+			o[0] = 0;
+			for (q = 0; q < 0xff; q++) {
+				if (colorMap[q] == j) {
+					o[0] = q;
+					break;
+				}
+			}				
 		} else {
 			o[0] = p[0];
 			o[1] = p[1];

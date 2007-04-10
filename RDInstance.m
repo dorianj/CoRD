@@ -55,10 +55,7 @@
 	[domain release];
 	[otherAttributes release];
 	[rdpFilename release];
-	
-	// Clear out the conn
-	xfree(conn->rdpdrClientname);
-	
+		
 	[cellRepresentation release];
 	[super dealloc];
 }

@@ -49,7 +49,6 @@ NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
 #define BUTTON_STATE_AS_NUMBER_INVERSE(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 0 : 1)]
 
 /* RDCKeyboard */
-void free_key_translation(uni_key_translation *);
 void print_bitfield(unsigned v, int bits);
 #define HEXSTRING_TO_INT(s, ret) [[NSScanner scannerWithString:(s)] scanHexInt:(ret)]
 
