@@ -16,10 +16,7 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-/*	Notes: This class is a bit unsafe if not used properly: after calling one of
-		bitmapWithData, glyphWithData, or cursorWithData, those methods must not
-		be called again, or data will be leaked. This should be eventually changed
-		to follow a more rigid factory and/or initWith structure.
+/*	Notes: The ivar 'data' is used because NSBitmapImageRep does not copy the bitmap data.
 */
 
 #import "RDCBitmap.h"
@@ -39,29 +36,34 @@
 	const uint8 *p, *end;
 	unsigned realLength, newLength;
 	
-	if (bitsPerPixel == 24) {
-		data = [[NSData alloc] initWithBytes:d length:s.width * s.height];
-	} else {
-		realLength = (int)s.width * (int)s.height * bytesPerPixel;
-		newLength = (int)s.width * (int)s.height * 3;
-		p = d;
-		end = p + realLength;
-		
-		nc = np = malloc(newLength);
-		while (p < end) {
-			if (bitsPerPixel != 8) {
-				[v rgbForRDCColor:*(uint16 *)p r:&nc[0] g:&nc[1] b:&nc[2]];
-				nc += 3;
-				p += bytesPerPixel;
-			} else {
-				[v rgbForRDCColor:*p r:&nc[0] g:&nc[1] b:&nc[2]];
-				nc += 3;
-				p += bytesPerPixel;
-			}
+	realLength = (int)s.width * (int)s.height * bytesPerPixel;
+	newLength = (int)s.width * (int)s.height * 3;
+	p = d;
+	end = p + realLength;
+	
+	nc = np = malloc(newLength);
+	while (p < end)
+	{
+		if (bitsPerPixel == 16)
+		{
+			[v rgbForRDCColor:*(uint16 *)p r:&nc[0] g:&nc[1] b:&nc[2]];
 		}
-		data = [[NSData alloc] initWithBytesNoCopy:(void *)np length:newLength];
+		else if (bitsPerPixel == 8)
+		{
+			[v rgbForRDCColor:*p r:&nc[0] g:&nc[1] b:&nc[2]];
+		}
+		else // 24 and 32 bpp
+		{
+			// swap R and B
+			nc[0] = p[2];
+			nc[1] = p[1];
+			nc[2] = p[0];
+		}
+		p += bytesPerPixel;
+		nc += 3;
 	}
 	
+	data = [[NSData alloc] initWithBytesNoCopy:(void *)np length:newLength];
 	
 	planes[0] = (unsigned char *)[data bytes];
 	planes[1] = NULL;
@@ -127,24 +129,24 @@
 	p = a;
 	end = a + ((int)s.width * (int)s.height * 3);
 	np = (uint8 *)[data bytes];
-	int i = 0, bit;
-	while (p < end) {
+	int i = 0, alpha;
+	while (p < end)
+	{
 		np[0] = p[0];
 		np[1] = p[1];
 		np[2] = p[2];
-		bit = d[i / 8] & (0x80 >> (i % 8));
-		if (np[0] || np[1] || np[2]) {
-			if (bit) {
-				np[0] = np[1] = np[2] = 0;
-			}
+		
+		alpha = d[i / 8] & (0x80 >> (i % 8));
+		if (alpha && (np[0] || np[1] || np[2]))
+		{
+			np[0] = np[1] = np[2] = 0;
 			np[3] = 0xff;
-		} else {
-			if (!bit) {
-				np[3] = 0xff;
-			} else {
-				np[3] = 0;
-			}
 		}
+		else
+		{
+			np[3] = alpha ? 0 : 0xff;
+		}
+
 		i++;
 		p += 3;
 		np += 4;

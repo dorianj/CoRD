@@ -216,23 +216,31 @@
 {
 	int r, g, b, t;
 	
-	if (bitdepth == 8) {
-		t = colorMap[(unsigned int)col];
+	if (bitdepth == 8)
+	{
+		t = colorMap[col];
 		r = (t >> 16) & 0xff;
 		g = (t >> 8)  & 0xff;
 		b = t & 0xff;
-	} else if (bitdepth == 16) {
+	}
+	else if (bitdepth == 16)
+	{
 		r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
 		g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
 		b = ((col << 3) & 0xf8) | ((col >> 2) & 0x7);
-	} else if (bitdepth == 24) {
-		r = (col >> 16) & 0xff;
+	}
+	else if (bitdepth == 24)
+	{
+		r = col & 0xff;
 		g = (col >> 8)  & 0xff;
-		b = col & 0xff;
-	} else {
+		b = (col >> 16) & 0xff;
+	}
+	else
+	{
 		NSLog(@"Bitdepth = %d", bitdepth);
 		r = g = b = 0;
 	}
+	
 	return [NSColor colorWithDeviceRed:(float)r / 255.0
 								 green:(float)g / 255.0
 							  	  blue:(float)b / 255.0
@@ -396,8 +404,8 @@
 	NSRect frame = [self frame];
 	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
 	
-	return  (mouseLoc.x < frame.origin.x) && (mouseLoc.x > frame.size.width) && 
-			(mouseLoc.y < frame.origin.y) && (mouseLoc.y > frame.size.height);
+	return  (mouseLoc.x > frame.origin.x) || (mouseLoc.x > frame.size.width) || 
+			(mouseLoc.y > frame.origin.y) || (mouseLoc.y > frame.size.height);
 
 }
 
@@ -494,9 +502,9 @@
 	}
 	else if (bitdepth == 24 || bitdepth == 32)
 	{
-		*r = (col >> 16) & 0xff;
+		*r =  col        & 0xff;
 		*g = (col >> 8)  & 0xff;
-		*b =  col        & 0xff;
+		*b = (col >> 16) & 0xff;
 	}
 	else
 	{

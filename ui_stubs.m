@@ -189,13 +189,14 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty,
 
 #pragma mark Desktop cache functions
 
+// Takes a section of the desktop cache and saves it into a RDCBitmap compatible byte array
 void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
 	RDCView *v = conn->ui;
 	NSImage *back = [v valueForKey:@"back"];
 	NSBitmapImageRep *deskScrape;
 	NSRect r = NSMakeRect(x,y,cx,cy);	
 	
-	// Get the screen contents into an nsbitmapimagerep so we can get at the pixels
+	// Dump that section of the store into an NSBitmapImageRep for pixel RGB access
 	deskScrape = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
 			  pixelsWide:cx
 			  pixelsHigh:cy
@@ -213,7 +214,7 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	[NSGraphicsContext restoreGraphicsState];
 	
 	
-	// Now, translate the 32-bit screen dump into RDP colors
+	// Translate the 32-bit screen dump into RDP colors
 	uint8 *data, *o, *src, *p;
 	uint16 k;
 	int i=0, j, q, len=cx*cy, bytespp = conn->serverBpp/8;
@@ -226,8 +227,13 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	{
 		if (conn->serverBpp == 16) {
 			k = ((p[0] & 0xF8) << 8) | ((p[1] & 0xFC) << 3) | (p[2] >> 3);
+#ifdef __BIG_ENDIAN__
+			o[1] = (uint8)(k & 0xFF);
+			o[0] = (uint8)((k >> 8) & 0xFF);
+#else
 			o[0] = (uint8)(k & 0xFF);
 			o[1] = (uint8)((k >> 8) & 0xFF);
+#endif
 		} else if (conn->serverBpp == 8) {
 			// Find color's index on colormap, use that
 			j = (p[0] << 16) | (p[1] << 8) | p[2];
@@ -239,9 +245,10 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 				}
 			}				
 		} else {
-			o[0] = p[0];
+			// swap R and B
+			o[2] = p[0];
 			o[1] = p[1];
-			o[2] = p[2];
+			o[0] = p[2];
 			if (conn->serverBpp == 32)
 				o[3] = p[3];
 		}
@@ -249,7 +256,7 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 		o += bytespp;
 	}
 	
-	// Finally, put our translated screen dump into the rdesktop bitmap cache
+	// Put the translated screen dump into the rdesktop bitmap cache
 	offset *= bytespp;
 	cache_put_desktop(conn, offset, cx, cy, cx*bytespp, bytespp, data);
 	

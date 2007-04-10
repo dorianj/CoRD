@@ -203,7 +203,7 @@ static NSDictionary *isoNameTable = nil;
 		lineNumber++;
 		
 		if (!b)
-			DEBUG_KEYBOARD( (@"Uncaught keymap syntax at line %d. Ignoring.", lineNumber - 1) );
+			DEBUG_KEYBOARD( (@"Uncaught keymap syntax error at line %d. Ignoring.", lineNumber - 1) );
 
 		scanner = [NSScanner scannerWithString:line];
 		b = YES;
@@ -217,7 +217,7 @@ static NSDictionary *isoNameTable = nil;
 			b &= [scanner scanHexInt:&osxVKValue];
 			b &= [scanner scanHexInt:&scancode];
 			
-			if (b && osxVKValue)
+			if (b)
 				SET_KEYMAP_ENTRY(osxVKValue, scancode);
 		}	
 	}
