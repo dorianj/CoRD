@@ -67,7 +67,10 @@
 	// The list of unconnected saved servers
 	NSMutableArray *savedServers;
 	
+	CGDirectDisplayID fullscreenCapturedScreen;
+	NSWindow *gui_fullscreenWindow;
 	CRDDisplayMode displayMode;
+	
 	
 	// Label cells
 	CRDLabelCell *connectedServersLabel;

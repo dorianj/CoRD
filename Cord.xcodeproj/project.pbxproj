@@ -42,6 +42,7 @@
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		9801D2650BC6096E0040CB55 /* Arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 9801D2640BC6096D0040CB55 /* Arrow.png */; };
+		980D5C130BCC7DE0002D5DD5 /* Fullscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 980D5C120BCC7DE0002D5DD5 /* Fullscreen.png */; };
 		980F31550B49F7A200E01CCA /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 980F31530B49F7A100E01CCA /* plus.png */; };
 		981739850BACE45D00EAB48A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 981739840BACE45D00EAB48A /* Carbon.framework */; };
 		983E4B5E0BB88821009F833D /* CRDServerCell.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 983E4B5C0BB88821009F833D /* CRDServerCell.h */; };
@@ -144,6 +145,7 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9801D2640BC6096D0040CB55 /* Arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Arrow.png; sourceTree = "<group>"; };
+		980D5C120BCC7DE0002D5DD5 /* Fullscreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Fullscreen.png; sourceTree = "<group>"; };
 		980F31530B49F7A100E01CCA /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plus.png; sourceTree = "<group>"; };
 		981739840BACE45D00EAB48A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		983E4B5C0BB88821009F833D /* CRDServerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRDServerCell.h; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				980D5C120BCC7DE0002D5DD5 /* Fullscreen.png */,
 				98D8EF9B0BCAFE810052DADE /* keymap.txt */,
 				98A96AD20BC9A162005F217F /* Servers.png */,
 				9801D2640BC6096D0040CB55 /* Arrow.png */,
@@ -402,6 +405,7 @@
 				9801D2650BC6096E0040CB55 /* Arrow.png in Resources */,
 				98A96AD30BC9A162005F217F /* Servers.png in Resources */,
 				98D8EF9C0BCAFE810052DADE /* keymap.txt in Resources */,
+				980D5C130BCC7DE0002D5DD5 /* Fullscreen.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -26,6 +26,7 @@ static NSImage *shared_documentIcon = nil;
 
 #define TOOLBAR_DISCONNECT	@"Disconnect"
 #define TOOLBAR_DRAWER @"Servers"
+#define TOOLBAR_FULLSCREEN @"Fullscreen"
 
 @interface AppController (Private)
 	- (void)listUpdated;
@@ -119,6 +120,10 @@ static NSImage *shared_documentIcon = nil;
 		setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT,
 			@"Close the selected connection", @selector(disconnect:))
 		forKey:TOOLBAR_DISCONNECT];	
+	[toolbarItems
+		setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN,
+			@"Enter fullscreen mode", @selector(startFullscreen:))
+		forKey:TOOLBAR_FULLSCREEN];
 	
 	gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
 	[gui_toolbar setDelegate:self];
@@ -365,8 +370,47 @@ static NSImage *shared_documentIcon = nil;
 
 - (IBAction)startFullscreen:(id)sender
 {
-	// todo:windows write
+	if ([self displayMode] == CRDDisplayFullscreen || [self viewedServer] == nil)
+		return;
+		
+	// Get the screen information.
+	long screenID = [[[[NSScreen mainScreen] deviceDescription] objectForKey:@"NSScreenNumber"] longValue];
 
+	// Capture the screen.
+	fullscreenCapturedScreen = (CGDirectDisplayID)screenID; 
+	if (CGDisplayCapture(fullscreenCapturedScreen) != CGDisplayNoErr)
+	{
+		// abort
+		return;
+	}
+	
+	// Create the fullscreen window then move the tabview into it
+	NSRect winRect = [[NSScreen mainScreen] frame];
+	gui_fullscreenWindow = [[NSWindow alloc] initWithContentRect:winRect styleMask:NSBorderlessWindowMask 
+			backing:NSBackingStoreBuffered defer:NO screen:[NSScreen mainScreen]];
+	[gui_fullscreenWindow setAcceptsMouseMovedEvents:YES];
+	[gui_fullscreenWindow setReleasedWhenClosed:YES];
+	[gui_fullscreenWindow setDisplaysWhenScreenProfileChanges:YES];
+	[gui_fullscreenWindow setDelegate:self];
+
+
+	[gui_tabView retain];
+	[gui_tabView removeFromSuperview];
+	[gui_fullscreenWindow setContentView:gui_tabView];
+	[gui_tabView release];
+	
+
+	[gui_fullscreenWindow setLevel:CGShieldingWindowLevel()];
+	[gui_fullscreenWindow makeKeyAndOrderFront:self];
+}
+
+- (IBAction)endFullscreen:(id)sender
+{
+	if ([self displayMode] != CRDDisplayFullscreen)
+		return;
+	
+	CGDisplayRelease(fullscreenCapturedScreen);
+	[gui_fullscreenWindow release];
 }
 
 #pragma mark -
@@ -394,6 +438,8 @@ static NSImage *shared_documentIcon = nil;
 
 	NSMutableArray *defaultItems = [NSArray arrayWithObjects:
 				TOOLBAR_DRAWER,
+				NSToolbarFlexibleSpaceItemIdentifier,
+				TOOLBAR_FULLSCREEN,
 				NSToolbarFlexibleSpaceItemIdentifier,
 				TOOLBAR_DISCONNECT,
 				nil];
