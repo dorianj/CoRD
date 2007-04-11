@@ -523,7 +523,8 @@
 	[cursor release];
 	cursor = cur;
 	
-	[[self window] invalidateCursorRectsForView:self];	
+	[[self window] invalidateCursorRectsForView:self];
+	[[self window] resetCursorRects];
 }
 
 - (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue

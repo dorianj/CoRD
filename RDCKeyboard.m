@@ -16,6 +16,10 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+/*	Notes: Numlock isn't synchronized because Apple keyboards don't use it.
+			CapLock will eventually be properly synchronized.
+*/
+
 #import <Carbon/Carbon.h>
 
 #import <IOKit/hidsystem/IOHIDTypes.h>
@@ -33,7 +37,7 @@
 static NSDictionary *isoNameTable = nil;
 
 @interface RDCKeyboard (Private)
-	- (BOOL)parse_readKeymap;
+	- (BOOL)readKeymap;
 	- (BOOL)scancodeIsModifier:(uint8)scancode;
 @end
 
@@ -49,7 +53,7 @@ static NSDictionary *isoNameTable = nil;
 	
 	virtualKeymap = [[NSMutableDictionary alloc] init];
 	
-	[self parse_readKeymap];		
+	[self readKeymap];		
 	
 	return self;
 }
@@ -71,8 +75,6 @@ static NSDictionary *isoNameTable = nil;
 	DEBUG_KEYBOARD( (@"handleKeyEvent: virtual key 0x%x %spressed", keycode, (down) ? "" : "de") );
 
 	[self sendKeycode:keycode modifiers:rdflags pressed:down];
-
-	DEBUG_KEYBOARD( (@"\n") );
 }
 
 
@@ -82,7 +84,12 @@ static NSDictionary *isoNameTable = nil;
 	int newMods = [ev modifierFlags], changedMods = newMods ^ lastMods;
 	BOOL keySent;
 	
+	DEBUG_KEYBOARD( (@"handleFlagsChanged called") );
+	
 	#define UP_OR_DOWN(b) ( (b) ? RDP_KEYPRESS : RDP_KEYRELEASE )
+	
+	// keySent is used because some older keyboards may not specify right or left.
+	//	It is unknown if it is actually needed.
 	
 	// Shift key
 	if ( (keySent = changedMods & NX_DEVICELSHIFTKEYMASK) )
@@ -122,6 +129,13 @@ static NSDictionary *isoNameTable = nil;
 
 	if (!keySent && (changedMods & NSCommandKeyMask))
 		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NSCommandKeyMask)];
+
+	// Caps lock, which is only sent once per change
+	if (changedMods & NSAlphaShiftKeyMask)
+	{
+		[self sendScancode:SCANCODE_CHAR_CAPSLOCK flags:RDP_KEYPRESS];
+		[self sendScancode:SCANCODE_CHAR_CAPSLOCK flags:RDP_KEYRELEASE];
+	}
 
    lastMods = newMods;
 
@@ -182,7 +196,7 @@ static NSDictionary *isoNameTable = nil;
 
 
 #pragma mark Keymap file parser
-- (BOOL)parse_readKeymap
+- (BOOL)readKeymap
 {
 	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"keymap" ofType:@"txt"];
 	NSArray *fileLines = [[NSString stringWithContentsOfFile:filePath] componentsSeparatedByString:@"\n"];
@@ -222,26 +236,49 @@ static NSDictionary *isoNameTable = nil;
 		}	
 	}
 	
+	
+	// Some manual mappings for different types of physical keyboards
+	SInt16 physicalKeyboardType = KBGetLayoutType(LMGetKbdType());
+
+	switch ((unsigned)physicalKeyboardType)
+	{
+		case kKeyboardISO:
+			DEBUG_KEYBOARD( (@"Enabling hacks for European keyboard") );
+			SET_KEYMAP_ENTRY(0x32, 0x56);
+			break;
+				
+		default:
+			break;
+	}
+	
 	return YES;
 }
 
 
 #pragma mark Class methods
-+ (uint16)modifiersForEvent:(NSEvent *)ev {
++ (uint16)modifiersForEvent:(NSEvent *)ev
+{
 	unsigned int eventFlags = [ev modifierFlags];
 	uint16 rdFlags = 0;
 	
-	if (eventFlags & NSAlphaShiftKeyMask)
-		MASK_CHANGE_BIT(rdFlags, MapCapsLockMask, 1);
+	// Unless if a system to ensure modifiers before keypress is added, this is uneeded
+	//if (eventFlags & NSAlphaShiftKeyMask)
+	// 	MASK_CHANGE_BIT(rdFlags, MapCapsLockMask, 1);
 	
-	if (eventFlags & NSShiftKeyMask)
+	if (eventFlags & NX_DEVICELSHIFTKEYMASK)
+		MASK_CHANGE_BIT(rdFlags, MapLeftShiftMask, 1);
+	
+	if (eventFlags & NX_DEVICERSHIFTKEYMASK)
 		MASK_CHANGE_BIT(rdFlags, MapLeftShiftMask, 1);
 
 	if (eventFlags & NSControlKeyMask)
 		MASK_CHANGE_BIT(rdFlags, MapLeftCtrlMask, 1);
 	
-	if (eventFlags & NSAlternateKeyMask)
+	if (eventFlags & NX_DEVICELALTKEYMASK)
 		MASK_CHANGE_BIT(rdFlags, MapLeftAltMask, 1);
+	
+	if (eventFlags & NX_DEVICERALTKEYMASK)
+		MASK_CHANGE_BIT(rdFlags, MapRightAltMask, 1);
 
 	if (eventFlags & NSCommandKeyMask)
 		MASK_CHANGE_BIT(rdFlags, MapLeftWinMask, 1);

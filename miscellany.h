@@ -70,8 +70,15 @@ typedef enum _CRDConnectionStatus
    CRDConnectionConnected = 2
 } CRDConnectionStatus;
 
+typedef enum _CRDDisplayMode
+{
+	CRDDisplayUnified = 0,
+	CRDDisplayWindowed = 1,
+	CRDDisplayFullscreen = 2
+} CRDDisplayMode;
 
-/* Evil: global variables */
+
+/* Global variables */
 AppController *g_appController;
 
 

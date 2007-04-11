@@ -25,6 +25,7 @@
 @interface RDCKeyboard : NSObject
 {
 	@private
+		int remoteModifierState, savedModifierState;
 		NSMutableDictionary *virtualKeymap;
 		RDInstance *controller;
 }

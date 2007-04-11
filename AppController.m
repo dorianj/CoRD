@@ -102,7 +102,11 @@ static NSImage *shared_documentIcon = nil;
 
 - (void)awakeFromNib
 {
+	g_appController = self;
+	
+	
 	[gui_mainWindow setAcceptsMouseMovedEvents:YES];
+	
 	
 	// Create the toolbar 
 	toolbarItems = [[NSMutableDictionary alloc] init];
@@ -123,10 +127,11 @@ static NSImage *shared_documentIcon = nil;
 	[gui_toolbar setAutosavesConfiguration:YES];
 	
 	[gui_mainWindow setToolbar:gui_toolbar];
+	[gui_toolbar validateVisibleItems];
 	
-	g_appController = self;
 	
-	// Load files from the ~/Library/Application Support/CoRD/Servers dir
+	
+	// Load saved servers from the CoRD Application Support folder
 	NSFileManager *fileManager = [NSFileManager defaultManager];
 	
 	// Assure that the CoRD application support folder is created, locate and store other useful paths
@@ -140,7 +145,7 @@ static NSImage *shared_documentIcon = nil;
 	ensure_directory_exists(cordDirectory, fileManager);
 	ensure_directory_exists(serversDirectory, fileManager);
 
-	// Get a list of files from the Servers directory, load each
+	// Read each .rdp file
 	RDInstance *rdpinfo;
 	NSString *path;
 	NSArray *files = [fileManager directoryContentsAtPath:serversDirectory];
@@ -160,7 +165,7 @@ static NSImage *shared_documentIcon = nil;
 			[rdpinfo release];
 		}
 	}
-
+	
 	// todo:dragndrop Register for all the types of drag operations
 	//[gui_serverList setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
 	//[gui_serverList setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
@@ -169,8 +174,7 @@ static NSImage *shared_documentIcon = nil;
 	// Remove the next line to have a header
 	[gui_serverList setHeaderView:nil];
 	
-	// Since it's a custom class, the attributes pane isn't available for
-	//	the password entry box. Set it up here.
+	// Since it's a custom class, the attributes pane isn't available for the password entry box in IB.
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 
@@ -274,7 +278,7 @@ static NSImage *shared_documentIcon = nil;
 }
 
 
-/* Hides/shows the Performance Options. Called by the disclosure triangle. */
+// Hides/shows the performance options in inspector.
 - (IBAction)togglePerformanceDisclosure:(id)sender
 {
 	BOOL nowVisible = ([sender state] != NSOffState);
@@ -299,7 +303,7 @@ static NSImage *shared_documentIcon = nil;
 }
 
 
-/* Called whenever anything in the inspector is edited */
+// Called whenever anything in the inspector is edited
 - (IBAction)fieldEdited:(id)sender
 {			
 	if (inspectedServer != nil)
@@ -318,10 +322,14 @@ static NSImage *shared_documentIcon = nil;
 		return;
 		
 	[gui_serverList selectRow:(1 + [connectedServers indexOfObjectIdenticalTo:inst])];
+	[self resizeToMatchSelection];
 }
 
 - (IBAction)selectPrevious:(id)sender
 {
+	if ([gui_tabView indexOfTabViewItem:[gui_tabView selectedTabViewItem]] == 1)
+		return;
+	
 	[gui_tabView selectPreviousTabViewItem:sender];
 	
 	RDInstance *inst = [self viewedServer];
@@ -329,6 +337,7 @@ static NSImage *shared_documentIcon = nil;
 		return;
 		
 	[gui_serverList selectRow:(1 + [connectedServers indexOfObjectIdenticalTo:inst])];
+	[self resizeToMatchSelection];
 }
 
 - (IBAction)showOpen:(id)sender
@@ -337,7 +346,8 @@ static NSImage *shared_documentIcon = nil;
 	[panel setAllowsMultipleSelection:YES];
 	[panel runModalForTypes:[NSArray arrayWithObject:@"rdp"]];
 	NSArray *filenames = [panel filenames];
-	if ([filenames count] <= 0) return;
+	if ([filenames count] <= 0)
+		return;
 	
 	[self application:[NSApplication sharedApplication] openFiles:filenames];
 }
@@ -347,6 +357,17 @@ static NSImage *shared_documentIcon = nil;
 	[self toggleDrawer:sender visible:!drawer_is_visisble(gui_serversDrawer)];
 }
 
+// Switches between unified mode and windowed mode
+- (IBAction)toggleUnified:(id)sender
+{
+	// todo:windows write
+}
+
+- (IBAction)startFullscreen:(id)sender
+{
+	// todo:windows write
+
+}
 
 #pragma mark -
 #pragma mark Toolbar methods
@@ -455,6 +476,7 @@ static NSImage *shared_documentIcon = nil;
 	{
 		[self toggleDrawer:self visible:YES];
 	}
+	
 }
 
 
@@ -875,22 +897,23 @@ static NSImage *shared_documentIcon = nil;
 
 - (void)toggleDrawer:(id)sender visible:(BOOL)visible
 {
-	NSString *newLabel = (visible) ? @"Hide Drawer" : @"Show Drawer";
-	
-	[gui_drawerToggleMenu setTitle:newLabel];
-	
+	NSString *newLabel = (visible) ? @"Hide Servers" : @"Show Servers";
+	[gui_drawerToggleMenu setTitle:[newLabel stringByAppendingString:@" Drawer"]];
+		
 	if (visible)
 		[gui_serversDrawer open];
 	else
 		[gui_serversDrawer close];
+	
+	[gui_toolbar validateVisibleItems];
 }
 
 - (void)resizeToMatchSelection
 {
-	// todo: make this work with drawer
+	// todo: make this work better with drawer
 	
 	RDInstance *inst = [self viewedServer];
-	NSSize newContentSize = (inst != nil) ? [[inst view] frame].size : NSMakeSize(600, 450);
+	NSSize newContentSize = (inst != nil) ? [[inst view] frame].size : NSMakeSize(600, 400);
 
 
 	NSRect windowFrame = [gui_mainWindow frame];
@@ -904,6 +927,7 @@ static NSImage *shared_documentIcon = nil;
 	NSRect newWindowFrame = NSMakeRect( windowFrame.origin.x, windowFrame.origin.y +
 										windowFrame.size.height-newContentSize.height-toolbarHeight, 
 										newContentSize.width, newContentSize.height + toolbarHeight);
+	// Assure that no unneccesary scrollers are created
 	if (newWindowFrame.size.height > screenRect.size.height &&
 		newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
 	{
@@ -990,6 +1014,15 @@ static NSImage *shared_documentIcon = nil;
 	
 	[gui_keepServerMenu setState:([inst temporary] ? NSOffState : NSOnState)];
 	[[[NSApplication sharedApplication] menu] update];
+}
+
+
+#pragma mark -
+#pragma mark Accessors
+
+- (CRDDisplayMode)displayMode
+{
+	return displayMode;
 }
 
 

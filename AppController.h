@@ -17,6 +17,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
+#import "miscellany.h"
 
 @class CRDLabelCell;
 @class CRDServerList;
@@ -59,12 +60,14 @@
 	IBOutlet NSBox *gui_performanceOptions;
 	IBOutlet NSTabView *gui_tabView;
 	IBOutlet NSDrawer *gui_serversDrawer;
-		
+	
 	// The list of connected servers (may contain some saved servers)
 	NSMutableArray *connectedServers;
 	
 	// The list of unconnected saved servers
 	NSMutableArray *savedServers;
+	
+	CRDDisplayMode displayMode;
 	
 	// Label cells
 	CRDLabelCell *connectedServersLabel;
@@ -97,6 +100,9 @@
 - (IBAction)connect:(id)sender;
 - (IBAction)showOpen:(id)sender;
 - (IBAction)toggleDrawer:(id)sender;
+- (IBAction)toggleUnified:(id)sender;
+- (IBAction)startFullscreen:(id)sender;
+
 - (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
 
 - (void)cellNeedsDisplay:(NSCell *)cell;
@@ -109,6 +115,8 @@
 - (RDInstance *)serverInstanceForRow:(int)row;
 - (RDInstance *)selectedServerInstance;
 - (RDInstance *)viewedServer;
+
+- (CRDDisplayMode)displayMode;
 
 @end
 
