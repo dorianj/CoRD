@@ -202,6 +202,8 @@
 	conn->screenHeight = screenHeight;
 	conn->tcpPort = (port==0 || port>=65536) ? 3389 : port;
 
+	// Set up correct keymap
+	conn->keyLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
 
 	// Set up disk redirection
 	if (forwardDisks)
@@ -312,6 +314,7 @@
 	[enclosingView setHasHorizontalScroller:YES];
 	[enclosingView setAutohidesScrollers:YES];
 	[enclosingView setBorderType:NSNoBorder];
+	[enclosingView setDrawsBackground:NO];
 	
 	[tabViewRepresentation release];
 	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];

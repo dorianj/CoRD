@@ -33,8 +33,7 @@
 #define KEYMAP_ENTRY(n) [[virtualKeymap objectForKey:[NSNumber numberWithInt:(n)]] intValue]
 #define SET_KEYMAP_ENTRY(n, v) [virtualKeymap setObject:[NSNumber numberWithInt:(v)] forKey:[NSNumber numberWithInt:(n)]]
 
-// Static class variables
-static NSDictionary *isoNameTable = nil;
+static NSDictionary *windowsKeymapTable = nil;
 
 @interface RDCKeyboard (Private)
 	- (BOOL)readKeymap;
@@ -61,7 +60,6 @@ static NSDictionary *isoNameTable = nil;
 - (void)dealloc
 {
 	[virtualKeymap release];
-	[isoNameTable release];
 	[super dealloc];
 }
 
@@ -238,9 +236,9 @@ static NSDictionary *isoNameTable = nil;
 	
 	
 	// Some manual mappings for different types of physical keyboards
-	SInt16 physicalKeyboardType = KBGetLayoutType(LMGetKbdType());
+	PhysicalKeyboardLayoutType physicalKeyboardType = KBGetLayoutType(LMGetKbdType());
 
-	switch ((unsigned)physicalKeyboardType)
+	switch (physicalKeyboardType)
 	{
 		case kKeyboardISO:
 			DEBUG_KEYBOARD( (@"Enabling hacks for European keyboard") );
@@ -256,6 +254,80 @@ static NSDictionary *isoNameTable = nil;
 
 
 #pragma mark Class methods
+
+// This method isn't threadsafe.
++ (int) windowsKeymapForMacKeymap:(NSString *)keymapName {
+	
+	// Load 'OSX keymap name' --> 'Windows keymap number' lookup table if it isn't already loaded
+	if (windowsKeymapTable == nil)
+	{
+		NSMutableDictionary *dict = [[NSMutableDictionary dictionaryWithCapacity:30] retain];
+		NSString *filename = [[NSBundle mainBundle] pathForResource:@"windows_keymap_table" ofType:@"txt"];
+		NSArray *lines = [[NSString stringWithContentsOfFile:filename] componentsSeparatedByString:@"\n"];
+		NSScanner *scanner;
+		NSString *n;
+		int i;
+		
+		id line;
+		NSEnumerator *enumerator = [lines objectEnumerator];
+		while ( (line = [enumerator nextObject]) )
+		{
+			line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			scanner = [NSScanner scannerWithString:line];
+			[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@" \t="]];
+			[scanner scanUpToString:@"=" intoString:&n];
+			[scanner scanHexInt:(unsigned*)&i];
+			
+			if (i != 0 && n != nil)
+				[dict setObject:[NSNumber numberWithInt:i] forKey:n];			
+
+		}
+		windowsKeymapTable = dict;
+	}
+	
+	
+	
+	/* First, look up directly in the table. If not found, try a fuzzy match
+		so that input types like "Arabic-QWERTY" will match "Arabic". Finally, 
+		if an appropriate keymap isn't found either way, use US keymap as default.
+	*/
+	
+	NSNumber *windowsKeymap = [windowsKeymapTable objectForKey:keymapName];
+	
+	if (windowsKeymap == nil)
+	{
+		NSString *prefix;
+		
+		id potentialKeymapName;
+		NSEnumerator *enumerator = [[windowsKeymapTable allKeys] objectEnumerator];
+		
+		while ( (potentialKeymapName = [enumerator nextObject]) )
+		{
+			prefix = [keymapName commonPrefixWithString:potentialKeymapName
+												options:NSLiteralSearch];
+			if ([prefix length] >= 4)
+			{ 
+				windowsKeymap = [windowsKeymapTable objectForKey:potentialKeymapName];
+				DEBUG_KEYBOARD( (@"windowsKeymapForMacKeymap: substituting keymap '%@' for passed '%@', giving Windows keymap '%x'",
+								 potentialKeymapName, keymapName, [windowsKeymap intValue]));
+				break;
+			}
+		}
+	}
+	
+	return windowsKeymap == nil ? 0x409 : [windowsKeymap intValue];
+}
+
++ (NSString *) currentKeymapName
+{
+	CFStringRef *name;
+	KeyboardLayoutRef keyLayout;
+	KLGetCurrentKeyboardLayout(&keyLayout);
+	KLGetKeyboardLayoutProperty(keyLayout, kKLLocalizedName, (const void **)&name);
+	
+	return (NSString *)name;
+}
+
 + (uint16)modifiersForEvent:(NSEvent *)ev
 {
 	unsigned int eventFlags = [ev modifierFlags];

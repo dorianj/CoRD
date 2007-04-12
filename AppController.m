@@ -16,6 +16,7 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+#import <Carbon/Carbon.h>
 
 #import "AppController.h"
 #import "RDInstance.h"
@@ -373,35 +374,55 @@ static NSImage *shared_documentIcon = nil;
 	if ([self displayMode] == CRDDisplayFullscreen || [self viewedServer] == nil)
 		return;
 		
-	// Get the screen information.
-	long screenID = [[[[NSScreen mainScreen] deviceDescription] objectForKey:@"NSScreenNumber"] longValue];
-
-	// Capture the screen.
-	fullscreenCapturedScreen = (CGDirectDisplayID)screenID; 
-	if (CGDisplayCapture(fullscreenCapturedScreen) != CGDisplayNoErr)
-	{
-		// abort
-		return;
-	}
+	displayMode = CRDDisplayFullscreen;
 	
-	// Create the fullscreen window then move the tabview into it
+
+	// Create the fullscreen window then move the tabview into it	
+	RDCView *serverView = [[self viewedServer] view];
+	
 	NSRect winRect = [[NSScreen mainScreen] frame];
-	gui_fullscreenWindow = [[NSWindow alloc] initWithContentRect:winRect styleMask:NSBorderlessWindowMask 
-			backing:NSBackingStoreBuffered defer:NO screen:[NSScreen mainScreen]];
+	gui_fullscreenWindow = [[NSWindow alloc] initWithContentRect:winRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO screen:[NSScreen mainScreen]];
+	[gui_fullscreenWindow setLevel: NSScreenSaverWindowLevel];
 	[gui_fullscreenWindow setAcceptsMouseMovedEvents:YES];
 	[gui_fullscreenWindow setReleasedWhenClosed:YES];
 	[gui_fullscreenWindow setDisplaysWhenScreenProfileChanges:YES];
 	[gui_fullscreenWindow setDelegate:self];
-
-
-	[gui_tabView retain];
-	[gui_tabView removeFromSuperview];
-	[gui_fullscreenWindow setContentView:gui_tabView];
-	[gui_tabView release];
+	[gui_fullscreenWindow setBackgroundColor:[NSColor blackColor]];
 	
-
-	[gui_fullscreenWindow setLevel:CGShieldingWindowLevel()];
+	[gui_tabView retain];
+	[gui_tabView setAutoresizingMask:NSViewNotSizable];
+	[gui_tabView removeFromSuperview];
+	[[gui_fullscreenWindow contentView] addSubview:gui_tabView];
+	[gui_tabView release];	
+	
+	NSRect serverRect = [serverView frame];
+	[gui_tabView setFrame:NSMakeRect(winRect.size.width/2.0-serverRect.size.width/2.0,
+									 winRect.size.height/2.0-serverRect.size.height/2.0,
+									 serverRect.size.width, serverRect.size.height)];
+	
+	[gui_fullscreenWindow setInitialFirstResponder:serverView];
+	
+	// Fade the fullscreen window in
+	NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
+								gui_fullscreenWindow, NSViewAnimationTargetKey,
+								[NSValue valueWithRect:winRect], NSViewAnimationStartFrameKey,
+								[NSValue valueWithRect:winRect], NSViewAnimationEndFrameKey,
+								NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
+								nil];
+	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:animDict]];
+	[viewAnim setAnimationBlockingMode: NSAnimationNonblockingThreaded];
+	[viewAnim setDuration:0.5];
+	[viewAnim setAnimationCurve:NSAnimationEaseIn];
+	
+	[gui_fullscreenWindow setAlphaValue:0.0];
 	[gui_fullscreenWindow makeKeyAndOrderFront:self];
+	
+	[viewAnim startAnimation];
+	[viewAnim release];	
+	
+	[self resizeToMatchSelection];
+	
+	[serverView setNeedsDisplay:YES];
 }
 
 - (IBAction)endFullscreen:(id)sender
@@ -686,12 +707,48 @@ static NSImage *shared_documentIcon = nil;
 
 
 #pragma mark -
+#pragma mark NSTabView delegate
+
+- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
+{
+	if ([self viewedServer] == nil)
+		return;
+	
+	/* Resize the tabview to match the newly selected server.. Using instead of an 
+		autofilling width/height because this allows it to be centered in fullscreen mode */
+	if ([self displayMode] == CRDDisplayFullscreen)
+	{
+		NSRect viewRect = [[[self viewedServer] view] frame];
+		NSRect windowRect = [[gui_tabView superview] frame];
+		NSRect tabRect = [gui_tabView frame];
+		tabRect.size.width  = MIN(viewRect.size.width, windowRect.size.width);
+		tabRect.size.height = MIN(viewRect.size.height, windowRect.size.height);
+		tabRect.origin = NSMakePoint((windowRect.size.width / 2.0) - (tabRect.size.width / 2.0),
+									 (windowRect.size.height / 2.0) - (tabRect.size.height / 2.0));
+		
+		NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
+									gui_tabView, NSViewAnimationTargetKey,
+									[NSValue valueWithRect:tabRect], NSViewAnimationEndFrameKey,
+									nil];
+		NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:animDict]];
+		[viewAnim setDuration:0.33];
+		[viewAnim setAnimationCurve:NSAnimationEaseIn];
+		
+		[[[self viewedServer] view] viewWillStartLiveResize];
+		[viewAnim startAnimation];
+		[[[self viewedServer] view] viewDidEndLiveResize];
+		[viewAnim release];
+	}
+}
+
+
+#pragma mark -
 #pragma mark Managing inspector settings
 
 // Sets all of the values in the passed RDInstance to match the inspector
 - (void)updateInstToMatchInspector:(RDInstance *)inst
 {
-	// Set all of the checkbox options
+	// Checkboxes
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_cacheBitmaps)		forKey:@"cacheBitmaps"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)	forKey:@"windowDrags"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)		forKey:@"drawDesktop"];
@@ -701,24 +758,24 @@ static NSImage *shared_documentIcon = nil;
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)		forKey:@"forwardDisks"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)	forKey:@"consoleSession"];
 	
-	// Set the text fields
+	// Text fields
 	[inst setValue:[gui_label stringValue] forKey:@"label"];
 	[inst setValue:[gui_username stringValue] forKey:@"username"];
 	[inst setValue:[gui_domain stringValue]	 forKey:@"domain"];	
 	[inst setValue:[gui_password stringValue] forKey:@"password"];
 	
-	// Set host/port
+	// Host/port
 	int port;
 	NSString *s;
 	split_hostname([gui_host stringValue], &s, &port);
 	[inst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
 	[inst setValue:s forKey:@"hostName"];
 	
-	// Set screen depth
+	// Screen depth
 	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8]
 			forKey:@"screenDepth"];
 			
-	// Get resolution.
+	// Screen resolution
 	NSScanner *scanner = [NSScanner scannerWithString:[gui_screenResolution titleOfSelectedItem]];
 	[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"x"]];
 	int width, height;
@@ -957,10 +1014,13 @@ static NSImage *shared_documentIcon = nil;
 - (void)resizeToMatchSelection
 {
 	// todo: make this work better with drawer
-	
 	RDInstance *inst = [self viewedServer];
-	NSSize newContentSize = (inst != nil) ? [[inst view] frame].size : NSMakeSize(600, 400);
-
+	NSSize newContentSize;
+	if ([self displayMode] == CRDDisplayUnified && inst != nil)
+		newContentSize = [[inst view] frame].size;
+	else
+		newContentSize = NSMakeSize(600, 400);
+	
 
 	NSRect windowFrame = [gui_mainWindow frame];
 	NSRect screenRect = [[gui_mainWindow screen] visibleFrame];

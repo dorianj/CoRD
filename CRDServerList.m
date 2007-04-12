@@ -19,7 +19,6 @@
 /*	Notes:
 		- I could have used CoreGraphics for the gradients. Drawing my own was easier.
 			It's the same exact result: a calculated gradient.
-
 */
 
 #import "CRDServerList.h"
@@ -127,15 +126,30 @@
 		switch ([str characterAtIndex:0])
 		{
 			case NSDeleteFunctionKey:
+			case 0x007f: /* backward delete */
 				[g_appController removeSelectedSavedServer:self];
+				return;
 				break;
+			
 			default:
 				break;
 		}
-		
-		
 	}
-
+	
+	[super keyUp:ev];	
 }
+
+- (void)mouseDown:(NSEvent *)ev
+{
+	if ([ev clickCount] == 2)
+	{
+		[g_appController connect:self];
+		return;
+	}
+	
+	[super mouseDown:ev];
+}
+
+
 
 @end
