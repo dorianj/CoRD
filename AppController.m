@@ -21,6 +21,7 @@
 #import "AppController.h"
 #import "RDInstance.h"
 #import "CRDServerList.h"
+#import "CRDFullScreenWindow.h"
 #import "miscellany.h"
 
 static NSImage *shared_documentIcon = nil;
@@ -381,48 +382,26 @@ static NSImage *shared_documentIcon = nil;
 	RDCView *serverView = [[self viewedServer] view];
 	
 	NSRect winRect = [[NSScreen mainScreen] frame];
-	gui_fullscreenWindow = [[NSWindow alloc] initWithContentRect:winRect styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO screen:[NSScreen mainScreen]];
-	[gui_fullscreenWindow setLevel: NSScreenSaverWindowLevel];
-	[gui_fullscreenWindow setAcceptsMouseMovedEvents:YES];
-	[gui_fullscreenWindow setReleasedWhenClosed:YES];
-	[gui_fullscreenWindow setDisplaysWhenScreenProfileChanges:YES];
-	[gui_fullscreenWindow setDelegate:self];
-	[gui_fullscreenWindow setBackgroundColor:[NSColor blackColor]];
+	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];
+	[gui_fullScreenWindow setDelegate:self];
+	
 	
 	[gui_tabView retain];
 	[gui_tabView setAutoresizingMask:NSViewNotSizable];
 	[gui_tabView removeFromSuperview];
-	[[gui_fullscreenWindow contentView] addSubview:gui_tabView];
+	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
+	[gui_fullScreenWindow setInitialFirstResponder:serverView];
 	[gui_tabView release];	
 	
+	
+	// Using other code would animate moving the server, which is unwanted here
 	NSRect serverRect = [serverView frame];
 	[gui_tabView setFrame:NSMakeRect(winRect.size.width/2.0-serverRect.size.width/2.0,
 									 winRect.size.height/2.0-serverRect.size.height/2.0,
 									 serverRect.size.width, serverRect.size.height)];
 	
-	[gui_fullscreenWindow setInitialFirstResponder:serverView];
-	
-	// Fade the fullscreen window in
-	NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
-								gui_fullscreenWindow, NSViewAnimationTargetKey,
-								[NSValue valueWithRect:winRect], NSViewAnimationStartFrameKey,
-								[NSValue valueWithRect:winRect], NSViewAnimationEndFrameKey,
-								NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
-								nil];
-	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:animDict]];
-	[viewAnim setAnimationBlockingMode: NSAnimationNonblockingThreaded];
-	[viewAnim setDuration:0.5];
-	[viewAnim setAnimationCurve:NSAnimationEaseIn];
-	
-	[gui_fullscreenWindow setAlphaValue:0.0];
-	[gui_fullscreenWindow makeKeyAndOrderFront:self];
-	
-	[viewAnim startAnimation];
-	[viewAnim release];	
-	
-	[self resizeToMatchSelection];
-	
-	[serverView setNeedsDisplay:YES];
+	[gui_mainWindow display];
+	[gui_fullScreenWindow startFullScreen];
 }
 
 - (IBAction)endFullscreen:(id)sender
@@ -430,8 +409,8 @@ static NSImage *shared_documentIcon = nil;
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
 	
-	CGDisplayRelease(fullscreenCapturedScreen);
-	[gui_fullscreenWindow release];
+	[gui_fullScreenWindow close];
+	[gui_fullScreenWindow release];
 }
 
 #pragma mark -

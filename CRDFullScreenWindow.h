@@ -21,8 +21,16 @@
 
 @interface CRDFullScreenWindow : NSWindow
 {
-
+	
+	NSDate *timeMouseEnteredMenuHotspot;
+	BOOL menuVisible;
+	NSTimer *menuTimer;
 
 }
 
+
+- (void)startFullScreen;
+- (id)initWithScreen:(NSScreen *)screen;
+
+- (BOOL)pointIsInMouseHotSpot:(NSPoint)point;
 @end

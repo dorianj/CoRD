@@ -17,8 +17,147 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "CRDFullScreenWindow.h"
+#import "miscellany.h"
+#import "AppController.h"
+#import "CRDApplication.h"
+
+#define MENU_HOTSPOT_HEIGHT 3.0
+#define MENU_HOTSPOT_WAIT 0.5
 
 
+@interface CRDFullScreenWindow (Private)
+	- (void)toggleMenuBarVisible:(BOOL)visible;
+@end
+
+
+#pragma mark -
 @implementation CRDFullScreenWindow
 
+- (id)initWithScreen:(NSScreen *)screen
+{
+	if (![super initWithContentRect:[screen frame] styleMask:NSBorderlessWindowMask backing:NSBackingStoreBuffered defer:NO])
+	{
+		return nil;
+	}
+	
+	[self setAcceptsMouseMovedEvents:YES];
+	[self setDisplaysWhenScreenProfileChanges:YES];
+	[self setBackgroundColor:[NSColor blackColor]];
+	[self setAcceptsMouseMovedEvents:YES];
+	
+	// Could use NSScreenSaverWindowLevel, but this achieves the same effect while
+	//	allowing the menu to display over it
+	[self setLevel:NSPopUpMenuWindowLevel];
+	
+	return self;
+}
+
+- (void)startFullScreen
+{
+	NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
+						self, NSViewAnimationTargetKey,
+						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
+						nil];
+	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:animDict]];
+	[viewAnim setAnimationBlockingMode: NSAnimationNonblockingThreaded];
+	[viewAnim setDuration:0.5];
+	[viewAnim setAnimationCurve:NSAnimationEaseIn];
+	
+	[self setAlphaValue:0.0];
+	[self makeKeyAndOrderFront:self];
+	
+	[viewAnim startAnimation];
+	[viewAnim release];	
+}
+
+// Custom windows that use the NSBorderlessWindowMask can't become key by default.
+- (BOOL) canBecomeKeyWindow
+{
+    return YES;
+}
+
+
+
+- (void)menuHotspotTracker:(NSTimer*)timer
+{
+	if ([[NSDate date] timeIntervalSinceDate:timeMouseEnteredMenuHotspot] > MENU_HOTSPOT_WAIT)
+	{
+		[self toggleMenuBarVisible:YES];
+	}
+}
+
+- (void)mouseMoved:(NSEvent *)ev
+{
+	if ([self pointIsInMouseHotSpot:[ev locationInWindow]])
+	{
+	
+		NSDate *curTime = [NSDate date];
+		if (timeMouseEnteredMenuHotspot == nil && !menuVisible)
+		{
+			// Start the timer for showing the menu
+			timeMouseEnteredMenuHotspot = [curTime retain];
+			
+			// Schedule a check back
+			[NSTimer scheduledTimerWithTimeInterval:MENU_HOTSPOT_WAIT target:self selector:@selector(menuHotspotTracker:) userInfo:nil repeats:NO];
+			
+		}
+		else if ([curTime timeIntervalSinceDate:timeMouseEnteredMenuHotspot] > MENU_HOTSPOT_WAIT && !menuVisible)
+		{
+			[self toggleMenuBarVisible:YES];
+		}
+	} 
+	else 
+	{
+		if (menuVisible)
+		{
+			[self toggleMenuBarVisible:NO];
+		}
+		
+		
+		[timeMouseEnteredMenuHotspot release];
+		timeMouseEnteredMenuHotspot = nil;
+	}
+}
+
+- (BOOL)pointIsInMouseHotSpot:(NSPoint)point
+{
+	return [self frame].size.height - point.y <= MENU_HOTSPOT_HEIGHT;
+}
+
+
+- (void)toggleMenuBarVisible:(BOOL)visible
+{
+	if (visible == menuVisible)
+		return;
+		
+	if (visible)
+		[NSMenu setMenuBarVisible:visible];
+	else
+	{
+		[timeMouseEnteredMenuHotspot release];
+		timeMouseEnteredMenuHotspot = nil;
+	}
+	
+	
+	 // -[NSMenu menuBarHeight] has a bug in 10.4 and returns 0.0 always
+	float menuBarHeight = [NSMenuView menuBarHeight];
+		
+	NSRect winFrame = [self frame];
+	winFrame.origin.y += (visible? -1 : 1) * menuBarHeight;		
+		
+	[self setFrame:winFrame display:YES animate:YES];
+	
+	if (!visible)
+		[NSMenu setMenuBarVisible:NO];
+		
+	menuVisible = visible;
+}
+
+
 @end
+
+
+
+
+
+

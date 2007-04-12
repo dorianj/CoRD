@@ -20,6 +20,7 @@
 
 #import "miscellany.h"
 
+@class CRDFullScreenWindow;
 @class CRDLabelCell;
 @class CRDServerList;
 @class RDInstance;
@@ -69,7 +70,7 @@
 	NSMutableArray *savedServers;
 	
 	CGDirectDisplayID fullscreenCapturedScreen;
-	NSWindow *gui_fullscreenWindow;
+	CRDFullScreenWindow *gui_fullScreenWindow;
 	CRDDisplayMode displayMode;
 	
 	

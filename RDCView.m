@@ -401,23 +401,21 @@
 
 - (BOOL)checkMouseInBounds:(NSEvent *)ev
 {
-	NSRect frame = [self frame];
-	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	
-	return  (mouseLoc.x > frame.origin.x) || (mouseLoc.x > frame.size.width) || 
-			(mouseLoc.y > frame.origin.y) || (mouseLoc.y > frame.size.height);
-
+	return  NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self frame]);
 }
 
 - (void)mouseDragged:(NSEvent *)ev
 {
-	[self mouseMoved:ev];
+	if ([self checkMouseInBounds:ev])
+		[self mouseMoved:ev];
 }
 
 - (void)mouseMoved:(NSEvent *)ev
 {
 	if ([self checkMouseInBounds:ev])
 		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_MOVE param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	else
+		[super mouseMoved:ev];
 }
 
 
