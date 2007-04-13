@@ -40,13 +40,13 @@
 		return nil;
 	}
 	
-	[self setAcceptsMouseMovedEvents:YES];
 	[self setDisplaysWhenScreenProfileChanges:YES];
 	[self setBackgroundColor:[NSColor blackColor]];
 	[self setAcceptsMouseMovedEvents:YES];
+	[self setReleasedWhenClosed:YES];
 	
-	// Could use NSScreenSaverWindowLevel, but this achieves the same effect while
-	//	allowing the menu to display over it
+	// Could use NSScreenSaverWindowLevel, but NSPopUpMenuWindowLevel achieves the same effect while
+	//	allowing the menu to display over it. Change to NSNormalWindowLevel for debugging fullscreen
 	[self setLevel:NSPopUpMenuWindowLevel];
 	
 	return self;
@@ -59,7 +59,7 @@
 						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
 						nil];
 	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:animDict]];
-	[viewAnim setAnimationBlockingMode: NSAnimationNonblockingThreaded];
+	[viewAnim setAnimationBlockingMode:NSAnimationNonblockingThreaded];
 	[viewAnim setDuration:0.5];
 	[viewAnim setAnimationCurve:NSAnimationEaseIn];
 	
@@ -70,17 +70,17 @@
 	[viewAnim release];	
 }
 
-// Custom windows that use the NSBorderlessWindowMask can't become key by default.
+// Windows that use the NSBorderlessWindowMask can't become key by default.
 - (BOOL) canBecomeKeyWindow
 {
     return YES;
 }
 
 
-
 - (void)menuHotspotTracker:(NSTimer*)timer
 {
-	if ([[NSDate date] timeIntervalSinceDate:timeMouseEnteredMenuHotspot] > MENU_HOTSPOT_WAIT)
+	if ([[NSDate date] timeIntervalSinceDate:timeMouseEnteredMenuHotspot] > MENU_HOTSPOT_WAIT &&
+		[self pointIsInMouseHotSpot:[self mouseLocationOutsideOfEventStream]])
 	{
 		[self toggleMenuBarVisible:YES];
 	}
@@ -94,10 +94,9 @@
 		NSDate *curTime = [NSDate date];
 		if (timeMouseEnteredMenuHotspot == nil && !menuVisible)
 		{
-			// Start the timer for showing the menu
 			timeMouseEnteredMenuHotspot = [curTime retain];
 			
-			// Schedule a check back
+			// Schedule a check back in case the mouse doesn't move again
 			[NSTimer scheduledTimerWithTimeInterval:MENU_HOTSPOT_WAIT target:self selector:@selector(menuHotspotTracker:) userInfo:nil repeats:NO];
 			
 		}
@@ -109,10 +108,7 @@
 	else 
 	{
 		if (menuVisible)
-		{
 			[self toggleMenuBarVisible:NO];
-		}
-		
 		
 		[timeMouseEnteredMenuHotspot release];
 		timeMouseEnteredMenuHotspot = nil;

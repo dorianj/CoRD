@@ -32,7 +32,7 @@
 {
 	
 	RDCView *v = [[g_appController viewedServer] view];
-	BOOL viewIsFocused = [g_appController mainWindowIsFocused] && 
+	BOOL viewIsFocused = v != nil && [g_appController mainWindowIsFocused] && 
 			([[g_appController valueForKey:@"gui_mainWindow"] firstResponder] == v);
 			
 	if (viewIsFocused)

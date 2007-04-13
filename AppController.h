@@ -54,14 +54,12 @@
 	IBOutlet NSWindow *gui_inspector;
 	IBOutlet NSWindow *gui_mainWindow;
 	
-	IBOutlet NSMenuItem *gui_inspectorToggleMenu;
-	IBOutlet NSMenuItem *gui_drawerToggleMenu;
-	IBOutlet NSMenuItem *gui_keepServerMenu;
-	
 	// Other interface elements
 	IBOutlet NSBox *gui_performanceOptions;
 	IBOutlet NSTabView *gui_tabView;
 	IBOutlet NSDrawer *gui_serversDrawer;
+	
+	IBOutlet NSUserDefaultsController *userDefaultsController;
 	
 	// The list of connected servers (may contain some saved servers)
 	NSMutableArray *connectedServers;
@@ -107,6 +105,8 @@
 - (IBAction)toggleDrawer:(id)sender;
 - (IBAction)toggleUnified:(id)sender;
 - (IBAction)startFullscreen:(id)sender;
+- (IBAction)endFullscreen:(id)sender;
+- (IBAction)performFullScreen:(id)sender;
 
 - (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
 

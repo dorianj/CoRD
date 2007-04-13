@@ -5,15 +5,19 @@
                 addNewSavedServer = id; 
                 connect = id; 
                 disconnect = id; 
+                endFullscreen = id; 
                 fieldEdited = id; 
                 keepSelectedServer = id; 
+                performFullScreen = id; 
                 removeSelectedSavedServer = id; 
                 selectNext = id; 
                 selectPrevious = id; 
                 showOpen = id; 
+                startFullscreen = id; 
                 toggleDrawer = id; 
                 toggleInspector = id; 
                 togglePerformanceDisclosure = id; 
+                toggleUnified = id; 
             }; 
             CLASS = AppController; 
             LANGUAGE = ObjC; 
@@ -26,15 +30,12 @@
                 "gui_displayDragging" = NSButton; 
                 "gui_domain" = NSTextField; 
                 "gui_drawDesktop" = NSButton; 
-                "gui_drawerToggleMenu" = NSMenuItem; 
                 "gui_enableAnimations" = NSButton; 
                 "gui_enableThemes" = NSButton; 
                 "gui_forwardDisks" = NSButton; 
                 "gui_host" = NSTextField; 
                 "gui_inspector" = NSWindow; 
                 "gui_inspectorButton" = NSButton; 
-                "gui_inspectorToggleMenu" = NSMenuItem; 
-                "gui_keepServerMenu" = NSMenuItem; 
                 "gui_label" = NSTextField; 
                 "gui_mainWindow" = NSWindow; 
                 "gui_password" = NSTextField; 
@@ -45,6 +46,7 @@
                 "gui_serversDrawer" = NSDrawer; 
                 "gui_tabView" = NSTabView; 
                 "gui_username" = NSTextField; 
+                userDefaultsController = NSUserDefaultsController; 
             }; 
             SUPERCLASS = NSObject; 
         }, 

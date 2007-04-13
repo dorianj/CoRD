@@ -53,7 +53,7 @@ static NSImage *shared_documentIcon = nil;
 	if (![super init])
 		return nil;
 		
-	userDefaults = [[NSUserDefaults standardUserDefaults] retain];
+	userDefaults = [[userDefaultsController defaults] retain];
 	
 	connectedServers = [[NSMutableArray alloc] init];
 	savedServers = [[NSMutableArray alloc] init];
@@ -79,29 +79,6 @@ static NSImage *shared_documentIcon = nil;
 	[userDefaults release];
 	[super dealloc];
 }
-
-- (BOOL)validateMenuItem:(NSMenuItem *)item
-{
-	RDInstance *inst = [self selectedServerInstance];
-	RDInstance *viewedInst = [self viewedServer];
-	SEL action = [item action];
-	
-    if (action == @selector(removeSelectedSavedServer:))
-		return (inst != nil) && ![inst temporary] && [inst status] == CRDConnectionClosed;
-    else if (action == @selector(connect:))
-        return (inst != nil) && [inst status] != CRDConnectionConnected;
-    else if (action == @selector(disconnect:))
-		return (inst != nil) && [inst status] != CRDConnectionClosed;
-	else if (action == @selector(keepSelectedServer:))
-		return (inst != nil) && [inst status] == CRDConnectionConnected;
-	else if (action == @selector(selectNext:))
-		return viewedInst != nil;
-	else if (action == @selector(selectPrevious:))
-		return viewedInst != nil;
-	else
-		return YES;
-}
-
 
 - (void)awakeFromNib
 {
@@ -189,6 +166,54 @@ static NSImage *shared_documentIcon = nil;
 	[self validateControls];
 	[self listUpdated];
 }
+
+- (BOOL)validateMenuItem:(NSMenuItem *)item
+{
+	RDInstance *inst = [self selectedServerInstance];
+	RDInstance *viewedInst = [self viewedServer];
+	SEL action = [item action];
+	
+    if (action == @selector(removeSelectedSavedServer:))
+		return (inst != nil) && ![inst temporary] && [inst status] == CRDConnectionClosed;
+    else if (action == @selector(connect:))
+        return (inst != nil) && [inst status] != CRDConnectionConnected;
+    else if (action == @selector(disconnect:))
+		return (inst != nil) && [inst status] != CRDConnectionClosed;
+	else if (action == @selector(keepSelectedServer:))
+		return (inst != nil) && [inst status] == CRDConnectionConnected;
+	else if (action == @selector(selectNext:))
+		return viewedInst != nil;
+	else if (action == @selector(selectPrevious:))
+		return viewedInst != nil;
+	else if (action == @selector(toggleInspector:))
+	{
+		[item setTitle:([gui_inspector isVisible] ? @"Hide Inspector" : @"Show Inspector")];
+		return inst != nil;
+	}
+	else if (action == @selector(toggleDrawer:))
+	{
+		[item setTitle:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Severs Drawer" : @"Show Servers Drawer")];
+	}
+	else if (action == @selector(keepSelectedServer:))
+	{
+		[item setState:([inst temporary] ? NSOffState : NSOnState)];
+		return [item state] == CRDConnectionConnected;
+	}
+	else if (action == @selector(performFullScreen:)) 
+	{
+		if ([self displayMode] == CRDDisplayFullscreen) {
+			[item setTitle:@"Exit Full Screen"];
+			return YES;
+		} else {
+			[item setTitle:@"Start Full Screen"];
+			return [connectedServers count] > 0;			
+		}
+	}
+	
+	
+	return YES;
+}
+
 
 
 #pragma mark -
@@ -377,30 +402,29 @@ static NSImage *shared_documentIcon = nil;
 		
 	displayMode = CRDDisplayFullscreen;
 	
+	NSView *placeholder = create_placeholder_view([gui_tabView frame]);
 
 	// Create the fullscreen window then move the tabview into it	
 	RDCView *serverView = [[self viewedServer] view];
 	
 	NSRect winRect = [[NSScreen mainScreen] frame];
-	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];
-	[gui_fullScreenWindow setDelegate:self];
-	
+	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
 	
 	[gui_tabView retain];
 	[gui_tabView setAutoresizingMask:NSViewNotSizable];
-	[gui_tabView removeFromSuperview];
+	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
 	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
 	[gui_fullScreenWindow setInitialFirstResponder:serverView];
 	[gui_tabView release];	
 	
+	[gui_mainWindow setContentView:placeholder];
 	
-	// Using other code would animate moving the server, which is unwanted here
+	// Using tabView:didSelectTabViewItem: would animate moving the server, which is unwanted here
 	NSRect serverRect = [serverView frame];
 	[gui_tabView setFrame:NSMakeRect(winRect.size.width/2.0-serverRect.size.width/2.0,
 									 winRect.size.height/2.0-serverRect.size.height/2.0,
 									 serverRect.size.width, serverRect.size.height)];
 	
-	[gui_mainWindow display];
 	[gui_fullScreenWindow startFullScreen];
 }
 
@@ -408,9 +432,53 @@ static NSImage *shared_documentIcon = nil;
 {
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
+		
+	NSView *placeholder = create_placeholder_view([gui_tabView frame]);
 	
+	[gui_tabView retain];
+	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
+	[gui_tabView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+	[gui_mainWindow setContentSize:[gui_tabView frame].size];
+	[gui_mainWindow setContentView:gui_tabView];
+	[gui_mainWindow display];
+
+	// -[NSView setContentView] doesn't retain its argument, so don't release gui_tabView
+	
+	[[gui_fullScreenWindow contentView] addSubview:placeholder];
+
+	// Animate the fullscreen window fading away
+	NSDictionary *fadeWindow = [NSDictionary dictionaryWithObjectsAndKeys:
+						gui_fullScreenWindow, NSViewAnimationTargetKey,
+						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
+						nil];
+	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:fadeWindow]];
+	[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
+	[viewAnim setDuration:0.5];
+	[viewAnim setAnimationCurve:NSAnimationEaseOut];
+	
+	[viewAnim startAnimation];
+	[viewAnim release];	
+
+	printf("retain %d\n", [gui_fullScreenWindow retainCount]);
 	[gui_fullScreenWindow close];
-	[gui_fullScreenWindow release];
+	
+	//gui_fullScreenWindow = nil;
+	
+	displayMode = CRDDisplayUnified;
+}
+
+// Toggles between fullscreen and unified
+//	xxx: toggle between fullscreen and state before fullscreen (windowed or unified)
+- (IBAction)performFullScreen:(id)sender
+{
+	if ([self displayMode] == CRDDisplayFullscreen)
+	{
+		[self endFullscreen:sender];
+	}
+	else
+	{
+		[self startFullscreen:sender];
+	}
 }
 
 #pragma mark -
@@ -457,6 +525,8 @@ static NSImage *shared_documentIcon = nil;
 		[toolbarItem setLabel:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Servers" : @"Show Servers")];
 	else if ([itemId isEqualToString:TOOLBAR_DISCONNECT])
 		return viewedInst != nil;
+	else if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
+		return [connectedServers count] > 0;
 	
 	return YES;
 }
@@ -649,6 +719,7 @@ static NSImage *shared_documentIcon = nil;
 	if (selectedRow >= 1 && selectedRow <= [connectedServers count])
 	{
 		[gui_tabView selectTabViewItem:[inspectedServer tabViewRepresentation]];
+		[gui_mainWindow makeFirstResponder:[[self viewedServer] view]];
 		[self resizeToMatchSelection];
 	}
 	
@@ -979,9 +1050,6 @@ static NSImage *shared_documentIcon = nil;
 
 - (void)toggleDrawer:(id)sender visible:(BOOL)visible
 {
-	NSString *newLabel = (visible) ? @"Hide Servers" : @"Show Servers";
-	[gui_drawerToggleMenu setTitle:[newLabel stringByAppendingString:@" Drawer"]];
-		
 	if (visible)
 		[gui_serversDrawer open];
 	else
@@ -1073,7 +1141,6 @@ static NSImage *shared_documentIcon = nil;
 	if (selectedItem == nil)
 		return nil;
 		
-	// Linear search the connectedServers array for this item
 	NSEnumerator *enumerator = [connectedServers objectEnumerator];
 	id item;
 	
@@ -1089,16 +1156,10 @@ static NSImage *shared_documentIcon = nil;
 // Enables/disables gui controls as needed
 - (void)validateControls
 {
-	[gui_inspectorToggleMenu setTitle:([gui_inspector isVisible] ? @"Hide Inspector" : @"Show Inspector")];
-	[gui_inspectorToggleMenu setEnabled:[gui_serverList selectedRow] == -1];
-	
 	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
 	
 	[gui_connectButton setEnabled:(inst != nil && [inst status] != CRDConnectionConnected)];
 	[gui_inspectorButton setEnabled:(inst != nil)];
-	
-	[gui_keepServerMenu setState:([inst temporary] ? NSOffState : NSOnState)];
-	[[[NSApplication sharedApplication] menu] update];
 }
 
 

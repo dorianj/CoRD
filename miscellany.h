@@ -47,6 +47,7 @@ NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
 #define NUMBER_AS_BSTATE(b) ( ([(b) boolValue]) ? NSOnState : NSOffState)
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
 #define BUTTON_STATE_AS_NUMBER_INVERSE(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 0 : 1)]
+NSView *create_placeholder_view(NSRect source);
 
 /* RDCKeyboard */
 void print_bitfield(unsigned v, int bits);
@@ -62,6 +63,10 @@ void fill_default_connection(rdcConnection conn);
 /* User defaults (NSUserDefaults) keys */
 #define DEFAULTS_SHOW_DRAWER @"show_drawer"
 #define DEFAULTS_DRAWER_WIDTH @"drawer_width"
+
+#define PREFS_FULLSCREEN_RECONNECT @"reconnectFullScreen"
+#define PREFS_FORWARD_MENU_SHORTCUTS @"forwardMenuKeyShortcuts"
+
 
 typedef enum _CRDConnectionStatus
 {

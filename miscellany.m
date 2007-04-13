@@ -82,8 +82,23 @@ BOOL drawer_is_visisble(NSDrawer *drawer)
 }
 
 
+// Captures the contents of a given screen rect and puts it into a NSView
+NSView *create_placeholder_view(NSRect source)
+{
+	NSBitmapImageRep *screenCap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:source];
+	NSImage *img = [[NSImage alloc] initWithSize:source.size];
+	[img addRepresentation:screenCap];
+	[screenCap release];
+	
+	NSImageView *placeholder = [[NSImageView alloc] initWithFrame:source];
+	[placeholder setImage:img];
+	[img release];
+	
+	return [placeholder autorelease];
+}
+
+
 #pragma mark ServersManager
-// xxx: make this recursive?
 void ensure_directory_exists(NSString *path, NSFileManager *manager)
 {
 	BOOL isDir;
