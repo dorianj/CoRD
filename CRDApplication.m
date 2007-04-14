@@ -40,6 +40,10 @@
 		switch ([ev type])
 		{
 			case NSKeyDown:
+				// Catch fullscreen command
+				if ([ev keyCode] == 0x24 && ([ev modifierFlags] &  NSCommandKeyMask) && ([ev modifierFlags] & NSAlternateKeyMask))
+					break;
+			
 				// This functionality can be unintuitive and should only be used if 
 				//	there's a user-settable way to control it
 				//if (![[self menu] performKeyEquivalent:ev])

@@ -84,6 +84,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	g_appController = self;
 	
+	displayMode = CRDDisplayUnified;
 	
 	[gui_mainWindow setAcceptsMouseMovedEvents:YES];
 	
@@ -182,9 +183,9 @@ static NSImage *shared_documentIcon = nil;
 	else if (action == @selector(keepSelectedServer:))
 		return (inst != nil) && [inst status] == CRDConnectionConnected;
 	else if (action == @selector(selectNext:))
-		return viewedInst != nil;
+		return [gui_tabView numberOfTabViewItems] > 2; /* Greater than 2 because 1 blank is added */ 
 	else if (action == @selector(selectPrevious:))
-		return viewedInst != nil;
+		return [gui_tabView numberOfTabViewItems] > 2;
 	else if (action == @selector(toggleInspector:))
 	{
 		[item setTitle:([gui_inspector isVisible] ? @"Hide Inspector" : @"Show Inspector")];
@@ -399,11 +400,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	if ([self displayMode] == CRDDisplayFullscreen || [self viewedServer] == nil)
 		return;
-		
-	displayMode = CRDDisplayFullscreen;
 	
-	NSView *placeholder = create_placeholder_view([gui_tabView frame]);
-
 	// Create the fullscreen window then move the tabview into it	
 	RDCView *serverView = [[self viewedServer] view];
 	
@@ -415,9 +412,8 @@ static NSImage *shared_documentIcon = nil;
 	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
 	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
 	[gui_fullScreenWindow setInitialFirstResponder:serverView];
+//	[gui_mainWindow setContentView:nil];
 	[gui_tabView release];	
-	
-	[gui_mainWindow setContentView:placeholder];
 	
 	// Using tabView:didSelectTabViewItem: would animate moving the server, which is unwanted here
 	NSRect serverRect = [serverView frame];
@@ -426,25 +422,26 @@ static NSImage *shared_documentIcon = nil;
 									 serverRect.size.width, serverRect.size.height)];
 	
 	[gui_fullScreenWindow startFullScreen];
+
+	[gui_fullScreenWindow makeFirstResponder:serverView];
+	
+	displayMode = CRDDisplayFullscreen;
 }
 
 - (IBAction)endFullscreen:(id)sender
 {
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
-		
-	NSView *placeholder = create_placeholder_view([gui_tabView frame]);
 	
 	[gui_tabView retain];
 	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
 	[gui_tabView setAutoresizingMask:(NSViewWidthSizable | NSViewHeightSizable)];
+	[gui_tabView setFrameOrigin:NSMakePoint(0.0,0.0)];
 	[gui_mainWindow setContentSize:[gui_tabView frame].size];
-	[gui_mainWindow setContentView:gui_tabView];
+	[[gui_mainWindow contentView] addSubview:gui_tabView];
 	[gui_mainWindow display];
 
-	// -[NSView setContentView] doesn't retain its argument, so don't release gui_tabView
-	
-	[[gui_fullScreenWindow contentView] addSubview:placeholder];
+	// -[NSView setContentView] doesn't seem to retain its argument, so don't release gui_tabView
 
 	// Animate the fullscreen window fading away
 	NSDictionary *fadeWindow = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -459,12 +456,13 @@ static NSImage *shared_documentIcon = nil;
 	[viewAnim startAnimation];
 	[viewAnim release];	
 
-	printf("retain %d\n", [gui_fullScreenWindow retainCount]);
 	[gui_fullScreenWindow close];
+	gui_fullScreenWindow = nil;
 	
-	//gui_fullScreenWindow = nil;
 	
 	displayMode = CRDDisplayUnified;
+	
+	[self resizeToMatchSelection];
 }
 
 // Toggles between fullscreen and unified
@@ -784,9 +782,7 @@ static NSImage *shared_documentIcon = nil;
 		[viewAnim setDuration:0.33];
 		[viewAnim setAnimationCurve:NSAnimationEaseIn];
 		
-		[[[self viewedServer] view] viewWillStartLiveResize];
 		[viewAnim startAnimation];
-		[[[self viewedServer] view] viewDidEndLiveResize];
 		[viewAnim release];
 	}
 }
@@ -1136,18 +1132,21 @@ static NSImage *shared_documentIcon = nil;
 // Returns the connected server that the tab view is displaying
 - (RDInstance *)viewedServer
 {
-	NSTabViewItem *selectedItem = [gui_tabView selectedTabViewItem];
-
-	if (selectedItem == nil)
-		return nil;
-		
-	NSEnumerator *enumerator = [connectedServers objectEnumerator];
-	id item;
-	
-	while ( (item = [enumerator nextObject]) )
+	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
 	{
-		if ([item tabViewRepresentation] == selectedItem)
-			return item;
+		NSTabViewItem *selectedItem = [gui_tabView selectedTabViewItem];
+
+		if (selectedItem == nil)
+			return nil;
+			
+		NSEnumerator *enumerator = [connectedServers objectEnumerator];
+		id item;
+		
+		while ( (item = [enumerator nextObject]) )
+		{
+			if ([item tabViewRepresentation] == selectedItem)
+				return item;
+		}
 	}
 	
 	return nil;

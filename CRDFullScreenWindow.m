@@ -44,10 +44,11 @@
 	[self setBackgroundColor:[NSColor blackColor]];
 	[self setAcceptsMouseMovedEvents:YES];
 	[self setReleasedWhenClosed:YES];
+	[self setHasShadow:NO];
 	
 	// Could use NSScreenSaverWindowLevel, but NSPopUpMenuWindowLevel achieves the same effect while
 	//	allowing the menu to display over it. Change to NSNormalWindowLevel for debugging fullscreen
-	[self setLevel:NSPopUpMenuWindowLevel];
+	[self setLevel:NSNormalWindowLevel];
 	
 	return self;
 }
@@ -59,7 +60,7 @@
 						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
 						nil];
 	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:animDict]];
-	[viewAnim setAnimationBlockingMode:NSAnimationNonblockingThreaded];
+	[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
 	[viewAnim setDuration:0.5];
 	[viewAnim setAnimationCurve:NSAnimationEaseIn];
 	
@@ -68,6 +69,8 @@
 	
 	[viewAnim startAnimation];
 	[viewAnim release];	
+	
+	[self display];
 }
 
 // Windows that use the NSBorderlessWindowMask can't become key by default.
@@ -113,6 +116,8 @@
 		[timeMouseEnteredMenuHotspot release];
 		timeMouseEnteredMenuHotspot = nil;
 	}
+	
+	[super mouseMoved:ev];
 }
 
 - (BOOL)pointIsInMouseHotSpot:(NSPoint)point
@@ -125,15 +130,9 @@
 {
 	if (visible == menuVisible)
 		return;
-		
-	if (visible)
-		[NSMenu setMenuBarVisible:visible];
-	else
-	{
-		[timeMouseEnteredMenuHotspot release];
-		timeMouseEnteredMenuHotspot = nil;
-	}
-	
+
+	[timeMouseEnteredMenuHotspot release];
+	timeMouseEnteredMenuHotspot = nil;
 	
 	 // -[NSMenu menuBarHeight] has a bug in 10.4 and returns 0.0 always
 	float menuBarHeight = [NSMenuView menuBarHeight];
@@ -142,9 +141,6 @@
 	winFrame.origin.y += (visible? -1 : 1) * menuBarHeight;		
 		
 	[self setFrame:winFrame display:YES animate:YES];
-	
-	if (!visible)
-		[NSMenu setMenuBarVisible:NO];
 		
 	menuVisible = visible;
 }
