@@ -45,6 +45,7 @@
 	BOOL windowAnimation; 
 	BOOL themes; 
 	BOOL consoleSession;
+	BOOL fullscreen;
 	
 	int startDisplay;
 	int forwardAudio; 
@@ -62,10 +63,12 @@
 	// Flags used by ServersManager (and possibly others)
 	BOOL temporary;
 	BOOL modified;
+	BOOL temporarilyFullscreen;
 	CRDConnectionStatus connectionStatus;
 	
 	// Path to the RDP File backing this RDInstance, if any.
 	NSString *rdpFilename;
+	NSStringEncoding fileEncoding;
 	
 	// Some internal stuff
 	uint32 cFlags;

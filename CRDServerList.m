@@ -88,11 +88,8 @@
 {
 	int selectedRow, i, count;
 	
-	if (indexes != nil)
-		selectedRow = [indexes firstIndex];
-	else
-		selectedRow  = -1;
-	
+	selectedRow = (indexes != nil) ? [indexes firstIndex] : -1;
+
 	for (i = 0, count = [self numberOfRows]; i < count; i++)
 		[[[[self tableColumns] objectAtIndex:0] dataCellForRow:i] setHighlighted:(i == selectedRow)];
 	

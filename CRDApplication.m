@@ -20,50 +20,68 @@
 //			as windows+key and sent to server. This will be enabled in the furture,
 //			some RDCKeyboard modifications are needed and this is low priority
 
+// Notes: 
+
 #import "CRDApplication.h"
 
 #import "AppController.h"
 #import "RDInstance.h"
 #import "RDCView.h"
+#import "CRDFullScreenWindow.h"
 
 @implementation CRDApplication
 
 - (void)sendEvent:(NSEvent *)ev
 {
-	
+	// This could be optimized by lazy checking of viewIsFocused, and v and/or changing
+	//	some to use IB connections
+	CRDFullScreenWindow *fullScreenWindow = [g_appController fullScreenWindow];
 	RDCView *v = [[g_appController viewedServer] view];
 	BOOL viewIsFocused = v != nil && [g_appController mainWindowIsFocused] && 
-			([[g_appController valueForKey:@"gui_mainWindow"] firstResponder] == v);
-			
-	if (viewIsFocused)
+			([[g_appController unifiedWindow] firstResponder] == v);
+	NSEventType eventType = [ev type];
+	
+	switch (eventType)
 	{
-		switch ([ev type])
-		{
-			case NSKeyDown:
-				// Catch fullscreen command
-				if ([ev keyCode] == 0x24 && ([ev modifierFlags] &  NSCommandKeyMask) && ([ev modifierFlags] & NSAlternateKeyMask))
-					break;
-			
-				// This functionality can be unintuitive and should only be used if 
-				//	there's a user-settable way to control it
-				//if (![[self menu] performKeyEquivalent:ev])
-				
+		case NSKeyDown:	
+			if (viewIsFocused)
+			{
 				[v keyDown:ev];
-				
+				[[self menu] performKeyEquivalent:ev];
 				return;
-				
-			case NSKeyUp:
+			}
+			break;
+			
+		case NSKeyUp:
+			if (viewIsFocused)
+			{
 				[v keyUp:ev];
 				return;
-				
-			case NSFlagsChanged:
+			}
+			break;
+			
+		case NSFlagsChanged:
+			if (viewIsFocused)
+			{
 				[v flagsChanged:ev];
 				return;
-						
-			default:
-				break;
-		}
+			}
+			break;
+			
+		case NSMouseMoved:
+			if ([g_appController displayMode] == CRDDisplayFullscreen &&
+				([fullScreenWindow pointIsInMouseHotSpot:[fullScreenWindow mouseLocationOutsideOfEventStream]] ||
+				[fullScreenWindow menuVisible]) )
+			{
+				[fullScreenWindow mouseMoved:ev];
+				return;
+			}
+			
+			break;
+		default:
+			break;
 	}
+	
 	
     [super sendEvent:ev];
 }

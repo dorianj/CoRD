@@ -36,11 +36,11 @@ static NSImage *shared_documentIcon = nil;
 	- (void)saveInspectedServer;
 	- (void)updateInstToMatchInspector:(RDInstance *)inst;
 	- (void)setInspectorSettings:(RDInstance *)newSettings;
-	- (void)addServer:(RDInstance *)inst;
 	- (void)connectInstance:(RDInstance *)inst;
 	- (void)completeConnection:(RDInstance *)inst;
 	- (void)connectAsync:(RDInstance *)inst;
 	- (void)resizeToMatchSelection;
+	- (void)connectionFinished:(RDInstance *)newlyConnectedInst;
 @end
 
 
@@ -53,7 +53,7 @@ static NSImage *shared_documentIcon = nil;
 	if (![super init])
 		return nil;
 		
-	userDefaults = [[userDefaultsController defaults] retain];
+	userDefaults = [NSUserDefaults standardUserDefaults];
 	
 	connectedServers = [[NSMutableArray alloc] init];
 	savedServers = [[NSMutableArray alloc] init];
@@ -402,9 +402,23 @@ static NSImage *shared_documentIcon = nil;
 		return;
 	
 	// Create the fullscreen window then move the tabview into it	
+	RDInstance *inst = [self viewedServer];
 	RDCView *serverView = [[self viewedServer] view];
-	
+	NSSize serverSize = [serverView frame].size;	
 	NSRect winRect = [[NSScreen mainScreen] frame];
+	
+	// If needed, reconnect the instance so that it can fill the screen
+	if (serverSize.width < winRect.size.width || serverSize.height < winRect.size.height)
+	{
+		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
+		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"temporarilyFullscreen"];
+		instanceReconnectingForFullscreen = inst;
+		[self connectInstance:inst];
+		return;
+	}
+	
+	instanceReconnectingForFullscreen = nil;
+	
 	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
 	
 	[gui_tabView retain];
@@ -551,6 +565,7 @@ static NSImage *shared_documentIcon = nil;
 		{
 			[inst setTemporary:YES];
 			[connectedServers addObject:inst];
+			[gui_serverList deselectAll:self];
 			[self listUpdated];
 			[self connectInstance:inst];	
 		}
@@ -822,12 +837,22 @@ static NSImage *shared_documentIcon = nil;
 			forKey:@"screenDepth"];
 			
 	// Screen resolution
-	NSScanner *scanner = [NSScanner scannerWithString:[gui_screenResolution titleOfSelectedItem]];
-	[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"x"]];
 	int width, height;
-	[scanner scanInt:&width]; [scanner scanInt:&height];
+	if ([gui_screenResolution indexOfSelectedItem] == 0)
+	{
+		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
+		width = height = 0;
+	}
+	else
+	{
+		NSScanner *scanner = [NSScanner scannerWithString:[gui_screenResolution titleOfSelectedItem]];
+		[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"x"]];
+		[scanner scanInt:&width]; [scanner scanInt:&height];
+		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"fullscreen"];
+	}
 	[inst setValue:[NSNumber numberWithInt:width]  forKey:@"screenWidth"];
 	[inst setValue:[NSNumber numberWithInt:height] forKey:@"screenHeight"];
+	
 	
 }
 
@@ -864,18 +889,25 @@ static NSImage *shared_documentIcon = nil;
 	[gui_colorCount selectItemAtIndex:(colorDepth/8-1)];
 	
 	// Set the resolution
-	int screenWidth = [[newSettings valueForKey:@"screenWidth"] intValue];
-	int screenHeight = [[newSettings valueForKey:@"screenHeight"] intValue]; 
-	if (screenWidth == 0 || screenHeight == 0) {
-		screenWidth = 1024;
-		screenHeight = 768;
+	if ([[newSettings valueForKey:@"fullscreen"] boolValue])
+	{
+		[gui_screenResolution selectItemAtIndex:0];
 	}
-	
-	NSString *resolutionLabel = [NSString stringWithFormat:@"%dx%d", screenWidth, screenHeight];
-	// If this resolution doesn't exist in the pop-up box, create it. Either way, select it.
-	if ([gui_screenResolution itemWithTitle:resolutionLabel] == nil)
-		[gui_screenResolution addItemWithTitle:resolutionLabel];
-	[gui_screenResolution selectItemWithTitle:resolutionLabel];
+	else 
+	{
+		int screenWidth = [[newSettings valueForKey:@"screenWidth"] intValue];
+		int screenHeight = [[newSettings valueForKey:@"screenHeight"] intValue]; 
+		if (screenWidth == 0 || screenHeight == 0) {
+			screenWidth = 1024;
+			screenHeight = 768;
+		}
+		
+		NSString *resolutionLabel = [NSString stringWithFormat:@"%dx%d", screenWidth, screenHeight];
+		// If this resolution doesn't exist in the pop-up box, create it. Either way, select it.
+		if ([gui_screenResolution itemWithTitle:resolutionLabel] == nil)
+			[gui_screenResolution addItemWithTitle:resolutionLabel];
+		[gui_screenResolution selectItemWithTitle:resolutionLabel];
+	}
 }
 
 
@@ -930,6 +962,13 @@ static NSImage *shared_documentIcon = nil;
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
+	if ([[inst valueForKey:@"fullscreen"] boolValue])
+	{
+		NSSize screenSize = [[gui_mainWindow screen] frame].size;
+		[inst setValue:[NSNumber numberWithInt:(int)screenSize.width] forKey:@"screenWidth"];
+		[inst setValue:[NSNumber numberWithInt:(int)screenSize.height] forKey:@"screenHeight"];
+	}
+	
 	BOOL connected = [inst connect];
 	
 	[self performSelectorOnMainThread:@selector(completeConnection:)
@@ -967,12 +1006,14 @@ static NSImage *shared_documentIcon = nil;
 		
 		[gui_mainWindow makeFirstResponder:[inst view]];
 		
-		
 		[self resizeToMatchSelection];
 		[self listUpdated];
+		[self connectionFinished:inst];
 	}
 	else
 	{
+		BOOL retry = NO;
+		
 		[self cellNeedsDisplay:(NSCell *)[inst cellRepresentation]];
 		ConnectionErrorCode errorCode = [inst conn]->errorCode;
 		
@@ -990,13 +1031,19 @@ static NSImage *shared_documentIcon = nil;
 						alternateButton:@"Retry" otherButton:nil informativeTextWithFormat:descs[errorCode]];
 			[alert setAlertStyle:NSCriticalAlertStyle];
 			
-			// Retry if needed
+			// Retry if requested
 			if ([alert runModal] == NSAlertAlternateReturn)
-				[self performSelectorOnMainThread:@selector(connectInstance:) withObject:inst waitUntilDone:NO];
+			{
+				[self connectInstance:inst];
+			}
+			else if ([inst temporary])
+			{
+				// Connect failed, remove it
+				[connectedServers removeObject:inst];
+				[self listUpdated];
+			}
 		}
-	}
-	
-	
+	}	
 }
 
 // Assures that the connected instance is disconnected and removed from view.
@@ -1011,6 +1058,11 @@ static NSImage *shared_documentIcon = nil;
 	if ([inst status] == CRDConnectionConnected)
 		[inst disconnect];
 		
+	if ([[inst valueForKey:@"temporarilyFullscreen"] boolValue])
+	{
+		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"fullscreen"];
+		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"temporarilyFullscreen"];
+	}
 	
 	// If it's not temporary, move it to the saved servers list. Update the table view
 	//	and selection as needed.
@@ -1054,8 +1106,11 @@ static NSImage *shared_documentIcon = nil;
 	[gui_toolbar validateVisibleItems];
 }
 
+
 - (void)resizeToMatchSelection
 {
+	// This doesn't use zoom to do it automatically because more control is needed
+	
 	// todo: make this work better with drawer
 	RDInstance *inst = [self viewedServer];
 	NSSize newContentSize;
@@ -1064,18 +1119,21 @@ static NSImage *shared_documentIcon = nil;
 	else
 		newContentSize = NSMakeSize(600, 400);
 	
-
 	NSRect windowFrame = [gui_mainWindow frame];
 	NSRect screenRect = [[gui_mainWindow screen] visibleFrame];
+	[gui_mainWindow setContentMaxSize:newContentSize];	
+	
+
 
 	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = windowFrame.size.height - [[gui_mainWindow contentView] frame].size.height;
 	
-	[gui_mainWindow setContentMaxSize:newContentSize];	
+	
 	
 	NSRect newWindowFrame = NSMakeRect( windowFrame.origin.x, windowFrame.origin.y +
 										windowFrame.size.height-newContentSize.height-toolbarHeight, 
 										newContentSize.width, newContentSize.height + toolbarHeight);
+	
 	// Assure that no unneccesary scrollers are created
 	if (newWindowFrame.size.height > screenRect.size.height &&
 		newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
@@ -1093,14 +1151,29 @@ static NSImage *shared_documentIcon = nil;
 	}
 	
 	// Try to make it not outside of the screen
-	if (newWindowFrame.origin.y < screenRect.origin.y)
+	if (newWindowFrame.origin.y < screenRect.origin.y && newWindowFrame.size.height <= screenRect.size.height)
+	{
 		newWindowFrame.origin.y = screenRect.origin.y;
+	}
 	
 	if (newWindowFrame.origin.x + newWindowFrame.size.width > screenRect.size.width)
+	{
 		newWindowFrame.origin.x -= (newWindowFrame.origin.x + newWindowFrame.size.width) - (screenRect.origin.x + screenRect.size.width);
+	}
 	
-	[gui_mainWindow setContentMaxSize:newWindowFrame.size];
+	
+	
 	[gui_mainWindow setFrame:newWindowFrame display:YES animate:YES];
+}
+
+
+- (void)connectionFinished:(RDInstance *)inst
+{
+	if (inst == instanceReconnectingForFullscreen)
+	{
+		[self startFullscreen:self];	
+	}
+
 }
 
 
@@ -1170,6 +1243,16 @@ static NSImage *shared_documentIcon = nil;
 	return displayMode;
 }
 
+// Used to speed -[CRDApplication sendEvent:] by not using KVC
+- (NSWindow *)unifiedWindow
+{
+	return gui_mainWindow;
+}
+
+- (CRDFullScreenWindow *)fullScreenWindow
+{
+	return gui_fullScreenWindow;
+}
 
 #pragma mark -
 #pragma mark Application-wide resources

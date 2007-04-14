@@ -1,10 +1,3 @@
-/*
- *  stubs.c
- *  Remote Desktop
- *
- *  Created by Craig Dooley on 5/10/06.
- */
-
  //  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
  //  Permission is hereby granted, free of charge, to any person obtaining a 
  //  copy of this software and associated documentation files (the "Software"), 
@@ -66,131 +59,77 @@ static void schedule_display_in_rect(NSView *v, NSRect r);
 
 static RDCBitmap *nullCursor = nil;
 
-int ui_select(rdcConnection conn) {
 
-	int n = 0, i = 0;
-	fd_set rfds, wfds;
-	struct timeval tv;
-	RDCBOOL s_timeout = False;
-	
-	if (!conn->ioRequest)
-		return 1;
-	
-	FD_ZERO(&rfds);
-	FD_ZERO(&wfds);	
+#pragma mark -
+#pragma mark Colormap 
 
-	rdpdr_add_fds(conn, &n, &rfds, &wfds, &tv, &s_timeout);
-	
-	switch (select(n, &rfds, &wfds, NULL, NULL))
-	{
-		case -1:
-			error("select: %s\n", strerror(errno));
-			break;
-		case 0:
-			rdpdr_check_fds(conn, &rfds, &wfds, 1);
-			break;
-		default:
-			rdpdr_check_fds(conn, &rfds, &wfds, 0);
-			break;
-	}
-	
-	return 1;
-}
-
-/* Tells whether numlock is on or off */
-unsigned int read_keyboard_state() {
-	return 0;
-}
-
-unsigned short ui_get_numlock_state(unsigned int state) {
-	return 0;
-}
-
-#pragma mark Colormap functions
-
-HCOLOURMAP ui_create_colourmap(COLOURMAP * colors) {
+HCOLOURMAP ui_create_colourmap(COLOURMAP * colors)
+{
 	unsigned int *colorMap = malloc(colors->ncolours * sizeof(unsigned));
 	
 	int i;
 	
-	for (i = 0; i < colors->ncolours; i++) {
+	for (i = 0; i < colors->ncolours; i++)
+	{
 		COLOURENTRY colorEntry = colors->colours[i];
 		colorMap[i] = (colorEntry.red << 16) | (colorEntry.green << 8) | (colorEntry.blue);
 	}
+	
 	return colorMap;
 }
 
-void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map) {
+void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map)
+{
 	RDCView *v = conn->ui;
 	[v setColorMap:(unsigned int *)map];
 }
 
-#pragma mark Bitmap functions
 
-HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data) {
+#pragma mark -
+#pragma mark Bitmap
+
+HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data)
+{
 	return [[RDCBitmap alloc] initWithBitmapData:data size:NSMakeSize(width, height) view:conn->ui];
 }
 
-void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width, int height, uint8 * data) {
+void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width, int height, uint8 * data)
+{
 	RDCBitmap *bitmap = [[RDCBitmap alloc] initWithBitmapData:data size:NSMakeSize(width, height) view:conn->ui];
 	ui_memblt(conn, 0, x, y, cx, cy, bitmap, 0, 0);
 	[bitmap release];
 }
 
-void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, HBITMAP src, int srcx, int srcy) {
+void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, HBITMAP src, int srcx, int srcy)
+{
 	RDCView *v = conn->ui;
 	RDCBitmap *bmp = (RDCBitmap *)src;
 	NSRect r = NSMakeRect(x, y, cx, cy);
 	NSPoint p = NSMakePoint(srcx, srcy);
 	
-	if (opcode != 0) {
+	if (opcode != 0)
+	{ 
 		/* Treat opcode 0 just like copy */
 		CHECKOPCODE(opcode);
 	}
+	
 	[v memblt:r from:[bmp image] withOrigin:p];
 	schedule_display_in_rect(v, r);
 }
 
-void ui_destroy_bitmap(HBITMAP bmp) {
+void ui_destroy_bitmap(HBITMAP bmp)
+{
 	id image = bmp;
 	[image release];
 }
 
-# pragma mark Drawing functions
 
-void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour) {
-	RDCView *v = conn->ui;
-	NSRect r = NSMakeRect(x , y, cx, cy);
-	[v setForeground:[v nscolorForRDCColor:colour]];
-	[v fillRect:r];
-	schedule_display_in_rect(v, r);
-}
-
-void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, 
-			 int endx, int endy, PEN * pen) {
-	RDCView *v = conn->ui;
-	NSPoint start = NSMakePoint(startx + 0.5, starty + 0.5);
-	NSPoint end = NSMakePoint(endx + 0.5, endy + 0.5);
-	
-	[v setForeground:[v nscolorForRDCColor:pen->colour]];
-	
-	if (opcode == 15) {
-		[v drawLineFrom:start to:end color:[NSColor whiteColor] width:pen->width];
-		return;
-	}
-	
-	CHECKOPCODE(opcode);
-	[v setForeground:[v nscolorForRDCColor:pen->colour]];
-	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
-	schedule_display(v);
-	// xxx: this should work quicker, but I haven't been able to test it (never called by rdesktop in use)
-	//schedule_display_in_rect(v, NSMakeRect(startx, starty, endx, endy));
-}
-
-#pragma mark Desktop cache functions
+#pragma mark -
+#pragma mark Desktop Cache
 
 // Takes a section of the desktop cache and saves it into a RDCBitmap compatible byte array
-void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
+void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
+{
 	RDCView *v = conn->ui;
 	NSImage *back = [v valueForKey:@"back"];
 	NSBitmapImageRep *deskScrape;
@@ -225,7 +164,8 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	
 	while (i++ < len)
 	{
-		if (conn->serverBpp == 16) {
+		if (conn->serverBpp == 16)
+		{
 			k = ((p[0] & 0xF8) << 8) | ((p[1] & 0xFC) << 3) | (p[2] >> 3);
 #ifdef __BIG_ENDIAN__
 			o[1] = (uint8)(k & 0xFF);
@@ -264,7 +204,8 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	[deskScrape release];
 }
 
-void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy) {
+void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
+{
 	RDCView *v = conn->ui;
 	NSImage *back = [v valueForKey:@"back"], *img;
 	uint8 *data;
@@ -288,20 +229,223 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx,
 	[b release];
 }
 
-#pragma mark Text functions
 
-HGLYPH ui_create_glyph(rdcConnection conn, int width, int height, const uint8 *data) {
+#pragma mark -
+#pragma mark General Drawing
+
+void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour)
+{
+	RDCView *v = conn->ui;
+	NSRect r = NSMakeRect(x , y, cx, cy);
+	[v fillRect:r withColor:[v nscolorForRDCColor:colour]];
+	schedule_display_in_rect(v, r);
+}
+
+void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, int endx, int endy, PEN * pen)
+{
+	RDCView *v = conn->ui;
+	NSPoint start = NSMakePoint(startx + 0.5, starty + 0.5);
+	NSPoint end = NSMakePoint(endx + 0.5, endy + 0.5);
+	
+	if (opcode == 15)
+	{
+		[v drawLineFrom:start to:end color:[NSColor whiteColor] width:pen->width];
+		return;
+	}
+	
+	CHECKOPCODE(opcode);
+	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
+	schedule_display(v);
+	// xxx: this should work quicker, but I haven't been able to test it (never called by rdesktop in use)
+	//schedule_display_in_rect(v, NSMakeRect(startx, starty, endx, endy));
+}
+
+void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, int srcx, int srcy)
+{
+	RDCView *v = conn->ui;
+	NSRect src = NSMakeRect(srcx, srcy, cx, cy);
+	NSPoint dest = NSMakePoint(x, y);
+	
+	CHECKOPCODE(opcode);
+	[v screenBlit:src to:dest];
+	schedule_display_in_rect(v, NSMakeRect(x, y, cx, cy));
+}
+
+void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy)
+{
+	RDCView *v = conn->ui;
+	NSRect r = NSMakeRect(x, y, cx, cy);
+	/* XXX */
+	switch (opcode)
+	{
+		case 0:
+			[v fillRect:r withColor:[NSColor blackColor]];
+			break;
+		case 5:
+			[v swapRect:r];
+			break;
+		case 15:
+			[v fillRect:r withColor:[NSColor whiteColor]];
+			break;
+		default:
+			CHECKOPCODE(opcode);
+			break;
+	}
+	
+	schedule_display_in_rect(v, r);
+}
+
+void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, PEN *pen)
+{
+	RDCView *v = conn->ui;
+	CHECKOPCODE(opcode);
+	[v polyline:points npoints:npoints color:[v nscolorForRDCColor:pen->colour] width:pen->width];
+	schedule_display(v);
+}
+
+void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH *brush, int bgcolour, int fgcolour)
+{
+	RDCView *v = conn->ui;
+	NSWindingRule r;
+	int style;
+	CHECKOPCODE(opcode);
+	
+	switch (fillmode)
+	{
+		case ALTERNATE:
+			r = NSEvenOddWindingRule;
+			break;
+		case WINDING:
+			r = NSNonZeroWindingRule;
+			break;
+		default:
+			UNIMPL;
+			return;
+	}
+	
+	style = brush != NULL ? brush->style : 0;
+	
+	switch (style)
+	{
+		case 0:
+			[v polygon:point npoints:npoints color:[v nscolorForRDCColor:fgcolour] winding:r];
+			break;
+		default:
+			UNIMPL;
+			break;
+	}
+	
+	schedule_display(v);
+}
+
+
+
+static const uint8 hatch_patterns[] =
+{
+    0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00, /* 0 - bsHorizontal */
+    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, /* 1 - bsVertical */
+    0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01, /* 2 - bsFDiagonal */
+    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, /* 3 - bsBDiagonal */
+    0x08, 0x08, 0x08, 0xff, 0x08, 0x08, 0x08, 0x08, /* 4 - bsCross */
+    0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81  /* 5 - bsDiagCross */
+};
+
+/* XXX Still needs origins */
+void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, BRUSH * brush, int bgcolor, int fgcolor)
+{
+	RDCView *v = conn->ui;
+	NSRect dest = NSMakeRect(x, y, cx, cy);
+	NSRect glyphSize;
+	RDCBitmap *bitmap;
+	NSImage *fill;
+	NSColor *fillColor;
+	uint8 i, ipattern[8];
+	
+	if (opcode == 6)
+	{
+		[v swapRect:dest];
+		schedule_display_in_rect(v, dest);
+		return;
+	}
+	
+	CHECKOPCODE(opcode);
+	
+	switch (brush->style)
+	{
+		case 0: /* Solid */
+			NSLog(@"fg %d bg %d opcode %d", fgcolor, bgcolor, opcode);
+			[v fillRect:dest withColor:[v nscolorForRDCColor:fgcolor]];
+			break;
+		case 2: /* Hatch */
+
+			glyphSize = NSMakeRect(0, 0, 8, 8);
+            bitmap = ui_create_glyph(conn, 8, 8, hatch_patterns + brush->pattern[0] * 8);
+			fill = [bitmap image];
+			[fill lockFocus];
+			
+			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+			[[v nscolorForRDCColor:fgcolor] set];
+			[NSBezierPath fillRect:glyphSize];
+			
+			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+			[[v nscolorForRDCColor:bgcolor] set];
+			[NSBezierPath fillRect:glyphSize];
+			
+			[fill unlockFocus];
+			
+			fillColor = [NSColor colorWithPatternImage:fill];
+			[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+            ui_destroy_glyph(bitmap);
+            break;
+		case 3: /* Pattern */
+			for (i = 0; i != 8; i++)
+				ipattern[7 - i] = brush->pattern[i];
+			
+			glyphSize = NSMakeRect(0, 0, 8, 8);
+            bitmap = ui_create_glyph(conn, 8, 8, ipattern);
+			fill = [bitmap image];
+			[fill lockFocus];
+			
+			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+			[[v nscolorForRDCColor:fgcolor] set];
+			[NSBezierPath fillRect:glyphSize];
+			
+			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+			[[v nscolorForRDCColor:bgcolor] set];
+			[NSBezierPath fillRect:glyphSize];
+			
+			[fill unlockFocus];
+			
+			fillColor = [NSColor colorWithPatternImage:fill];
+			[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+            ui_destroy_glyph(bitmap);
+			break;
+		default:
+			unimpl("brush %d\n", brush->style);
+			break;
+	}
+	schedule_display_in_rect(v, dest);
+}
+
+
+#pragma mark -
+#pragma mark Text drawing
+
+HGLYPH ui_create_glyph(rdcConnection conn, int width, int height, const uint8 *data)
+{
 	return [[RDCBitmap alloc] initWithGlyphData:data size:NSMakeSize(width, height) view:conn->ui];
 }
 
-void ui_destroy_glyph(HGLYPH glyph) {
+void ui_destroy_glyph(HGLYPH glyph)
+{
 	id image = glyph;
 	[image release];
 }
 
-static void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *glyph, int fgcolor, int bgcolor);
+void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor);
 
-void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *glyph, int fgcolor, int bgcolor) {
+void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor)
+{
 	RDCView *v = conn->ui;
 	NSRect r = NSMakeRect(x, y, w, h);
 	[v drawGlyph:glyph at:r fg:fgcolor bg:bgcolor];
@@ -333,7 +477,7 @@ void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *gly
   {\
     x1 = x + glyph->offset;\
     y1 = y + glyph->baseline;\
-	ui_drawglyph(conn, x1, y1, glyph->width, glyph->height, glyph->pixmap, fgcolour, bgcolour); \
+	ui_drawglyph(conn, x1, y1, glyph->width, glyph->height, glyph->pixmap, foregroundColor, backgroundColor); \
     if (flags & TEXT2_IMPLICIT_X)\
       x += glyph->width;\
   }\
@@ -341,7 +485,8 @@ void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *gly
 
 void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int mixmode, int x, int y, int clipx, int clipy,
 				  int clipcx, int clipcy, int boxx, int boxy, int boxcx, int boxcy, BRUSH * brush, int bgcolour,
-				  int fgcolour, uint8 * text, uint8 length) {
+				  int fgcolour, uint8 * text, uint8 length)
+{
 	int i = 0, j;
 	int xyoffset;
 	int x1, y1;
@@ -349,100 +494,101 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 	DATABLOB *entry;
 	RDCView *v = conn->ui;
 	NSRect box;
+	NSColor *foregroundColor = [v nscolorForRDCColor:fgcolour];
+	NSColor *backgroundColor = [v nscolorForRDCColor:bgcolour];
 	
 	CHECKOPCODE(opcode);
 	
 	if (boxx + boxcx >= [v width])
 		boxcx = [v width] - boxx;
 	
-	// Paint background color
-	[v setForeground:[v nscolorForRDCColor:bgcolour]];
-	if (boxcx > 1) {
-			box = NSMakeRect(boxx, boxy, boxcx, boxcy);
-			[v fillRect:box];
-	} else if (mixmode == MIX_OPAQUE) {
-			box = NSMakeRect(clipx, clipy, clipcx, clipcy);
-			[v fillRect:box];
-	}
+	// Paint background
+	box = (boxcx > 1) ? NSMakeRect(boxx, boxy, boxcx, boxcy) : NSMakeRect(clipx, clipy, clipcx, clipcy);
 	
-	[v setForeground:[v nscolorForRDCColor:fgcolour]];
-	[v setBackground:[v nscolorForRDCColor:bgcolour]];
+	if (boxcx > 1 || mixmode == MIX_OPAQUE)
+		[v fillRect:box withColor:backgroundColor];
+	
 	[v startUpdate];
 	
 	/* Paint text, character by character */
-    for (i = 0; i < length;) {                       
-        switch (text[i]) {           
-            case 0xff:  
-                if (i + 2 < length) {
-                    cache_put_text(conn, text[i + 1], text, text[i + 2]);
-                } else {
-                    error("this shouldn't be happening\n");
-                    exit(1);
-                }                /* this will move pointer from start to first character after FF command */            
+	for (i = 0; i < length;)
+	{                       
+		switch (text[i])
+		{           
+			case 0xff:  
+				if (i + 2 < length)
+				{
+					cache_put_text(conn, text[i + 1], text, text[i + 2]);
+				} 
+				else
+				{
+					error("this shouldn't be happening\n");
+					exit(1);
+				} /* this will move pointer from start to first character after FF command */ 
+
 				length -= i + 3;
-                text = &(text[i + 3]);
-                i = 0;
-                break;
-                
-            case 0xfe:
-                entry = cache_get_text(conn, text[i + 1]);
-                if (entry != NULL) {
-                    if ((((uint8 *) (entry->data))[1] == 0) && (!(flags & TEXT2_IMPLICIT_X))) {
-                        if (flags & TEXT2_VERTICAL) {
-                            y += text[i + 2];
-                        } else {
-                            x += text[i + 2]; 
-						}
-                    }
-                    for (j = 0; j < entry->size; j++) {
-                        DO_GLYPH(((uint8 *) (entry->data)), j);
+				text = &(text[i + 3]);
+				i = 0;
+				break;
+
+			case 0xfe:
+				entry = cache_get_text(conn, text[i + 1]);
+				if (entry != NULL)
+				{
+					if ((((uint8 *) (entry->data))[1] == 0) && (!(flags & TEXT2_IMPLICIT_X)))
+					{
+						if (flags & TEXT2_VERTICAL)
+							y += text[i + 2];
+						else
+							x += text[i + 2]; 
 					}
-                } 
-				
-				if (i + 2 < length) {
-					i += 3;
-                } else {
-                    i += 2;
-				}
-                length -= i;
-                /* this will move pointer from start to first character after FE command */
-                text = &(text[i]);
-                i = 0;
-                break;
-				
-            default:
-                DO_GLYPH(text, i);
-                i++;
-                break;
-        }
-    }  
+					
+					for (j = 0; j < entry->size; j++)
+						DO_GLYPH(((uint8 *) (entry->data)), j);
+				} 
+
+				i += (i + 2 < length) ? 3 : 2;
+				length -= i;
+				/* this will move pointer from start to first character after FE command */
+				text = &(text[i]);
+				i = 0;
+				break;
+
+			default:
+				DO_GLYPH(text, i);
+				i++;
+				break;
+		}
+	}  
 	
 	[v stopUpdate];
-	if (boxcx > 1)
-		schedule_display_in_rect(v, NSMakeRect(boxx, boxy, boxcx, boxcy));
-	else
-		schedule_display_in_rect(v, NSMakeRect(clipx, clipy, clipcx, clipcy));
+	schedule_display_in_rect(v, box);
 }
 
-#pragma mark Clipping functions
+#pragma mark -
+#pragma mark Clipping
 
-void ui_set_clip(rdcConnection conn, int x, int y, int cx, int cy) {
+void ui_set_clip(rdcConnection conn, int x, int y, int cx, int cy)
+{
 	TRACE_FUNC;
 	RDCView *v = conn->ui;
 	[v setClip:NSMakeRect(x, y, cx, cy)];
 }
 
-void ui_reset_clip(rdcConnection conn) {
+void ui_reset_clip(rdcConnection conn)
+{
 	RDCView *v = conn->ui;
 	[v resetClip];
 }
 
-void ui_bell(void) {
+void ui_bell(void)
+{
 	NSBeep();
 }
 
-#pragma mark Cursor functions
 
+#pragma mark -
+#pragma mark Cursors and Pointers
 
 HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int width, int height,
 						 uint8 * andmask, uint8 * xormask)
@@ -451,256 +597,93 @@ HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int
 			size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui];
 }
 
-void ui_set_null_cursor(rdcConnection conn) {
+void ui_set_null_cursor(rdcConnection conn)
+{
 	if (nullCursor == nil)
 		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL);
 	
 	ui_set_cursor(conn, nullCursor);
 }
 
-void ui_set_cursor(rdcConnection conn, HCURSOR cursor) {
+void ui_set_cursor(rdcConnection conn, HCURSOR cursor)
+{
 	RDCView *v = (RDCView *)conn->ui;
 	id c = (RDCBitmap *)cursor;
 	[v performSelectorOnMainThread:@selector(setCursor:) withObject:[c cursor] waitUntilDone:YES];
 }
 
-void ui_destroy_cursor(HCURSOR cursor) {
+void ui_destroy_cursor(HCURSOR cursor)
+{
 	id c = (RDCBitmap *)cursor;
 	[c release];
 }
 
+void ui_move_pointer(int x, int y)
+{
+	UNIMPL;
+}
 
 
+#pragma mark -
+#pragma mark Non-UI
 char *
 next_arg(char *src, char needle)
 {
-    char *nextval;
-    char *p;
-    char *mvp = 0;
+	char *nextval;
+	char *p;
+	char *mvp = 0;
 
-    /* EOS */
-    if (*src == (char) 0x00)
-        return 0;
+	/* EOS */
+	if (*src == (char) 0x00)
+		return 0;
 
-    p = src;
-    /*  skip escaped needles */
-    while ((nextval = strchr(p, needle)))
-    {
-        mvp = nextval - 1;
-        /* found backslashed needle */
-        if (*mvp == '\\' && (mvp > src))
-        {
-            /* move string one to the left */
-            while (*(mvp + 1) != (char) 0x00)
-            {
-                *mvp = *(mvp + 1);
-                *mvp++;
-            }
-            *mvp = (char) 0x00;
-            p = nextval;
-        }
-        else
-        {
-            p = nextval + 1;
-            break;
-        }
+	p = src;
+	/*  skip escaped needles */
+	while ((nextval = strchr(p, needle)))
+	{
+		mvp = nextval - 1;
+		/* found backslashed needle */
+		if (*mvp == '\\' && (mvp > src))
+		{
+			/* move string one to the left */
+			while (*(mvp + 1) != (char) 0x00)
+			{
+				*mvp = *(mvp + 1);
+				*mvp++;
+			}
+			*mvp = (char) 0x00;
+			p = nextval;
+		}
+		else
+		{
+			p = nextval + 1;
+			break;
+		}
+	}
 
-    }
+	/* more args available */
+	if (nextval)
+	{
+		*nextval = (char) 0x00;
+		return ++nextval;
+	}
 
-    /* more args available */
-    if (nextval)
-    {
-        *nextval = (char) 0x00;
-        return ++nextval;
-    }
-
-    /* no more args after this, jump to EOS */
-    nextval = src + strlen(src);
-    return nextval;
+	/* no more args after this, jump to EOS */
+	nextval = src + strlen(src);
+	return nextval;
 }
 
 void toupper_str(char *p)    
 {
-    while (*p)
-    {
-        if ((*p >= 'a') && (*p <= 'z'))
-            *p = toupper((int) *p);
-        p++;
-    }
-}
-
-
-
-
-void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, int srcx, int srcy) {
-	RDCView *v = conn->ui;
-	NSRect src = NSMakeRect(srcx, srcy, cx, cy);
-	NSPoint dest = NSMakePoint(x, y);
-	
-	CHECKOPCODE(opcode);
-	[v screenBlit:src to:dest];
-	schedule_display_in_rect(v, NSMakeRect(x, y, cx, cy));
-}
-
-
-
-
-void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy) {
-	RDCView *v = conn->ui;
-	NSRect r = NSMakeRect(x, y, cx, cy);
-	/* XXX */
-	switch (opcode) {
-		case 0:
-			[v fillRect:r];
-			break;
-		case 5:
-			[v swapRect:r];
-			break;
-		case 15:
-			[v fillRect:r withColor:[NSColor whiteColor]];
-			break;
-		default:
-			CHECKOPCODE(opcode);
+	while (*p)
+	{
+		if ((*p >= 'a') && (*p <= 'z'))
+			*p = toupper((int) *p);
+		p++;
 	}
-	
-	schedule_display_in_rect(v, r);
 }
 
-void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, PEN *pen) {
-	RDCView *v = conn->ui;
-	CHECKOPCODE(opcode);
-	[v polyline:points npoints:npoints color:[v nscolorForRDCColor:pen->colour] width:pen->width];
-	schedule_display(v);
-}
-
-void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH *brush,
-				int bgcolour, int fgcolour) {
-	RDCView *v = conn->ui;
-	NSWindingRule r;
-	int style;
-	CHECKOPCODE(opcode);
-	
-	switch (fillmode) {
-		case ALTERNATE:
-			r = NSEvenOddWindingRule;
-			break;
-		case WINDING:
-			r = NSNonZeroWindingRule;
-			break;
-		default:
-			UNIMPL;
-			return;
-	}
-	
-	if (brush) {
-		style = brush->style;
-	} else {
-		style = 0;
-	}
-	
-	switch(style) {
-		case 0:
-			[v setForeground:[v nscolorForRDCColor:fgcolour]];
-			[v polygon:point npoints:npoints color:[v nscolorForRDCColor:fgcolour]  winding:r];
-			break;
-		default:
-			UNIMPL;
-			break;
-	}
-	schedule_display(v);
-}
-
-void ui_move_pointer(int x, int y) {
-	UNIMPL;
-}
-
-static const uint8 hatch_patterns[] = {
-    0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00, /* 0 - bsHorizontal */
-    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, /* 1 - bsVertical */
-    0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01, /* 2 - bsFDiagonal */
-    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, /* 3 - bsBDiagonal */
-    0x08, 0x08, 0x08, 0xff, 0x08, 0x08, 0x08, 0x08, /* 4 - bsCross */
-    0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81  /* 5 - bsDiagCross */
-};
-
-/* XXX Still needs origins */
-void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, BRUSH * brush, int bgcolor, int fgcolor) {
-	RDCView *v = conn->ui;
-	NSRect dest = NSMakeRect(x, y, cx, cy);
-	NSRect glyphSize;
-	RDCBitmap *bitmap;
-	NSImage *fill;
-	NSColor *fillColor;
-	uint8 i, ipattern[8];
-	
-	if(opcode == 6) {
-		[v swapRect:dest];
-		schedule_display_in_rect(v, dest);
-		return;
-	}
-	
-	CHECKOPCODE(opcode);
-	
-	switch (brush->style) {
-		case 0: /* Solid */
-			NSLog(@"fg %d bg %d opcode %d", fgcolor, bgcolor, opcode);
-			[v fillRect:dest withColor:[v nscolorForRDCColor:fgcolor]];
-			break;
-		case 2: /* Hatch */
-
-			glyphSize = NSMakeRect(0, 0, 8, 8);
-            bitmap = ui_create_glyph(conn, 8, 8, hatch_patterns + brush->pattern[0] * 8);
-			fill = [bitmap image];
-			[fill lockFocus];
-			
-			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
-			[[v nscolorForRDCColor:fgcolor] set];
-			[NSBezierPath fillRect:glyphSize];
-			
-			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
-			[[v nscolorForRDCColor:bgcolor] set];
-			[NSBezierPath fillRect:glyphSize];
-			
-			[fill unlockFocus];
-			
-			fillColor = [NSColor colorWithPatternImage:fill];
-			[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
-            ui_destroy_glyph(bitmap);
-            break;
-		case 3: /* Pattern */
-			for (i = 0; i != 8; i++) {
-				ipattern[7 - i] = brush->pattern[i];
-			}
-			
-			glyphSize = NSMakeRect(0, 0, 8, 8);
-            bitmap = ui_create_glyph(conn, 8, 8, ipattern);
-			fill = [bitmap image];
-			[fill lockFocus];
-			
-			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
-			[[v nscolorForRDCColor:fgcolor] set];
-			[NSBezierPath fillRect:glyphSize];
-			
-			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
-			[[v nscolorForRDCColor:bgcolor] set];
-			[NSBezierPath fillRect:glyphSize];
-			
-			[fill unlockFocus];
-			
-			fillColor = [NSColor colorWithPatternImage:fill];
-			[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
-            ui_destroy_glyph(bitmap);
-			break;
-		default:
-			unimpl("brush %d\n", brush->style);
-			break;
-	}
-	schedule_display_in_rect(v, dest);
-}
-
-
-void *
-xmalloc(int size)
+void * xmalloc(int size)
 {
     void *mem = malloc(size);
     if (mem == NULL)
@@ -712,13 +695,13 @@ xmalloc(int size)
 }
 
 /* realloc; exit if out of memory */
-void *
-xrealloc(void *oldmem, int size)
+void * xrealloc(void *oldmem, int size)
 {
     void *mem;
 	
     if (size < 1)
         size = 1;
+	
     mem = realloc(oldmem, size);
     if (mem == NULL)
     {
@@ -728,16 +711,13 @@ xrealloc(void *oldmem, int size)
     return mem;
 }
 
-/* free */
-void
-xfree(void *mem)
+void xfree(void *mem)
 {
     free(mem);
 }
 
 /* report an error */
-void
-error(char *format, ...)
+void error(char *format, ...)
 {
     va_list ap;
 	
@@ -749,8 +729,7 @@ error(char *format, ...)
 }
 
 /* report a warning */
-void
-warning(char *format, ...)
+void warning(char *format, ...)
 {
     va_list ap;
 	
@@ -762,8 +741,7 @@ warning(char *format, ...)
 }
 
 /* report an unimplemented protocol feature */
-void
-unimpl(char *format, ...)
+void unimpl(char *format, ...)
 {
     va_list ap;
 	
@@ -775,8 +753,7 @@ unimpl(char *format, ...)
 }
 
 /* produce a hex dump */
-void
-hexdump(unsigned char *p, unsigned int len)
+void hexdump(unsigned char *p, unsigned int len)
 {
     unsigned char *line = p;
     int i, thisline, offset = 0;
@@ -804,8 +781,7 @@ hexdump(unsigned char *p, unsigned int len)
 }
 
 /* Generate a 32-byte random for the secure transport code. */
-void
-generate_random(uint8 * random)
+void generate_random(uint8 *random)
 {
     int fd, n;
     if ( (fd = open("/dev/urandom", O_RDONLY)) != -1)
@@ -817,8 +793,7 @@ generate_random(uint8 * random)
 }
 
 /* Create the bitmap cache directory */
-int
-rd_pstcache_mkdir(void)
+int rd_pstcache_mkdir(void)
 {
     char *home;
     char bmpcache_dir[256];
@@ -848,8 +823,7 @@ rd_pstcache_mkdir(void)
 }
 
 /* open a file in the .rdesktop directory */
-int 
-rd_open_file(char *filename)
+int rd_open_file(char *filename)
 {
     char *home;
     char fn[256];
@@ -866,36 +840,31 @@ rd_open_file(char *filename)
 }
 
 /* close file */
-void
-rd_close_file(int fd)
+void rd_close_file(int fd)
 {
     close(fd);
 }
 
 /* read from file*/
-int
-rd_read_file(int fd, void *ptr, int len)
+int rd_read_file(int fd, void *ptr, int len)
 {
     return read(fd, ptr, len);
 }
 
 /* write to file */
-int
-rd_write_file(int fd, void *ptr, int len)
+int rd_write_file(int fd, void *ptr, int len)
 {
     return write(fd, ptr, len);
 }
 
 /* move file pointer */
-int
-rd_lseek_file(int fd, int offset)
+int rd_lseek_file(int fd, int offset)
 {
     return lseek(fd, offset, SEEK_SET);
 }
 
 /* do a write lock on a file */
-int
-rd_lock_file(int fd, int start, int len)
+int rd_lock_file(int fd, int start, int len)
 {
     struct flock lock;
 	
@@ -908,13 +877,13 @@ rd_lock_file(int fd, int start, int len)
     return True;
 }
 
-void ui_resize_window(void) {
+void ui_resize_window(void)
+{
 	UNIMPL;
 }
 
 #define LTOA_BUFSIZE (sizeof(long) * 8 + 1)
-char *
-l_to_a(long N, int base)
+char *l_to_a(long N, int base)
 {
     char *ret;
     
@@ -951,30 +920,25 @@ l_to_a(long N, int base)
 void ui_triblt(uint8 opcode, 
 			   int x, int y, int cx, int cy,
 			   HBITMAP src, int srcx, int srcy,
-			   BRUSH *brush, int bgcolour, int fgcolour) {
+			   BRUSH *brush, int bgcolour, int fgcolour)
+{
 	CHECKOPCODE(opcode);
 	UNIMPL;
 }
 
-void ui_ellipse(rdcConnection conn,
-				uint8 opcode,
-				uint8 fillmode,
-				int x, int y, int cx, int cy,
-				BRUSH *brush, int bgcolour, int fgcolour) {
+void ui_ellipse(rdcConnection conn, uint8 opcode, uint8 fillmode, int x, int y, int cx, int cy,
+				BRUSH *brush, int bgcolour, int fgcolour)
+{
 	RDCView *v = conn->ui;
 	NSRect r = NSMakeRect(x + 0.5, y + 0.5, cx, cy);
 	int style;
 	CHECKOPCODE(opcode);
 	
-	if (brush) {
-		style = brush->style;
-	} else {
-		style = 0;
-	}
+	style = brush != NULL ? brush->style : 0;
 	
-	switch(style) {
+	switch (style)
+	{
 		case 0:
-			[v setForeground:[v nscolorForRDCColor:fgcolour]];
 			[v ellipse:r color:[v nscolorForRDCColor:fgcolour]];
 			break;
 		default:
@@ -984,41 +948,99 @@ void ui_ellipse(rdcConnection conn,
 	schedule_display_in_rect(v, r);
 }
 
-void save_licence(unsigned char *data, int length) {
+void save_licence(unsigned char *data, int length)
+{
 	UNIMPL;
 }
 
-int load_licence(unsigned char **data) {
+int load_licence(unsigned char **data)
+{
 	UNIMPL;
 	return 0;
 }
 
-void ui_clip_format_announce(uint8 *data, uint32 length) {
+#pragma mark Disk forwarding
+int ui_select(rdcConnection conn)
+{
+
+	int n = 0, i = 0;
+	fd_set rfds, wfds;
+	struct timeval tv;
+	RDCBOOL s_timeout = False;
+	
+	if (!conn->ioRequest)
+		return 1;
+	
+	FD_ZERO(&rfds);
+	FD_ZERO(&wfds);	
+
+	rdpdr_add_fds(conn, &n, &rfds, &wfds, &tv, &s_timeout);
+	
+	switch (select(n, &rfds, &wfds, NULL, NULL))
+	{
+		case -1:
+			error("select: %s\n", strerror(errno));
+			break;
+		case 0:
+			rdpdr_check_fds(conn, &rfds, &wfds, 1);
+			break;
+		default:
+			rdpdr_check_fds(conn, &rfds, &wfds, 0);
+			break;
+	}
+	
+	return 1;
+}
+
+
+#pragma mark Numlock
+
+unsigned int read_keyboard_state()
+{
+	return 0;
+}
+
+unsigned short ui_get_numlock_state(unsigned int state)
+{
+	return 0;
+}
+
+
+#pragma mark -
+#pragma mark Clipboard
+
+void ui_clip_format_announce(uint8 *data, uint32 length)
+{
 	UNIMPL;
 }
 
-void ui_clip_handle_data(uint8 *data, uint32 length) {
+void ui_clip_handle_data(uint8 *data, uint32 length)
+{
 	UNIMPL;
 }
 
-void ui_clip_request_data(uint32 format) {
+void ui_clip_request_data(uint32 format)
+{
 	UNIMPL;
 }
 
-void ui_clip_sync(void) {
+void ui_clip_sync(void)
+{
 	UNIMPL;
 }
 
-
-#pragma mark Internal functions
+#pragma mark -
+#pragma mark Internal Use
 
 // Convenience functions to make setNeedsDisplay calls run in main thread
-void schedule_display(NSView *v) {
+void schedule_display(NSView *v)
+{
 	[v performSelectorOnMainThread:@selector(setNeedsDisplay:)
 			withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
 }
 
-void schedule_display_in_rect(NSView *v, NSRect r) {
+void schedule_display_in_rect(NSView *v, NSRect r)
+{
 	[v performSelectorOnMainThread:@selector(setNeedsDisplayInRectAsValue:)
 			withObject:[NSValue valueWithRect:r] waitUntilDone:NO];
 }

@@ -60,6 +60,7 @@
 	IBOutlet NSDrawer *gui_serversDrawer;
 	
 	IBOutlet NSUserDefaultsController *userDefaultsController;
+	NSUserDefaults *userDefaults;
 	
 	// The list of connected servers (may contain some saved servers)
 	NSMutableArray *connectedServers;
@@ -67,7 +68,7 @@
 	// The list of unconnected saved servers
 	NSMutableArray *savedServers;
 	
-	CGDirectDisplayID fullscreenCapturedScreen;
+	RDInstance *instanceReconnectingForFullscreen;
 	CRDFullScreenWindow *gui_fullScreenWindow;
 	CRDDisplayMode displayMode;
 	
@@ -87,7 +88,7 @@
 	NSToolbar *gui_toolbar;
 	NSMutableDictionary *toolbarItems;
 	
-	NSUserDefaults *userDefaults;
+	
 }
 
 // Actions
@@ -108,20 +109,24 @@
 - (IBAction)endFullscreen:(id)sender;
 - (IBAction)performFullScreen:(id)sender;
 
+// Otherwise, in no particular order
 - (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
-
 - (void)cellNeedsDisplay:(NSCell *)cell;
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
 
 - (BOOL)mainWindowIsFocused;
 + (NSImage *)sharedDocumentIcon;
+- (id) tableColumn:(NSTableColumn *)column inTableView:(NSTableView *)tableView dataCellForRow:(int)row;
 
 - (void)disconnectInstance:(RDInstance *)inst;
 - (RDInstance *)serverInstanceForRow:(int)row;
 - (RDInstance *)selectedServerInstance;
-- (RDInstance *)viewedServer;
 
+- (RDInstance *)viewedServer;
 - (CRDDisplayMode)displayMode;
+- (NSWindow *)unifiedWindow;
+
+- (CRDFullScreenWindow *)fullScreenWindow;
 
 @end
 

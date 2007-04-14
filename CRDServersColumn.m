@@ -17,6 +17,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "CRDServersColumn.h"
+#import "AppController.h" // to suppress a 'method not found' warning
 
 @implementation CRDServersColumn
 

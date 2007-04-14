@@ -112,9 +112,7 @@
 	[keyTranslator release];
 	[cursor release];
 	[back release];
-	[foregroundColor release];
-	[backgroundColor release];
-	
+
 	free(colorMap);
 	[super dealloc];
 }
@@ -174,13 +172,9 @@
 	[back lockFocus];
 	NSRectClip(clipRect);
 	[c set];
+	[bp closePath];
 	[bp stroke];
 	[back unlockFocus];
-}
-
-- (void)fillRect:(NSRect)rect
-{
-	[self fillRect:rect withColor:foregroundColor patternOrigin:NSZeroPoint];
 }
 
 - (void)fillRect:(NSRect)rect withColor:(NSColor *) color
@@ -209,44 +203,6 @@
 	[back unlockFocus];
 }
 
-
-
-
-- (NSColor *)nscolorForRDCColor:(int)col
-{
-	int r, g, b, t;
-	
-	if (bitdepth == 8)
-	{
-		t = colorMap[col];
-		r = (t >> 16) & 0xff;
-		g = (t >> 8)  & 0xff;
-		b = t & 0xff;
-	}
-	else if (bitdepth == 16)
-	{
-		r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
-		g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
-		b = ((col << 3) & 0xf8) | ((col >> 2) & 0x7);
-	}
-	else if (bitdepth == 24)
-	{
-		r = col & 0xff;
-		g = (col >> 8)  & 0xff;
-		b = (col >> 16) & 0xff;
-	}
-	else
-	{
-		NSLog(@"Bitdepth = %d", bitdepth);
-		r = g = b = 0;
-	}
-	
-	return [NSColor colorWithDeviceRed:(float)r / 255.0
-								 green:(float)g / 255.0
-							  	  blue:(float)b / 255.0
-							     alpha:1.0];
-}
-
 - (void)screenBlit:(NSRect)from to:(NSPoint)to
 {
 	[back lockFocus];
@@ -265,26 +221,24 @@
 	[bp moveToPoint:start];
 	[bp lineToPoint:end];
 	[bp setLineWidth:width];
+	[bp closePath];
 	[bp stroke];
 	[back unlockFocus];
 }
 
-
-- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(int)fgcolor bg:(int)bgcolor
+/* xxx: should use cached NSColors for color */
+- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor
 {
-	NSColor *fg, *bg;
-	fg = [self nscolorForRDCColor:fgcolor];
-	bg = [self nscolorForRDCColor:bgcolor];
 	NSImage *image = [glyph image];
 	
-	if (![[glyph color] isEqual:fg])
+	if (![[glyph color] isEqual:fgcolor])
 	{
 		[image lockFocus];
 		[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
-		[fg setFill];
+		[fgcolor setFill];
 		[NSBezierPath fillRect:NSMakeRect(0, 0, [image size].width, [image size].height)];
 		[image unlockFocus];
-		[glyph setColor:fg];
+		[glyph setColor:fgcolor];
 	}
 	
 	NSRectClip(clipRect);
@@ -421,21 +375,73 @@
 
 
 #pragma mark -
+#pragma mark Converting RDP Colors
+
+- (void)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b
+{
+	if (bitdepth == 8)
+	{
+		int t = colorMap[col];
+		*r = (t >> 16) & 0xff;
+		*g = (t >> 8)  & 0xff;
+		*b =  t        & 0xff;
+	}
+	else if (bitdepth == 16)
+	{
+		*r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
+		*g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
+		*b = ((col << 3) & 0xf8) | ((col >> 2) & 0x7);
+	}
+	else if (bitdepth == 24 || bitdepth == 32)
+	{
+		*r =  col        & 0xff;
+		*g = (col >> 8)  & 0xff;
+		*b = (col >> 16) & 0xff;
+	}
+	else
+	{
+		DEBUG_UI( (@"Attempting to convert color in unknown bitdepth %d", bitdepth) );
+	}
+}
+
+- (NSColor *)nscolorForRDCColor:(int)col
+{
+	int r, g, b, t;
+	
+	if (bitdepth == 8)
+	{
+		t = colorMap[col];
+		r = (t >> 16) & 0xff;
+		g = (t >> 8)  & 0xff;
+		b = t & 0xff;
+	}
+	else if (bitdepth == 16)
+	{
+		r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
+		g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
+		b = ((col << 3) & 0xf8) | ((col >> 2) & 0x7);
+	}
+	else if (bitdepth == 24)
+	{
+		r = col & 0xff;
+		g = (col >> 8)  & 0xff;
+		b = (col >> 16) & 0xff;
+	}
+	else
+	{
+		NSLog(@"Bitdepth = %d", bitdepth);
+		r = g = b = 0;
+	}
+	
+	return [NSColor colorWithDeviceRed:(float)r / 255.0
+								 green:(float)g / 255.0
+							  	  blue:(float)b / 255.0
+							     alpha:1.0];
+}
+
+
+#pragma mark -
 #pragma mark Accessors
-
-- (void)setForeground:(NSColor *)color
-{
-	[color retain];
-	[foregroundColor release];
-	foregroundColor = color;
-}
-
-- (void)setBackground:(NSColor *)color
-{
-	[color retain];
-	[backgroundColor release];
-	backgroundColor = color;
-}
 
 - (int)bitsPerPixel
 {
@@ -482,33 +488,6 @@
 	CGContextFlush(context);
 	CGContextRestoreGState (context);
 	[back unlockFocus];
-}
-
-- (void)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b
-{
-	if (bitdepth == 8)
-	{
-		int t = colorMap[col];
-		*r = (t >> 16) & 0xff;
-		*g = (t >> 8)  & 0xff;
-		*b =  t        & 0xff;
-	}
-	else if (bitdepth == 16)
-	{
-		*r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
-		*g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
-		*b = ((col << 3) & 0xf8) | ((col >> 2) & 0x7);
-	}
-	else if (bitdepth == 24 || bitdepth == 32)
-	{
-		*r =  col        & 0xff;
-		*g = (col >> 8)  & 0xff;
-		*b = (col >> 16) & 0xff;
-	}
-	else
-	{
-		DEBUG_UI( (@"Attempting to convert color in unknown bitdepth %d", bitdepth) );
-	}
 }
 
 - (void)setBitdepth:(int)depth

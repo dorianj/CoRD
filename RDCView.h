@@ -31,7 +31,6 @@
 	NSImage *back;
 	NSPoint mouseLoc;
 	NSRect clipRect;
-	NSColor *foregroundColor, *backgroundColor;
 	NSCursor *cursor;
 	int bitdepth;
 	RDCKeyboard *keyTranslator;
@@ -40,11 +39,10 @@
 
 - (void)startUpdate;
 - (void)stopUpdate;
-- (void)fillRect:(NSRect)r;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *) color;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin;
 - (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
-- (void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c  winding:(NSWindingRule)winding;
+- (void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c winding:(NSWindingRule)winding;
 - (void)setColorMap:(unsigned int *)map;
 - (unsigned int *)colorMap;
 - (void)memblt:(NSRect)r from:(NSImage *)src withOrigin:(NSPoint)origin;
@@ -52,14 +50,12 @@
 - (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)w;
 - (int)width;
 - (int)height;
-- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(int)fgcolor bg:(int)bgcolor;
+- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor;
 - (void)setClip:(NSRect)r;
 - (void)resetClip;
 - (int)bitsPerPixel;
 - (NSColor *)nscolorForRDCColor:(int)col;
 - (void)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b;
-- (void)setForeground:(NSColor *)color;
-- (void)setBackground:(NSColor *)color;
 - (void)swapRect:(NSRect)r;
 - (void)ellipse:(NSRect)r color:(NSColor *)c;
 - (void)setController:(RDInstance *)instance;

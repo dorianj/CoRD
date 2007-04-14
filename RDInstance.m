@@ -40,6 +40,7 @@
 - (id)init
 {
 	themes = cacheBitmaps = YES;
+	fileEncoding = NSASCIIStringEncoding;
 	return [self initWithRDPFile:nil];
 }
 
@@ -77,7 +78,11 @@
 	
 	[cellRepresentation setImage:[AppController sharedDocumentIcon]];
 	
-	[self readRDPFile:path];
+	if (path != nil && ![self readRDPFile:path])
+	{
+		[self autorelease];
+		return nil;
+	}
 	
 	
 	return self;
@@ -147,6 +152,11 @@
 // Using the current properties, attempt to connect to a server. Blocks until timeout on failure.
 - (BOOL) connect
 {
+	if (conn != NULL)
+		free(conn);
+	conn = malloc(sizeof(struct rdcConn));
+	fill_default_connection(conn);
+	
 	// Fail quickly if it's a totally bogus host
 	if ([hostName length] < 2)
 	{
@@ -157,10 +167,7 @@
 	[self performSelectorOnMainThread:@selector(setStatusAsNumber:)
 			withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
 	
-	if (conn != NULL)
-		free(conn);
-	conn = malloc(sizeof(struct rdcConn));
-	fill_default_connection(conn);
+
 	
 	// Clear out the bitmap cache
 	int i, k;
@@ -351,20 +358,23 @@
 //	current form
 - (BOOL) readRDPFile:(NSString *)path
 {
-	if (path == nil)
+	if (path == nil || ![[NSFileManager defaultManager] isReadableFileAtPath:path])
 		return NO;
-		
-	[self setRdpFilename:path];	
+
+	NSString *fileContents = [NSString stringWithContentsOfFile:path usedEncoding:&fileEncoding error:NULL];
+			
+	if (!fileContents)
+		fileContents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
 	
-	NSString *fileContents = [NSString stringWithContentsOfFile:path
-			encoding:NSASCIIStringEncoding error:NULL];
 	NSArray *fileLines = [fileContents componentsSeparatedByString:@"\r\n"];
-	
+
 	if (fileLines == nil)
 	{
 		NSLog(@"Couldn't open RDP file '%@'!", path);
 		return NO;
 	}
+		
+	[self setRdpFilename:path];
 		
 	NSScanner *scan;
 	NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"],
@@ -433,6 +443,9 @@
 				split_hostname(value, &hostName, &port);
 				[hostName retain];
 			}
+			else if ([name isEqualToString:@"cord fullscreen"]) {
+				fullscreen = numVal;
+			}
 			else
 			{
 				if ([type isEqualToString:@"i"])
@@ -485,7 +498,7 @@
 	write_int(@"session bpp", screenDepth);
 	write_int(@"cord save password", savePassword);
 	write_int(@"startdisplay", startDisplay);
-	
+	write_int(@"cord fullscreen", fullscreen);
 	
 	write_string(@"full address", full_host_name(hostName, port));
 	write_string(@"username", username);
@@ -504,7 +517,7 @@
 			write_string(key, value);	
 	}
 	
-	BOOL success = [o writeToFile:path atomically:YES encoding:NSASCIIStringEncoding error:NULL];
+	BOOL success = [o writeToFile:path atomically:YES encoding:fileEncoding error:NULL];
 	
 	if (!success)
 		NSLog(@"Error writing to '%@'", path);

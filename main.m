@@ -1,9 +1,3 @@
-//
-//  main.m
-//  Remote Desktop
-//
-//  Created by Craig Dooley on 8/28/06.
-
 //  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
 //  Permission is hereby granted, free of charge, to any person obtaining a 
 //  copy of this software and associated documentation files (the "Software"), 

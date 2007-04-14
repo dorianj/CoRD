@@ -21,9 +21,6 @@
 #import "AppController.h"
 #import "CRDApplication.h"
 
-#define MENU_HOTSPOT_HEIGHT 3.0
-#define MENU_HOTSPOT_WAIT 0.5
-
 
 @interface CRDFullScreenWindow (Private)
 	- (void)toggleMenuBarVisible:(BOOL)visible;
@@ -48,7 +45,7 @@
 	
 	// Could use NSScreenSaverWindowLevel, but NSPopUpMenuWindowLevel achieves the same effect while
 	//	allowing the menu to display over it. Change to NSNormalWindowLevel for debugging fullscreen
-	[self setLevel:NSNormalWindowLevel];
+	[self setLevel:NSPopUpMenuWindowLevel];
 	
 	return self;
 }
@@ -145,6 +142,11 @@
 	menuVisible = visible;
 }
 
+
+- (BOOL)menuVisible
+{
+	return menuVisible;
+}
 
 @end
 
