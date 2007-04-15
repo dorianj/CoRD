@@ -18,7 +18,7 @@
 
 #include "miscellany.h"
 
-
+#pragma mark -
 #pragma mark General purpose
 const char *safe_string_conv(void *src)
 {
@@ -61,7 +61,19 @@ NSString *full_host_name(NSString *host, int port)
 		return [[host retain] autorelease];
 }
 
+void print_bitfield(unsigned v, int bits)
+{
+	int i;
+	for (i = sizeof(int) - (sizeof(int)-bits)-1; i >= 0; i--)
+	{
+		printf("%u", (v >> i) & 1);
+		if (i % 4 == 0)
+			printf(" ");
+	}
+	printf("\n");
+}
 
+#pragma mark -
 #pragma mark AppController
 NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *tooltip, SEL action)
 {
@@ -98,6 +110,7 @@ NSView *create_placeholder_view(NSRect source)
 }
 
 
+#pragma mark -
 #pragma mark ServersManager
 void ensure_directory_exists(NSString *path, NSFileManager *manager)
 {
@@ -159,19 +172,7 @@ NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 	return ([returnFiles count] > 0) ? [[returnFiles copy] autorelease] : nil;
 }
 
-#pragma mark RDCKeyboard
-void print_bitfield(unsigned v, int bits)
-{
-	int i;
-	for (i = 0; i < bits; i++) {
-		if (i % 4 == 0)
-			printf(" ");
-		printf("%u", (v << (i + bits)) >> (sizeof(unsigned)*8-1));
-	}
-	printf("\n");
-}
-
-
+#pragma mark -
 #pragma mark RDInstance
 // converts a NSArray of strings to a 2d c string array. You are responsible to 
 //	free the returned pointer array.

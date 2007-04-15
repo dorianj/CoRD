@@ -152,8 +152,10 @@
 // Using the current properties, attempt to connect to a server. Blocks until timeout on failure.
 - (BOOL) connect
 {
-	if (conn != NULL)
-		free(conn);
+	if (connectionStatus != CRDConnectionClosed)
+		return NO;
+	
+	free(conn);
 	conn = malloc(sizeof(struct rdcConn));
 	fill_default_connection(conn);
 	
@@ -166,8 +168,6 @@
 		
 	[self performSelectorOnMainThread:@selector(setStatusAsNumber:)
 			withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
-	
-
 	
 	// Clear out the bitmap cache
 	int i, k;
@@ -299,7 +299,6 @@
 		}
 	}
 	
-	
 	free(conn);
 	conn = NULL;
 }
@@ -322,6 +321,7 @@
 	[enclosingView setAutohidesScrollers:YES];
 	[enclosingView setBorderType:NSNoBorder];
 	[enclosingView setDrawsBackground:NO];
+	[enclosingView setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin)];
 	
 	[tabViewRepresentation release];
 	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];

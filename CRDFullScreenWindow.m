@@ -42,6 +42,7 @@
 	[self setAcceptsMouseMovedEvents:YES];
 	[self setReleasedWhenClosed:YES];
 	[self setHasShadow:NO];
+	[[self contentView] setAutoresizesSubviews:YES];
 	
 	// Could use NSScreenSaverWindowLevel, but NSPopUpMenuWindowLevel achieves the same effect while
 	//	allowing the menu to display over it. Change to NSNormalWindowLevel for debugging fullscreen
