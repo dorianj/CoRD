@@ -39,24 +39,24 @@
 		return nil;
 		
 	back = [[NSImage alloc] initWithSize:frame.size];
+		
+	// Other initializations
+	cursor = [[NSCursor arrowCursor] retain];
+	[self addCursorRect:[self visibleRect] cursor:cursor];
+	colorMap = malloc(0xff * sizeof(unsigned int));
+	memset(colorMap, 0, 0xff * sizeof(unsigned int));
+	keyTranslator = [[RDCKeyboard alloc] init];
 	
-	// Fill back with default color
+	// Fill background with default
 	[self resetClip];
 	[back lockFocus];
 	[[NSColor blackColor] set];
 	[NSBezierPath fillRect:frame];
 	[back unlockFocus];
-	
-	
-	// Other initializations
-	cursor = [[NSCursor arrowCursor] retain];
-	[self addCursorRect:[self visibleRect] cursor:cursor];
-	
-	colorMap = malloc(0xff * sizeof(unsigned int));
-	memset(colorMap, 0, 0xff * sizeof(unsigned int));
-	
-	keyTranslator = [[RDCKeyboard alloc] init];
     
+	[self setBounds:NSMakeRect(0.0, 0.0, frame.size.width, frame.size.height)];
+	screenSize = frame.size;
+	
     return self;
 }
 
@@ -83,7 +83,9 @@
 	const NSRect* rects;
 	[self getRectsBeingDrawn:&rects count:&nRects];
 	for (i = 0; i < nRects; i++)
-		[back drawInRect:rects[i] fromRect:rects[i] operation:NSCompositeCopy fraction:1.0f];
+	{
+		[back drawInRect:rects[i] fromRect:rects[i]  operation:NSCompositeCopy fraction:1.0f];
+	}
 }
 
 - (BOOL)isFlipped
@@ -99,9 +101,24 @@
 - (void)resetCursorRects
 {
     [self discardCursorRects];
-	NSRect r = [self visibleRect];
-    [self addCursorRect:r cursor:cursor]; 
+    [self addCursorRect:[self visibleRect] cursor:cursor]; 
 }
+
+- (void)setFrame:(NSRect)frame
+{	
+	[super setFrame:frame];
+	
+	NSRect bounds = NSMakeRect(0.0, 0.0, screenSize.width, screenSize.height);
+
+	if (frame.size.width > bounds.size.width)
+		bounds.origin.x = (frame.size.width - bounds.size.width)/2.0;
+		
+	if (frame.size.height > bounds.size.height)
+		bounds.origin.y = (frame.size.height - bounds.size.height)/2.0;
+		
+	[self setBounds:bounds];
+}
+
 
 
 #pragma mark -
@@ -209,7 +226,6 @@
 	NSRectClip(clipRect);
 	NSCopyBits(nil, from, to);
 	[back unlockFocus];
-	
 }
 
 - (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)width
@@ -226,7 +242,6 @@
 	[back unlockFocus];
 }
 
-/* xxx: should use cached NSColors for color */
 - (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor
 {
 	NSImage *image = [glyph image];
@@ -245,7 +260,21 @@
 	[image drawInRect:r
 			 fromRect:NSMakeRect(0, 0, r.size.width, r.size.height)
 			operation:NSCompositeSourceOver
-			 fraction:1.0];
+		     fraction:1.0];
+}
+
+- (void)swapRect:(NSRect)r
+{
+	[back lockFocus];
+	NSRectClip(clipRect);
+	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	CGContextSaveGState(context);
+	CGContextSetBlendMode(context, kCGBlendModeDifference);
+	CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
+	CGContextFillRect(context, CGRectMake(r.origin.x, r.origin.y, r.size.width, r.size.height));
+	CGContextFlush(context);
+	CGContextRestoreGState(context);
+	[back unlockFocus];
 }
 
 - (void)setClip:(NSRect)r
@@ -257,13 +286,12 @@
 {
 	NSRect r = NSZeroRect;
 	r.size = [back size];
-	
 	clipRect = r;
 }
 
 
 #pragma mark -
-#pragma mark Event Handlers
+#pragma mark NSResponder Event Handlers
 
 - (void)keyDown:(NSEvent *)ev
 {
@@ -356,7 +384,7 @@
 - (BOOL)checkMouseInBounds:(NSEvent *)ev
 { 
 	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	return NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self frame]);
+	return NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self frame]); // xxx: use bounds?
 }
 
 - (void)mouseDragged:(NSEvent *)ev
@@ -448,21 +476,14 @@
 	return bitdepth;
 }
 
-- (void)setFrameSize:(NSSize)size
-{
-	[back release];
-	back = [[NSImage alloc] initWithSize:size];
-	[super setFrameSize:size];
-}
-
 - (int)width
 {
-	return [self frame].size.width;
+	return [self bounds].size.width;
 }
 
 - (int)height
 {
-	return [self frame].size.height;
+	return [self bounds].size.height;
 }
 
 - (unsigned int *)colorMap
@@ -474,20 +495,6 @@
 {
 	free(colorMap);
 	colorMap = map;
-}
-
-- (void)swapRect:(NSRect)r
-{
-	[back lockFocus];
-	NSRectClip(clipRect);
-	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	CGContextSaveGState(context);
-	CGContextSetBlendMode(context, kCGBlendModeDifference);
-	CGContextSetRGBFillColor (context, 1.0, 1.0, 1.0, 1.0);
-	CGContextFillRect (context, CGRectMake(r.origin.x, r.origin.y, r.size.width, r.size.height));
-	CGContextFlush(context);
-	CGContextRestoreGState (context);
-	[back unlockFocus];
 }
 
 - (void)setBitdepth:(int)depth
@@ -507,7 +514,16 @@
 
 - (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue
 {
-	[self setNeedsDisplayInRect:[rectValue rectValue]];
+	NSRect r = [rectValue rectValue];
+	
+	// Hack: make the box 1px bigger all around; seems to make updates much more
+	//	reliable when the screen is stretched
+	r.origin.x = (int)r.origin.x - 1.0;
+	r.origin.y = (int)r.origin.y - 1.0;
+	r.size.width = (int)r.size.width + 2.0;
+	r.size.height = (int)r.size.height + 2.0;
+
+	[self setNeedsDisplayInRect:r];
 }
 
 @end

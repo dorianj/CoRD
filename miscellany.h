@@ -65,8 +65,9 @@ void fill_default_connection(rdcConnection conn);
 #define DEFAULTS_DRAWER_WIDTH @"drawer_width"
 
 #define PREFS_FULLSCREEN_RECONNECT @"reconnectFullScreen"
-#define PREFS_FORWARD_MENU_SHORTCUTS @"forwardMenuKeyShortcuts"
+#define PREFS_RESIZE_VIEWS @"resizeViewToFit"
 
+#define PREFERENCE_ENABLED(prefName) [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:(prefName)] boolValue]
 
 typedef enum _CRDConnectionStatus
 {

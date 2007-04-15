@@ -78,6 +78,7 @@ static NSImage *shared_documentIcon = nil;
 	[savedServersLabel release];
 	
 	[userDefaults release];
+	g_appController = nil;
 	[super dealloc];
 }
 
@@ -405,11 +406,12 @@ static NSImage *shared_documentIcon = nil;
 	// Create the fullscreen window then move the tabview into it	
 	RDInstance *inst = [self viewedServer];
 	RDCView *serverView = [[self viewedServer] view];
-	NSSize serverSize = [serverView frame].size;	
+	NSSize serverSize = [serverView bounds].size;	
 	NSRect winRect = [[NSScreen mainScreen] frame];
-	
+		
 	// If needed, reconnect the instance so that it can fill the screen
-	if (serverSize.width < winRect.size.width || serverSize.height < winRect.size.height)
+	if (![[inst valueForKey:@"fullscreen"] boolValue]  && PREFERENCE_ENABLED(PREFS_FULLSCREEN_RECONNECT) &&
+		( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
 	{
 		[self disconnectInstance:inst];
 		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
@@ -430,9 +432,9 @@ static NSImage *shared_documentIcon = nil;
 	[gui_tabView release];	
 	
 	// Using tabView:didSelectTabViewItem: would animate moving the server, which is unwanted here
-	NSRect serverRect = [serverView frame];
-	[gui_tabView setFrame:NSMakeRect(winRect.size.width/2.0-serverRect.size.width/2.0,
-									 winRect.size.height/2.0-serverRect.size.height/2.0,
+	NSRect serverRect = [serverView bounds];
+	[gui_tabView setFrame:NSMakeRect((winRect.size.width-serverRect.size.width)/2.0,
+									 (winRect.size.height-serverRect.size.height)/2.0,
 									 serverRect.size.width, serverRect.size.height)];
 	
 	[gui_fullScreenWindow startFullScreen];
@@ -707,6 +709,7 @@ static NSImage *shared_documentIcon = nil;
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
 	int selectedRow = [gui_serverList selectedRow];
+	RDInstance *inst = [self selectedServerInstance];
 	
 	[self validateControls];
 	[self fieldEdited:nil];
@@ -725,18 +728,16 @@ static NSImage *shared_documentIcon = nil;
 
 	// todo: ensure inspector controls are enabled
 	
-	inspectedServer =  [self serverInstanceForRow:selectedRow];
-	[self setInspectorSettings:inspectedServer];
+	inspectedServer =  inst;
+	[self setInspectorSettings:inst];
 	
-	
-	// If the new selection is connected, change the selected view
-	if (selectedRow >= 1 && selectedRow <= [connectedServers count])
+	// If the new selection is an active session and this wasn't called from self, change the selected view
+	if (inst != nil && aNotification != nil && [gui_tabView indexOfTabViewItem:[inst tabViewRepresentation]] != NSNotFound)
 	{
 		[gui_tabView selectTabViewItem:[inspectedServer tabViewRepresentation]];
 		[gui_mainWindow makeFirstResponder:[[self viewedServer] view]];
 		[self autosizeUnifiedWindow];
 	}
-	
 	
 }
 
@@ -777,30 +778,6 @@ static NSImage *shared_documentIcon = nil;
 {
 	if ([self viewedServer] == nil)
 		return;
-	/*
-	/* Resize the tabview to match the newly selected server.. Using instead of an 
-		autofilling width/height because this allows it to be centered in fullscreen mode
-	if ([self displayMode] == CRDDisplayFullscreen)
-	{
-		NSRect viewRect = [[[self viewedServer] view] frame];
-		NSRect windowRect = [[gui_tabView superview] frame];
-		NSRect tabRect = [gui_tabView frame];
-		tabRect.size.width  = MIN(viewRect.size.width, windowRect.size.width);
-		tabRect.size.height = MIN(viewRect.size.height, windowRect.size.height);
-		tabRect.origin = NSMakePoint((windowRect.size.width / 2.0) - (tabRect.size.width / 2.0),
-									 (windowRect.size.height / 2.0) - (tabRect.size.height / 2.0));
-		
-		NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
-									gui_tabView, NSViewAnimationTargetKey,
-									[NSValue valueWithRect:tabRect], NSViewAnimationEndFrameKey,
-									nil];
-		NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:animDict]];
-		[viewAnim setDuration:0.33];
-		[viewAnim setAnimationCurve:NSAnimationEaseIn];
-		
-		[viewAnim startAnimation];
-		[viewAnim release];
-	}*/
 }
 
 
@@ -948,12 +925,15 @@ static NSImage *shared_documentIcon = nil;
 #pragma mark -
 #pragma mark Managing connected servers
 
-// Starting point to connect to a instance. Threading is automatically handled.
+// Starting point to connect to a instance
 - (void)connectInstance:(RDInstance *)inst
 {
 	if (inst == nil)
 		return;
 	
+	if ([inst status] == CRDConnectionConnected)
+		[self disconnectInstance:inst];
+		
 	[inst retain];
 	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self withObject:inst];
 }
@@ -970,9 +950,6 @@ static NSImage *shared_documentIcon = nil;
 		[inst setValue:[NSNumber numberWithInt:(int)screenSize.height] forKey:@"screenHeight"];
 	}
 	
-	if ([inst status] == CRDConnectionConnected)
-		[inst disconnect];
-	
 	BOOL connected = [inst connect];
 	
 	[self performSelectorOnMainThread:@selector(completeConnection:)
@@ -985,7 +962,7 @@ static NSImage *shared_documentIcon = nil;
 	[pool release];
 }
 
-// Called from main thread in connectAsync
+// Called in main thread by connectAsync
 - (void)completeConnection:(RDInstance *)inst
 {
 	if ([inst status] == CRDConnectionConnected)
@@ -999,28 +976,25 @@ static NSImage *shared_documentIcon = nil;
 			[inst release];
 		}
 		
-		
 		NSIndexSet *index = [NSIndexSet indexSetWithIndex:1 + [connectedServers indexOfObject:inst]];
 		[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
+		[self listUpdated];
 		
-		// Create the gui, add to window
-		NSScrollView *scroll = [[[NSScrollView alloc] initWithFrame:[gui_tabView frame]] autorelease];
-		[inst createGUI:scroll];
+		// Create the gui, add to window			
+		[inst createGUI:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
 		[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
 		[gui_tabView selectLastTabViewItem:self];
 		
 		[gui_mainWindow makeFirstResponder:[inst view]];
 		
-		
-		if ([[inst valueForKey:@"fullscreen"] boolValue])
+						
+		if ([[inst valueForKey:@"fullscreen"] boolValue] || [[inst valueForKey:@"temporarilyFullscreen"] boolValue])
 		{
-			[self startFullscreen:self];		
+			[self startFullscreen:self];	
+			return;	
 		}
 		
-		[self listUpdated];
 		[self autosizeUnifiedWindow];
-		
-		
 	}
 	else
 	{
@@ -1031,6 +1005,12 @@ static NSImage *shared_documentIcon = nil;
 		
 		if (errorCode != ConnectionErrorNone && errorCode != ConnectionErrorCanceled)
 		{
+			if ([inst temporary])
+			{
+				[connectedServers removeObject:inst];
+				[self listUpdated];
+			}
+			
 			NSString *descs[] = {
 					@"No error",
 					@"The connection timed out.",
@@ -1048,9 +1028,8 @@ static NSImage *shared_documentIcon = nil;
 			{
 				[self connectInstance:inst];
 			}
-			else if ([inst temporary])
+			else if ([inst temporary]) /* Temporary items are added to the active session before connecting, so remove on failure */
 			{
-				// Connect failed, remove it
 				[connectedServers removeObject:inst];
 				[self listUpdated];
 			}
@@ -1063,7 +1042,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	if (inst == nil || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
 		return;
-		
+	
 	if ([inst tabViewRepresentation] != nil)
 		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
 	
@@ -1096,7 +1075,16 @@ static NSImage *shared_documentIcon = nil;
 	[inst release];
 
 	[self listUpdated];
-	[self autosizeUnifiedWindow];
+		
+	if (displayMode == CRDDisplayFullscreen && [gui_tabView numberOfTabViewItems] == 1)
+	{
+		[self autosizeUnifiedWindowWithAnimation:NO];
+		[self endFullscreen:self];
+	}
+	else
+	{
+		[self autosizeUnifiedWindow];
+	}
 }
 
 
@@ -1129,15 +1117,19 @@ static NSImage *shared_documentIcon = nil;
 	RDInstance *inst = [self viewedServer];
 	NSSize newContentSize;
 	if ([self displayMode] == CRDDisplayUnified && inst != nil)
-		newContentSize = [[inst view] frame].size;
+		newContentSize = [[inst view] bounds].size;
 	else
 		newContentSize = NSMakeSize(600, 400);
 	
+
 	NSRect windowFrame = [gui_mainWindow frame];
 	NSRect screenRect = [[gui_mainWindow screen] visibleFrame];
 	
 	[gui_mainWindow setContentMaxSize:newContentSize];
-
+	
+	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
+		[gui_mainWindow setContentAspectRatio:newContentSize];
+		
 	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = windowFrame.size.height - [[gui_mainWindow contentView] frame].size.height;
 	
@@ -1157,21 +1149,26 @@ static NSImage *shared_documentIcon = nil;
 	newWindowFrame.size.width = MIN(screenRect.size.width, newWindowFrame.size.width);
 	newWindowFrame.size.height = MIN(screenRect.size.height, newWindowFrame.size.height);
 	
+	
 	// Assure that no unneccesary scrollers are created
-	if (newWindowFrame.size.height > screenRect.size.height &&
-		newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
+	if (!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
 	{
-		newWindowFrame.origin.y = screenRect.origin.y;
-		newWindowFrame.size.height = screenRect.size.height;
-		newWindowFrame.size.width += scrollerWidth;
+		
+		if (newWindowFrame.size.height > screenRect.size.height &&
+			newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
+		{
+			newWindowFrame.origin.y = screenRect.origin.y;
+			newWindowFrame.size.height = screenRect.size.height;
+			newWindowFrame.size.width += scrollerWidth;
 
-	}
-	if (newWindowFrame.size.width > screenRect.size.width &&
-				newWindowFrame.size.height+scrollerWidth <= screenRect.size.height)
-	{
-		newWindowFrame.origin.x = screenRect.origin.x;
-		newWindowFrame.size.width = screenRect.size.width;
-		newWindowFrame.size.height += scrollerWidth;
+		}
+		if (newWindowFrame.size.width > screenRect.size.width &&
+					newWindowFrame.size.height+scrollerWidth <= screenRect.size.height)
+		{
+			newWindowFrame.origin.x = screenRect.origin.x;
+			newWindowFrame.size.width = screenRect.size.width;
+			newWindowFrame.size.height += scrollerWidth;
+		}
 	}
 	
 	// Try to make it contained within the screen
@@ -1194,6 +1191,27 @@ static NSImage *shared_documentIcon = nil;
 			newWindowFrame.origin.x += [gui_serversDrawer contentSize].width;
 
 		newWindowFrame.size.width -= [gui_serversDrawer contentSize].width;
+	}
+	
+	
+	// Assure that the aspect ratio is correct
+	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
+	{
+		float bareWindowHeight = (newWindowFrame.size.height - toolbarHeight);
+		float realAspect = newContentSize.width / newContentSize.height;
+		float proposedAspect = newWindowFrame.size.width / bareWindowHeight;
+		
+		if (fabs(realAspect - proposedAspect) > 0.001)
+		{
+			if (realAspect > proposedAspect)
+			{
+				float oldHeight = newWindowFrame.size.height;
+				newWindowFrame.size.height = toolbarHeight + newWindowFrame.size.width * (1.0 / realAspect);
+				newWindowFrame.origin.y += oldHeight - newWindowFrame.size.height;
+			}
+			else
+				newWindowFrame.size.width = newWindowFrame.size.height * realAspect;			
+		}
 	}
 	
 	[gui_mainWindow setFrame:newWindowFrame display:YES animate:animate];

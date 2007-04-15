@@ -35,6 +35,7 @@
 	int bitdepth;
 	RDCKeyboard *keyTranslator;
 	unsigned int *colorMap;	// size of 0xff always
+	NSSize screenSize;
 }
 
 - (void)startUpdate;

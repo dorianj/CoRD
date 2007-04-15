@@ -313,20 +313,31 @@
 #pragma mark GUI management
 
 // Should be called just after a successful connect
-- (void) createGUI:(NSScrollView *)enclosingView
+- (void)createGUI:(BOOL)useScrollView enclosure:(NSRect)enclosure
 {	
-	[enclosingView setDocumentView:view];
-	[enclosingView setHasVerticalScroller:YES];
-	[enclosingView setHasHorizontalScroller:YES];
-	[enclosingView setAutohidesScrollers:YES];
-	[enclosingView setBorderType:NSNoBorder];
-	[enclosingView setDrawsBackground:NO];
-	[enclosingView setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin)];
-	
 	[tabViewRepresentation release];
 	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];
-	[tabViewRepresentation setView:enclosingView];
 	[tabViewRepresentation setLabel:label];	
+	
+	if (useScrollView)
+	{
+		NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:enclosure];
+		[scrollView setDocumentView:view];
+		[scrollView setHasVerticalScroller:YES];
+		[scrollView setHasHorizontalScroller:YES];
+		[scrollView setAutohidesScrollers:YES];
+		[scrollView setBorderType:NSNoBorder];
+		[scrollView setDrawsBackground:NO];
+	//	[scrollView setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin)];
+		[tabViewRepresentation setView:scrollView];
+	}
+	else
+	{
+		[view setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
+		[tabViewRepresentation setView:view];
+	}
+
+	
 }
 
 
@@ -488,10 +499,10 @@
 	write_int(@"connect to console", consoleSession);
 	write_int(@"bitmapcachepersistenable", cacheBitmaps);
 	write_int(@"redirectdrives", forwardDisks);
-	write_int(@"disable wallpaper", drawDesktop);
-	write_int(@"disable full window drag", windowDrags);
-	write_int(@"disable menu anims", windowAnimation);
-	write_int(@"disable themes", themes);
+	write_int(@"disable wallpaper", !drawDesktop);
+	write_int(@"disable full window drag", !windowDrags);
+	write_int(@"disable menu anims", !windowAnimation);
+	write_int(@"disable themes", !themes);
 	write_int(@"audiomode", forwardAudio);
 	write_int(@"desktopwidth", screenWidth);
 	write_int(@"desktopheight", screenHeight);

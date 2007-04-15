@@ -85,7 +85,7 @@
 - (BOOL) connect;
 - (void) disconnect;
 - (void) startInputRunLoop;
-- (void) createGUI:(NSScrollView *)enclosingView;
+- (void)createGUI:(BOOL)useScrollView enclosure:(NSRect)enclosure;
 
 - (BOOL) readRDPFile:(NSString *)path;
 - (BOOL) writeRDPFile:(NSString *)pathconf;
