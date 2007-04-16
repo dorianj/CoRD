@@ -108,6 +108,10 @@
 - (IBAction)startFullscreen:(id)sender;
 - (IBAction)endFullscreen:(id)sender;
 - (IBAction)performFullScreen:(id)sender;
+- (IBAction)performUnified:(id)sender;
+- (IBAction)startWindowed:(id)sender;
+- (IBAction)startUnified:(id)sender;
+
 
 // Otherwise, in no particular order
 - (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;

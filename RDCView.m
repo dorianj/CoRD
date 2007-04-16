@@ -79,6 +79,13 @@
 
 - (void)drawRect:(NSRect)rect
 {
+	// xxx: performance heavy, looks nice though
+	if (fabs(screenSize.width - rect.size.width) > .001)
+	{
+		[[NSGraphicsContext currentContext] setShouldAntialias:YES];
+		[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];		
+	}
+	
 	int nRects, i;
 	const NSRect* rects;
 	[self getRectsBeingDrawn:&rects count:&nRects];
@@ -384,7 +391,7 @@
 - (BOOL)checkMouseInBounds:(NSEvent *)ev
 { 
 	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	return NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self frame]); // xxx: use bounds?
+	return NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self frame]);
 }
 
 - (void)mouseDragged:(NSEvent *)ev

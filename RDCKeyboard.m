@@ -81,9 +81,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	static unsigned lastMods = 0;
 	int newMods = [ev modifierFlags], changedMods = newMods ^ lastMods;
 	BOOL keySent;
-	
-	DEBUG_KEYBOARD( (@"handleFlagsChanged called") );
-	
+		
 	#define UP_OR_DOWN(b) ( (b) ? RDP_KEYPRESS : RDP_KEYRELEASE )
 	
 	// keySent is used because some older keyboards may not specify right or left.

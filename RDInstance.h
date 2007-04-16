@@ -78,6 +78,9 @@
 	// UI elements (only valid if connected)
 	CRDServerCell *cellRepresentation;
 	NSTabViewItem *tabViewRepresentation;
+	
+	// Used when in windowed mode
+	NSWindow *window;
 }
 
 - (id) initWithRDPFile:(NSString *)path;
@@ -85,7 +88,7 @@
 - (BOOL) connect;
 - (void) disconnect;
 - (void) startInputRunLoop;
-- (void)createGUI:(BOOL)useScrollView enclosure:(NSRect)enclosure;
+- (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure;
 
 - (BOOL) readRDPFile:(NSString *)path;
 - (BOOL) writeRDPFile:(NSString *)pathconf;

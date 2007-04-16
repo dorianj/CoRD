@@ -29,6 +29,7 @@ static NSImage *shared_documentIcon = nil;
 #define TOOLBAR_DISCONNECT	@"Disconnect"
 #define TOOLBAR_DRAWER @"Servers"
 #define TOOLBAR_FULLSCREEN @"Fullscreen"
+#define TOOLBAR_UNIFIED @"Windowed"
 
 @interface AppController (Private)
 	- (void)listUpdated;
@@ -41,7 +42,6 @@ static NSImage *shared_documentIcon = nil;
 	- (void)connectAsync:(RDInstance *)inst;
 	- (void)autosizeUnifiedWindow;
 	- (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate;
-	- (void)connectionFinished:(RDInstance *)newlyConnectedInst;
 @end
 
 
@@ -106,6 +106,10 @@ static NSImage *shared_documentIcon = nil;
 		setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN,
 			@"Enter fullscreen mode", @selector(startFullscreen:))
 		forKey:TOOLBAR_FULLSCREEN];
+	[toolbarItems
+		setObject:create_static_toolbar_item(TOOLBAR_UNIFIED,
+			@"Toggle between unified mode and windowed mode", @selector(performUnified:))
+		forKey:TOOLBAR_UNIFIED];
 	
 	gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
 	[gui_toolbar setDelegate:self];
@@ -165,7 +169,7 @@ static NSImage *shared_documentIcon = nil;
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 
-
+	
 	[self validateControls];
 	[self listUpdated];
 }
@@ -195,7 +199,7 @@ static NSImage *shared_documentIcon = nil;
 	}
 	else if (action == @selector(toggleDrawer:))
 	{
-		[item setTitle:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Severs Drawer" : @"Show Servers Drawer")];
+		[item setTitle:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Servers Drawer" : @"Show Servers Drawer")];
 	}
 	else if (action == @selector(keepSelectedServer:))
 	{
@@ -296,7 +300,6 @@ static NSImage *shared_documentIcon = nil;
 	RDInstance *inst = [self viewedServer];
 	
 	[self disconnectInstance:inst];
-
 }
 
 
@@ -390,6 +393,7 @@ static NSImage *shared_documentIcon = nil;
 - (IBAction)toggleDrawer:(id)sender
 {
 	[self toggleDrawer:sender visible:!drawer_is_visisble(gui_serversDrawer)];
+	[gui_toolbar validateVisibleItems];
 }
 
 // Switches between unified mode and windowed mode
@@ -405,7 +409,7 @@ static NSImage *shared_documentIcon = nil;
 	
 	// Create the fullscreen window then move the tabview into it	
 	RDInstance *inst = [self viewedServer];
-	RDCView *serverView = [[self viewedServer] view];
+	RDCView *serverView = [inst view];
 	NSSize serverSize = [serverView bounds].size;	
 	NSRect winRect = [[NSScreen mainScreen] frame];
 		
@@ -487,14 +491,35 @@ static NSImage *shared_documentIcon = nil;
 - (IBAction)performFullScreen:(id)sender
 {
 	if ([self displayMode] == CRDDisplayFullscreen)
-	{
 		[self endFullscreen:sender];
-	}
 	else
-	{
 		[self startFullscreen:sender];
-	}
 }
+
+- (IBAction)performUnified:(id)sender
+{
+	if (displayMode == CRDDisplayUnified)
+		[self startWindowed:sender];
+	else if (displayMode == CRDDisplayWindowed)
+		[self startUnified:sender];
+	
+	[gui_toolbar validateVisibleItems];
+}
+
+- (IBAction)startWindowed:(id)sender
+{
+
+	displayMode = CRDDisplayWindowed;
+}
+
+- (IBAction)startUnified:(id)sender
+{
+
+
+
+	displayMode = CRDDisplayUnified;
+}
+
 
 #pragma mark -
 #pragma mark Toolbar methods
@@ -523,6 +548,7 @@ static NSImage *shared_documentIcon = nil;
 				TOOLBAR_DRAWER,
 				NSToolbarFlexibleSpaceItemIdentifier,
 				TOOLBAR_FULLSCREEN,
+				TOOLBAR_UNIFIED, 
 				NSToolbarFlexibleSpaceItemIdentifier,
 				TOOLBAR_DISCONNECT,
 				nil];
@@ -542,6 +568,12 @@ static NSImage *shared_documentIcon = nil;
 		return viewedInst != nil;
 	else if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
 		return [connectedServers count] > 0;
+	else if ([itemId isEqualToString:TOOLBAR_UNIFIED] && (displayMode != CRDDisplayFullscreen))
+	{
+		NSString *label = (displayMode == CRDDisplayUnified) ? @"Windowed" : @"Unified";
+		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
+		[toolbarItem setLabel:label];	
+	}
 	
 	return YES;
 }
@@ -981,13 +1013,12 @@ static NSImage *shared_documentIcon = nil;
 		[self listUpdated];
 		
 		// Create the gui, add to window			
-		[inst createGUI:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
+		[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
 		[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
 		[gui_tabView selectLastTabViewItem:self];
 		
 		[gui_mainWindow makeFirstResponder:[inst view]];
 		
-						
 		if ([[inst valueForKey:@"fullscreen"] boolValue] || [[inst valueForKey:@"temporarilyFullscreen"] boolValue])
 		{
 			[self startFullscreen:self];	
@@ -1117,15 +1148,18 @@ static NSImage *shared_documentIcon = nil;
 	RDInstance *inst = [self viewedServer];
 	NSSize newContentSize;
 	if ([self displayMode] == CRDDisplayUnified && inst != nil)
+	{
 		newContentSize = [[inst view] bounds].size;
+		[gui_mainWindow setContentMaxSize:newContentSize];
+	}
 	else
+	{
 		newContentSize = NSMakeSize(600, 400);
-	
+		[gui_mainWindow setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+	}
 
 	NSRect windowFrame = [gui_mainWindow frame];
 	NSRect screenRect = [[gui_mainWindow screen] visibleFrame];
-	
-	[gui_mainWindow setContentMaxSize:newContentSize];
 	
 	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
 		[gui_mainWindow setContentAspectRatio:newContentSize];
@@ -1137,13 +1171,16 @@ static NSImage *shared_documentIcon = nil;
 										windowFrame.size.height-newContentSize.height-toolbarHeight, 
 										newContentSize.width, newContentSize.height + toolbarHeight);
 	
+	float drawerWidth = [gui_serversDrawer contentSize].width + 
+			([[[gui_serversDrawer contentView] window] frame].size.width-[gui_serversDrawer contentSize].width) / 2.0 + 1.0;
+	
 	// For our adjustments, add the drawer width
 	if ([gui_serversDrawer state] == NSDrawerOpenState)
 	{
 		if ([gui_serversDrawer edge] == NSMinXEdge) // left side
-			newWindowFrame.origin.x -= [gui_serversDrawer contentSize].width;
+			newWindowFrame.origin.x -= drawerWidth;
 		
-		newWindowFrame.size.width += [gui_serversDrawer contentSize].width;
+		newWindowFrame.size.width += drawerWidth;
 	}
 	
 	newWindowFrame.size.width = MIN(screenRect.size.width, newWindowFrame.size.width);
@@ -1187,10 +1224,12 @@ static NSImage *shared_documentIcon = nil;
 	// Reset window rect to exclude drawer
 	if ([gui_serversDrawer state] == NSDrawerOpenState)
 	{
+		float drawerWidth = [gui_serversDrawer contentSize].width;
+		drawerWidth += ([[[gui_serversDrawer contentView] window] frame].size.width - drawerWidth) / 2.0 + 1;
 		if ([gui_serversDrawer edge] == NSMinXEdge) // left side
-			newWindowFrame.origin.x += [gui_serversDrawer contentSize].width;
+			newWindowFrame.origin.x += drawerWidth;
 
-		newWindowFrame.size.width -= [gui_serversDrawer contentSize].width;
+		newWindowFrame.size.width -= drawerWidth;
 	}
 	
 	
@@ -1216,15 +1255,6 @@ static NSImage *shared_documentIcon = nil;
 	
 	[gui_mainWindow setFrame:newWindowFrame display:YES animate:animate];
 }
-
-- (void)connectionFinished:(RDInstance *)inst
-{
-	if ([[inst valueForKey:@"fullscreen"] boolValue])
-	{
-		[self startFullscreen:self];	
-	}
-}
-
 
 #pragma mark -
 #pragma mark Internal use
@@ -1292,7 +1322,6 @@ static NSImage *shared_documentIcon = nil;
 	return displayMode;
 }
 
-// Used to speed -[CRDApplication sendEvent:] by not using KVC
 - (NSWindow *)unifiedWindow
 {
 	return gui_mainWindow;
@@ -1309,7 +1338,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	if (shared_documentIcon == nil)
 	{
-		// The stored icon is loaded as flipped for whatever reason, so flip it back
+		// The stored icon is loaded flipped for whatever reason, so flip it back
 		// xxx: maybe use nscopybits?
 		NSImage *icon = [NSImage imageNamed:@"rdp document.icns"];
 		shared_documentIcon = [[NSImage alloc] initWithSize:[icon size]];

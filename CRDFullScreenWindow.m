@@ -108,8 +108,7 @@
 	} 
 	else 
 	{
-		if (menuVisible)
-			[self toggleMenuBarVisible:NO];
+		[self toggleMenuBarVisible:NO];
 		
 		[timeMouseEnteredMenuHotspot release];
 		timeMouseEnteredMenuHotspot = nil;

@@ -36,7 +36,8 @@
 	// This could be optimized by lazy checking of viewIsFocused, and v and/or changing
 	//	some to use IB connections
 	CRDFullScreenWindow *fullScreenWindow = [g_appController fullScreenWindow];
-	RDCView *v = [[g_appController viewedServer] view];
+	RDInstance *inst = [g_appController viewedServer];
+	RDCView *v = [inst view];
 	BOOL viewIsFocused = v != nil && [g_appController mainWindowIsFocused] && 
 			([[g_appController unifiedWindow] firstResponder] == v);
 	NSEventType eventType = [ev type];
@@ -47,7 +48,17 @@
 			if (viewIsFocused)
 			{
 				[v keyDown:ev];
-				[[self menu] performKeyEquivalent:ev];
+				if ([[self menu] performKeyEquivalent:ev])
+				{
+					[v keyUp:ev];
+					
+					// Release all of the modifiers as well, as the flagsChanged event releasing them won't fire
+					NSEvent *releaseModsEv = [NSEvent keyEventWithType:NSFlagsChanged location:[ev locationInWindow]
+								modifierFlags:![ev modifierFlags] timestamp:[ev timestamp] windowNumber:0 context:nil characters:@""
+								charactersIgnoringModifiers:@"" isARepeat:NO keyCode:[ev keyCode]];
+					[v flagsChanged:releaseModsEv];
+				}
+				
 				return;
 			}
 			break;
@@ -58,6 +69,7 @@
 				[v keyUp:ev];
 				return;
 			}
+			
 			break;
 			
 		case NSFlagsChanged:

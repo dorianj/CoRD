@@ -309,38 +309,6 @@
 		rdp_send_input(conn, time(NULL), type, flags, param1, param2);
 }
 
-
-#pragma mark GUI management
-
-// Should be called just after a successful connect
-- (void)createGUI:(BOOL)useScrollView enclosure:(NSRect)enclosure
-{	
-	[tabViewRepresentation release];
-	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];
-	[tabViewRepresentation setLabel:label];	
-	
-	if (useScrollView)
-	{
-		NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:enclosure];
-		[scrollView setDocumentView:view];
-		[scrollView setHasVerticalScroller:YES];
-		[scrollView setHasHorizontalScroller:YES];
-		[scrollView setAutohidesScrollers:YES];
-		[scrollView setBorderType:NSNoBorder];
-		[scrollView setDrawsBackground:NO];
-	//	[scrollView setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin)];
-		[tabViewRepresentation setView:scrollView];
-	}
-	else
-	{
-		[view setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
-		[tabViewRepresentation setView:view];
-	}
-
-	
-}
-
-
 #pragma mark Input run loop management
 - (void)startInputRunLoop
 {
@@ -542,6 +510,10 @@
 	return success;
 }
 
+
+#pragma mark -
+#pragma mark Working with GUI
+
 // Updates the CRDServerCell this instance manages to match the current details.
 - (void)updateCellData
 {
@@ -577,6 +549,59 @@
 			
 }
 
+- (void)createWindow:(BOOL)useScrollView
+{
+	// Todo: 
+	//	- add ability to use scrollbars
+	
+	[window release];
+	window = [[NSWindow alloc] initWithContentRect:[view bounds]
+			styleMask:(NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask)
+			backing:NSBackingStoreBuffered defer:NO];
+	[window setAcceptsMouseMovedEvents:YES];
+	
+	[view removeFromSuperview];
+	[[window contentView] addSubview:view];
+	[view setFrameOrigin:NSZeroPoint];
+	[window makeFirstResponder:view];
+	[window display];
+}
+
+
+- (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure
+{	
+	[tabViewRepresentation release];
+	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];
+	[tabViewRepresentation setLabel:label];	
+	
+	if (useScrollView)
+	{
+		NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:enclosure];
+		[scrollView setDocumentView:view];
+		[scrollView setHasVerticalScroller:YES];
+		[scrollView setHasHorizontalScroller:YES];
+		[scrollView setAutohidesScrollers:YES];
+		[scrollView setBorderType:NSNoBorder];
+		[scrollView setDrawsBackground:NO];
+		[tabViewRepresentation setView:scrollView];
+	}
+	else
+	{
+		[view setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
+		[tabViewRepresentation setView:view];
+	}	
+}
+
+
+/*
+- (NSScrollView *)createScrollEnclosure:(NSRect)enclosure
+{
+
+
+}*/
+
+#pragma mark -
+#pragma mark Keychain
 // Called right before modifying any data that effects the keychain
 - (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword
 {
@@ -584,7 +609,7 @@
 }
 
 // Force flag makes it save data to keychain regardless if it has changed. savePassword 
-//	is still respected.
+//	is always respected.
 - (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force
 {
 	if (savePassword && (force || ![hostName isEqualToString:newHost] || 

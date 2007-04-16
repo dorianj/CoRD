@@ -48,6 +48,8 @@
 		983D9FC80BCD8F8F00D90A4D /* windows_keymap_table.txt in Resources */ = {isa = PBXBuildFile; fileRef = 983D9FC70BCD8F8F00D90A4D /* windows_keymap_table.txt */; };
 		983DA2220BCDC32F00D90A4D /* CRDFullScreenWindow.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 983DA2200BCDC32F00D90A4D /* CRDFullScreenWindow.h */; };
 		983DA2230BCDC32F00D90A4D /* CRDFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 983DA2210BCDC32F00D90A4D /* CRDFullScreenWindow.m */; };
+		983E2A400BD307CE00B55CB3 /* Unified.png in Resources */ = {isa = PBXBuildFile; fileRef = 983E2A3F0BD307CE00B55CB3 /* Unified.png */; };
+		983E2A5D0BD30E4000B55CB3 /* Windowed.png in Resources */ = {isa = PBXBuildFile; fileRef = 983E2A5C0BD30E4000B55CB3 /* Windowed.png */; };
 		983E4B5E0BB88821009F833D /* CRDServerCell.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 983E4B5C0BB88821009F833D /* CRDServerCell.h */; };
 		983E4B5F0BB88821009F833D /* CRDServerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 983E4B5D0BB88821009F833D /* CRDServerCell.m */; };
 		983E4C5D0BB89E8E009F833D /* i Button Face.png in Resources */ = {isa = PBXBuildFile; fileRef = 983E4C5C0BB89E8E009F833D /* i Button Face.png */; };
@@ -116,7 +118,6 @@
 		44D2AE520AA761C000EA19A1 /* serial.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; path = serial.c; sourceTree = "<group>"; };
 		44D2AE530AA761C000EA19A1 /* tcp.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = tcp.m; sourceTree = "<group>"; };
 		44D2AE540AA761C000EA19A1 /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
-		44D2AE550AA761C000EA19A1 /* xproto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = xproto.h; sourceTree = "<group>"; };
 		44D2AE560AA761C000EA19A1 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		44D2AE570AA761C000EA19A1 /* disk.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; path = disk.m; sourceTree = "<group>"; };
 		44D2AE580AA761C000EA19A1 /* disk.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; path = disk.h; sourceTree = "<group>"; };
@@ -155,6 +156,8 @@
 		983D9FC70BCD8F8F00D90A4D /* windows_keymap_table.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; path = windows_keymap_table.txt; sourceTree = "<group>"; };
 		983DA2200BCDC32F00D90A4D /* CRDFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRDFullScreenWindow.h; sourceTree = "<group>"; };
 		983DA2210BCDC32F00D90A4D /* CRDFullScreenWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDFullScreenWindow.m; sourceTree = "<group>"; };
+		983E2A3F0BD307CE00B55CB3 /* Unified.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Unified.png; sourceTree = "<group>"; };
+		983E2A5C0BD30E4000B55CB3 /* Windowed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Windowed.png; sourceTree = "<group>"; };
 		983E4B5C0BB88821009F833D /* CRDServerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRDServerCell.h; sourceTree = "<group>"; };
 		983E4B5D0BB88821009F833D /* CRDServerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDServerCell.m; sourceTree = "<group>"; };
 		983E4C5C0BB89E8E009F833D /* i Button Face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "i Button Face.png"; sourceTree = "<group>"; };
@@ -266,6 +269,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				983E2A5C0BD30E4000B55CB3 /* Windowed.png */,
+				983E2A3F0BD307CE00B55CB3 /* Unified.png */,
 				983D9FC70BCD8F8F00D90A4D /* windows_keymap_table.txt */,
 				980D5C120BCC7DE0002D5DD5 /* Fullscreen.png */,
 				98D8EF9B0BCAFE810052DADE /* keymap.txt */,
@@ -308,7 +313,6 @@
 				44D2AE520AA761C000EA19A1 /* serial.c */,
 				44D2AE530AA761C000EA19A1 /* tcp.m */,
 				44D2AE540AA761C000EA19A1 /* types.h */,
-				44D2AE550AA761C000EA19A1 /* xproto.h */,
 				44D2AE560AA761C000EA19A1 /* constants.h */,
 				44D2AE570AA761C000EA19A1 /* disk.m */,
 				44D2AE580AA761C000EA19A1 /* disk.h */,
@@ -417,6 +421,8 @@
 				98D8EF9C0BCAFE810052DADE /* keymap.txt in Resources */,
 				980D5C130BCC7DE0002D5DD5 /* Fullscreen.png in Resources */,
 				983D9FC80BCD8F8F00D90A4D /* windows_keymap_table.txt in Resources */,
+				983E2A400BD307CE00B55CB3 /* Unified.png in Resources */,
+				983E2A5D0BD30E4000B55CB3 /* Windowed.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
