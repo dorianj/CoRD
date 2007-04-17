@@ -25,8 +25,6 @@
 #import "AppController.h"
 
 @interface RDInstance (Private)
-	- (void)updateCellData;
-	- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword;
 	- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force;
 	- (void)setStatus:(CRDConnectionStatus)status;
 @end
@@ -555,11 +553,24 @@
 	//	- add ability to use scrollbars
 	
 	[window release];
-	window = [[NSWindow alloc] initWithContentRect:[view bounds]
+	NSRect sessionScreenSize = [view bounds];
+	window = [[NSWindow alloc] initWithContentRect:sessionScreenSize
 			styleMask:(NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask)
 			backing:NSBackingStoreBuffered defer:NO];
+	
+	[window setContentMaxSize:sessionScreenSize.size];
+	[window setTitle:label];
 	[window setAcceptsMouseMovedEvents:YES];
 	
+	
+	if (!useScrollView)
+	{
+		[[window contentView] setAutoresizesSubviews:YES];
+		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+		[window setContentAspectRatio:sessionScreenSize.size];	
+	}
+	
+
 	[view removeFromSuperview];
 	[[window contentView] addSubview:view];
 	[view setFrameOrigin:NSZeroPoint];
@@ -602,12 +613,6 @@
 
 #pragma mark -
 #pragma mark Keychain
-// Called right before modifying any data that effects the keychain
-- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword
-{
-	[self updateKeychainData:newHost user:newUser password:newPassword force:NO];
-}
-
 // Force flag makes it save data to keychain regardless if it has changed. savePassword 
 //	is always respected.
 - (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force
@@ -686,6 +691,11 @@
 	return connectionStatus;
 }
 
+- (NSWindow *)window
+{
+	return window;
+}
+
 - (void)setStatus:(CRDConnectionStatus)status
 {
 	[cellRepresentation setStatus:status];
@@ -714,7 +724,7 @@
 
 - (void)setHostName:(NSString *)s
 {
-	[self updateKeychainData:s user:username password:password];
+	[self updateKeychainData:s user:username password:password force:NO];
 	[hostName autorelease];
 	hostName = [s retain];
 	[self updateCellData];
@@ -729,7 +739,7 @@
 
 - (void)setPassword:(NSString *)pass
 {
-	[self updateKeychainData:hostName user:username password:pass];
+	[self updateKeychainData:hostName user:username password:pass force:NO];
 	[password autorelease];
 	password = [pass retain];
 }

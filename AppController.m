@@ -257,9 +257,11 @@ static NSImage *shared_documentIcon = nil;
 		return;
 	
 	NSString *msg = [NSString stringWithFormat:@"Are you sure you wish to delete the saved server '%@'?", [inst label]];
-	int ret = NSRunAlertPanel(@"Delete saved server", msg, @"Delete", @"Cancel", nil);
+	NSAlert *alert = [NSAlert alertWithMessageText:@"Delete saved server" defaultButton:@"Delete" 
+			alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Are you sure you wish to delete the saved server '%@'?", [inst label]];
+	[alert setAlertStyle:NSCriticalAlertStyle];
 	
-	if (ret == NSAlertAlternateReturn)
+	if ([alert runModal] == NSAlertAlternateReturn)
 		return;
 		
 	[gui_serverList deselectAll:self];
@@ -508,7 +510,59 @@ static NSImage *shared_documentIcon = nil;
 
 - (IBAction)startWindowed:(id)sender
 {
+	if (displayMode == CRDDisplayWindowed)
+		return;
+	
+	
+	BOOL usingScrollers = !PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS);
+	
+	NSRect screenRect = [[gui_mainWindow screen] visibleFrame], windowRect;
+	
+	NSMutableArray *animArray = [NSMutableArray arrayWithCapacity:[connectedServers count]];
+	NSPoint windowTopLeft = NSMakePoint(screenRect.origin.x + WINDOW_START_X, screenRect.origin.y + 
+				screenRect.size.height - WINDOW_START_Y);
+	
+	NSEnumerator *enumerator = [connectedServers objectEnumerator];
+	RDInstance *inst;
+	
 
+	while ( (inst = (RDInstance *)[enumerator nextObject]) )
+	{
+		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
+		[inst createWindow:usingScrollers];
+		NSWindow *window = [inst window];
+		[window setAlphaValue:0.0];
+		[window makeKeyAndOrderFront:self];
+		windowRect = [window frame];
+		windowTopLeft = [window cascadeTopLeftFromPoint:windowTopLeft];
+		[window display];
+		
+		NSRect endFrame = NSMakeRect(windowTopLeft.x, windowTopLeft.y - windowRect.size.height,
+					windowRect.size.width, windowRect.size.height);
+/*
+		[window setFrame:endFrame display:YES];
+		
+		NSDictionary *windowFadeIn = [NSDictionary dictionaryWithObjectsAndKeys:
+						[inst window], NSViewAnimationTargetKey,
+						[NSValue valueWithRect:[gui_mainWindow frame]], NSViewAnimationStartFrameKey,
+						[NSValue valueWithRect:endFrame], NSViewAnimationEndFrameKey,
+						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
+						nil];
+		[animArray addObject:windowFadeIn];*/
+		[window setFrame:endFrame display:YES];
+		[window setAlphaValue:1.0];
+	}
+	/*
+	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:animArray];
+	[viewAnim setDuration:0.5];
+	[viewAnim setAnimationCurve:NSAnimationEaseIn];
+	[viewAnim setAnimationBlockingMode:NSAnimationNonblockingThreaded];
+	[viewAnim startAnimation];
+	[viewAnim release];*/
+	
+	
+	[self autosizeUnifiedWindow];
+	
 	displayMode = CRDDisplayWindowed;
 }
 
@@ -1162,7 +1216,9 @@ static NSImage *shared_documentIcon = nil;
 	NSRect screenRect = [[gui_mainWindow screen] visibleFrame];
 	
 	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
-		[gui_mainWindow setContentAspectRatio:newContentSize];
+		[gui_mainWindow setResizeIncrements:newContentSize];
+	else
+		[gui_mainWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
 		
 	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = windowFrame.size.height - [[gui_mainWindow contentView] frame].size.height;

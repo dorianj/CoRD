@@ -83,15 +83,18 @@
 	NSWindow *window;
 }
 
-- (id) initWithRDPFile:(NSString *)path;
-- (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
-- (BOOL) connect;
-- (void) disconnect;
-- (void) startInputRunLoop;
-- (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure;
+- (id)initWithRDPFile:(NSString *)path;
+- (void)sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
+- (BOOL)connect;
+- (void)disconnect;
+- (void)startInputRunLoop;
 
-- (BOOL) readRDPFile:(NSString *)path;
-- (BOOL) writeRDPFile:(NSString *)pathconf;
+- (void)updateCellData;
+- (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure;
+- (void)createWindow:(BOOL)useScrollView;
+
+- (BOOL)readRDPFile:(NSString *)path;
+- (BOOL)writeRDPFile:(NSString *)pathconf;
 
 // Accessors
 - (rdcConnection)conn;
@@ -99,14 +102,14 @@
 - (RDCView *)view;
 - (NSString *)rdpFilename;
 - (void)setRdpFilename:(NSString *)path;
-- (void)setTemporary:(BOOL)temp;
 - (BOOL)temporary;
+- (void)setTemporary:(BOOL)temp;
 - (CRDServerCell *)cellRepresentation;
 - (NSTabViewItem *)tabViewRepresentation;
 - (BOOL)modified;
 - (CRDConnectionStatus)status;
 - (void)setStatusAsNumber:(NSNumber *)status;
-
+- (NSWindow *)window;
 
 - (void)setLabel:(NSString *)s;
 - (void)setHostName:(NSString *)s;

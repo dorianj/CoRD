@@ -391,7 +391,7 @@
 - (BOOL)checkMouseInBounds:(NSEvent *)ev
 { 
 	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	return NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self frame]);
+	return NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self bounds]);
 }
 
 - (void)mouseDragged:(NSEvent *)ev
