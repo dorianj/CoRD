@@ -92,14 +92,17 @@
 
 	for (i = 0, count = [self numberOfRows]; i < count; i++)
 		[[[[self tableColumns] objectAtIndex:0] dataCellForRow:i] setHighlighted:(i == selectedRow)];
-	
+
 	[super selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO];
 	[self setNeedsDisplay:YES];
 }
 
 - (void)selectRow:(int)index
 {
-	[self selectRowIndexes:[NSIndexSet indexSetWithIndex:(unsigned)index] byExtendingSelection:NO];
+	if (index > -1)
+		[self selectRowIndexes:[NSIndexSet indexSetWithIndex:(unsigned)index] byExtendingSelection:NO];
+	else
+		[self deselectAll:self];
 }
 
 - (void)deselectRow:(int)rowIndex
@@ -114,7 +117,7 @@
 	[super deselectAll:sender];
 }
 
-- (void)keyUp:(NSEvent *)ev
+- (void)keyDown:(NSEvent *)ev
 {
 	NSString *str = [ev charactersIgnoringModifiers];
 	
@@ -128,23 +131,44 @@
 				return;
 				break;
 			
+			case 0x0003: // return
+			case 0x000d: // numpad enter
+				[g_appController connect:self];
+				return;
+				break;
+				
 			default:
 				break;
 		}
 	}
 	
-	[super keyUp:ev];	
+	[super keyDown:ev];
 }
 
 - (void)mouseDown:(NSEvent *)ev
 {
-	if ([ev clickCount] == 2)
+	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+	if ([ev clickCount] == 2 && row == [self selectedRow])
 	{
 		[g_appController connect:self];
 		return;
 	}
+	else
+	{
+		[self selectRow:row];
+	}
 	
-	[super mouseDown:ev];
+	// Don't call super so that it performs click-through selection
+}
+
+// Assure that the row the right click is over is selected so that the context menu is correct
+- (void)rightMouseDown:(NSEvent *)ev
+{
+	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+	if (row != -1)
+		[self selectRow:row];
+		
+	[super rightMouseDown:ev];
 }
 
 

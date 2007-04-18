@@ -42,6 +42,8 @@ static NSImage *shared_documentIcon = nil;
 	- (void)connectAsync:(RDInstance *)inst;
 	- (void)autosizeUnifiedWindow;
 	- (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate;
+	- (void)setInspectorEnabled:(BOOL)enabled;
+	- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled;
 @end
 
 
@@ -90,24 +92,23 @@ static NSImage *shared_documentIcon = nil;
 	
 	[gui_mainWindow setAcceptsMouseMovedEvents:YES];
 	
-	
 	// Create the toolbar 
 	toolbarItems = [[NSMutableDictionary alloc] init];
 	
 	[toolbarItems 
-		setObject:create_static_toolbar_item(TOOLBAR_DRAWER,
+		setObject:create_static_toolbar_item(TOOLBAR_DRAWER, @"Show Servers",
 			@"Hide or show the servers drawer", @selector(toggleDrawer:))
 		forKey:TOOLBAR_DRAWER];
 	[toolbarItems 
-		setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT,
+		setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT, @"Disconnect", 
 			@"Close the selected connection", @selector(disconnect:))
 		forKey:TOOLBAR_DISCONNECT];	
 	[toolbarItems
-		setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN,
+		setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN, @"Full Screen",
 			@"Enter fullscreen mode", @selector(startFullscreen:))
 		forKey:TOOLBAR_FULLSCREEN];
 	[toolbarItems
-		setObject:create_static_toolbar_item(TOOLBAR_UNIFIED,
+		setObject:create_static_toolbar_item(TOOLBAR_UNIFIED, @"Windowed",
 			@"Toggle between unified mode and windowed mode", @selector(performUnified:))
 		forKey:TOOLBAR_UNIFIED];
 	
@@ -162,7 +163,6 @@ static NSImage *shared_documentIcon = nil;
 	//[gui_serverList setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
 	//[gui_serverList registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 	
-	// Remove the next line to have a header
 	[gui_serverList setHeaderView:nil];
 	
 	// Since it's a custom class, the attributes pane isn't available for the password entry box in IB.
@@ -217,7 +217,6 @@ static NSImage *shared_documentIcon = nil;
 		}
 	}
 	
-	
 	return YES;
 }
 
@@ -243,6 +242,9 @@ static NSImage *shared_documentIcon = nil;
 	
 	NSIndexSet *index = [NSIndexSet indexSetWithIndex:2 + [savedServers indexOfObjectIdenticalTo:inst]];
 	[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
+	
+	if (![gui_inspector isVisible])
+		[self toggleInspector:self];
 }
 
 
@@ -805,14 +807,14 @@ static NSImage *shared_documentIcon = nil;
 	{
 		[self setInspectorSettings:nil];	
 		inspectedServer = nil;
-		// todo: set all inspector controls to disabled
+		[self setInspectorEnabled:NO];
 		
 		return;
 	} else {
 		[inspectedServer writeRDPFile:nil];	
 	}
 
-	// todo: ensure inspector controls are enabled
+	[self setInspectorEnabled:YES];
 	
 	inspectedServer =  inst;
 	[self setInspectorSettings:inst];
@@ -822,6 +824,7 @@ static NSImage *shared_documentIcon = nil;
 	{
 		[gui_tabView selectTabViewItem:[inspectedServer tabViewRepresentation]];
 		[gui_mainWindow makeFirstResponder:[[self viewedServer] view]];
+		[gui_mainWindow setTitle:[inspectedServer label]];
 		[self autosizeUnifiedWindow];
 	}
 	
@@ -917,14 +920,20 @@ static NSImage *shared_documentIcon = nil;
 	[inst setValue:[NSNumber numberWithInt:width]  forKey:@"screenWidth"];
 	[inst setValue:[NSNumber numberWithInt:height] forKey:@"screenHeight"];
 	
-	
 }
 
 /* Sets the inspector options to match an RDInstance */
 - (void)setInspectorSettings:(RDInstance *)newSettings
 {
 	if (newSettings == nil)
+	{
+		[gui_inspector setTitle:@"Inspector: No Server Selected"];
 		newSettings = [[[RDInstance alloc] init] autorelease];
+	}
+	else
+	{
+		[gui_inspector setTitle:[@"Inspector: " stringByAppendingString:[newSettings label]]];
+	}
 		
 	// Set the checkboxes 
 	[gui_cacheBitmaps		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"cacheBitmaps"])];
@@ -972,6 +981,8 @@ static NSImage *shared_documentIcon = nil;
 			[gui_screenResolution addItemWithTitle:resolutionLabel];
 		[gui_screenResolution selectItemWithTitle:resolutionLabel];
 	}
+	
+	
 }
 
 
@@ -1070,7 +1081,7 @@ static NSImage *shared_documentIcon = nil;
 		[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
 		[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
 		[gui_tabView selectLastTabViewItem:self];
-		
+		[gui_mainWindow setTitle:[inst label]];
 		[gui_mainWindow makeFirstResponder:[inst view]];
 		
 		if ([[inst valueForKey:@"fullscreen"] boolValue] || [[inst valueForKey:@"temporarilyFullscreen"] boolValue])
@@ -1216,10 +1227,11 @@ static NSImage *shared_documentIcon = nil;
 	NSRect screenRect = [[gui_mainWindow screen] visibleFrame];
 	
 	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
-		[gui_mainWindow setResizeIncrements:newContentSize];
-	else
-		[gui_mainWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
-		
+		[gui_mainWindow setContentAspectRatio:newContentSize];
+	//else
+	//	[gui_mainWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
+	//	xxx: need a way to cancel setContentResizeIncrements
+	
 	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = windowFrame.size.height - [[gui_mainWindow contentView] frame].size.height;
 	
@@ -1369,6 +1381,38 @@ static NSImage *shared_documentIcon = nil;
 	[gui_inspectorButton setEnabled:(inst != nil)];
 }
 
+- (void)setInspectorEnabled:(BOOL)enabled
+{
+	[self toggleControlsEnabledInView:[gui_inspector contentView] enabled:enabled];
+	[gui_inspector display];
+}
+
+- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled
+{
+	if ([view isKindOfClass:[NSControl class]])
+	{
+		if ([view isKindOfClass:[NSTextField class]] && ![(NSTextField *)view drawsBackground])
+		{
+			// setTextColor is buggy in 10.4, thus use white to get the greyed color while disabled
+			if (enabled)
+				[(NSTextField *)view setTextColor:[NSColor blackColor]];
+			else
+				[(NSTextField *)view setTextColor:[NSColor whiteColor]];
+
+		}
+		[(NSControl *)view setEnabled:enabled];
+	}
+	else
+	{
+		NSEnumerator *enumerator = [[view subviews] objectEnumerator];
+		id subview;
+		while ( (subview = [enumerator nextObject]) )
+		{
+			[self toggleControlsEnabledInView:subview enabled:enabled];
+		}
+	}
+	
+}
 
 #pragma mark -
 #pragma mark Accessors

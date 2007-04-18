@@ -79,12 +79,15 @@
 
 - (void)drawRect:(NSRect)rect
 {
-	// xxx: performance heavy, looks nice though
+
+	// This makes the resize look a lot nicer, but may slow old machines down. It works
+	//	quick enough on my slow mac, so I'm going to leave it as long as there aren't complaints
 	if (fabs(screenSize.width - rect.size.width) > .001)
 	{
 		[[NSGraphicsContext currentContext] setShouldAntialias:YES];
 		[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];		
 	}
+	
 	
 	int nRects, i;
 	const NSRect* rects;

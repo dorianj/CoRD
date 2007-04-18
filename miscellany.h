@@ -35,19 +35,15 @@ void draw_line(NSColor *color, NSPoint start, NSPoint end);
 NSString *full_host_name(NSString *host, int port);
 
 /* AppController */
-NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *tooltip, SEL action);
-int wrap_array_index(int start, int count, signed int modifier);
+NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);
 BOOL drawer_is_visisble(NSDrawer *drawer);
 void ensure_directory_exists(NSString *directory, NSFileManager *manager);
-NSNumber *buttonStateAsNumber(NSButton * button);
-NSNumber *buttonStateAsNumberInverse(NSButton * button);
 NSString *increment_file_name(NSString *path, NSString *base, NSString *extension);
 void split_hostname(NSString *address, NSString **host, int *port);
 NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
 #define NUMBER_AS_BSTATE(b) ( ([(b) boolValue]) ? NSOnState : NSOffState)
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
 #define BUTTON_STATE_AS_NUMBER_INVERSE(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 0 : 1)]
-NSView *create_placeholder_view(NSRect source);
 
 /* RDCKeyboard */
 void print_bitfield(unsigned v, int bits);
@@ -91,7 +87,7 @@ AppController *g_appController;
 
 
 /* General mid-level debugging */
-#define WITH_DEBUG_KEYBOARD 1
+//#define WITH_DEBUG_KEYBOARD 1
 //#define WITH_DEBUG_UI 1
 //#define WITH_MID_LEVEL_DEBUG 1
 

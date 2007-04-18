@@ -163,9 +163,12 @@
 		conn->errorCode = ConnectionErrorGeneral;
 		return NO;
 	}
-		
+	
+	// Set status to connecting. Do so on main thread to assure that the cell's progress
+	//	indicator timer is on the main thread.
 	[self performSelectorOnMainThread:@selector(setStatusAsNumber:)
 			withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
+	
 	
 	// Clear out the bitmap cache
 	int i, k;
@@ -195,7 +198,7 @@
 
 	// Set RDP logon flags
 	int logonFlags = RDP_LOGON_NORMAL;
-	if (password && username)
+	if ([username length] > 0 && ([password length] > 0 || savePassword))
 		logonFlags |= RDP_LOGON_AUTO;
 	
 	// Set some other settings
@@ -205,7 +208,7 @@
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth;
 	conn->screenHeight = screenHeight;
-	conn->tcpPort = (port==0 || port>=65536) ? 3389 : port;
+	conn->tcpPort = (port==0 || port>=65536) ? DEFAULT_PORT : port;
 
 	// Set up correct keymap
 	conn->keyLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
@@ -280,6 +283,10 @@
 	[is removeFromRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
 	tcp_disconnect(conn);
 	
+	// UI cleanup
+	[window close];
+	[window release];
+	window = nil;
 	[tabViewRepresentation release];
 	tabViewRepresentation = nil;	
 	[view release];
@@ -331,8 +338,7 @@
 #pragma mark -
 #pragma mark Reading/writing RDP files
 
-// This probably isn't safe to call from anywhere other than initWith.. in its
-//	current form
+// This probably isn't safe to call from anywhere other than initWith.. in its current form
 - (BOOL) readRDPFile:(NSString *)path
 {
 	if (path == nil || ![[NSFileManager defaultManager] isReadableFileAtPath:path])
@@ -613,8 +619,7 @@
 
 #pragma mark -
 #pragma mark Keychain
-// Force flag makes it save data to keychain regardless if it has changed. savePassword 
-//	is always respected.
+// Force flag makes it save data to keychain regardless if it has changed. savePassword  is always respected.
 - (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force
 {
 	if (savePassword && (force || ![hostName isEqualToString:newHost] || 
@@ -703,7 +708,7 @@
 }
 
 // Status needs to be set on the main thread when setting it to Connecting
-//	so the the CRDServerCell will create its progressbar timer in the main run loop
+//	so the the CRDServerCell will create its progress indicator timer in the main run loop
 - (void)setStatusAsNumber:(NSNumber *)status
 {
 	[self setStatus:[status intValue]];

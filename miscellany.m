@@ -75,11 +75,11 @@ void print_bitfield(unsigned v, int bits)
 
 #pragma mark -
 #pragma mark AppController
-NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *tooltip, SEL action)
+NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action)
 {
 	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
 	[item setPaletteLabel:name];
-	[item setLabel:name];
+	[item setLabel:label];
 	[item setToolTip:tooltip];
 	[item setAction:action];
 	[item setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%@.png", name]]];
@@ -91,22 +91,6 @@ BOOL drawer_is_visisble(NSDrawer *drawer)
 {
 	int state = [drawer state];
 	return state == NSDrawerOpenState || state == NSDrawerOpeningState;
-}
-
-
-// Captures the contents of a given screen rect and puts it into a NSView
-NSView *create_placeholder_view(NSRect source)
-{
-	NSBitmapImageRep *screenCap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:source];
-	NSImage *img = [[NSImage alloc] initWithSize:source.size];
-	[img addRepresentation:screenCap];
-	[screenCap release];
-	
-	NSImageView *placeholder = [[NSImageView alloc] initWithFrame:source];
-	[placeholder setImage:img];
-	[img release];
-	
-	return [placeholder autorelease];
 }
 
 
