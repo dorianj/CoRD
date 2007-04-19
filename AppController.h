@@ -71,7 +71,9 @@
 	RDInstance *instanceReconnectingForFullscreen;
 	CRDFullScreenWindow *gui_fullScreenWindow;
 	CRDDisplayMode displayMode;
+	CRDDisplayMode displayModeBeforeFullscreen;
 	
+	NSPoint windowCascadePoint;
 	
 	// Label cells
 	CRDLabelCell *connectedServersLabel;

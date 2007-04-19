@@ -44,6 +44,7 @@ static NSImage *shared_documentIcon = nil;
 	- (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate;
 	- (void)setInspectorEnabled:(BOOL)enabled;
 	- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled;
+	- (void)createWindowForInstance:(RDInstance *)inst;
 @end
 
 
@@ -91,6 +92,8 @@ static NSImage *shared_documentIcon = nil;
 	displayMode = CRDDisplayUnified;
 	
 	[gui_mainWindow setAcceptsMouseMovedEvents:YES];
+	windowCascadePoint = NSMakePoint(WINDOW_START_X, WINDOW_START_Y);
+	
 	
 	// Create the toolbar 
 	toolbarItems = [[NSMutableDictionary alloc] init];
@@ -119,9 +122,9 @@ static NSImage *shared_documentIcon = nil;
 	[gui_toolbar setAutosavesConfiguration:YES];
 	
 	[gui_mainWindow setToolbar:gui_toolbar];
-	[gui_toolbar validateVisibleItems];
+		
 	
-	
+	displayMode = [[userDefaults objectForKey:DEFAULTS_DISPLAY_MODE] intValue];
 	
 	// Load saved servers from the CoRD Application Support folder
 	NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -169,7 +172,9 @@ static NSImage *shared_documentIcon = nil;
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 
-	
+
+
+	[gui_toolbar validateVisibleItems];
 	[self validateControls];
 	[self listUpdated];
 }
@@ -183,7 +188,7 @@ static NSImage *shared_documentIcon = nil;
     if (action == @selector(removeSelectedSavedServer:))
 		return (inst != nil) && ![inst temporary] && [inst status] == CRDConnectionClosed;
     else if (action == @selector(connect:))
-        return (inst != nil) && [inst status] != CRDConnectionConnected;
+        return (inst != nil) && [inst status] == CRDConnectionClosed;
     else if (action == @selector(disconnect:))
 		return (inst != nil) && [inst status] != CRDConnectionClosed;
 	else if (action == @selector(keepSelectedServer:))
@@ -219,7 +224,6 @@ static NSImage *shared_documentIcon = nil;
 	
 	return YES;
 }
-
 
 
 #pragma mark -
@@ -341,9 +345,7 @@ static NSImage *shared_documentIcon = nil;
 	[gui_inspector setMinSize:NSMakeSize(minSize.width, windowFrame.size.height)];
 	[gui_inspector setMaxSize:NSMakeSize(FLT_MAX, windowFrame.size.height)];
 	[gui_inspector setFrame:windowFrame display:YES animate:YES];
-
 }
-
 
 // Called whenever anything in the inspector is edited
 - (IBAction)fieldEdited:(id)sender
@@ -408,15 +410,17 @@ static NSImage *shared_documentIcon = nil;
 
 - (IBAction)startFullscreen:(id)sender
 {
-	if ([self displayMode] == CRDDisplayFullscreen || [self viewedServer] == nil)
+	if (displayMode == CRDDisplayFullscreen || [connectedServers count] == 0)
 		return;
+		
+	displayModeBeforeFullscreen = displayMode;
 	
 	// Create the fullscreen window then move the tabview into it	
 	RDInstance *inst = [self viewedServer];
 	RDCView *serverView = [inst view];
 	NSSize serverSize = [serverView bounds].size;	
 	NSRect winRect = [[NSScreen mainScreen] frame];
-		
+
 	// If needed, reconnect the instance so that it can fill the screen
 	if (![[inst valueForKey:@"fullscreen"] boolValue]  && PREFERENCE_ENABLED(PREFS_FULLSCREEN_RECONNECT) &&
 		( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
@@ -429,6 +433,9 @@ static NSImage *shared_documentIcon = nil;
 		return;
 	}
 	
+	if ([self displayMode] != CRDDisplayUnified)
+		[self startUnified:self];
+	
 	instanceReconnectingForFullscreen = nil;
 	
 	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
@@ -439,7 +446,7 @@ static NSImage *shared_documentIcon = nil;
 	[gui_fullScreenWindow setInitialFirstResponder:serverView];
 	[gui_tabView release];	
 	
-	// Using tabView:didSelectTabViewItem: would animate moving the server, which is unwanted here
+	// Center the view (xxx: make it center when changing tabs in fullscreen)
 	NSRect serverRect = [serverView bounds];
 	[gui_tabView setFrame:NSMakeRect((winRect.size.width-serverRect.size.width)/2.0,
 									 (winRect.size.height-serverRect.size.height)/2.0,
@@ -457,6 +464,7 @@ static NSImage *shared_documentIcon = nil;
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
 	
+	
 	displayMode = CRDDisplayUnified;
 	[self autosizeUnifiedWindowWithAnimation:NO];
 	
@@ -473,6 +481,10 @@ static NSImage *shared_documentIcon = nil;
 	
 	[gui_mainWindow display];
 	
+	
+	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
+		[self startWindowed:self];
+		
 	// Animate the fullscreen window fading away
 	NSDictionary *fadeWindow = [NSDictionary dictionaryWithObjectsAndKeys:
 						gui_fullScreenWindow, NSViewAnimationTargetKey,
@@ -488,10 +500,11 @@ static NSImage *shared_documentIcon = nil;
 
 	[gui_fullScreenWindow close];
 	gui_fullScreenWindow = nil;
+
+	displayMode = displayModeBeforeFullscreen;
 }
 
-// Toggles between fullscreen and unified
-//	xxx: toggle between fullscreen and state before fullscreen (windowed or unified)
+// Toggles between fullscreen and previous state
 - (IBAction)performFullScreen:(id)sender
 {
 	if ([self displayMode] == CRDDisplayFullscreen)
@@ -515,65 +528,51 @@ static NSImage *shared_documentIcon = nil;
 	if (displayMode == CRDDisplayWindowed)
 		return;
 	
+	displayMode = CRDDisplayWindowed;
 	
-	BOOL usingScrollers = !PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS);
-	
-	NSRect screenRect = [[gui_mainWindow screen] visibleFrame], windowRect;
-	
-	NSMutableArray *animArray = [NSMutableArray arrayWithCapacity:[connectedServers count]];
-	NSPoint windowTopLeft = NSMakePoint(screenRect.origin.x + WINDOW_START_X, screenRect.origin.y + 
-				screenRect.size.height - WINDOW_START_Y);
+	if ([connectedServers count] == 0)
+		return;
 	
 	NSEnumerator *enumerator = [connectedServers objectEnumerator];
 	RDInstance *inst;
 	
-
-	while ( (inst = (RDInstance *)[enumerator nextObject]) )
+	while ( (inst = [enumerator nextObject]) )
 	{
 		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
-		[inst createWindow:usingScrollers];
-		NSWindow *window = [inst window];
-		[window setAlphaValue:0.0];
-		[window makeKeyAndOrderFront:self];
-		windowRect = [window frame];
-		windowTopLeft = [window cascadeTopLeftFromPoint:windowTopLeft];
-		[window display];
+		[self createWindowForInstance:inst];
+	}	
 		
-		NSRect endFrame = NSMakeRect(windowTopLeft.x, windowTopLeft.y - windowRect.size.height,
-					windowRect.size.width, windowRect.size.height);
-/*
-		[window setFrame:endFrame display:YES];
-		
-		NSDictionary *windowFadeIn = [NSDictionary dictionaryWithObjectsAndKeys:
-						[inst window], NSViewAnimationTargetKey,
-						[NSValue valueWithRect:[gui_mainWindow frame]], NSViewAnimationStartFrameKey,
-						[NSValue valueWithRect:endFrame], NSViewAnimationEndFrameKey,
-						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
-						nil];
-		[animArray addObject:windowFadeIn];*/
-		[window setFrame:endFrame display:YES];
-		[window setAlphaValue:1.0];
-	}
-	/*
-	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:animArray];
-	[viewAnim setDuration:0.5];
-	[viewAnim setAnimationCurve:NSAnimationEaseIn];
-	[viewAnim setAnimationBlockingMode:NSAnimationNonblockingThreaded];
-	[viewAnim startAnimation];
-	[viewAnim release];*/
-	
-	
 	[self autosizeUnifiedWindow];
-	
-	displayMode = CRDDisplayWindowed;
 }
 
 - (IBAction)startUnified:(id)sender
 {
-
-
-
+	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
+		return;
+		
 	displayMode = CRDDisplayUnified;
+	
+	if ([connectedServers count] == 0)
+		return;
+	
+	NSEnumerator *enumerator = [connectedServers objectEnumerator];
+	RDInstance *inst;
+	
+	while ( (inst = [enumerator nextObject]) )
+	{
+		[inst destroyWindow];
+		[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
+		[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
+	}	
+	
+	[gui_tabView selectLastTabViewItem:self];
+	
+	if ([self selectedServerInstance])
+		[gui_mainWindow setTitle:[[self viewedServer] label]];
+	else
+		[gui_mainWindow setTitle:@"CoRD"];
+	
+	[self autosizeUnifiedWindowWithAnimation:(sender != self)];
 }
 
 
@@ -676,12 +675,12 @@ static NSImage *shared_documentIcon = nil;
 	// Save drawer state to user defaults
 	[userDefaults setBool:drawer_is_visisble(gui_serversDrawer) forKey:DEFAULTS_SHOW_DRAWER];
 	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:DEFAULTS_DRAWER_WIDTH];
-
+	[userDefaults setInteger:displayMode forKey:DEFAULTS_DISPLAY_MODE];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {	
-	// Make sure the drawer is in the user-saved position
+	// Make sure the drawer is in the user-saved position. Do it here so that it displays nicely
 	if ([userDefaults objectForKey:DEFAULTS_SHOW_DRAWER] != nil)
 	{		
 		float width = [userDefaults floatForKey:DEFAULTS_DRAWER_WIDTH];
@@ -696,7 +695,6 @@ static NSImage *shared_documentIcon = nil;
 	{
 		[self toggleDrawer:self visible:YES];
 	}
-	
 }
 
 
@@ -820,12 +818,20 @@ static NSImage *shared_documentIcon = nil;
 	[self setInspectorSettings:inst];
 	
 	// If the new selection is an active session and this wasn't called from self, change the selected view
-	if (inst != nil && aNotification != nil && [gui_tabView indexOfTabViewItem:[inst tabViewRepresentation]] != NSNotFound)
+	if (inst != nil && aNotification != nil && [inst status] == CRDConnectionConnected)
 	{
-		[gui_tabView selectTabViewItem:[inspectedServer tabViewRepresentation]];
-		[gui_mainWindow makeFirstResponder:[[self viewedServer] view]];
-		[gui_mainWindow setTitle:[inspectedServer label]];
-		[self autosizeUnifiedWindow];
+		if (displayMode == CRDDisplayWindowed)
+		{
+			[[inst window] makeKeyAndOrderFront:self];
+			[[inst window] makeFirstResponder:[inst view]];
+		}
+		else if ([gui_tabView indexOfTabViewItem:[inst tabViewRepresentation]] != NSNotFound)
+		{
+			[gui_tabView selectTabViewItem:[inspectedServer tabViewRepresentation]];
+			[gui_mainWindow makeFirstResponder:[[self viewedServer] view]];
+			[gui_mainWindow setTitle:[inspectedServer label]];
+			[self autosizeUnifiedWindow];
+		}
 	}
 	
 }
@@ -867,6 +873,8 @@ static NSImage *shared_documentIcon = nil;
 {
 	if ([self viewedServer] == nil)
 		return;
+	
+	// xxx: May be used to auto-center tab view items (otherwise an NSTabView subclass will be made)
 }
 
 
@@ -998,7 +1006,7 @@ static NSImage *shared_documentIcon = nil;
 
 - (BOOL)windowShouldClose:(id)sender
 {
-	if (sender == gui_mainWindow)
+	if (sender == gui_mainWindow && displayMode == CRDDisplayUnified)
 	{
 		[[NSApplication sharedApplication] hide:self];
 		return NO;
@@ -1077,12 +1085,20 @@ static NSImage *shared_documentIcon = nil;
 		[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
 		[self listUpdated];
 		
-		// Create the gui, add to window			
-		[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
-		[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
-		[gui_tabView selectLastTabViewItem:self];
-		[gui_mainWindow setTitle:[inst label]];
-		[gui_mainWindow makeFirstResponder:[inst view]];
+		// Create gui
+		if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
+		{
+			[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
+			[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
+			[gui_tabView selectLastTabViewItem:self];
+			[gui_mainWindow setTitle:[inst label]];
+			[gui_mainWindow makeFirstResponder:[inst view]];
+		}
+		else
+		{
+			[self createWindowForInstance:inst];
+		}
+		
 		
 		if ([[inst valueForKey:@"fullscreen"] boolValue] || [[inst valueForKey:@"temporarilyFullscreen"] boolValue])
 		{
@@ -1090,7 +1106,8 @@ static NSImage *shared_documentIcon = nil;
 			return;	
 		}
 		
-		[self autosizeUnifiedWindow];
+		if (displayMode == CRDDisplayUnified)
+			[self autosizeUnifiedWindow];
 	}
 	else
 	{
@@ -1124,7 +1141,7 @@ static NSImage *shared_documentIcon = nil;
 			{
 				[self connectInstance:inst];
 			}
-			else if ([inst temporary]) /* Temporary items are added to the active session before connecting, so remove on failure */
+			else if ([inst temporary]) // Temporary items are added to the active session before connecting, so remove on failure
 			{
 				[connectedServers removeObject:inst];
 				[self listUpdated];
@@ -1133,14 +1150,16 @@ static NSImage *shared_documentIcon = nil;
 	}	
 }
 
-// Assures that the connected instance is disconnected and removed from view.
+// Assures that the passed instance is disconnected and removed from view.
 - (void)disconnectInstance:(RDInstance *)inst
 {
 	if (inst == nil || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
 		return;
-	
-	if ([inst tabViewRepresentation] != nil)
+		
+	if (displayMode != CRDDisplayWindowed && [inst tabViewRepresentation] != nil)
+	{
 		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
+	}
 	
 	if ([inst status] == CRDConnectionConnected)
 		[inst disconnect];
@@ -1177,7 +1196,7 @@ static NSImage *shared_documentIcon = nil;
 		[self autosizeUnifiedWindowWithAnimation:NO];
 		[self endFullscreen:self];
 	}
-	else
+	else if (displayMode == CRDDisplayUnified)
 	{
 		[self autosizeUnifiedWindow];
 	}
@@ -1368,6 +1387,17 @@ static NSImage *shared_documentIcon = nil;
 				return item;
 		}
 	}
+	else
+	{
+		NSEnumerator *enumerator = [connectedServers objectEnumerator];
+		RDInstance *inst;
+		
+		while ( (inst = [enumerator nextObject]) )
+		{
+			if ([[inst window] isMainWindow])
+				return inst;
+		}
+	}
 	
 	return nil;
 }
@@ -1377,7 +1407,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
 	
-	[gui_connectButton setEnabled:(inst != nil && [inst status] != CRDConnectionConnected)];
+	[gui_connectButton setEnabled:(inst != nil && [inst status] == CRDConnectionClosed)];
 	[gui_inspectorButton setEnabled:(inst != nil)];
 }
 
@@ -1414,6 +1444,17 @@ static NSImage *shared_documentIcon = nil;
 	
 }
 
+- (void)createWindowForInstance:(RDInstance *)inst
+{
+	[inst createWindow:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS)];
+	
+	NSWindow *window = [inst window];
+	[window cascadeTopLeftFromPoint:windowCascadePoint];
+	[window makeFirstResponder:[inst view]];
+	[window makeKeyAndOrderFront:self];
+}
+
+
 #pragma mark -
 #pragma mark Accessors
 
@@ -1431,6 +1472,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	return gui_fullScreenWindow;
 }
+
 
 #pragma mark -
 #pragma mark Application-wide resources

@@ -71,7 +71,9 @@
 	[self lockFocus];	
 	NSRectClip(drawRect);
 	draw_vertical_gradient(topColor, bottomColor, drawRect);
-			
+	draw_line([bottomColor blendedColorWithFraction:0.6 ofColor:topColor], 
+			NSMakePoint(drawRect.origin.x, drawRect.origin.y),
+			NSMakePoint(drawRect.origin.x + drawRect.size.width, drawRect.origin.y ));
 	[self unlockFocus];
 }
 
@@ -99,7 +101,7 @@
 
 - (void)selectRow:(int)index
 {
-	if (index > -1)
+	if (index > -1 && [[self delegate] tableView:self shouldSelectRow:index])
 		[self selectRowIndexes:[NSIndexSet indexSetWithIndex:(unsigned)index] byExtendingSelection:NO];
 	else
 		[self deselectAll:self];

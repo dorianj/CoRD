@@ -81,6 +81,8 @@
 	
 	// Used when in windowed mode
 	NSWindow *window;
+	
+	NSScrollView *scrollEnclosure;
 }
 
 - (id)initWithRDPFile:(NSString *)path;
@@ -89,9 +91,13 @@
 - (void)disconnect;
 - (void)startInputRunLoop;
 
+// GUI
 - (void)updateCellData;
 - (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure;
 - (void)createWindow:(BOOL)useScrollView;
+- (void)destroyUnified;
+- (void)destroyWindow;
+
 
 - (BOOL)readRDPFile:(NSString *)path;
 - (BOOL)writeRDPFile:(NSString *)pathconf;

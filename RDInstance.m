@@ -27,6 +27,7 @@
 @interface RDInstance (Private)
 	- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force;
 	- (void)setStatus:(CRDConnectionStatus)status;
+	- (void)createScrollEnclosure:(NSRect)frame;
 @end
 
 
@@ -289,6 +290,8 @@
 	window = nil;
 	[tabViewRepresentation release];
 	tabViewRepresentation = nil;	
+	[scrollEnclosure release];
+	scrollEnclosure = nil;
 	[view release];
 	view = nil;
 	conn->ui = NULL;
@@ -567,19 +570,29 @@
 	[window setContentMaxSize:sessionScreenSize.size];
 	[window setTitle:label];
 	[window setAcceptsMouseMovedEvents:YES];
+	[window setDelegate:self];
+	[window setReleasedWhenClosed:NO];
+	[[window contentView] setAutoresizesSubviews:YES];
+	[window setContentMinSize:NSMakeSize(100.0, 75.0)];
 	
+	[view setFrameOrigin:NSZeroPoint];
+	[view removeFromSuperview];
 	
-	if (!useScrollView)
+	if (useScrollView)
 	{
-		[[window contentView] setAutoresizesSubviews:YES];
+		[view setAutoresizingMask:NSViewNotSizable];
+		[self createScrollEnclosure:[[window contentView] bounds]];
+		[[window contentView] addSubview:scrollEnclosure];
+	}
+	else
+	{
+		[view setFrameSize:[[window contentView] frame].size];
 		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
 		[window setContentAspectRatio:sessionScreenSize.size];	
+		[[window contentView] addSubview:view];
+		[view setNeedsDisplay:YES];
 	}
 	
-
-	[view removeFromSuperview];
-	[[window contentView] addSubview:view];
-	[view setFrameOrigin:NSZeroPoint];
 	[window makeFirstResponder:view];
 	[window display];
 }
@@ -593,32 +606,56 @@
 	
 	if (useScrollView)
 	{
-		NSScrollView *scrollView = [[NSScrollView alloc] initWithFrame:enclosure];
-		[scrollView setDocumentView:view];
-		[scrollView setHasVerticalScroller:YES];
-		[scrollView setHasHorizontalScroller:YES];
-		[scrollView setAutohidesScrollers:YES];
-		[scrollView setBorderType:NSNoBorder];
-		[scrollView setDrawsBackground:NO];
-		[tabViewRepresentation setView:scrollView];
+		[self createScrollEnclosure:enclosure];
+		[tabViewRepresentation setView:scrollEnclosure];
 	}
 	else
 	{
-		[view setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
+		[view setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|
+				NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
 		[tabViewRepresentation setView:view];
 	}	
 }
 
-
-/*
-- (NSScrollView *)createScrollEnclosure:(NSRect)enclosure
+- (void)destroyUnified
 {
+	[tabViewRepresentation release];
+	tabViewRepresentation = nil;
+}
+
+- (void)destroyWindow
+{
+	[window setDelegate:nil];
+	[window close];
+	window = nil;
+}
 
 
-}*/
+- (void)createScrollEnclosure:(NSRect)frame
+{
+	[scrollEnclosure release];
+	scrollEnclosure = [[NSScrollView alloc] initWithFrame:frame];
+	[scrollEnclosure setDocumentView:view];
+	[scrollEnclosure setHasVerticalScroller:YES];
+	[scrollEnclosure setHasHorizontalScroller:YES];
+	[scrollEnclosure setAutohidesScrollers:YES];
+	[scrollEnclosure setBorderType:NSNoBorder];
+	[scrollEnclosure setDrawsBackground:NO];
+}
+
+
+#pragma mark -
+#pragma mark NSWindow delegate
+
+- (void)windowWillClose:(NSNotification *)aNotification
+{
+	if (connectionStatus == CRDConnectionConnected)
+		[g_appController disconnectInstance:self];
+}
 
 #pragma mark -
 #pragma mark Keychain
+
 // Force flag makes it save data to keychain regardless if it has changed. savePassword  is always respected.
 - (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force
 {
