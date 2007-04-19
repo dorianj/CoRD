@@ -67,11 +67,6 @@
 	bitdepth = [instance conn]->serverBpp;
 }
 
-- (BOOL)acceptsFirstResponder
-{
-	return YES;
-}
-
 - (BOOL)wantsDefaultClipping
 {
 	return NO;
@@ -300,8 +295,29 @@
 }
 
 
+// Assures that all modifier keys are released
+- (void)releaseRemoteModifiers
+{
+	NSEvent *releaseModsEv = [NSEvent keyEventWithType:NSFlagsChanged location:NSZeroPoint
+				modifierFlags:0 timestamp:nil windowNumber:0 context:nil characters:@""
+				charactersIgnoringModifiers:@"" isARepeat:NO keyCode:0];
+	[keyTranslator handleFlagsChanged:releaseModsEv];
+}
+
+
 #pragma mark -
 #pragma mark NSResponder Event Handlers
+
+- (BOOL)acceptsFirstResponder
+{
+	return YES;
+}
+
+- (BOOL)resignFirstResponder
+{
+	[self releaseRemoteModifiers];
+	return [super resignFirstResponder];
+}
 
 - (void)keyDown:(NSEvent *)ev
 {

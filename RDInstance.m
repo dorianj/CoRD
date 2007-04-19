@@ -653,6 +653,11 @@
 		[g_appController disconnectInstance:self];
 }
 
+- (void)windowDidResignKey:(NSNotification *)sender
+{
+	[view releaseRemoteModifiers];	
+}
+
 #pragma mark -
 #pragma mark Keychain
 

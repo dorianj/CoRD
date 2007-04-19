@@ -51,12 +51,6 @@
 				if ([[self menu] performKeyEquivalent:ev])
 				{
 					[v keyUp:ev];
-					
-					// Release all of the modifiers as well, as the flagsChanged event releasing them won't fire
-					NSEvent *releaseModsEv = [NSEvent keyEventWithType:NSFlagsChanged location:[ev locationInWindow]
-								modifierFlags:![ev modifierFlags] timestamp:[ev timestamp] windowNumber:0 context:nil characters:@""
-								charactersIgnoringModifiers:@"" isARepeat:NO keyCode:[ev keyCode]];
-					[v flagsChanged:releaseModsEv];
 				}
 				
 				return;
@@ -78,6 +72,7 @@
 				[v flagsChanged:ev];
 				return;
 			}
+			
 			break;
 			
 		case NSMouseMoved:

@@ -1026,6 +1026,14 @@ static NSImage *shared_documentIcon = nil;
 	}
 }
 
+- (void)windowDidResignKey:(NSNotification *)sender
+{
+	if ([sender object] == gui_mainWindow)
+	{
+		[[[self viewedServer] view] releaseRemoteModifiers];	
+	}
+}
+
 
 #pragma mark -
 #pragma mark Managing connected servers

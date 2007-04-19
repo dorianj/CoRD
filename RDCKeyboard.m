@@ -44,7 +44,6 @@ static NSDictionary *windowsKeymapTable = nil;
 
 @implementation RDCKeyboard
 
-#pragma mark NSObject methods
 - (id) init
 {
 	if (![super init])
@@ -64,6 +63,7 @@ static NSDictionary *windowsKeymapTable = nil;
 }
 
 
+#pragma mark -
 #pragma mark Key event handling
 - (void)handleKeyEvent:(NSEvent *)ev keyDown:(BOOL)down
 {
@@ -138,9 +138,12 @@ static NSDictionary *windowsKeymapTable = nil;
    #undef UP_OR_DOWN(x)
 }
 
+
+#pragma mark -
+#pragma mark Sending events to server
+
 - (void)sendKeycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down
 {
-	
 	if ([virtualKeymap objectForKey:[NSNumber numberWithInt:keyCode]] != nil)
 	{
 		if (down)
@@ -154,7 +157,7 @@ static NSDictionary *windowsKeymapTable = nil;
 
 
 // Returns YES if any keys are handled, otherwise NO
-- (BOOL) handleSpecialKeys:(NSEvent *)ev
+- (BOOL)handleSpecialKeys:(NSEvent *)ev
 {
 	uint16 flags = [RDCKeyboard modifiersForEvent:ev];
 	uint16 keycode = [ev keyCode];
@@ -179,6 +182,7 @@ static NSDictionary *windowsKeymapTable = nil;
 }
 
 
+#pragma mark -
 #pragma mark Accessors
 - (RDInstance *)controller
 {
@@ -191,6 +195,7 @@ static NSDictionary *windowsKeymapTable = nil;
 }
 
 
+#pragma mark -
 #pragma mark Keymap file parser
 - (BOOL)readKeymap
 {

@@ -20,9 +20,8 @@
 
 #import "miscellany.h"
 
-@interface CRDApplication : NSApplication {
-
-
+@interface CRDApplication : NSApplication
+{
 
 }
 

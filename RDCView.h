@@ -63,4 +63,5 @@
 - (void)setBitdepth:(int)depth;
 - (void)setCursor:(NSCursor *)cursor;
 - (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
+- (void)releaseRemoteModifiers;
 @end
