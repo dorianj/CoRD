@@ -17,10 +17,8 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 // Purpose: Subclass of NSApplication so that command+key can be interpreted
-//			as windows+key and sent to server. This will be enabled in the furture,
-//			some RDCKeyboard modifications are needed and this is low priority
-
-// Notes: 
+//			as windows+key and sent to server. Additionally, the mouse is tracked
+//			to allow the menu bar to be unhidden during fullscreeen
 
 #import "CRDApplication.h"
 
@@ -38,8 +36,8 @@
 	CRDFullScreenWindow *fullScreenWindow = [g_appController fullScreenWindow];
 	RDInstance *inst = [g_appController viewedServer];
 	RDCView *v = [inst view];
-	BOOL viewIsFocused = v != nil && [g_appController mainWindowIsFocused] && 
-			([[g_appController unifiedWindow] firstResponder] == v);
+	BOOL viewIsFocused = (v != nil) && [[v window] isKeyWindow] && [[v window] isMainWindow] && 
+			([[v window] firstResponder] == v);
 	NSEventType eventType = [ev type];
 	
 	switch (eventType)

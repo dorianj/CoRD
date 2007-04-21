@@ -57,6 +57,7 @@ void fill_default_connection(rdcConnection conn);
 #define DEFAULT_PORT 3389
 #define WINDOW_START_X 50
 #define WINDOW_START_Y 20
+#define SAVED_SERVER_DRAG_TYPE @"savedServerDragType"
 
 /* User defaults (NSUserDefaults) keys */
 #define DEFAULTS_SHOW_DRAWER @"show_drawer"

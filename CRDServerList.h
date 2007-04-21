@@ -19,8 +19,16 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface CRDServerList : NSTableView {
-
+@interface CRDServerList : NSTableView
+{
+	NSAnimation *autoexpansionAnimation;
+	BOOL inLiveDrag;
+	int draggedRowIndex;
+		
+	// Arrays of NSValues encapsulating NSPoints
+	NSArray *autoexpansionStartRowOrigins, *autoexpansionEndRowOrigins, *autoexpansionCurrentRowOrigins;
+	
+	
 }
 - (void)selectRow:(int)index;
 @end

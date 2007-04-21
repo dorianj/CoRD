@@ -59,6 +59,8 @@
 		983E4FE10BBA071E009F833D /* CRDServersColumn.m in Sources */ = {isa = PBXBuildFile; fileRef = 983E4FDF0BBA071E009F833D /* CRDServersColumn.m */; };
 		984846900BB7153D003947F1 /* miscellany.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9848468E0BB7153D003947F1 /* miscellany.h */; };
 		984846910BB7153D003947F1 /* miscellany.m in Sources */ = {isa = PBXBuildFile; fileRef = 9848468F0BB7153D003947F1 /* miscellany.m */; };
+		9854AD790BD9A89600A47149 /* CRDTableViewAnimation.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9854AD770BD9A89600A47149 /* CRDTableViewAnimation.h */; };
+		9854AD7A0BD9A89600A47149 /* CRDTableViewAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 9854AD780BD9A89600A47149 /* CRDTableViewAnimation.m */; };
 		987BEB6C0BC1B8B800237C81 /* Clock icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 987BEB6B0BC1B8B800237C81 /* Clock icon.png */; };
 		987D6E2C0B51DEF3005B8E92 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
 		987D6FCA0B51E520005B8E92 /* keychain.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 987D6FC80B51E520005B8E92 /* keychain.h */; };
@@ -88,6 +90,7 @@
 				98B4F0DA0BBECAE7001F499B /* CRDServerList.h in CopyFiles */,
 				98A96E060BC9C6E8005F217F /* CRDApplication.h in CopyFiles */,
 				983DA2220BCDC32F00D90A4D /* CRDFullScreenWindow.h in CopyFiles */,
+				9854AD790BD9A89600A47149 /* CRDTableViewAnimation.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -167,6 +170,8 @@
 		983E4FDF0BBA071E009F833D /* CRDServersColumn.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDServersColumn.m; sourceTree = "<group>"; };
 		9848468E0BB7153D003947F1 /* miscellany.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = miscellany.h; sourceTree = "<group>"; };
 		9848468F0BB7153D003947F1 /* miscellany.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = miscellany.m; sourceTree = "<group>"; };
+		9854AD770BD9A89600A47149 /* CRDTableViewAnimation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CRDTableViewAnimation.h; sourceTree = "<group>"; };
+		9854AD780BD9A89600A47149 /* CRDTableViewAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDTableViewAnimation.m; sourceTree = "<group>"; };
 		987BEB6B0BC1B8B800237C81 /* Clock icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Clock icon.png"; sourceTree = "<group>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		987D6FC80B51E520005B8E92 /* keychain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = keychain.h; sourceTree = "<group>"; };
@@ -200,6 +205,7 @@
 			children = (
 				98A96DE80BC9C695005F217F /* rdesktop UI */,
 				983E4BAE0BB8900D009F833D /* Cocoa UI */,
+				9854AD740BD9A7BB00A47149 /* Supporting classes */,
 				44D2ACDE0AA73B2A00EA19A1 /* AppController.h */,
 				44D2ACDF0AA73B2A00EA19A1 /* AppController.m */,
 				98A96E040BC9C6E8005F217F /* CRDApplication.h */,
@@ -352,6 +358,15 @@
 			name = "Cocoa UI";
 			sourceTree = "<group>";
 		};
+		9854AD740BD9A7BB00A47149 /* Supporting classes */ = {
+			isa = PBXGroup;
+			children = (
+				9854AD770BD9A89600A47149 /* CRDTableViewAnimation.h */,
+				9854AD780BD9A89600A47149 /* CRDTableViewAnimation.m */,
+			);
+			name = "Supporting classes";
+			sourceTree = "<group>";
+		};
 		98A96DE80BC9C695005F217F /* rdesktop UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -468,6 +483,7 @@
 				98B4F0DB0BBECAE7001F499B /* CRDServerList.m in Sources */,
 				98A96E070BC9C6E8005F217F /* CRDApplication.m in Sources */,
 				983DA2230BCDC32F00D90A4D /* CRDFullScreenWindow.m in Sources */,
+				9854AD7A0BD9A89600A47149 /* CRDTableViewAnimation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

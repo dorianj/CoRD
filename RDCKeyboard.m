@@ -116,7 +116,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	if (!keySent && (changedMods & NSAlternateKeyMask))
 		[self sendScancode:SCANCODE_CHAR_LALT flags:UP_OR_DOWN(newMods & NSAlternateKeyMask)];
 
-	
+
 	// Windows key
 	if ( (keySent = changedMods & NX_DEVICELCMDKEYMASK) )
 		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NX_DEVICELCMDKEYMASK)];

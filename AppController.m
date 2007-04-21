@@ -31,6 +31,9 @@ static NSImage *shared_documentIcon = nil;
 #define TOOLBAR_FULLSCREEN @"Fullscreen"
 #define TOOLBAR_UNIFIED @"Windowed"
 
+
+#pragma mark -
+
 @interface AppController (Private)
 	- (void)listUpdated;
 	- (void)validateControls;
