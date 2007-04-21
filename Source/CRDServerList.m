@@ -284,7 +284,7 @@
 		{
 		
 		}
-		[startBuilder addObject:rowOrigin];
+		[startBuilder addObject:[NSValue valueWithPoint:rowOrigin]];
 		[endBuilder addObject:[NSValue valueWithPoint:NSMakePoint(rowOrigin.x, rowOrigin.y + delta * (rowIndex - i))]];
 	}
 	
