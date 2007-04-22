@@ -45,11 +45,8 @@
 		case NSKeyDown:	
 			if (viewIsFocused)
 			{
-				[v keyDown:ev];
-				if ([[self menu] performKeyEquivalent:ev])
-				{
-					[v keyUp:ev];
-				}
+				if (![[self menu] performKeyEquivalent:ev])
+					[v keyDown:ev];
 				
 				return;
 			}

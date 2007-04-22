@@ -37,22 +37,29 @@
 #define UNFOCUSED_START [NSColor colorWithDeviceRed:(150/255.0) green:(150/255.0) blue:(150/255.0) alpha:1.0]
 #define UNFOCUSED_END [NSColor colorWithDeviceRed:(100/255.0) green:(100/255.0) blue:(100/255.0) alpha:1.0]
 
+#define ANIMATION_DURATION 0.15
 
 #pragma mark -
 
 @interface CRDServerList (Private)
 	- (NSString *)pasteboardDataType:(NSPasteboard *)draggingPasteboard;
 	- (BOOL)pasteboardHasValidData:(NSPasteboard *)draggingPasteboard;
-
+	- (void)createNewRowOriginsAboveRow:(int)rowIndex;
+	- (void)startAnimation;
+	- (void)concludeDrag;
 @end
 
 
 #pragma mark -
 @implementation CRDServerList
 
-
 #pragma mark -
 #pragma mark NSTableView
+
+- (void)awakeFromNib
+{
+	emptyRowIndex = -1;
+}
 
 // If this isn't overridden, it won't use the hightlightSelectionInClipRect method
 - (id)_highlightColorForCell:(NSCell *)cell
@@ -165,7 +172,7 @@
 	{
 		[self selectRow:row];
 	}
-	
+
 	// Don't call super so that it performs click-through selection
 }
 
@@ -181,49 +188,84 @@
 
 - (NSRect)rectOfRow:(int)rowIndex
 {
-	if (inLiveDrag && (autoexpansionCurrentRowOrigins != nil))
+	
+	NSRect realRect = [super rectOfRow:rowIndex];
+	
+
+	
+	if ((rowIndex != -1) && (autoexpansionCurrentRowOrigins != nil))
 	{
-		return [[autoexpansionCurrentRowOrigins objectAtIndex:rowIndex] rectValue];
+		signed q = (rowIndex >= emptyRowIndex) ? 1 : -1;
+		realRect.origin = [[autoexpansionCurrentRowOrigins objectAtIndex:rowIndex] pointValue];
+		/*
+		if ( (q == -1) && (rowIndex < emptyRowIndex) && (rowIndex >= oldEmptyRowIndex) )
+		{
+			realRect.origin = [[autoexpansionCurrentRowOrigins objectAtIndex:rowIndex-oldEmptyRowIndex] pointValue];
+		//	NSLog(@"rectOfRow for %d, q=%d, old=%d, new=%d, used=%d", rowIndex, q, oldEmptyRowIndex, emptyRowIndex, rowIndex-oldEmptyRowIndex);
+		}
+		else if ( (q == 1) && (rowIndex >= emptyRowIndex) && (rowIndex < oldEmptyRowIndex) )
+		{
+			realRect.origin = [[autoexpansionCurrentRowOrigins objectAtIndex:oldEmptyRowIndex-rowIndex] pointValue];
+			//NSLog(@"rectOfRow for %d, q=%d, old=%d, new=%d, used=%d", rowIndex, q, oldEmptyRowIndex, emptyRowIndex, oldEmptyRowIndex-rowIndex);
+		}	*/
 	}
 	
-	
-	return [super rectOfRow:rowIndex];
+	return realRect;
 }
+
 
 #pragma mark -
 #pragma mark NSDraggingDestination
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
-	// todo: if the destination is one of the labels, return NSDragOperationNone
-	return NSDragOperationMove;
+	return [self draggingUpdated:sender];
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
 {
 	// todo: if the destination is one of the labels, return NSDragOperationNone
-	return NSDragOperationMove;
+	
+	int row = [self rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
+	NSDragOperation retOperation;
+		
+	if ([sender draggingSource] == self)
+		retOperation = NSDragOperationMove;
+	else if ([[[[self tableColumns] objectAtIndex:0] dataCellForRow:row] isKindOfClass:[CRDLabelCell class]])
+		return retOperation = NSDragOperationNone;
+	else
+		retOperation = NSDragOperationCopy;
+	
+	if (row != emptyRowIndex || (row >= [self numberOfRows] && oldEmptyRowIndex != [self numberOfRows] && oldEmptyRowIndex != -1) )
+	{
+		[self createNewRowOriginsAboveRow:row];
+		[self startAnimation];
+	}
+
+	return retOperation;
 }
 
 
 - (void)draggingExited:(id <NSDraggingInfo>)sender
 {
-	// todo: if the destination is one of the labels, return NSDragOperationNone
-	// todo: animate all list items moving back to their original position
-	
-	inLiveDrag = NO;
+	[self concludeDrag];
 }
 
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
 {
-	return [self pasteboardHasValidData:[sender draggingPasteboard]];
-	
+	[self concludeDrag];
+	return NO;//[self pasteboardHasValidData:[sender draggingPasteboard]];
 }
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
 	
-	return [self pasteboardHasValidData:[sender draggingPasteboard]];
+	return NO;//[self pasteboardHasValidData:[sender draggingPasteboard]];
+}
+
+- (void)concludeDragOperation:(id <NSDraggingInfo>)sender
+{
+	[self concludeDrag];
 }
 
 
@@ -232,13 +274,10 @@
 	return YES;
 }
 
-- (void)concludeDragOperation:(id <NSDraggingInfo>)sender
-{
-
-}
 
 
-#pragma mark - 
+
+#pragma mark -
 #pragma mark Dragging internal use
 
 - (NSString *)pasteboardDataType:(NSPasteboard *)draggingPasteboard
@@ -256,38 +295,79 @@
 
 - (void)startAnimation
 {
+	if (autoexpansionAnimation != nil)
+	{
+		[autoexpansionAnimation stopAnimation];
+		[autoexpansionAnimation release];
+	}
 
-
+	float frameRate = 30.0;
+	
+	autoexpansionAnimation = [[NSAnimation alloc] initWithDuration:ANIMATION_DURATION
+			animationCurve:NSAnimationLinear];
+			
+	[autoexpansionAnimation setFrameRate:frameRate];
+	[autoexpansionAnimation setAnimationBlockingMode:NSAnimationNonblocking];
+	[autoexpansionAnimation setDelegate:self];
+	
+	// Make sure animation:didReachProgressMark: gets called on each frame	
+	for (int i = 0; i < (int)frameRate; i++)
+		[autoexpansionAnimation addProgressMark:(i / frameRate)];
+		
+	[autoexpansionAnimation startAnimation];
 }
 
-- (void)createNewRowOriginsWithStartRow:(int)rowIndex
+- (void)createNewRowOriginsAboveRow:(int)rowIndex
 {
+	if (emptyRowIndex == rowIndex || rowIndex == -1) 
+		return;
+		
+	oldEmptyRowIndex = (emptyRowIndex == -1) ? [self numberOfRows] : emptyRowIndex;
+	emptyRowIndex = rowIndex;
+	
 	int numRows = [self numberOfRows], i;
+	float delta = [super rectOfRow:rowIndex].size.height;
+
+	NSRect realRowRect;
+	NSPoint realRowOrigin, startRowOrigin, endRowOrigin;
+	NSMutableArray *endBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
+	NSMutableArray *startBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
+
+	// If the new empty is lower, start at the current empty and move down. Otherwise,
+	//	start at the current empty and move up
+	signed q = (emptyRowIndex >= oldEmptyRowIndex) ? 1 : -1;
 	
-	// If this row is in an altered position, assume the rest are and adjust accordingly
-	float delta;
-	if (autoexpansionCurrentRowOrigins != nil)
+	NSLog(@"Starting for %d, q=%d, old=%d, delta=%f", rowIndex, q, oldEmptyRowIndex, delta);
+	
+	for (i = 0; i < numRows; i++)
 	{
-		NSRect r = [self rectOfRow:rowIndex], c = [[autoexpansionCurrentRowOrigins objectAtIndex:rowIndex] rectValue];
-		
-		delta = r.size.height + (r.origin.y - c.origin.y);
+		realRowOrigin = [super rectOfRow:i].origin;
+		[startBuilder addObject:[NSValue valueWithPoint:realRowOrigin]];
+		[endBuilder addObject:[NSValue valueWithPoint:realRowOrigin]];
 	}
 	
-	NSPoint rowOrigin;
-	NSMutableArray *endBuilder = [NSMutableArray arrayWithCapacity:numRows-rowIndex];
-	NSMutableArray *startBuilder = [NSMutableArray arrayWithCapacity:numRows-rowIndex];
-	
-	for (i = rowIndex; i < numRows; i++)
+	for (i = MIN(oldEmptyRowIndex, numRows-1); i != emptyRowIndex+q; i += q)
 	{
-		rowOrigin = [self rectOfRow:i].origin;
+		// Find the end origin by adding the delta to the original row origin
+		realRowOrigin = [super rectOfRow:i].origin;
+		
 		if (autoexpansionCurrentRowOrigins != nil)
-		{
+			startRowOrigin = [self rectOfRow:i].origin;
+		else
+			startRowOrigin = realRowOrigin;
+			
+		endRowOrigin = realRowOrigin;
+		endRowOrigin.y += delta *  -q;
 		
-		}
-		[startBuilder addObject:[NSValue valueWithPoint:rowOrigin]];
-		[endBuilder addObject:[NSValue valueWithPoint:NSMakePoint(rowOrigin.x, rowOrigin.y + delta * (rowIndex - i))]];
+		[startBuilder replaceObjectAtIndex:i withObject:[NSValue valueWithPoint:startRowOrigin]];
+		[endBuilder replaceObjectAtIndex:i withObject:[NSValue valueWithPoint:endRowOrigin]];
+		
+		NSLog(@"Adding... %d", i);
+		PRINT_POINT(@"start", startRowOrigin);
+		PRINT_POINT(@"end", endRowOrigin);
 	}
 	
+	NSLog(@"---");
 	
 	[autoexpansionStartRowOrigins release];
 	[autoexpansionEndRowOrigins release];
@@ -296,14 +376,62 @@
 	autoexpansionEndRowOrigins = [endBuilder retain];
 }
 
+- (void)concludeDrag
+{
+	[autoexpansionCurrentRowOrigins release];
+	[autoexpansionEndRowOrigins release];
+	[autoexpansionCurrentRowOrigins release];
+	autoexpansionCurrentRowOrigins = autoexpansionEndRowOrigins = autoexpansionStartRowOrigins = nil;
+	
+	[autoexpansionAnimation stopAnimation];
+	[autoexpansionAnimation release];
+	autoexpansionAnimation = nil;
+	
+	emptyRowIndex = oldEmptyRowIndex = -1;
+	inLiveDrag = NO;
+	
+	// todo: animate items moving back to original place
+	[self setNeedsDisplay];
+}
+
+
 #pragma mark -
 #pragma mark NSAnimation delegate
 
 - (void)animation:(NSAnimation*)animation didReachProgressMark:(NSAnimationProgress)progress
 {
-	// Create new autoexpansionCurrentRowOrigins by convolving the start origin to the end
-	
+	// Create new autoexpansionCurrentRowOrigins by convolving the start origins to the end
+	float fraction = [animation currentValue];
 
+	NSMutableArray *currentPointsBuilder = [[NSMutableArray alloc] init];
+	
+	NSEnumerator *startEnum = [autoexpansionStartRowOrigins objectEnumerator],
+			*endEnum = [autoexpansionEndRowOrigins objectEnumerator];
+	id startValue, endValue;
+	NSPoint convolvedPoint, startOrigin, endOrigin;
+		
+	while ( (startValue = [startEnum nextObject]) && (endValue = [endEnum nextObject]))
+	{
+		startOrigin = [startValue pointValue];
+		endOrigin = [endValue pointValue];
+		convolvedPoint = NSMakePoint(startOrigin.x * (1.0 - fraction) + endOrigin.x * fraction,
+									 startOrigin.y * (1.0 - fraction) + endOrigin.y * fraction);
+		
+		//NSLog(@"Convolving %f,%f to %f,%f with fraction %f", startOrigin.x, startOrigin.y, endOrigin.x, endOrigin.y, fraction);
+		
+		[currentPointsBuilder addObject:[NSValue valueWithPoint:convolvedPoint]];
+	}
+	
+	[autoexpansionCurrentRowOrigins release];
+	autoexpansionCurrentRowOrigins = [currentPointsBuilder retain];
+	
+	[self setNeedsDisplay:YES];
+}
+
+
+- (void)animationDidEnd:(NSAnimation*)animation
+{
+	oldEmptyRowIndex = -1;
 }
 
 

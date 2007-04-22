@@ -23,7 +23,7 @@
 {
 	NSAnimation *autoexpansionAnimation;
 	BOOL inLiveDrag;
-	int draggedRowIndex;
+	int emptyRowIndex, oldEmptyRowIndex;
 		
 	// Arrays of NSValues encapsulating NSPoints
 	NSArray *autoexpansionStartRowOrigins, *autoexpansionEndRowOrigins, *autoexpansionCurrentRowOrigins;

@@ -463,12 +463,12 @@
 // Saves all of the current settings to a Microsoft RDC client compatible file
 - (BOOL) writeRDPFile:(NSString *)path
 {
-	if (path == nil && (path = [self rdpFilename]) == nil)
-		return nil;
-
 	#define write_int(n, v)	 [o appendString:[NSString stringWithFormat:@"%@:i:%d\r\n", (n), (v)]]
 	#define write_string(n, v) [o appendString:[NSString stringWithFormat:@"%@:s:%@\r\n", (n), (v) ? (v) : @""]]
 	
+	if (path == nil && (path = [self rdpFilename]) == nil)
+		return nil;
+
 	NSMutableString *o = [[NSMutableString alloc] init];
 	
 	write_int(@"connect to console", consoleSession);
@@ -509,12 +509,13 @@
 		NSLog(@"Error writing to '%@'", path);
 	
 	[o release];
-	#undef write_int(n, v)
-	#undef write_string(n, v)
-	
+
 	modified = NO;
 	
 	return success;
+	
+	#undef write_int(n, v)
+	#undef write_string(n, v)
 }
 
 

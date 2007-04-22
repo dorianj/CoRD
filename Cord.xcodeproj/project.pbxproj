@@ -24,7 +24,7 @@
 		98E972720BD9D9DF0041110D /* CRDServersColumn.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972370BD9D9DF0041110D /* CRDServersColumn.m */; };
 		98E972740BD9D9DF0041110D /* disk.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972390BD9D9DF0041110D /* disk.m */; };
 		98E972750BD9D9DF0041110D /* iso.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723A0BD9D9DF0041110D /* iso.m */; };
-		98E972760BD9D9DF0041110D /* keychain.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723B0BD9D9DF0041110D /* keychain.c */; };
+		98E972760BD9D9DF0041110D /* keychain.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723B0BD9D9DF0041110D /* keychain.c */; settings = {COMPILER_FLAGS = "-D__NO_RDESKTOP__=1"; }; };
 		98E972780BD9D9DF0041110D /* licence.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723D0BD9D9DF0041110D /* licence.c */; };
 		98E972790BD9D9DF0041110D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723E0BD9D9DF0041110D /* main.m */; };
 		98E9727A0BD9D9DF0041110D /* mcs.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723F0BD9D9DF0041110D /* mcs.c */; };
@@ -85,7 +85,7 @@
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		981739840BACE45D00EAB48A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		98E972240BD9D9DF0041110D /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = Source/AppController.h; sourceTree = "<group>"; };
@@ -95,7 +95,7 @@
 		98E972280BD9D9DF0041110D /* channels.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = channels.c; path = Source/channels.c; sourceTree = "<group>"; };
 		98E972290BD9D9DF0041110D /* cliprdr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = cliprdr.c; path = Source/cliprdr.c; sourceTree = "<group>"; };
 		98E9722A0BD9D9DF0041110D /* constants.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = constants.h; path = Source/constants.h; sourceTree = "<group>"; };
-		98E9722B0BD9D9DF0041110D /* Cord_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = Cord_Prefix.pch; path = Source/Cord_Prefix.pch; sourceTree = "<group>"; };
+		98E9722B0BD9D9DF0041110D /* Cord_Prefix.pch */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Cord_Prefix.pch; path = Source/Cord_Prefix.pch; sourceTree = "<group>"; };
 		98E9722C0BD9D9DF0041110D /* CRDApplication.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDApplication.h; path = Source/CRDApplication.h; sourceTree = "<group>"; };
 		98E9722D0BD9D9DF0041110D /* CRDApplication.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDApplication.m; path = Source/CRDApplication.m; sourceTree = "<group>"; };
 		98E9722E0BD9D9DF0041110D /* CRDFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDFullScreenWindow.h; path = Source/CRDFullScreenWindow.h; sourceTree = "<group>"; };
@@ -184,14 +184,14 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				98A96DE80BC9C695005F217F /* rdesktop UI */,
+				983E4BAE0BB8900D009F833D /* Cocoa UI */,
 				98E972240BD9D9DF0041110D /* AppController.h */,
 				98E972250BD9D9DF0041110D /* AppController.m */,
 				98E9722C0BD9D9DF0041110D /* CRDApplication.h */,
 				98E9722D0BD9D9DF0041110D /* CRDApplication.m */,
 				98E972520BD9D9DF0041110D /* RDInstance.h */,
 				98E972530BD9D9DF0041110D /* RDInstance.m */,
-				98A96DE80BC9C695005F217F /* rdesktop UI */,
-				983E4BAE0BB8900D009F833D /* Cocoa UI */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -199,27 +199,28 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
-			);
-			name = "Linked Frameworks";
-			sourceTree = "<group>";
-		};
-		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
-			isa = PBXGroup;
-			children = (
 				981739840BACE45D00EAB48A /* Carbon.framework */,
 				987D6E2B0B51DEF3005B8E92 /* Security.framework */,
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
 				13E42FB307B3F0F600E4EEF1 /* CoreData.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 			);
-			name = "Other Frameworks";
+			name = "Linked Frameworks";
+			sourceTree = "<group>";
+		};
+		1058C7A2FEA54F0111CA2CBB /* Included Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				98E972B90BD9DA720041110D /* Sparkle.framework */,
+			);
+			name = "Included Frameworks";
 			sourceTree = "<group>";
 		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* CoRD.app */,
+				8D1107320486CEB800E47090 /* Cord.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -276,9 +277,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				98E972B90BD9DA720041110D /* Sparkle.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
-				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Included Frameworks */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -323,7 +323,6 @@
 		983E4BAE0BB8900D009F833D /* Cocoa UI */ = {
 			isa = PBXGroup;
 			children = (
-				98E9725E0BD9D9DF0041110D /* ui_stubs.m */,
 				98E9722E0BD9D9DF0041110D /* CRDFullScreenWindow.h */,
 				98E9722F0BD9D9DF0041110D /* CRDFullScreenWindow.m */,
 				98E972300BD9D9DF0041110D /* CRDLabelCell.h */,
@@ -341,6 +340,7 @@
 		98A96DE80BC9C695005F217F /* rdesktop UI */ = {
 			isa = PBXGroup;
 			children = (
+				98E9725E0BD9D9DF0041110D /* ui_stubs.m */,
 				98E9724B0BD9D9DF0041110D /* RDCBitmap.h */,
 				98E9724C0BD9D9DF0041110D /* RDCBitmap.m */,
 				98E9724D0BD9D9DF0041110D /* RDCKeyboard.h */,
@@ -370,7 +370,7 @@
 			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
-			productReference = 8D1107320486CEB800E47090 /* CoRD.app */;
+			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -497,11 +497,16 @@
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Source/Cord_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_SHADOW = NO;
 				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = NO;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VALUE = YES;
 				GCC_WARN_UNUSED_VARIABLE = NO;
@@ -509,6 +514,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = Cord;
+				VERSIONING_SYSTEM = "";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
@@ -536,6 +542,8 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Source/Cord_Prefix.pch;
 				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
 				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
 				GCC_WARN_MISSING_PARENTHESES = YES;

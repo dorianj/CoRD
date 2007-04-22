@@ -23,7 +23,7 @@
 
 #import "keychain.h"
 #import <Carbon/Carbon.h>
-#import "Security/Security.h"
+#import <Security/Security.h>
 #import <stdarg.h>
 
 
@@ -125,8 +125,6 @@ void keychain_update_password(const char *origServer, const char *origUser,
 		if (status != noErr) 
 			EXTENDED_KC_ERR(status, "saving a new password");
     }
-
-
 }
 
 

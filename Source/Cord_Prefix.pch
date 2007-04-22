@@ -3,5 +3,10 @@
 //
 
 #ifdef __OBJC__
-    #import <Cocoa/Cocoa.h>
+	#import <Cocoa/Cocoa.h>
+	#import <Carbon/Carbon.h>
+#endif
+
+#ifndef __NO_RDESKTOP__
+	#import "rdesktop.h"
 #endif

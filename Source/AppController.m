@@ -165,10 +165,8 @@ static NSImage *shared_documentIcon = nil;
 	}
 	
 	// todo:dragndrop Register for all the types of drag operations
-	//[gui_serverList setDraggingSourceOperationMask:NSDragOperationCopy forLocal:NO];
-	//[gui_serverList setDraggingSourceOperationMask:NSDragOperationMove forLocal:YES];
-	//[gui_serverList registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
-	
+	NSArray *types = [NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
+	[gui_serverList registerForDraggedTypes:types];
 	[gui_serverList setHeaderView:nil];
 	
 	// Since it's a custom class, the attributes pane isn't available for the password entry box in IB.

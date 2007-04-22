@@ -781,12 +781,12 @@ void hexdump(unsigned char *p, unsigned int len)
 }
 
 /* Generate a 32-byte random for the secure transport code. */
-void generate_random(uint8 *random)
+void generate_random(uint8 *randomValue)
 {
     int fd, n;
     if ( (fd = open("/dev/urandom", O_RDONLY)) != -1)
     {
-        n = read(fd, random, 32);
+        n = read(fd, randomValue, 32);
         close(fd);
 		return;
     }
