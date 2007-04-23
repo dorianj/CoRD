@@ -77,7 +77,7 @@
 	NSRect drawRect = [self rectOfRow:selectedRow];
 	
 	NSColor *topColor, *bottomColor;
-	if ([g_appController mainWindowIsFocused])
+	if ([g_appController mainWindowIsFocused] || inLiveDrag)
 	{
 		topColor = HIGHLIGHT_START;
 		bottomColor = HIGHLIGHT_END;
@@ -188,26 +188,11 @@
 
 - (NSRect)rectOfRow:(int)rowIndex
 {
-	
 	NSRect realRect = [super rectOfRow:rowIndex];
-	
-
 	
 	if ((rowIndex != -1) && (autoexpansionCurrentRowOrigins != nil))
 	{
-		signed q = (rowIndex >= emptyRowIndex) ? 1 : -1;
 		realRect.origin = [[autoexpansionCurrentRowOrigins objectAtIndex:rowIndex] pointValue];
-		/*
-		if ( (q == -1) && (rowIndex < emptyRowIndex) && (rowIndex >= oldEmptyRowIndex) )
-		{
-			realRect.origin = [[autoexpansionCurrentRowOrigins objectAtIndex:rowIndex-oldEmptyRowIndex] pointValue];
-		//	NSLog(@"rectOfRow for %d, q=%d, old=%d, new=%d, used=%d", rowIndex, q, oldEmptyRowIndex, emptyRowIndex, rowIndex-oldEmptyRowIndex);
-		}
-		else if ( (q == 1) && (rowIndex >= emptyRowIndex) && (rowIndex < oldEmptyRowIndex) )
-		{
-			realRect.origin = [[autoexpansionCurrentRowOrigins objectAtIndex:oldEmptyRowIndex-rowIndex] pointValue];
-			//NSLog(@"rectOfRow for %d, q=%d, old=%d, new=%d, used=%d", rowIndex, q, oldEmptyRowIndex, emptyRowIndex, oldEmptyRowIndex-rowIndex);
-		}	*/
 	}
 	
 	return realRect;
@@ -226,9 +211,11 @@
 {
 	// todo: if the destination is one of the labels, return NSDragOperationNone
 	
-	int row = [self rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
+	int row = [super rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
 	NSDragOperation retOperation;
 		
+	inLiveDrag = YES;
+	
 	if ([sender draggingSource] == self)
 		retOperation = NSDragOperationMove;
 	else if ([[[[self tableColumns] objectAtIndex:0] dataCellForRow:row] isKindOfClass:[CRDLabelCell class]])
@@ -236,12 +223,17 @@
 	else
 		retOperation = NSDragOperationCopy;
 	
-	if (row != emptyRowIndex || (row >= [self numberOfRows] && oldEmptyRowIndex != [self numberOfRows] && oldEmptyRowIndex != -1) )
+	if ( (row != -1) && (row != emptyRowIndex) )
 	{
 		[self createNewRowOriginsAboveRow:row];
 		[self startAnimation];
 	}
-
+	else if ( (row == -1) && (emptyRowIndex != [self numberOfRows]) )
+	{
+		[self createNewRowOriginsAboveRow:[self numberOfRows]];
+		[self startAnimation];	
+	}
+	
 	return retOperation;
 }
 
@@ -305,7 +297,7 @@
 	
 	autoexpansionAnimation = [[NSAnimation alloc] initWithDuration:ANIMATION_DURATION
 			animationCurve:NSAnimationLinear];
-			
+	
 	[autoexpansionAnimation setFrameRate:frameRate];
 	[autoexpansionAnimation setAnimationBlockingMode:NSAnimationNonblocking];
 	[autoexpansionAnimation setDelegate:self];
@@ -337,37 +329,42 @@
 	//	start at the current empty and move up
 	signed q = (emptyRowIndex >= oldEmptyRowIndex) ? 1 : -1;
 	
-	NSLog(@"Starting for %d, q=%d, old=%d, delta=%f", rowIndex, q, oldEmptyRowIndex, delta);
+	NSLog(@"Starting for new row %d, old=%d, q=%d, delta=%f", emptyRowIndex, oldEmptyRowIndex, q, delta);
 	
-	for (i = 0; i < numRows; i++)
+	for (i = 0; i <= numRows; i++)
 	{
-		realRowOrigin = [super rectOfRow:i].origin;
+		realRowOrigin = [self rectOfRow:i].origin;
 		[startBuilder addObject:[NSValue valueWithPoint:realRowOrigin]];
 		[endBuilder addObject:[NSValue valueWithPoint:realRowOrigin]];
 	}
 	
-	for (i = MIN(oldEmptyRowIndex, numRows-1); i != emptyRowIndex+q; i += q)
+	
+	// Adjust bounds because all empty indexes are really above the index
+	int bound = (q == -1) ? emptyRowIndex+q : emptyRowIndex,
+		start = (q == -1) ? oldEmptyRowIndex+q : oldEmptyRowIndex;
+	
+	for (i = start; i != bound; i += q)
 	{
 		// Find the end origin by adding the delta to the original row origin
 		realRowOrigin = [super rectOfRow:i].origin;
+		startRowOrigin = [self rectOfRow:i].origin;
 		
-		if (autoexpansionCurrentRowOrigins != nil)
-			startRowOrigin = [self rectOfRow:i].origin;
-		else
-			startRowOrigin = realRowOrigin;
-			
 		endRowOrigin = realRowOrigin;
-		endRowOrigin.y += delta *  -q;
 		
+		if (i >= emptyRowIndex)
+			endRowOrigin.y += delta;
+
 		[startBuilder replaceObjectAtIndex:i withObject:[NSValue valueWithPoint:startRowOrigin]];
 		[endBuilder replaceObjectAtIndex:i withObject:[NSValue valueWithPoint:endRowOrigin]];
 		
-		NSLog(@"Adding... %d", i);
+		NSLog(@"Adding convolution points for row=%d", i);
 		PRINT_POINT(@"start", startRowOrigin);
 		PRINT_POINT(@"end", endRowOrigin);
+		PRINT_POINT(@"real", realRowOrigin);
 	}
 	
 	NSLog(@"---");
+	printf("\n");
 	
 	[autoexpansionStartRowOrigins release];
 	[autoexpansionEndRowOrigins release];
@@ -378,19 +375,29 @@
 
 - (void)concludeDrag
 {
-	[autoexpansionCurrentRowOrigins release];
-	[autoexpansionEndRowOrigins release];
-	[autoexpansionCurrentRowOrigins release];
-	autoexpansionCurrentRowOrigins = autoexpansionEndRowOrigins = autoexpansionStartRowOrigins = nil;
-	
-	[autoexpansionAnimation stopAnimation];
-	[autoexpansionAnimation release];
-	autoexpansionAnimation = nil;
-	
-	emptyRowIndex = oldEmptyRowIndex = -1;
-	inLiveDrag = NO;
-	
-	// todo: animate items moving back to original place
+	if (inLiveDrag)
+	{
+		if (emptyRowIndex != [self numberOfRows])
+		{
+			[self createNewRowOriginsAboveRow:[self numberOfRows]];
+			[self startAnimation];
+		}
+		inLiveDrag = NO;
+	}
+	else
+	{
+		[autoexpansionCurrentRowOrigins release];
+		[autoexpansionEndRowOrigins release];
+		[autoexpansionCurrentRowOrigins release];
+		autoexpansionCurrentRowOrigins = autoexpansionEndRowOrigins = autoexpansionStartRowOrigins = nil;
+		
+		[autoexpansionAnimation stopAnimation];
+		[autoexpansionAnimation release];
+		autoexpansionAnimation = nil;
+		
+		emptyRowIndex = oldEmptyRowIndex = -1;
+	}
+
 	[self setNeedsDisplay];
 }
 
@@ -432,6 +439,9 @@
 - (void)animationDidEnd:(NSAnimation*)animation
 {
 	oldEmptyRowIndex = -1;
+	
+	if (!inLiveDrag)
+		[self concludeDrag];
 }
 
 
