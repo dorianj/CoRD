@@ -442,9 +442,10 @@
 	}
 	else if (bitdepth == 16)
 	{
-		*r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
-		*g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
-		*b = ((col << 3) & 0xf8) | ((col >> 2) & 0x7);
+		*r = (( (col >> 11) & 0x1f) * 255 + 15) / 31;
+		*g = (( (col >> 5) & 0x3f) * 255 + 31) / 63;
+		*b = ((col & 0x1f) * 255 + 15) / 31;
+		
 	}
 	else if (bitdepth == 24 || bitdepth == 32)
 	{
@@ -471,9 +472,9 @@
 	}
 	else if (bitdepth == 16)
 	{
-		r = ((col >> 8) & 0xf8) | ((col >> 13) & 0x7);
-		g = ((col >> 3) & 0xfc) | ((col >> 9) & 0x3);
-		b = ((col << 3) & 0xf8) | ((col >> 2) & 0x7);
+		r = (( (col >> 11) & 0x1f) * 255 + 15) / 31;
+		g = (( (col >> 5) & 0x3f) * 255 + 31) / 63;
+		b = ((col & 0x1f) * 255 + 15) / 31;
 	}
 	else if (bitdepth == 24)
 	{

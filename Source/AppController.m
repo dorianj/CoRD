@@ -48,6 +48,7 @@ static NSImage *shared_documentIcon = nil;
 	- (void)setInspectorEnabled:(BOOL)enabled;
 	- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled;
 	- (void)createWindowForInstance:(RDInstance *)inst;
+	- (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
 @end
 
 
@@ -94,7 +95,7 @@ static NSImage *shared_documentIcon = nil;
 	
 	displayMode = CRDDisplayUnified;
 	
-	[gui_mainWindow setAcceptsMouseMovedEvents:YES];
+	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
 	windowCascadePoint = NSMakePoint(WINDOW_START_X, WINDOW_START_Y);
 	
 	
@@ -124,7 +125,7 @@ static NSImage *shared_documentIcon = nil;
 	[gui_toolbar setAllowsUserCustomization:YES];
 	[gui_toolbar setAutosavesConfiguration:YES];
 	
-	[gui_mainWindow setToolbar:gui_toolbar];
+	[gui_unifiedWindow setToolbar:gui_toolbar];
 		
 	
 	displayMode = [[userDefaults objectForKey:DEFAULTS_DISPLAY_MODE] intValue];
@@ -285,9 +286,9 @@ static NSImage *shared_documentIcon = nil;
 {
 	RDInstance *inst = [self selectedServerInstance];
 	
-	if (inst == nil)
+	if (inst == nil || [inst status] != CRDConnectionClosed)
 		return;
-		
+	
 	[self connectInstance:inst];
 }
 
@@ -472,15 +473,15 @@ static NSImage *shared_documentIcon = nil;
 	[gui_tabView retain];
 	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
 	
-	NSSize contentSize = [[gui_mainWindow contentView] frame].size;
+	NSSize contentSize = [[gui_unifiedWindow contentView] frame].size;
 	
 	// Autosizing will get screwed up if the size is bigger than the content view
 	[gui_tabView setFrame:NSMakeRect(0.0, 0.0, contentSize.width, contentSize.height)];
 	
-	[[gui_mainWindow contentView] addSubview:gui_tabView];
+	[[gui_unifiedWindow contentView] addSubview:gui_tabView];
 	[gui_tabView release];
 	
-	[gui_mainWindow display];
+	[gui_unifiedWindow display];
 	
 	
 	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
@@ -569,9 +570,9 @@ static NSImage *shared_documentIcon = nil;
 	[gui_tabView selectLastTabViewItem:self];
 	
 	if ([self selectedServerInstance])
-		[gui_mainWindow setTitle:[[self viewedServer] label]];
+		[gui_unifiedWindow setTitle:[[self viewedServer] label]];
 	else
-		[gui_mainWindow setTitle:@"CoRD"];
+		[gui_unifiedWindow setTitle:@"CoRD"];
 	
 	[self autosizeUnifiedWindowWithAnimation:(sender != self)];
 }
@@ -829,8 +830,8 @@ static NSImage *shared_documentIcon = nil;
 		else if ([gui_tabView indexOfTabViewItem:[inst tabViewRepresentation]] != NSNotFound)
 		{
 			[gui_tabView selectTabViewItem:[inspectedServer tabViewRepresentation]];
-			[gui_mainWindow makeFirstResponder:[[self viewedServer] view]];
-			[gui_mainWindow setTitle:[inspectedServer label]];
+			[gui_unifiedWindow makeFirstResponder:[[self viewedServer] view]];
+			[gui_unifiedWindow setTitle:[inspectedServer label]];
 			[self autosizeUnifiedWindow];
 		}
 	}
@@ -1007,7 +1008,7 @@ static NSImage *shared_documentIcon = nil;
 
 - (BOOL)windowShouldClose:(id)sender
 {
-	if (sender == gui_mainWindow && displayMode == CRDDisplayUnified)
+	if ((sender == gui_unifiedWindow) && (displayMode == CRDDisplayUnified))
 	{
 		[[NSApplication sharedApplication] hide:self];
 		return NO;
@@ -1029,9 +1030,17 @@ static NSImage *shared_documentIcon = nil;
 
 - (void)windowDidResignKey:(NSNotification *)sender
 {
-	if ([sender object] == gui_mainWindow)
+	if ( ([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) )
 	{
 		[[[self viewedServer] view] releaseRemoteModifiers];	
+	}
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)sender
+{
+	if ( ([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) )
+	{
+		[[self viewedServer] synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_TEXT];
 	}
 }
 
@@ -1059,7 +1068,7 @@ static NSImage *shared_documentIcon = nil;
 	
 	if ([[inst valueForKey:@"fullscreen"] boolValue])
 	{
-		NSSize screenSize = [[gui_mainWindow screen] frame].size;
+		NSSize screenSize = [[gui_unifiedWindow screen] frame].size;
 		[inst setValue:[NSNumber numberWithInt:(int)screenSize.width] forKey:@"screenWidth"];
 		[inst setValue:[NSNumber numberWithInt:(int)screenSize.height] forKey:@"screenHeight"];
 	}
@@ -1100,8 +1109,8 @@ static NSImage *shared_documentIcon = nil;
 			[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
 			[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
 			[gui_tabView selectLastTabViewItem:self];
-			[gui_mainWindow setTitle:[inst label]];
-			[gui_mainWindow makeFirstResponder:[inst view]];
+			[gui_unifiedWindow setTitle:[inst label]];
+			[gui_unifiedWindow makeFirstResponder:[inst view]];
 		}
 		else
 		{
@@ -1217,7 +1226,7 @@ static NSImage *shared_documentIcon = nil;
 
 - (BOOL)mainWindowIsFocused
 {
-	return [gui_mainWindow isMainWindow] && [gui_mainWindow isKeyWindow];
+	return [gui_unifiedWindow isMainWindow] && [gui_unifiedWindow isKeyWindow];
 }
 
 - (void)toggleDrawer:(id)sender visible:(BOOL)visible
@@ -1243,25 +1252,25 @@ static NSImage *shared_documentIcon = nil;
 	if ([self displayMode] == CRDDisplayUnified && inst != nil)
 	{
 		newContentSize = [[inst view] bounds].size;
-		[gui_mainWindow setContentMaxSize:newContentSize];
+		[gui_unifiedWindow setContentMaxSize:newContentSize];
 	}
 	else
 	{
 		newContentSize = NSMakeSize(600, 400);
-		[gui_mainWindow setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+		[gui_unifiedWindow setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
 	}
 
-	NSRect windowFrame = [gui_mainWindow frame];
-	NSRect screenRect = [[gui_mainWindow screen] visibleFrame];
+	NSRect windowFrame = [gui_unifiedWindow frame];
+	NSRect screenRect = [[gui_unifiedWindow screen] visibleFrame];
 	
 	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
-		[gui_mainWindow setContentAspectRatio:newContentSize];
+		[gui_unifiedWindow setContentAspectRatio:newContentSize];
 	//else
-	//	[gui_mainWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
+	//	[gui_unifiedWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
 	//	xxx: need a way to cancel setContentResizeIncrements
 	
 	float scrollerWidth = [NSScroller scrollerWidth];
-	float toolbarHeight = windowFrame.size.height - [[gui_mainWindow contentView] frame].size.height;
+	float toolbarHeight = windowFrame.size.height - [[gui_unifiedWindow contentView] frame].size.height;
 	
 	NSRect newWindowFrame = NSMakeRect( windowFrame.origin.x, windowFrame.origin.y +
 										windowFrame.size.height-newContentSize.height-toolbarHeight, 
@@ -1349,7 +1358,7 @@ static NSImage *shared_documentIcon = nil;
 		}
 	}
 	
-	[gui_mainWindow setFrame:newWindowFrame display:YES animate:animate];
+	[gui_unifiedWindow setFrame:newWindowFrame display:YES animate:animate];
 }
 
 #pragma mark -
@@ -1474,7 +1483,7 @@ static NSImage *shared_documentIcon = nil;
 
 - (NSWindow *)unifiedWindow
 {
-	return gui_mainWindow;
+	return gui_unifiedWindow;
 }
 
 - (CRDFullScreenWindow *)fullScreenWindow

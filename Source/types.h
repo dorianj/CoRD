@@ -299,7 +299,9 @@ typedef enum _ConnectionErrorCode
 #define NBITMAPCACHE 3
 #define NBITMAPCACHEENTRIES 0xa00
 #define NOT_SET -1
-struct rdcConn {
+
+struct rdcConn
+{
 	// State flags
 	int isConnected;
 	int useRdp5;

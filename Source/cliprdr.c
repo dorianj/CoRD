@@ -17,6 +17,8 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   
+   From rdesktop 1.5.1
 */
 
 #import "rdesktop.h"
@@ -48,14 +50,21 @@ cliprdr_send_packet(rdcConnection conn, uint16 type, uint16 status, uint8 * data
 	channel_send(conn, s, conn->cliprdrChannel);
 }
 
+/* Helper which announces our readiness to supply clipboard data
+   in a single format (such as CF_TEXT) to the RDP side.
+   To announce more than one format at a time, use
+   cliprdr_send_native_format_announce.
+ */
 void
-cliprdr_send_text_format_announce(rdcConnection conn)
+cliprdr_send_simple_native_format_announce(rdcConnection conn, uint32 format)
 {
 	uint8 buffer[36];
 
-	buf_out_uint32(buffer, CF_TEXT);
+	DEBUG_CLIPBOARD(("cliprdr_send_simple_native_format_announce\n"));
+
+	buf_out_uint32(buffer, format);
 	memset(buffer + 4, 0, sizeof(buffer) - 4);	/* description */
-	cliprdr_send_packet(conn, CLIPRDR_FORMAT_ANNOUNCE, CLIPRDR_REQUEST, buffer, sizeof(buffer));
+	cliprdr_send_native_format_announce(conn, buffer, sizeof(buffer));
 }
 
 void
@@ -68,10 +77,17 @@ cliprdr_send_blah_format_announce(rdcConnection conn)
 	cliprdr_send_packet(conn, CLIPRDR_FORMAT_ANNOUNCE, CLIPRDR_REQUEST, buffer, sizeof(buffer));
 }
 
+/* Announces our readiness to supply clipboard data in multiple
+   formats, each denoted by a 36-byte format descriptor of
+   [ uint32 format + 32-byte description ].
+ */
 void
-cliprdr_send_native_format_announce(rdcConnection conn, uint8 * data, uint32 length)
+cliprdr_send_native_format_announce(rdcConnection conn, uint8 * formats_data, uint32 formats_data_length)
 {
-	cliprdr_send_packet(conn, CLIPRDR_FORMAT_ANNOUNCE, CLIPRDR_REQUEST, data, length);
+	DEBUG_CLIPBOARD(("cliprdr_send_native_format_announce\n"));
+
+	cliprdr_send_packet(conn, CLIPRDR_FORMAT_ANNOUNCE, CLIPRDR_REQUEST, formats_data,
+			    formats_data_length);
 }
 
 void
@@ -105,41 +121,53 @@ cliprdr_process(rdcConnection conn, STREAM s)
 
 	if (status == CLIPRDR_ERROR)
 	{
-		if (type == CLIPRDR_FORMAT_ACK)
+		switch (type)
 		{
-			/* FIXME: We seem to get this when we send an announce while the server is
-			   still processing a paste. Try sending another announce. */
-			cliprdr_send_text_format_announce(conn);
-			return;
+			case CLIPRDR_FORMAT_ACK:
+				/* FIXME: We seem to get this when we send an announce while the server is
+				   still processing a paste. Try sending another announce. 
+				   xxx: Can't use in CoRD unless if last_formats is moved into conn */
+				//cliprdr_send_native_format_announce(conn, last_formats, last_formats_length);
+				break;
+			case CLIPRDR_DATA_RESPONSE:
+				ui_clip_request_failed(conn);
+				break;
+			default:
+				DEBUG_CLIPBOARD(("CLIPRDR error (type=%d)\n", type));
 		}
 
-		DEBUG_CLIPBOARD(("CLIPRDR error (type=%d)\n", type));
 		return;
 	}
 
 	switch (type)
 	{
 		case CLIPRDR_CONNECT:
-			ui_clip_sync();
+			ui_clip_sync(conn);
 			break;
 		case CLIPRDR_FORMAT_ANNOUNCE:
-			ui_clip_format_announce(data, length);
+			ui_clip_format_announce(conn, data, length);
 			cliprdr_send_packet(conn, CLIPRDR_FORMAT_ACK, CLIPRDR_RESPONSE, NULL, 0);
 			return;
 		case CLIPRDR_FORMAT_ACK:
 			break;
 		case CLIPRDR_DATA_REQUEST:
 			in_uint32_le(s, format);
-			ui_clip_request_data(format);
+			ui_clip_request_data(conn, format);
 			break;
 		case CLIPRDR_DATA_RESPONSE:
-			ui_clip_handle_data(data, length);
+			ui_clip_handle_data(conn, data, length);
 			break;
 		case 7:	/* TODO: W2K3 SP1 sends this on connect with a value of 1 */
 			break;
 		default:
 			unimpl("CLIPRDR packet type %d\n", type);
 	}
+}
+
+void
+cliprdr_set_mode(rdcConnection conn, const char *optarg)
+{
+	ui_clip_set_mode(conn, optarg);
 }
 
 RDCBOOL

@@ -179,8 +179,8 @@ iso_connect(rdcConnection conn, const char *server, char *username)
 
 	iso_send_connection_request(conn, username);
 
-	if (iso_recv_msg(conn, &code, NULL) == NULL) {
-		//[(id)conn->controller setStatus:[NSString stringWithFormat:@"Failed to connect to %s", server]];
+	if (iso_recv_msg(conn, &code, NULL) == NULL)
+	{
 		return False;
 	}
 

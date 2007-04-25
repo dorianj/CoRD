@@ -30,7 +30,6 @@
 	- (void)createScrollEnclosure:(NSRect)frame;
 @end
 
-
 #pragma mark -
 
 @implementation RDInstance
@@ -82,7 +81,6 @@
 		[self autorelease];
 		return nil;
 	}
-	
 	
 	return self;
 }
@@ -157,6 +155,7 @@
 	free(conn);
 	conn = malloc(sizeof(struct rdcConn));
 	fill_default_connection(conn);
+	conn->controller = self;
 	
 	// Fail quickly if it's a totally bogus host
 	if ([hostName length] < 2)
@@ -202,16 +201,16 @@
 	if ([username length] > 0 && ([password length] > 0 || savePassword))
 		logonFlags |= RDP_LOGON_AUTO;
 	
-	// Set some other settings
+	// Other various settings
 	conn->bitmapCache = cacheBitmaps;
-	conn->serverBpp = screenDepth;	
-	conn->controller = g_appController;
+	conn->serverBpp = screenDepth;
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth;
 	conn->screenHeight = screenHeight;
 	conn->tcpPort = (port==0 || port>=65536) ? DEFAULT_PORT : port;
-
-	// Set up correct keymap
+	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
+	
+	// Set remote keymap to match local OS X input type
 	conn->keyLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
 
 	// Set up disk redirection
@@ -239,7 +238,9 @@
 	
 	rdpdr_init(conn);
 	
-	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
+	cliprdr_init(conn);
+	
+	
 	
 	// Make the connection
 	BOOL connected = rdp_connect(conn, safe_string_conv(hostName), 
@@ -264,8 +265,10 @@
 							   withObject:[NSNumber numberWithBool:YES]
 							waitUntilDone:NO];
 		conn->ui = view;
-				
+		
 		[self setStatus:CRDConnectionConnected];
+		
+		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_TEXT];	
 	}
 	else
 	{	
@@ -317,10 +320,46 @@
 		rdp_send_input(conn, time(NULL), type, flags, param1, param2);
 }
 
-#pragma mark Input run loop management
+// Assures that the remote clipboard is the same as the passed pasteboard, sending new
+//	clipboard as needed
+- (void)synchronizeRemoteClipboard:(NSPasteboard *)toPasteboard suggestedFormat:(int)format
+{
+	// Currently, only look for text
+	if ([toPasteboard availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
+	{
+		NSString *pasteContent = convert_line_endings([toPasteboard stringForType:NSStringPboardType], YES);
+	
+		//if (![pasteContent isEqualToString:remoteClipboardContents])
+		//{
+			
+			const char *data = [pasteContent UTF8String];
+			
+			cliprdr_send_data(conn, (unsigned char *)data, strlen(data)+1);				
+			cliprdr_send_simple_native_format_announce(conn, CF_TEXT);
+			
+			[remoteClipboardContents release];
+			remoteClipboardContents = [pasteContent retain];
+		//}
+		//else
+		//{
+			//NSLog(@"not sending clipboard - remote is same as local");
+		//}
+	}
+}
+
+// Sets the local clipboard to match the server provided data
+- (void)synchronizeLocalClipboard:(NSData *)data
+{
+	NSPasteboard *pb = [NSPasteboard generalPasteboard];
+	[pb declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
+	[pb setString:convert_line_endings([NSString stringWithUTF8String:[data bytes]], NO) forType:NSStringPboardType];
+}
+
+
+#pragma mark -
+#pragma mark Run loop management
 - (void)startInputRunLoop
 {
-	// Run the run loop, allocating/releasing a pool occasionally
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	BOOL gotInput;
 	unsigned x = 0;
@@ -658,6 +697,15 @@
 {
 	[view releaseRemoteModifiers];	
 }
+
+- (void)windowDidBecomeKey:(NSNotification *)sender
+{
+	if ([sender object] == window)
+	{
+		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_TEXT];
+	}
+}
+
 
 #pragma mark -
 #pragma mark Keychain

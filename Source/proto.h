@@ -21,11 +21,12 @@ STREAM channel_init(rdcConnection conn, VCHANNEL * channel, uint32 length);
 void channel_send(rdcConnection conn, STREAM s, VCHANNEL * channel);
 void channel_process(rdcConnection conn, STREAM s, uint16 mcs_channel);
 /* cliprdr.c */
-void cliprdr_send_text_format_announce(rdcConnection conn);
+void cliprdr_send_simple_native_format_announce(rdcConnection conn, uint32 format);
 void cliprdr_send_blah_format_announce(rdcConnection conn);
 void cliprdr_send_native_format_announce(rdcConnection conn, uint8 * data, uint32 length);
 void cliprdr_send_data_request(rdcConnection conn, uint32 format);
 void cliprdr_send_data(rdcConnection conn, uint8 * data, uint32 length);
+void cliprdr_set_mode(rdcConnection conn, const char *optarg);
 RDCBOOL cliprdr_init(rdcConnection conn);
 /* disk.c */
 int disk_enum_devices(rdcConnection conn, char ** paths, char **names, int count);
@@ -161,22 +162,18 @@ RDCBOOL tcp_connect(rdcConnection conn, const char *server);
 void tcp_disconnect(rdcConnection conn);
 char *tcp_get_address(rdcConnection conn);
 /* xclip.c */
-void ui_clip_format_announce(uint8 * data, uint32 length);
-void ui_clip_handle_data(uint8 * data, uint32 length);
-void ui_clip_request_data(uint32 format);
-void ui_clip_sync(void);
-void xclip_init(rdcConnection conn);
+void ui_clip_format_announce(rdcConnection conn, uint8 * data, uint32 length);
+void ui_clip_handle_data(rdcConnection conn, uint8 * data, uint32 length);
+void ui_clip_request_data(rdcConnection conn, uint32 format);
+void ui_clip_sync(rdcConnection conn);
+void ui_clip_request_failed(rdcConnection conn);
+void ui_clip_set_mode(rdcConnection conn, const char *optarg);
 /* xkeymap.c */
 unsigned int read_keyboard_state(void);
 uint16 ui_get_numlock_state(unsigned int state);
 /* xwin.c */
-RDCBOOL get_key_state(unsigned int state, uint32 keysym);
-RDCBOOL ui_init(void);
-void ui_deinit(void);
-RDCBOOL ui_create_window(void);
 void ui_resize_window(void);
 void ui_destroy_window(void);
-void xwin_toggle_fullscreen(void);
 int ui_select(rdcConnection conn);
 void ui_move_pointer(int x, int y);
 HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 * data);

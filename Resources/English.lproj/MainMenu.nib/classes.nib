@@ -9,11 +9,14 @@
                 fieldEdited = id; 
                 keepSelectedServer = id; 
                 performFullScreen = id; 
+                performUnified = id; 
                 removeSelectedSavedServer = id; 
                 selectNext = id; 
                 selectPrevious = id; 
                 showOpen = id; 
                 startFullscreen = id; 
+                startUnified = id; 
+                startWindowed = id; 
                 toggleDrawer = id; 
                 toggleInspector = id; 
                 togglePerformanceDisclosure = id; 
@@ -37,7 +40,6 @@
                 "gui_inspector" = NSWindow; 
                 "gui_inspectorButton" = NSButton; 
                 "gui_label" = NSTextField; 
-                "gui_mainWindow" = NSWindow; 
                 "gui_password" = NSTextField; 
                 "gui_performanceOptions" = NSBox; 
                 "gui_savePassword" = NSButton; 
@@ -45,6 +47,7 @@
                 "gui_serverList" = CRDServerList; 
                 "gui_serversDrawer" = NSDrawer; 
                 "gui_tabView" = NSTabView; 
+                "gui_unifiedWindow" = NSWindow; 
                 "gui_username" = NSTextField; 
                 userDefaultsController = NSUserDefaultsController; 
             }; 

@@ -52,7 +52,7 @@
 	IBOutlet NSButton *gui_addNewButton;
 	
 	IBOutlet NSWindow *gui_inspector;
-	IBOutlet NSWindow *gui_mainWindow;
+	IBOutlet NSWindow *gui_unifiedWindow;
 	
 	// Other interface elements
 	IBOutlet NSBox *gui_performanceOptions;
@@ -115,24 +115,23 @@
 - (IBAction)startUnified:(id)sender;
 
 
-// Otherwise, in no particular order
-- (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
+// Other methods, in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;
-- (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames;
 
-- (BOOL)mainWindowIsFocused;
-+ (NSImage *)sharedDocumentIcon;
-- (id) tableColumn:(NSTableColumn *)column inTableView:(NSTableView *)tableView dataCellForRow:(int)row;
+- (id)tableColumn:(NSTableColumn *)column inTableView:(NSTableView *)tableView dataCellForRow:(int)row;
 
 - (void)disconnectInstance:(RDInstance *)inst;
 - (RDInstance *)serverInstanceForRow:(int)row;
 - (RDInstance *)selectedServerInstance;
-
 - (RDInstance *)viewedServer;
+
+- (BOOL)mainWindowIsFocused;
 - (CRDDisplayMode)displayMode;
 - (NSWindow *)unifiedWindow;
-
 - (CRDFullScreenWindow *)fullScreenWindow;
+
+
++ (NSImage *)sharedDocumentIcon;
 
 @end
 

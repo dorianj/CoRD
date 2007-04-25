@@ -30,6 +30,7 @@
 
 #import "RDCView.h"
 #import "RDCBitmap.h"
+#import "RDInstance.h"
 
 
 #import "miscellany.h"
@@ -153,7 +154,7 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	[NSGraphicsContext restoreGraphicsState];
 	
 	
-	// Translate the 32-bit screen dump into RDP colors
+	// Translate the 32-bit RGBA screen dump into RDP colors
 	uint8 *data, *o, *src, *p;
 	uint16 k;
 	int i=0, j, q, len=cx*cy, bytespp = conn->serverBpp/8;
@@ -165,17 +166,15 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	while (i++ < len)
 	{
 		if (conn->serverBpp == 16)
+		{			
+			*((unsigned short *)o) = 
+					(((p[0] * 31 + 127) / 255) << 11) |
+					(((p[1] * 63 + 127) / 255) << 5)  |
+					((p[2] * 31 + 127) / 255);
+		} 
+		else if (conn->serverBpp == 8)
 		{
-			k = ((p[0] & 0xF8) << 8) | ((p[1] & 0xFC) << 3) | (p[2] >> 3);
-#ifdef __BIG_ENDIAN__
-			o[1] = (uint8)(k & 0xFF);
-			o[0] = (uint8)((k >> 8) & 0xFF);
-#else
-			o[0] = (uint8)(k & 0xFF);
-			o[1] = (uint8)((k >> 8) & 0xFF);
-#endif
-		} else if (conn->serverBpp == 8) {
-			// Find color's index on colormap, use that
+			// Find color's index on colormap, use it as color
 			j = (p[0] << 16) | (p[1] << 8) | p[2];
 			o[0] = 0;
 			for (q = 0; q < 0xff; q++) {
@@ -183,8 +182,10 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 					o[0] = q;
 					break;
 				}
-			}				
-		} else {
+			}		
+		}
+		else
+		{
 			// swap R and B
 			o[2] = p[0];
 			o[1] = p[1];
@@ -565,12 +566,12 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 	schedule_display_in_rect(v, box);
 }
 
+
 #pragma mark -
-#pragma mark Clipping
+#pragma mark Clipping drawing
 
 void ui_set_clip(rdcConnection conn, int x, int y, int cx, int cy)
 {
-	TRACE_FUNC;
 	RDCView *v = conn->ui;
 	[v setClip:NSMakeRect(x, y, cx, cy)];
 }
@@ -1009,25 +1010,45 @@ unsigned short ui_get_numlock_state(unsigned int state)
 #pragma mark -
 #pragma mark Clipboard
 
-void ui_clip_format_announce(uint8 *data, uint32 length)
+void ui_clip_format_announce(rdcConnection conn, uint8 *data, uint32 length) 
 {
-	UNIMPL;
+	DEBUG_CLIPBOARD(("Clipboard format announced\n"));
+	cliprdr_send_data_request(conn, CF_TEXT);
 }
 
-void ui_clip_handle_data(uint8 *data, uint32 length)
+void ui_clip_handle_data(rdcConnection conn, uint8 *data, uint32 length) 
 {
-	UNIMPL;
+	DEBUG_CLIPBOARD(("Recieved Clipboard data: %s\tlength:%d\n", data, length));
+	
+	RDInstance *inst = (RDInstance *)conn->controller;
+	[inst synchronizeLocalClipboard:[NSData dataWithBytes:data length:length]];
 }
 
-void ui_clip_request_data(uint32 format)
+void ui_clip_request_data(rdcConnection conn, uint32 format) 
 {
-	UNIMPL;
+	DEBUG_CLIPBOARD(("Clipboard Data was Requested\n"));
+	
+	RDInstance *inst = (RDInstance *)conn->controller;
+	
+	[inst synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:format];
 }
 
-void ui_clip_sync(void)
+void ui_clip_sync(rdcConnection conn) 
 {
-	UNIMPL;
+	cliprdr_send_simple_native_format_announce(conn, CF_TEXT);	
 }
+
+void ui_clip_request_failed(rdcConnection conn)
+{
+
+	
+}
+
+void ui_clip_set_mode(rdcConnection conn, const char *optarg)
+{
+
+}
+
 
 #pragma mark -
 #pragma mark Internal Use

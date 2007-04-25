@@ -335,7 +335,7 @@
 	{
 		realRowOrigin = [self rectOfRow:i].origin;
 		[startBuilder addObject:[NSValue valueWithPoint:realRowOrigin]];
-		[endBuilder addObject:[NSValue valueWithPoint:realRowOrigin]];
+		[endBuilder addObject:[NSValue valueWithPoint:[super rectOfRow:i].origin]];
 	}
 	
 	

@@ -137,7 +137,6 @@ tcp_connect(rdcConnection conn, const char *server)
 	NSInputStream *is = nil;
 	NSOutputStream *os = nil;
 	NSHost *host;
-	AppController *cont = conn->controller;
 	
 	if ( (host = [NSHost hostWithAddress:[NSString stringWithUTF8String:server]]) == nil)
 	{

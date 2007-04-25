@@ -74,6 +74,7 @@
 	uint32 cFlags;
 	NSString *cCommand, *cDirectory;
 	rdcConnection conn;
+	NSString *remoteClipboardContents;
 
 	// UI elements (only valid if connected)
 	CRDServerCell *cellRepresentation;
@@ -81,15 +82,17 @@
 	
 	// Used when in windowed mode
 	NSWindow *window;
-	
 	NSScrollView *scrollEnclosure;
 }
-
 - (id)initWithRDPFile:(NSString *)path;
-- (void)sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
+
+// RDP-related
 - (BOOL)connect;
 - (void)disconnect;
+- (void)sendInput:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
 - (void)startInputRunLoop;
+- (void)synchronizeRemoteClipboard:(NSPasteboard *)toPasteboard suggestedFormat:(int)format;
+- (void)synchronizeLocalClipboard:(NSData *)data;
 
 // GUI
 - (void)updateCellData;
@@ -97,7 +100,6 @@
 - (void)createWindow:(BOOL)useScrollView;
 - (void)destroyUnified;
 - (void)destroyWindow;
-
 
 - (BOOL)readRDPFile:(NSString *)path;
 - (BOOL)writeRDPFile:(NSString *)pathconf;

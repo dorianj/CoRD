@@ -73,6 +73,16 @@ void print_bitfield(unsigned v, int bits)
 	printf("\n");
 }
 
+NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn)
+{
+	NSMutableString *new = [[orig mutableCopy] autorelease];
+	NSString *replace = withCarriageReturn ? @"\n" : @"\r\n",
+			 *with = withCarriageReturn ? @"\r\n" : @"\n";
+	[new replaceOccurrencesOfString:replace withString:with options:NSLiteralSearch range:NSMakeRange(0, [orig length])];
+	return new;
+}
+
+
 #pragma mark -
 #pragma mark AppController
 NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action)
@@ -155,6 +165,7 @@ NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 	
 	return ([returnFiles count] > 0) ? [[returnFiles copy] autorelease] : nil;
 }
+
 
 #pragma mark -
 #pragma mark RDInstance

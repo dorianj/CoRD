@@ -33,6 +33,7 @@ void draw_line(NSColor *color, NSPoint start, NSPoint end);
 #define RECT_FROM_SIZE(r) NSMakeRect(0.0, 0.0, (r).width, (r).height)
 #define PRINT_RECT(s, r) NSLog(@"%@: (%.1f, %.1f) size %.1f x %.1f", s, (r).origin.x, (r).origin.y, (r).size.width, (r).size.height)
 #define PRINT_POINT(s, p) NSLog(@"%@: (%.1f, %.1f)", s, (p).x, (p).y)
+NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn);
 
 NSString *full_host_name(NSString *host, int port);
 
@@ -92,8 +93,8 @@ AppController *g_appController;
 
 /* General mid-level debugging */
 //#define WITH_DEBUG_KEYBOARD 1
-//#define WITH_DEBUG_UI 1
-#define WITH_MID_LEVEL_DEBUG 1
+#define WITH_DEBUG_UI 1
+//#define WITH_MID_LEVEL_DEBUG 1
 
 #ifdef WITH_MID_LEVEL_DEBUG
 	#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
