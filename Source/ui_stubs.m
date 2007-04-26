@@ -68,12 +68,10 @@ HCOLOURMAP ui_create_colourmap(COLOURMAP * colors)
 {
 	unsigned int *colorMap = malloc(colors->ncolours * sizeof(unsigned));
 	
-	int i;
-	
-	for (i = 0; i < colors->ncolours; i++)
+	for (int i = 0; i < colors->ncolours; i++)
 	{
 		COLOURENTRY colorEntry = colors->colours[i];
-		colorMap[i] = (colorEntry.red << 16) | (colorEntry.green << 8) | (colorEntry.blue);
+		colorMap[i] = (colorEntry.blue << 16) | (colorEntry.green << 8) | colorEntry.red;
 	}
 	
 	return colorMap;
@@ -129,6 +127,7 @@ void ui_destroy_bitmap(HBITMAP bmp)
 #pragma mark Desktop Cache
 
 // Takes a section of the desktop cache and saves it into a RDCBitmap compatible byte array
+//	This is far less performance critical than -[RDCBitmap initWithBitmapData:]
 void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
 {
 	RDCView *v = conn->ui;
@@ -175,7 +174,7 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 		else if (conn->serverBpp == 8)
 		{
 			// Find color's index on colormap, use it as color
-			j = (p[0] << 16) | (p[1] << 8) | p[2];
+			j = (p[2] << 16) | (p[1] << 8) | p[0];
 			o[0] = 0;
 			for (q = 0; q < 0xff; q++) {
 				if (colorMap[q] == j) {
@@ -186,7 +185,6 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 		}
 		else
 		{
-			// swap R and B
 			o[2] = p[0];
 			o[1] = p[1];
 			o[0] = p[2];
@@ -1012,25 +1010,23 @@ unsigned short ui_get_numlock_state(unsigned int state)
 
 void ui_clip_format_announce(rdcConnection conn, uint8 *data, uint32 length) 
 {
-	DEBUG_CLIPBOARD(("Clipboard format announced\n"));
 	cliprdr_send_data_request(conn, CF_TEXT);
 }
 
 void ui_clip_handle_data(rdcConnection conn, uint8 *data, uint32 length) 
-{
-	DEBUG_CLIPBOARD(("Recieved Clipboard data: %s\tlength:%d\n", data, length));
-	
+{	
 	RDInstance *inst = (RDInstance *)conn->controller;
 	[inst synchronizeLocalClipboard:[NSData dataWithBytes:data length:length]];
 }
 
 void ui_clip_request_data(rdcConnection conn, uint32 format) 
-{
-	DEBUG_CLIPBOARD(("Clipboard Data was Requested\n"));
-	
+{	
 	RDInstance *inst = (RDInstance *)conn->controller;
-	
-	[inst synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:format];
+	 
+	if (format == CF_TEXT)
+	{
+		[inst synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:format];
+	}
 }
 
 void ui_clip_sync(rdcConnection conn) 

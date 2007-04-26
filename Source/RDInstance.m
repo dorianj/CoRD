@@ -329,21 +329,13 @@
 	{
 		NSString *pasteContent = convert_line_endings([toPasteboard stringForType:NSStringPboardType], YES);
 	
-		//if (![pasteContent isEqualToString:remoteClipboardContents])
-		//{
-			
-			const char *data = [pasteContent UTF8String];
-			
-			cliprdr_send_data(conn, (unsigned char *)data, strlen(data)+1);				
-			cliprdr_send_simple_native_format_announce(conn, CF_TEXT);
-			
-			[remoteClipboardContents release];
-			remoteClipboardContents = [pasteContent retain];
-		//}
-		//else
-		//{
-			//NSLog(@"not sending clipboard - remote is same as local");
-		//}
+		const char *data = [pasteContent UTF8String];
+		
+		cliprdr_send_data(conn, (unsigned char *)data, strlen(data)+1);				
+		cliprdr_send_simple_native_format_announce(conn, CF_TEXT);
+		
+		[remoteClipboardContents release];
+		remoteClipboardContents = [pasteContent retain];
 	}
 }
 
@@ -598,9 +590,6 @@
 
 - (void)createWindow:(BOOL)useScrollView
 {
-	// Todo: 
-	//	- add ability to use scrollbars
-	
 	[window release];
 	NSRect sessionScreenSize = [view bounds];
 	window = [[NSWindow alloc] initWithContentRect:sessionScreenSize
@@ -620,7 +609,6 @@
 	
 	if (useScrollView)
 	{
-		[view setAutoresizingMask:NSViewNotSizable];
 		[self createScrollEnclosure:[[window contentView] bounds]];
 		[[window contentView] addSubview:scrollEnclosure];
 	}
@@ -651,8 +639,7 @@
 	}
 	else
 	{
-		[view setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|
-				NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
+		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
 		[tabViewRepresentation setView:view];
 	}	
 }
@@ -675,6 +662,9 @@
 {
 	[scrollEnclosure release];
 	scrollEnclosure = [[NSScrollView alloc] initWithFrame:frame];
+	[view setAutoresizingMask:NSViewNotSizable];
+	[scrollEnclosure setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|
+				NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
 	[scrollEnclosure setDocumentView:view];
 	[scrollEnclosure setHasVerticalScroller:YES];
 	[scrollEnclosure setHasHorizontalScroller:YES];

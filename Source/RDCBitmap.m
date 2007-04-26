@@ -16,68 +16,99 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-/*	Notes: The ivar 'data' is used because NSBitmapImageRep does not copy the bitmap data.
+/*	Notes:
+		- The ivar 'data' is used because NSBitmapImageRep does not copy the bitmap data.
+		- The stored bitmap is ARGB8888 with alpha data regardless if source has
+			alpha as a memory-speed tradeoff: vImage can convert RGB565 directly
+			only to ARGB8888 (or planar, which would add complexity)
 */
 
 #import "RDCBitmap.h"
+#import <Accelerate/Accelerate.h>;
 
 #import "RDCView.h"
 
 @implementation RDCBitmap
 
-- (id)initWithBitmapData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v
+- (id)initWithBitmapData:(const unsigned char *)sourceBitmap size:(NSSize)s view:(RDCView *)v
 {
 	if (![super init])
 		return nil;
 
-	int bitsPerPixel = [v bitsPerPixel];
-	int bytesPerPixel = bitsPerPixel / 8;
-	uint8 *np, *nc;
+	int bytesPerPixel = [v bitsPerPixel] / 8;
+	
+	uint8 *outputBitmap, *nc;
 	const uint8 *p, *end;
 	unsigned realLength, newLength;
+	unsigned int *colorMap;
 	
-	realLength = (int)s.width * (int)s.height * bytesPerPixel;
-	newLength = (int)s.width * (int)s.height * 3;
-	p = d;
+	int width = (int)s.width, height = (int)s.height, t;
+	realLength = width * height * bytesPerPixel;
+	newLength = width * height * 4;
+	
+	p = sourceBitmap;
 	end = p + realLength;
 	
-	nc = np = malloc(newLength);
-	while (p < end)
+	nc = outputBitmap = malloc(newLength);
+	
+	if (bytesPerPixel == 1)
 	{
-		if (bitsPerPixel == 16)
+		colorMap = [v colorMap];
+		while (p < end)
 		{
-			[v rgbForRDCColor:*(uint16 *)p r:&nc[0] g:&nc[1] b:&nc[2]];
+			nc[0] = 0;
+			nc[1] = colorMap[*p] & 0xff;
+			nc[2] = (colorMap[*p] >> 8) & 0xff;
+			nc[3] = (colorMap[*p] >> 16);
+			
+			p++;
+			nc += 4;
 		}
-		else if (bitsPerPixel == 8)
+	}
+	else if (bytesPerPixel == 2)
+	{
+		vImage_Buffer newBuffer, sourceBuffer;
+		sourceBuffer.width = newBuffer.width = width;
+		sourceBuffer.height = newBuffer.height = height;
+		
+		newBuffer.data = outputBitmap;
+		newBuffer.rowBytes = width * 4;
+		
+		sourceBuffer.data = (void *)sourceBitmap;
+		sourceBuffer.rowBytes = width * bytesPerPixel;
+		
+		vImageConvert_RGB565toARGB8888(0, &sourceBuffer, &newBuffer, 0);		
+	}
+	else if (bytesPerPixel == 3 || bytesPerPixel == 4)
+	{
+		while (p < end)
 		{
-			[v rgbForRDCColor:*p r:&nc[0] g:&nc[1] b:&nc[2]];
+			nc[0] = 0;
+			nc[1] = p[2];
+			nc[2] = p[1];
+			nc[3] = p[0];
+			
+			p += bytesPerPixel;
+			nc += 4;
 		}
-		else // 24 and 32 bpp
-		{
-			// swap R and B
-			nc[0] = p[2];
-			nc[1] = p[1];
-			nc[2] = p[0];
-		}
-		p += bytesPerPixel;
-		nc += 3;
 	}
 	
-	data = [[NSData alloc] initWithBytesNoCopy:(void *)np length:newLength];
+	data = [[NSData alloc] initWithBytesNoCopy:(void *)outputBitmap length:newLength];
 	
 	planes[0] = (unsigned char *)[data bytes];
 	planes[1] = NULL;
 	
 	bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
-													 pixelsWide:(int)s.width 
-													 pixelsHigh:(int)s.height
+													 pixelsWide:width
+													 pixelsHigh:height
 												  bitsPerSample:8
-												samplesPerPixel:3
-													   hasAlpha:NO
+												samplesPerPixel:4
+													   hasAlpha:YES
 													   isPlanar:NO
 												 colorSpaceName:NSDeviceRGBColorSpace
-													bytesPerRow:s.width * 3
-												   bitsPerPixel:0];
+												   bitmapFormat:NSAlphaFirstBitmapFormat
+													bytesPerRow:s.width * 4
+												   bitsPerPixel:32];
 
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];

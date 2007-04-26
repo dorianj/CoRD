@@ -106,7 +106,6 @@
 - (IBAction)connect:(id)sender;
 - (IBAction)showOpen:(id)sender;
 - (IBAction)toggleDrawer:(id)sender;
-- (IBAction)toggleUnified:(id)sender;
 - (IBAction)startFullscreen:(id)sender;
 - (IBAction)endFullscreen:(id)sender;
 - (IBAction)performFullScreen:(id)sender;

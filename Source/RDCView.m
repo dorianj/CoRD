@@ -32,7 +32,8 @@
 
 @implementation RDCView
 
-#pragma mark NSView functions
+#pragma mark NSView
+
 - (id)initWithFrame:(NSRect)frame
 {
 	if (![super initWithFrame:frame])
@@ -74,13 +75,13 @@
 
 - (void)drawRect:(NSRect)rect
 {
-
-	// This makes the resize look a lot nicer, but may slow old machines down. It works
-	//	quick enough on my slow mac, so I'm going to leave it as long as there aren't complaints
-	if (fabs(screenSize.width - rect.size.width) > .001)
+	if (fabs(screenSize.width - [self frame].size.width) > .001)
 	{
 		[[NSGraphicsContext currentContext] setShouldAntialias:YES];
-		[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];		
+		if ([self inLiveResize])
+			[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationLow];
+		else
+			[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
 	}
 	
 	
@@ -124,10 +125,15 @@
 	[self setBounds:bounds];
 }
 
+- (void)viewDidEndLiveResize
+{
+	[super viewDidEndLiveResize];
+	[self setNeedsDisplay:YES];
+}
 
 
 #pragma mark -
-#pragma mark NSObject functions
+#pragma mark NSObject
 
 - (void)dealloc
 {
@@ -319,6 +325,13 @@
 	return [super resignFirstResponder];
 }
 
+- (BOOL)becomeFirstResponder
+{
+	[controller synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:0];
+
+	return YES;
+}
+
 - (void)keyDown:(NSEvent *)ev
 {
 	[keyTranslator handleKeyEvent:ev keyDown:YES];
@@ -433,59 +446,36 @@
 
 - (void)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b
 {
-	if (bitdepth == 8)
-	{
-		int t = colorMap[col];
-		*r = (t >> 16) & 0xff;
-		*g = (t >> 8)  & 0xff;
-		*b =  t        & 0xff;
-	}
-	else if (bitdepth == 16)
+	if (bitdepth == 16)
 	{
 		*r = (( (col >> 11) & 0x1f) * 255 + 15) / 31;
 		*g = (( (col >> 5) & 0x3f) * 255 + 31) / 63;
 		*b = ((col & 0x1f) * 255 + 15) / 31;
-		
+		return;
 	}
-	else if (bitdepth == 24 || bitdepth == 32)
-	{
-		*r =  col        & 0xff;
-		*g = (col >> 8)  & 0xff;
-		*b = (col >> 16) & 0xff;
-	}
-	else
-	{
-		DEBUG_UI( (@"Attempting to convert color in unknown bitdepth %d", bitdepth) );
-	}
+	
+	int t = (bitdepth == 8) ? colorMap[col] : col;
+
+	*b = (t >> 16) & 0xff;
+	*g = (t >> 8)  & 0xff;
+	*r = t & 0xff;
 }
 
 - (NSColor *)nscolorForRDCColor:(int)col
 {
 	int r, g, b, t;
-	
-	if (bitdepth == 8)
-	{
-		t = colorMap[col];
-		r = (t >> 16) & 0xff;
-		g = (t >> 8)  & 0xff;
-		b = t & 0xff;
-	}
-	else if (bitdepth == 16)
+	if (bitdepth == 16)
 	{
 		r = (( (col >> 11) & 0x1f) * 255 + 15) / 31;
 		g = (( (col >> 5) & 0x3f) * 255 + 31) / 63;
 		b = ((col & 0x1f) * 255 + 15) / 31;
 	}
-	else if (bitdepth == 24)
+	else // 8, 24, 32
 	{
-		r = col & 0xff;
-		g = (col >> 8)  & 0xff;
-		b = (col >> 16) & 0xff;
-	}
-	else
-	{
-		NSLog(@"Bitdepth = %d", bitdepth);
-		r = g = b = 0;
+		int t = (bitdepth == 8) ? colorMap[col] : col;
+		b = (t >> 16) & 0xff;
+		g = (t >> 8)  & 0xff;
+		r = t & 0xff;
 	}
 	
 	return [NSColor colorWithDeviceRed:(float)r / 255.0

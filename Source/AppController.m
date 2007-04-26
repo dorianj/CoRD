@@ -404,12 +404,6 @@ static NSImage *shared_documentIcon = nil;
 	[gui_toolbar validateVisibleItems];
 }
 
-// Switches between unified mode and windowed mode
-- (IBAction)toggleUnified:(id)sender
-{
-	// todo:windows write
-}
-
 - (IBAction)startFullscreen:(id)sender
 {
 	if (displayMode == CRDDisplayFullscreen || [connectedServers count] == 0)
@@ -448,11 +442,8 @@ static NSImage *shared_documentIcon = nil;
 	[gui_fullScreenWindow setInitialFirstResponder:serverView];
 	[gui_tabView release];	
 	
-	// Center the view (xxx: make it center when changing tabs in fullscreen)
-	NSRect serverRect = [serverView bounds];
-	[gui_tabView setFrame:NSMakeRect((winRect.size.width-serverRect.size.width)/2.0,
-									 (winRect.size.height-serverRect.size.height)/2.0,
-									 serverRect.size.width, serverRect.size.height)];
+	NSSize serverViewSize = [serverView bounds].size;
+	[gui_tabView setFrame:NSMakeRect(0.0, 0.0, serverViewSize.width, serverViewSize.height)];
 	
 	[gui_fullScreenWindow startFullScreen];
 
@@ -465,7 +456,6 @@ static NSImage *shared_documentIcon = nil;
 {
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
-	
 	
 	displayMode = CRDDisplayUnified;
 	[self autosizeUnifiedWindowWithAnimation:NO];
@@ -622,9 +612,9 @@ static NSImage *shared_documentIcon = nil;
 	if ([itemId isEqualToString:TOOLBAR_DRAWER])
 		[toolbarItem setLabel:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Servers" : @"Show Servers")];
 	else if ([itemId isEqualToString:TOOLBAR_DISCONNECT])
-		return viewedInst != nil;
+		return (viewedInst != nil) && (displayMode == CRDDisplayUnified);
 	else if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
-		return [connectedServers count] > 0;
+		return ([connectedServers count] > 0);
 	else if ([itemId isEqualToString:TOOLBAR_UNIFIED] && (displayMode != CRDDisplayFullscreen))
 	{
 		NSString *label = (displayMode == CRDDisplayUnified) ? @"Windowed" : @"Unified";
@@ -995,7 +985,6 @@ static NSImage *shared_documentIcon = nil;
 	
 }
 
-
 - (void) saveInspectedServer
 {
 	if ([inspectedServer modified])
@@ -1008,12 +997,16 @@ static NSImage *shared_documentIcon = nil;
 
 - (BOOL)windowShouldClose:(id)sender
 {
-	if ((sender == gui_unifiedWindow) && (displayMode == CRDDisplayUnified))
+	if (sender == gui_unifiedWindow)
 	{
-		[[NSApplication sharedApplication] hide:self];
+		// todo: fix this up so unified window is always accessable to users, but can
+		//	be closed during windowed mode (also, show it when the last active session closes)
+		//if (displayMode == CRDDisplayUnified || ([connectedServers count] == 0))
+			[[NSApplication sharedApplication] hide:self];
+			
 		return NO;
 	}
-	
+		
 	return YES;
 }
 
@@ -1265,8 +1258,8 @@ static NSImage *shared_documentIcon = nil;
 	
 	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
 		[gui_unifiedWindow setContentAspectRatio:newContentSize];
-	//else
-	//	[gui_unifiedWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
+	else
+		[gui_unifiedWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
 	//	xxx: need a way to cancel setContentResizeIncrements
 	
 	float scrollerWidth = [NSScroller scrollerWidth];
