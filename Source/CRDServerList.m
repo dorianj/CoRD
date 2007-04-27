@@ -37,7 +37,7 @@
 #define UNFOCUSED_START [NSColor colorWithDeviceRed:(150/255.0) green:(150/255.0) blue:(150/255.0) alpha:1.0]
 #define UNFOCUSED_END [NSColor colorWithDeviceRed:(100/255.0) green:(100/255.0) blue:(100/255.0) alpha:1.0]
 
-#define ANIMATION_DURATION 0.15
+#define ANIMATION_DURATION 0.18
 
 #pragma mark -
 
@@ -58,7 +58,7 @@
 
 - (void)awakeFromNib
 {
-	emptyRowIndex = -1;
+	draggedRow = emptyRowIndex = -1;
 }
 
 // If this isn't overridden, it won't use the hightlightSelectionInClipRect method
@@ -128,6 +128,25 @@
 	[super deselectAll:sender];
 }
 
+- (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows tableColumns:(NSArray *)tableColumns
+		event:(NSEvent*)dragEvent offset:(NSPointPointer)dragImageOffset
+{
+	int row = [dragRows firstIndex];
+	
+	if ( (row < 0) || (row >= [self numberOfRows]))
+		return nil;
+	
+	NSRect rowRect = [self rectOfRow:row];	
+	NSImage *dragImage = [[NSImage alloc] initWithSize:rowRect.size];
+	
+	[dragImage lockFocus]; {
+		[[NSColor greenColor] set];
+		[NSBezierPath fillRect:rowRect];
+	} [dragImage unlockFocus];
+
+	return [dragImage autorelease];;
+}
+
 
 #pragma mark -
 #pragma mark NSResponder
@@ -176,6 +195,28 @@
 	// Don't call super so that it performs click-through selection
 }
 
+/*
+- (void)mouseDragged:(NSEvent *)ev
+{
+	if (draggedRow == -1)
+	{
+		NSLog(@"Starting drag");
+		NSPoint mouseLocation = [self convertPoint:[ev locationInWindow] fromView:nil];
+		int row = [self rowAtPoint:mouseLocation];
+		
+		NSPasteboard *pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+		[pboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:self];
+		[pboard setData:[@"Testing CoRD drag and drop" dataUsingEncoding:NSUTF8StringEncoding] forType:NSStringPboardType];
+		
+		NSImage *dragImage = [[self dragImageForRowsWithIndexes:[NSIndexSet indexSetWithIndex:row]
+				tableColumns:nil event:ev offset:NULL] retain];
+		
+		[self dragImage:dragImage at:mouseLocation offset:NSZeroSize
+			event:ev pasteboard:pboard source:self slideBack:YES];
+		draggedRow = row;
+	}
+}*/
+
 // Assure that the row the right click is over is selected so that the context menu is correct
 - (void)rightMouseDown:(NSEvent *)ev
 {
@@ -208,9 +249,7 @@
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
-{
-	// todo: if the destination is one of the labels, return NSDragOperationNone
-	
+{	
 	int row = [super rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
 	NSDragOperation retOperation;
 		
@@ -222,6 +261,7 @@
 		return retOperation = NSDragOperationNone;
 	else
 		retOperation = NSDragOperationCopy;
+	
 	
 	if ( (row != -1) && (row != emptyRowIndex) )
 	{
@@ -236,7 +276,6 @@
 	
 	return retOperation;
 }
-
 
 - (void)draggingExited:(id <NSDraggingInfo>)sender
 {
@@ -266,6 +305,14 @@
 	return YES;
 }
 
+
+#pragma mark -
+#pragma mark NSDraggingSource
+
+- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+{
+	return isLocal ? NSDragOperationMove : NSDragOperationCopy;
+}
 
 
 
@@ -321,51 +368,22 @@
 	float delta = [super rectOfRow:rowIndex].size.height;
 
 	NSRect realRowRect;
-	NSPoint realRowOrigin, startRowOrigin, endRowOrigin;
+	NSPoint startRowOrigin, endRowOrigin;
 	NSMutableArray *endBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
 	NSMutableArray *startBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
-
-	// If the new empty is lower, start at the current empty and move down. Otherwise,
-	//	start at the current empty and move up
-	signed q = (emptyRowIndex >= oldEmptyRowIndex) ? 1 : -1;
-	
-	NSLog(@"Starting for new row %d, old=%d, q=%d, delta=%f", emptyRowIndex, oldEmptyRowIndex, q, delta);
 	
 	for (i = 0; i <= numRows; i++)
 	{
-		realRowOrigin = [self rectOfRow:i].origin;
-		[startBuilder addObject:[NSValue valueWithPoint:realRowOrigin]];
-		[endBuilder addObject:[NSValue valueWithPoint:[super rectOfRow:i].origin]];
-	}
-	
-	
-	// Adjust bounds because all empty indexes are really above the index
-	int bound = (q == -1) ? emptyRowIndex+q : emptyRowIndex,
-		start = (q == -1) ? oldEmptyRowIndex+q : oldEmptyRowIndex;
-	
-	for (i = start; i != bound; i += q)
-	{
-		// Find the end origin by adding the delta to the original row origin
-		realRowOrigin = [super rectOfRow:i].origin;
 		startRowOrigin = [self rectOfRow:i].origin;
-		
-		endRowOrigin = realRowOrigin;
+		endRowOrigin = [super rectOfRow:i].origin;
 		
 		if (i >= emptyRowIndex)
 			endRowOrigin.y += delta;
 
-		[startBuilder replaceObjectAtIndex:i withObject:[NSValue valueWithPoint:startRowOrigin]];
-		[endBuilder replaceObjectAtIndex:i withObject:[NSValue valueWithPoint:endRowOrigin]];
-		
-		NSLog(@"Adding convolution points for row=%d", i);
-		PRINT_POINT(@"start", startRowOrigin);
-		PRINT_POINT(@"end", endRowOrigin);
-		PRINT_POINT(@"real", realRowOrigin);
+		[startBuilder addObject:[NSValue valueWithPoint:startRowOrigin]];
+		[endBuilder addObject:[NSValue valueWithPoint:endRowOrigin]];
 	}
-	
-	NSLog(@"---");
-	printf("\n");
-	
+
 	[autoexpansionStartRowOrigins release];
 	[autoexpansionEndRowOrigins release];
 	
@@ -423,8 +441,6 @@
 		endOrigin = [endValue pointValue];
 		convolvedPoint = NSMakePoint(startOrigin.x * (1.0 - fraction) + endOrigin.x * fraction,
 									 startOrigin.y * (1.0 - fraction) + endOrigin.y * fraction);
-		
-		//NSLog(@"Convolving %f,%f to %f,%f with fraction %f", startOrigin.x, startOrigin.y, endOrigin.x, endOrigin.y, fraction);
 		
 		[currentPointsBuilder addObject:[NSValue valueWithPoint:convolvedPoint]];
 	}

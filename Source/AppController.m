@@ -165,11 +165,10 @@ static NSImage *shared_documentIcon = nil;
 		}
 	}
 	
-	// todo:dragndrop Register for all the types of drag operations
+	// Register for all the types of drag operations
 	NSArray *types = [NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
 	[gui_serverList registerForDraggedTypes:types];
-	[gui_serverList setHeaderView:nil];
-	
+
 	// Since it's a custom class, the attributes pane isn't available for the password entry box in IB.
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
@@ -706,79 +705,77 @@ static NSImage *shared_documentIcon = nil;
 	else if (rowIndex == [connectedServers count] + 1)
 		return [savedServersLabel attributedStringValue];
 	else
-		return @"Filler";//[[self serverInstanceForRow:rowIndex] cellTextualData];	
+		return @"";
 }
-
-/* Drag and drop methods */
 
 - (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info
 		proposedRow:(int)row proposedDropOperation:(NSTableViewDropOperation)op
 {
-	UNIMPL;
-	/* todo:dragndrop - rewrite
-	if ([info draggingSource] == (id)gui_serverList)
+	TRACE_FUNC;
+	
+	if ([info draggingSource] == gui_serverList)
 	{
-		// inner list drag, currently ignoring. Todo: allow for item moving
+		// Inner list drag
 		return NSDragOperationNone;
 	} 
 	else
 	{
-		// external drag, make sure there's at least one RDP file in there
+		// External drag, make sure there's at least one RDP file in there
 		NSArray *files = [[info draggingPasteboard] propertyListForType:NSFilenamesPboardType];
 		NSArray *rdpFiles = filter_filenames(files, [NSArray arrayWithObjects:@"rdp",nil]);
+		
 		return ([rdpFiles count] > 0) ? NSDragOperationCopy : NSDragOperationNone;
-	}*/
-	return nil;
+	}
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id <NSDraggingInfo>)info
 		row:(int)row dropOperation:(NSTableViewDropOperation)operation
 {
-	UNIMPL;
-	/* todo:dragndrop - rewrite 
-	if ([info draggingSource] == (id)gui_serverList)
+	TRACE_FUNC;
+
+	if ([info draggingSource] == gui_serverList)
 	{
 		// inner list drag, currently ignoring. Todo: allow for item moving
 		return NO;
 	} 
 	else
 	{
-		// external drag, load all rdp files passed
+		// External drag, load all rdp files passed
 		NSArray *files = [[info draggingPasteboard] propertyListForType:NSFilenamesPboardType];
 		NSArray *rdpFiles = filter_filenames(files, [NSArray arrayWithObjects:@"rdp",nil]);
+		
+		RDInstance *inst, *base = [self serverInstanceForRow:row];
 		NSEnumerator *enumerator = [rdpFiles objectEnumerator];
 		id file;
+		
 		while ( (file = [enumerator nextObject]) )
 		{
-			[self addServer:[[[RDInstance alloc] initWithRDPFile:file] autorelease]];
+			inst = [[RDInstance alloc] initWithRDPFile:file];
+			
+			if (inst != nil)
+				[savedServers insertObject:inst atIndex:[savedServers indexOfObject:base]];
+			
+			[inst release];
 		}
 		
 		return YES;
-	}*/
-	return NO;
+	}
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes
 		toPasteboard:(NSPasteboard*)pboard
 {
-	UNIMPL;
-	/* todo:dragndrop - rewrite 
-	NSMutableArray *filenames = [NSMutableArray arrayWithCapacity:5];
-	NSEnumerator *e = [servers objectEnumerator];
-	id rdp;
-	unsigned i = 0;
-	while ( (rdp = [e nextObject]) )
-	{
-		if ([rowIndexes containsIndex:i]) {
-			[filenames addObject:[rdp filename]]; 	
-		}
-		i++;
-	}
-	[pboard declareTypes:[NSArray arrayWithObject:NSFilenamesPboardType] owner:nil];
-	[pboard setPropertyList:filenames forType:NSFilenamesPboardType];
+	TRACE_FUNC;
+
+	RDInstance *inst = [self serverInstanceForRow:[rowIndexes firstIndex]];
 	
-	return YES;*/
-	return NO;
+	if (inst == nil || [inst temporary]) // xxx: currently bails if not a saved server
+		return NO;
+			
+	[pboard declareTypes:[NSArray arrayWithObject:NSFilenamesPboardType] owner:nil];
+	[pboard setPropertyList:[NSArray arrayWithObject:[inst rdpFilename]] forType:NSFilenamesPboardType];
+	
+	return YES;
 }
 
 
