@@ -20,7 +20,6 @@
                 toggleDrawer = id; 
                 toggleInspector = id; 
                 togglePerformanceDisclosure = id; 
-                toggleUnified = id; 
             }; 
             CLASS = AppController; 
             LANGUAGE = ObjC; 
@@ -42,6 +41,7 @@
                 "gui_label" = NSTextField; 
                 "gui_password" = NSTextField; 
                 "gui_performanceOptions" = NSBox; 
+                "gui_quickConnect" = NSComboBox; 
                 "gui_savePassword" = NSButton; 
                 "gui_screenResolution" = NSPopUpButton; 
                 "gui_serverList" = CRDServerList; 

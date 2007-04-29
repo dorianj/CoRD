@@ -58,6 +58,7 @@
 	IBOutlet NSBox *gui_performanceOptions;
 	IBOutlet NSTabView *gui_tabView;
 	IBOutlet NSDrawer *gui_serversDrawer;
+	IBOutlet NSComboBox *gui_quickConnect;
 	
 	IBOutlet NSUserDefaultsController *userDefaultsController;
 	NSUserDefaults *userDefaults;

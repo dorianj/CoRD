@@ -97,31 +97,31 @@ static BOOL staticsInitialized;
 
 - (void) drawWithFrame:(NSRect)frame inView:(NSView *)controlView
 {	
-	//NSRectClip(frame);
+	if (frame.size.height < 5.0)
+		return;
 	
-	// Draw the image
-	NSRect imgRect = NSMakeRect(frame.origin.x + OUTER_PADDING + PADDING_LEFT, frame.origin.y + (frame.size.height / 2.0) - (CELL_IMAGE_HEIGHT / 2.0), CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT);
+ 	NSRect imgRect = NSMakeRect(frame.origin.x + OUTER_PADDING + PADDING_LEFT, frame.origin.y + (frame.size.height / 2.0) - (CELL_IMAGE_HEIGHT / 2.0), CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT);
 	RDInstance *inst = [g_appController serverInstanceForRow:[[g_appController valueForKey:@"gui_serverList"] rowAtPoint:imgRect.origin]];
 	
-	if ([inst status] == CRDConnectionConnecting)
+	// Draw the image or progress indicator
+	if ( ([inst status] == CRDConnectionConnecting) && (controlView != nil) )
 	{
-		if([progressIndicator superview] == nil)
-		{
+		if([progressIndicator superview] != controlView)
 			[controlView addSubview:progressIndicator];
-		}
 		
 		[progressIndicator setFrame:imgRect];
 	}
-	else
+	else 
 	{
-		[progressIndicator removeFromSuperview];
+		if (controlView != nil)
+			[progressIndicator removeFromSuperview];
 		[image drawInRect:imgRect fromRect:RECT_FROM_SIZE([image size]) operation:NSCompositeSourceOver fraction:1.0];
 	}
 	
 
 	// Draw the text
 	float textX = frame.origin.x + PADDING_LEFT + OUTER_PADDING + CELL_IMAGE_WIDTH + SEPARATOR_PADDING;
-	float textY = frame.origin.y + OUTER_PADDING;
+	float textY = frame.origin.y + OUTER_PADDING; 
 	float textWidth = frame.size.width - (textX - frame.origin.x) - OUTER_PADDING;
 	
 	if (highlighted)

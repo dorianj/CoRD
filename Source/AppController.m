@@ -30,6 +30,7 @@ static NSImage *shared_documentIcon = nil;
 #define TOOLBAR_DRAWER @"Servers"
 #define TOOLBAR_FULLSCREEN @"Fullscreen"
 #define TOOLBAR_UNIFIED @"Windowed"
+#define TOOLBAR_QUICKCONNECT @"Quick connect"
 
 
 #pragma mark -
@@ -54,6 +55,15 @@ static NSImage *shared_documentIcon = nil;
 
 #pragma mark -
 @implementation AppController
+
++ (void)initialize
+{
+	NSDictionary *defaults = [NSDictionary dictionaryWithObjectsAndKeys:
+			[NSNumber numberWithBool:YES], PREFS_RESIZE_VIEWS,
+			[NSNumber numberWithBool:YES], PREFS_FULLSCREEN_RECONNECT,
+			nil];
+	[[NSUserDefaultsController sharedUserDefaultsController] setInitialValues:defaults];	
+}
 
 #pragma mark NSObject methods
 - (id)init
@@ -100,6 +110,15 @@ static NSImage *shared_documentIcon = nil;
 	
 	
 	// Create the toolbar 
+	
+	NSToolbarItem *quickConnectItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECT] autorelease];
+	[quickConnectItem setView:gui_quickConnect];
+	NSSize qcSize = [gui_quickConnect frame].size;
+	[quickConnectItem setMinSize:NSMakeSize(110.0, qcSize.height)];
+	[quickConnectItem setMaxSize:NSMakeSize(150.0, qcSize.height)];
+	[quickConnectItem setLabel:@"Quick connect"];
+	[quickConnectItem setToolTip:@"Connect to a host with default settings. Uses 'host[:port]' syntax."];
+	
 	toolbarItems = [[NSMutableDictionary alloc] init];
 	
 	[toolbarItems 
@@ -118,6 +137,7 @@ static NSImage *shared_documentIcon = nil;
 		setObject:create_static_toolbar_item(TOOLBAR_UNIFIED, @"Windowed",
 			@"Toggle between unified mode and windowed mode", @selector(performUnified:))
 		forKey:TOOLBAR_UNIFIED];
+	[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
 	
 	gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
 	[gui_toolbar setDelegate:self];
@@ -592,6 +612,8 @@ static NSImage *shared_documentIcon = nil;
 
 	NSMutableArray *defaultItems = [NSArray arrayWithObjects:
 				TOOLBAR_DRAWER,
+				NSToolbarSeparatorItemIdentifier,
+				TOOLBAR_QUICKCONNECT,
 				NSToolbarFlexibleSpaceItemIdentifier,
 				TOOLBAR_FULLSCREEN,
 				TOOLBAR_UNIFIED, 
@@ -711,7 +733,7 @@ static NSImage *shared_documentIcon = nil;
 - (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info
 		proposedRow:(int)row proposedDropOperation:(NSTableViewDropOperation)op
 {
-	TRACE_FUNC;
+	//TRACE_FUNC;
 	
 	if ([info draggingSource] == gui_serverList)
 	{
@@ -731,7 +753,7 @@ static NSImage *shared_documentIcon = nil;
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id <NSDraggingInfo>)info
 		row:(int)row dropOperation:(NSTableViewDropOperation)operation
 {
-	TRACE_FUNC;
+	//TRACE_FUNC;
 
 	if ([info draggingSource] == gui_serverList)
 	{
@@ -765,7 +787,7 @@ static NSImage *shared_documentIcon = nil;
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes
 		toPasteboard:(NSPasteboard*)pboard
 {
-	TRACE_FUNC;
+	//TRACE_FUNC;
 
 	RDInstance *inst = [self serverInstanceForRow:[rowIndexes firstIndex]];
 	

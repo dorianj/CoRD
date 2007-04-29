@@ -47,6 +47,7 @@
 	- (void)createNewRowOriginsAboveRow:(int)rowIndex;
 	- (void)startAnimation;
 	- (void)concludeDrag;
+	- (CRDServerCell *)cellForRow:(int)row;
 @end
 
 
@@ -59,6 +60,7 @@
 - (void)awakeFromNib
 {
 	draggedRow = emptyRowIndex = -1;
+	[self setVerticalMotionCanBeginDrag:YES];
 }
 
 // If this isn't overridden, it won't use the hightlightSelectionInClipRect method
@@ -119,7 +121,7 @@
 - (void)deselectRow:(int)rowIndex
 {
 	if (rowIndex != -1)
-		[[[[self tableColumns] objectAtIndex:0] dataCellForRow:rowIndex] setHighlighted:NO];
+		[[self cellForRow:rowIndex] setHighlighted:NO];
 }
 
 - (void)deselectAll:(id)sender
@@ -140,9 +142,20 @@
 	NSImage *dragImage = [[NSImage alloc] initWithSize:rowRect.size];
 	
 	[dragImage lockFocus]; {
-		[[NSColor greenColor] set];
-		[NSBezierPath fillRect:rowRect];
+
+		//CGContextTranslateCTM([[NSGraphicsContext currentContext] graphicsPort], rowRect.origin.x,  rowRect.origin.y-rowRect.origin.y);
+		/*NSAffineTransform *xform = [NSAffineTransform transform];
+		[xform translateXBy:0.0 yBy:rowRect.size.height];
+		[xform scaleXBy:1.0 yBy:-1.0];
+		[xform concat];*/
+		
+		BOOL highlighted = [[self cellForRow:row] isHighlighted];
+		[[self cellForRow:row] setHighlighted:NO];
+		[[self cellForRow:row] drawWithFrame:RECT_FROM_SIZE(rowRect.size) inView:nil];
+		[[self cellForRow:row] setHighlighted:highlighted];
+		
 	} [dragImage unlockFocus];
+	
 
 	return [dragImage autorelease];;
 }
@@ -187,35 +200,13 @@
 		[g_appController connect:self];
 		return;
 	}
-	else
+	else if ([self selectedRow] != row)
 	{
 		[self selectRow:row];
 	}
-
-	// Don't call super so that it performs click-through selection
+	
+	[super mouseDown:ev];
 }
-
-/*
-- (void)mouseDragged:(NSEvent *)ev
-{
-	if (draggedRow == -1)
-	{
-		NSLog(@"Starting drag");
-		NSPoint mouseLocation = [self convertPoint:[ev locationInWindow] fromView:nil];
-		int row = [self rowAtPoint:mouseLocation];
-		
-		NSPasteboard *pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
-		[pboard declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:self];
-		[pboard setData:[@"Testing CoRD drag and drop" dataUsingEncoding:NSUTF8StringEncoding] forType:NSStringPboardType];
-		
-		NSImage *dragImage = [[self dragImageForRowsWithIndexes:[NSIndexSet indexSetWithIndex:row]
-				tableColumns:nil event:ev offset:NULL] retain];
-		
-		[self dragImage:dragImage at:mouseLocation offset:NSZeroSize
-			event:ev pasteboard:pboard source:self slideBack:YES];
-		draggedRow = row;
-	}
-}*/
 
 // Assure that the row the right click is over is selected so that the context menu is correct
 - (void)rightMouseDown:(NSEvent *)ev
@@ -309,11 +300,17 @@
 #pragma mark -
 #pragma mark NSDraggingSource
 
-- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+- (void)draggedImage:(NSImage *)anImage beganAt:(NSPoint)aPoint
 {
-	return isLocal ? NSDragOperationMove : NSDragOperationCopy;
+	draggedRow = [self rowAtPoint:[self convertPoint:[[self window] mouseLocationOutsideOfEventStream] fromView:nil]];
+	[super draggedImage:anImage beganAt:aPoint];	
 }
 
+- (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
+{
+	draggedRow = -1;
+	[super draggedImage:anImage endedAt:aPoint operation:operation];
+}
 
 
 #pragma mark -
@@ -379,7 +376,7 @@
 		
 		if (i >= emptyRowIndex)
 			endRowOrigin.y += delta;
-
+			
 		[startBuilder addObject:[NSValue valueWithPoint:startRowOrigin]];
 		[endBuilder addObject:[NSValue valueWithPoint:endRowOrigin]];
 	}
@@ -461,6 +458,13 @@
 }
 
 
+#pragma mark -
+#pragma mark Internal use
+- (CRDServerCell *)cellForRow:(int)row
+{
+	return [[[self tableColumns] objectAtIndex:0] dataCellForRow:row];
+
+}
 @end
 
 
