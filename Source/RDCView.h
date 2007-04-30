@@ -17,9 +17,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
-
-#import "rdesktop.h" // POINT
-
+#import "rdesktop.h"
 
 @class RDInstance;
 @class RDCBitmap;
@@ -34,34 +32,45 @@
 	NSCursor *cursor;
 	int bitdepth;
 	RDCKeyboard *keyTranslator;
-	unsigned int *colorMap;	// size of 0xff always
+	unsigned int *colorMap;	// always a size of 0xff
 	NSSize screenSize;
 }
 
-- (void)startUpdate;
-- (void)stopUpdate;
-- (void)fillRect:(NSRect)rect withColor:(NSColor *) color;
-- (void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin;
-- (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
+// Drawing
+- (void)ellipse:(NSRect)r color:(NSColor *)c;
 - (void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c winding:(NSWindingRule)winding;
-- (void)setColorMap:(unsigned int *)map;
-- (unsigned int *)colorMap;
-- (void)memblt:(NSRect)r from:(NSImage *)src withOrigin:(NSPoint)origin;
+- (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
+- (void)fillRect:(NSRect)rect withColor:(NSColor *)color;
+- (void)fillRect:(NSRect)rect withColor:(NSColor *)color patternOrigin:(NSPoint)origin;
+- (void)memblt:(NSRect)to from:(RDCBitmap *)image withOrigin:(NSPoint)origin;
 - (void)screenBlit:(NSRect)from to:(NSPoint)to;
-- (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)w;
-- (int)width;
-- (int)height;
+- (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)width;
 - (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor;
+- (void)swapRect:(NSRect)r;
+
+// Other rdesktop handlers
 - (void)setClip:(NSRect)r;
 - (void)resetClip;
-- (int)bitsPerPixel;
-- (NSColor *)nscolorForRDCColor:(int)col;
+- (void)startUpdate;
+- (void)stopUpdate;
+
+// Converting colors
 - (void)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b;
-- (void)swapRect:(NSRect)r;
-- (void)ellipse:(NSRect)r color:(NSColor *)c;
-- (void)setController:(RDInstance *)instance;
-- (void)setBitdepth:(int)depth;
-- (void)setCursor:(NSCursor *)cursor;
-- (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
+- (NSColor *)nscolorForRDCColor:(int)col;
+
+// Other
 - (void)releaseRemoteModifiers;
+- (void)setNeedsDisplayInRects:(NSArray *)rects;
+- (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
+
+// Accessors
+- (void)setController:(RDInstance *)instance;
+- (int)bitsPerPixel;
+- (void)setBitdepth:(int)depth;
+- (int)width;
+- (int)height;
+- (unsigned int *)colorMap;
+- (void)setColorMap:(unsigned int *)map;
+- (void)setCursor:(NSCursor *)cur;
+
 @end

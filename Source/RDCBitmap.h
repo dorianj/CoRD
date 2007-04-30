@@ -17,10 +17,12 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
+#import <ApplicationServices/ApplicationServices.h>
 
 @class RDCView;
 
-@interface RDCBitmap : NSObject {
+@interface RDCBitmap : NSObject
+{
 	NSImage *image;
 	NSBitmapImageRep *bitmap;
 	NSData *data;
@@ -32,6 +34,9 @@
 - (id)initWithBitmapData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v;
 - (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v;
 - (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(RDCView *)v;
+
+- (void)drawInRect:(NSRect)dstRect fromRect:(NSRect)srcRect operation:(NSCompositingOperation)op;
+
 - (NSImage *)image;
 - (void)setColor:(NSColor *)color;
 - (NSColor *)color;

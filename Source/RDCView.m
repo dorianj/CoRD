@@ -16,22 +16,42 @@
 //  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+/*	Note: 'backing store' in this class refers only to the ivar 'back',  not anything appkit-related.
+*/
+
 #import "RDCView.h"
 #import "RDCKeyboard.h"
 #import "RDCBitmap.h"
 #import "RDInstance.h"
 
-#import <sys/types.h>
 #import "scancodes.h"
 
 @interface RDCView (Private)
 	- (void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
+	- (void)focusBackingStore;
+	- (void)releaseBackingStore;
 @end
 
 #pragma mark -
 
 @implementation RDCView
 
+#pragma mark NSObject
+
+- (void)dealloc
+{
+	[keyTranslator release];
+	[cursor release];
+	[back release];
+
+	free(colorMap);
+	colorMap = NULL;
+	
+	[super dealloc];
+}
+
+
+#pragma mark -
 #pragma mark NSView
 
 - (id)initWithFrame:(NSRect)frame
@@ -61,13 +81,6 @@
     return self;
 }
 
-- (void)setController:(RDInstance *)instance
-{
-	controller = instance;
-	[keyTranslator setController:instance];
-	bitdepth = [instance conn]->serverBpp;
-}
-
 - (BOOL)wantsDefaultClipping
 {
 	return NO;
@@ -90,7 +103,7 @@
 	[self getRectsBeingDrawn:&rects count:&nRects];
 	for (i = 0; i < nRects; i++)
 	{
-		[back drawInRect:rects[i] fromRect:rects[i]  operation:NSCompositeCopy fraction:1.0f];
+		[back drawInRect:rects[i] fromRect:rects[i]  operation:NSCompositeCopy fraction:1.0];
 	}
 }
 
@@ -133,185 +146,6 @@
 
 
 #pragma mark -
-#pragma mark NSObject
-
-- (void)dealloc
-{
-	[keyTranslator release];
-	[cursor release];
-	[back release];
-
-	free(colorMap);
-	[super dealloc];
-}
-
-
-#pragma mark -
-#pragma mark Remote Desktop handlers 
-- (void)startUpdate
-{
-	[back lockFocus];
-}
-
-- (void)stopUpdate
-{
-	[back unlockFocus];
-}
-
-- (void)ellipse:(NSRect)r color:(NSColor *)c
-{
-	[back lockFocus];
-	NSRectClip(clipRect);
-	[c set];
-	[[NSBezierPath bezierPathWithOvalInRect:r] fill];
-	[back unlockFocus];
-}
-
-- (void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c
-		winding:(NSWindingRule)winding
-{
-	NSBezierPath *bp = [NSBezierPath bezierPath];
-	int i;
-	
-	[bp moveToPoint:NSMakePoint(points[0].x + 0.5, points[0].y + 0.5)];
-	for (i = 1; i < nPoints; i++)
-		[bp relativeLineToPoint:NSMakePoint(points[i].x, points[i].y)];
-
-	[bp closePath];
-	
-	[back lockFocus];
-	NSRectClip(clipRect);
-	[c set];
-	[bp fill];
-	[back unlockFocus];
-}
-
-- (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w
-{
-	NSBezierPath *bp = [NSBezierPath bezierPath];
-	int i;
-	
-	[bp moveToPoint:NSMakePoint(points[0].x + 0.5, points[0].y + 0.5)];
-	for (i = 1; i < nPoints; i++)
-		[bp relativeLineToPoint:NSMakePoint(points[i].x, points[i].y)];
-
-	[bp setLineWidth:w];
-
-	[back lockFocus];
-	NSRectClip(clipRect);
-	[c set];
-	[bp closePath];
-	[bp stroke];
-	[back unlockFocus];
-}
-
-- (void)fillRect:(NSRect)rect withColor:(NSColor *) color
-{	
-	[self fillRect:rect withColor:color patternOrigin:NSZeroPoint];
-}
-
-- (void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin
-{
-	[back lockFocus];
-	NSRectClip(clipRect);
-	[color set];
-	[[NSGraphicsContext currentContext] setPatternPhase:origin];
-	[NSBezierPath fillRect:rect];
-	[back unlockFocus];
-}
-
-- (void)memblt:(NSRect)to from:(NSImage *)image withOrigin:(NSPoint)origin
-{
-	[back lockFocus];
-	NSRectClip(clipRect);
-	[image drawInRect:to
-			 fromRect:NSMakeRect(origin.x, origin.y, to.size.width, to.size.height)
-			operation:NSCompositeCopy
-			 fraction:1.0];
-	[back unlockFocus];
-}
-
-- (void)screenBlit:(NSRect)from to:(NSPoint)to
-{
-	[back lockFocus];
-	NSRectClip(clipRect);
-	NSCopyBits(nil, from, to);
-	[back unlockFocus];
-}
-
-- (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)width
-{
-	NSBezierPath *bp = [NSBezierPath bezierPath];
-	[back lockFocus];
-	NSRectClip(clipRect);
-	[color set];
-	[bp moveToPoint:start];
-	[bp lineToPoint:end];
-	[bp setLineWidth:width];
-	[bp closePath];
-	[bp stroke];
-	[back unlockFocus];
-}
-
-- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor
-{
-	NSImage *image = [glyph image];
-	
-	if (![[glyph color] isEqual:fgcolor])
-	{
-		[image lockFocus];
-		[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
-		[fgcolor setFill];
-		[NSBezierPath fillRect:NSMakeRect(0, 0, [image size].width, [image size].height)];
-		[image unlockFocus];
-		[glyph setColor:fgcolor];
-	}
-	
-	NSRectClip(clipRect);
-	[image drawInRect:r
-			 fromRect:NSMakeRect(0, 0, r.size.width, r.size.height)
-			operation:NSCompositeSourceOver
-		     fraction:1.0];
-}
-
-- (void)swapRect:(NSRect)r
-{
-	[back lockFocus];
-	NSRectClip(clipRect);
-	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
-	CGContextSaveGState(context);
-	CGContextSetBlendMode(context, kCGBlendModeDifference);
-	CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
-	CGContextFillRect(context, CGRectMake(r.origin.x, r.origin.y, r.size.width, r.size.height));
-	CGContextFlush(context);
-	CGContextRestoreGState(context);
-	[back unlockFocus];
-}
-
-- (void)setClip:(NSRect)r
-{
-	clipRect = r;
-}
-
-- (void)resetClip
-{
-	NSRect r = NSZeroRect;
-	r.size = [back size];
-	clipRect = r;
-}
-
-
-// Assures that all modifier keys are released
-- (void)releaseRemoteModifiers
-{
-	NSEvent *releaseModsEv = [NSEvent keyEventWithType:NSFlagsChanged location:NSZeroPoint
-				modifierFlags:0 timestamp:nil windowNumber:0 context:nil characters:@""
-				charactersIgnoringModifiers:@"" isARepeat:NO keyCode:0];
-	[keyTranslator handleFlagsChanged:releaseModsEv];
-}
-
-
-#pragma mark -
 #pragma mark NSResponder Event Handlers
 
 - (BOOL)acceptsFirstResponder
@@ -328,7 +162,6 @@
 - (BOOL)becomeFirstResponder
 {
 	[controller synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:0];
-
 	return YES;
 }
 
@@ -341,7 +174,6 @@
 {
 	[keyTranslator handleKeyEvent:ev keyDown:NO];
 }
-
 
 - (void)flagsChanged:(NSEvent *)ev
 { 		
@@ -442,6 +274,175 @@
 
 
 #pragma mark -
+#pragma mark Drawing to the backing store 
+
+- (void)ellipse:(NSRect)r color:(NSColor *)c
+{
+	[self focusBackingStore];
+	[c set];
+	[[NSBezierPath bezierPathWithOvalInRect:r] fill];
+	[self releaseBackingStore];
+}
+
+- (void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c
+		winding:(NSWindingRule)winding
+{
+	NSBezierPath *bp = [NSBezierPath bezierPath];
+	int i;
+	
+	[bp moveToPoint:NSMakePoint(points[0].x + 0.5, points[0].y + 0.5)];
+	for (i = 1; i < nPoints; i++)
+		[bp relativeLineToPoint:NSMakePoint(points[i].x, points[i].y)];
+
+	[bp closePath];
+	
+	[self focusBackingStore];
+	[c set];
+	[bp fill];
+	[self releaseBackingStore];
+}
+
+- (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w
+{
+	NSBezierPath *bp = [NSBezierPath bezierPath];
+	int i;
+	
+	[bp moveToPoint:NSMakePoint(points[0].x + 0.5, points[0].y + 0.5)];
+	for (i = 1; i < nPoints; i++)
+		[bp relativeLineToPoint:NSMakePoint(points[i].x, points[i].y)];
+
+	[bp setLineWidth:w];
+	[bp closePath];
+	
+	[self focusBackingStore];
+	[c set];
+	[bp stroke];
+	[self releaseBackingStore];
+}
+
+- (void)fillRect:(NSRect)rect withColor:(NSColor *)color
+{	
+	[self fillRect:rect withColor:color patternOrigin:NSZeroPoint];
+}
+
+- (void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin
+{
+	[self focusBackingStore];
+	[color set];
+	[[NSGraphicsContext currentContext] setPatternPhase:origin];
+	[NSBezierPath fillRect:rect];
+	[self releaseBackingStore];
+}
+
+- (void)memblt:(NSRect)to from:(RDCBitmap *)image withOrigin:(NSPoint)origin
+{
+	[self focusBackingStore];
+	
+	NSAffineTransform *xform = [NSAffineTransform transform];	
+	[xform translateXBy:to.origin.x yBy:to.origin.y];
+	[xform concat];
+	
+	[image drawInRect:NSMakeRect(0.0, 0.0, to.size.width, to.size.height)
+			 fromRect:NSMakeRect(origin.x, origin.y, to.size.width, to.size.height)
+			operation:NSCompositeCopy];
+	[self releaseBackingStore];
+}
+
+- (void)screenBlit:(NSRect)from to:(NSPoint)to
+{
+	[self focusBackingStore];
+	NSCopyBits(nil, from, to);
+	[self releaseBackingStore];
+}
+
+- (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)width
+{
+	[NSBezierPath setDefaultLineWidth:0.0];
+	
+	[self focusBackingStore];
+	[color set];
+	[NSBezierPath strokeLineFromPoint:start toPoint:end];
+	[self releaseBackingStore];
+}
+
+- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor
+{
+	// Assumes that focusBackingStore has already been called (for efficiency)
+	
+	NSImage *image = [glyph image];
+	
+	if (![[glyph color] isEqual:fgcolor])
+	{
+		[image lockFocus];
+		[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+		[fgcolor setFill];
+		[NSBezierPath fillRect:NSMakeRect(0, 0, [image size].width, [image size].height)];
+		[image unlockFocus];
+		[glyph setColor:fgcolor];
+	}
+	
+	[image drawInRect:r
+			 fromRect:NSMakeRect(0, 0, r.size.width, r.size.height)
+			operation:NSCompositeSourceOver
+		     fraction:1.0];
+}
+
+- (void)swapRect:(NSRect)r
+{
+	[self focusBackingStore];
+	CGContextRef context = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+	CGContextSaveGState(context);
+	CGContextSetBlendMode(context, kCGBlendModeDifference);
+	CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);
+	CGContextFillRect(context, CGRectMake(r.origin.x, r.origin.y, r.size.width, r.size.height));
+	CGContextFlush(context);
+	CGContextRestoreGState(context);
+	[self releaseBackingStore];
+}
+
+
+#pragma mark -
+#pragma mark Clipping backing store drawing
+
+- (void)setClip:(NSRect)r
+{
+	clipRect = r;
+}
+
+- (void)resetClip
+{
+	NSRect r = NSZeroRect;
+	r.size = [back size];
+	clipRect = r;
+}
+
+
+#pragma mark -
+#pragma mark Controlling drawing to the backing store
+
+- (void)startUpdate
+{
+	[self focusBackingStore];
+}
+
+- (void)stopUpdate
+{
+	[self releaseBackingStore];
+}
+
+- (void)focusBackingStore
+{
+	[back lockFocus];
+	NSRectClip(clipRect);
+}
+
+- (void)releaseBackingStore
+{
+	[back unlockFocus];
+}
+
+
+#pragma mark -
 #pragma mark Converting RDP Colors
 
 - (void)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b
@@ -486,7 +487,52 @@
 
 
 #pragma mark -
+#pragma mark Other
+
+// Assures that all modifier keys are released
+- (void)releaseRemoteModifiers
+{
+	NSEvent *releaseModsEv = [NSEvent keyEventWithType:NSFlagsChanged location:NSZeroPoint
+				modifierFlags:0 timestamp:nil windowNumber:0 context:nil characters:@""
+				charactersIgnoringModifiers:@"" isARepeat:NO keyCode:0];
+	[keyTranslator handleFlagsChanged:releaseModsEv];
+}
+
+- (void)setNeedsDisplayInRects:(NSArray *)rects
+{
+	NSEnumerator *enumerator = [rects objectEnumerator];
+	id dirtyRect;
+	
+	while ( (dirtyRect = [enumerator nextObject]) )
+		[self setNeedsDisplayInRectAsValue:dirtyRect];
+	
+	[rects release];
+}
+
+- (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue
+{
+	NSRect r = [rectValue rectValue];
+	
+	// Hack: make the box 1px bigger all around; seems to make updates much more
+	//	reliable when the screen is stretched
+	r.origin.x = (int)r.origin.x - 1.0;
+	r.origin.y = (int)r.origin.y - 1.0;
+	r.size.width = (int)r.size.width + 2.0;
+	r.size.height = (int)r.size.height + 2.0;
+
+	[self setNeedsDisplayInRect:r];
+}
+
+
+#pragma mark -
 #pragma mark Accessors
+
+- (void)setController:(RDInstance *)instance
+{
+	controller = instance;
+	[keyTranslator setController:instance];
+	bitdepth = [instance conn]->serverBpp;
+}
 
 - (int)bitsPerPixel
 {
@@ -527,20 +573,6 @@
 	
 	[[self window] invalidateCursorRectsForView:self];
 	[[self window] resetCursorRects];
-}
-
-- (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue
-{
-	NSRect r = [rectValue rectValue];
-	
-	// Hack: make the box 1px bigger all around; seems to make updates much more
-	//	reliable when the screen is stretched
-	r.origin.x = (int)r.origin.x - 1.0;
-	r.origin.y = (int)r.origin.y - 1.0;
-	r.size.width = (int)r.size.width + 2.0;
-	r.size.height = (int)r.size.height + 2.0;
-
-	[self setNeedsDisplayInRect:r];
 }
 
 @end

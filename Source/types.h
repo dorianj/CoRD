@@ -384,6 +384,10 @@ struct rdcConn
 	void *controller;
 	
 	ConnectionErrorCode errorCode;
+	
+	// Managing current draw session (used by ui_stubs)
+	void *rectsNeedingUpdate;
+	int updateEntireScreen;
 };
 
 

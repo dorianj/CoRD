@@ -21,11 +21,24 @@
 		- The stored bitmap is ARGB8888 with alpha data regardless if source has
 			alpha as a memory-speed tradeoff: vImage can convert RGB565 directly
 			only to ARGB8888 (or planar, which would add complexity)
+		- Using an accelerated buffer would speed up drawing. An option could be used
+			for the situations where an NSImage is required. My tests on a machine
+			with a capable graphics card show that CGImage would speed
+			normal drawing up about 30-40%, and CGLayer would be 2-12 times quicker.
+			The hassle is that some situations, a normal NSImage is needed
+			(eg: when using the image as a pattern for NSColor and patblt), so it would 
+			either have to create both or have a switch for which to create, and 
+			neither CGImage nor CGLayer have a way to specify the source origin,
+			when drawing so	the only way to do it is clip drawing to match the origin.
+			I've written some basic code to use CFLayer (not committed currently),
+			but I'll need to sit down with it again to make it work well.
 */
 
 #import "RDCBitmap.h"
-#import <Accelerate/Accelerate.h>;
+#import <Accelerate/Accelerate.h>
 
+#import "AppController.h"
+#import "miscellany.h"
 #import "RDCView.h"
 
 @implementation RDCBitmap
@@ -41,8 +54,8 @@
 	const uint8 *p, *end;
 	unsigned realLength, newLength;
 	unsigned int *colorMap;
-	
 	int width = (int)s.width, height = (int)s.height, t;
+	
 	realLength = width * height * bytesPerPixel;
 	newLength = width * height * 4;
 	
@@ -56,10 +69,10 @@
 		colorMap = [v colorMap];
 		while (p < end)
 		{
-			nc[0] = 0;
+			nc[0] = 255;
 			nc[1] = colorMap[*p] & 0xff;
 			nc[2] = (colorMap[*p] >> 8) & 0xff;
-			nc[3] = (colorMap[*p] >> 16);
+			nc[3] = (colorMap[*p] >> 16) & 0xff;
 			
 			p++;
 			nc += 4;
@@ -77,13 +90,13 @@
 		sourceBuffer.data = (void *)sourceBitmap;
 		sourceBuffer.rowBytes = width * bytesPerPixel;
 		
-		vImageConvert_RGB565toARGB8888(0, &sourceBuffer, &newBuffer, 0);		
+		vImageConvert_RGB565toARGB8888(255, &sourceBuffer, &newBuffer, 0);		
 	}
 	else if (bytesPerPixel == 3 || bytesPerPixel == 4)
 	{
 		while (p < end)
 		{
-			nc[0] = 0;
+			nc[0] = 255;
 			nc[1] = p[2];
 			nc[2] = p[1];
 			nc[3] = p[0];
@@ -107,7 +120,7 @@
 													   isPlanar:NO
 												 colorSpaceName:NSDeviceRGBColorSpace
 												   bitmapFormat:NSAlphaFirstBitmapFormat
-													bytesPerRow:s.width * 4
+													bytesPerRow:width * 4
 												   bitsPerPixel:32];
 
 	image = [[NSImage alloc] init];
@@ -118,7 +131,7 @@
 }
 
 - (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v
-{
+{	
 	if (![super init])
 		return nil;
 		
@@ -148,7 +161,7 @@
 
 - (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s
 		hotspot:(NSPoint)hotspot view:(RDCView *)v
-{
+{	
 	if (![super init])
 		return nil;
 
@@ -207,6 +220,19 @@
 	return self;
 }
 
+
+#pragma mark -
+#pragma mark Drawing the RDCBitmap
+
+// Draws in the specified rect
+- (void)drawInRect:(NSRect)dstRect fromRect:(NSRect)srcRect operation:(NSCompositingOperation)op
+{
+	[image drawInRect:dstRect fromRect:srcRect operation:op fraction:1.0];
+}
+
+
+#pragma mark -
+#pragma mark Accessors
 -(NSImage *)image
 {
 	return image;

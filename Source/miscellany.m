@@ -217,6 +217,8 @@ void fill_default_connection(rdcConnection conn)
 	conn->errorCode = 0;
 	memcpy(conn->hostname, [host UTF8String], [host length] + 1);
 	conn->rdp5PerformanceFlags	= RDP5_NO_WALLPAPER | RDP5_NO_FULLWINDOWDRAG | RDP5_NO_MENUANIMATIONS;
+	conn->rectsNeedingUpdate = NULL;
+	conn->updateEntireScreen = 0;
 		
 }
 

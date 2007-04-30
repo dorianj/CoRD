@@ -38,7 +38,7 @@ rdp5_process(rdcConnection conn, STREAM s)
 	hexdump(s->p, s->end - s->p);
 #endif
 
-	// ui_begin_update(conn);
+	ui_begin_update(conn);
 	while (s->p < s->end)
 	{	
 		in_uint8(s, type);
@@ -115,5 +115,5 @@ rdp5_process(rdcConnection conn, STREAM s)
 
 		s->p = next;
 	}
-	// ui_end_update(conn);
+	ui_end_update(conn);
 }

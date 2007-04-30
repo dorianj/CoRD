@@ -17,6 +17,7 @@
  //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
+
 #import "rdesktop.h"
 
 #import <sys/types.h>
@@ -54,9 +55,9 @@
     GXset				15 1
 */
 
-
-static void schedule_display(NSView *v);
-static void schedule_display_in_rect(NSView *v, NSRect r);
+// For managing the current draw session (the time bracketed between ui_begin_update and _end)
+static void schedule_display(rdcConnection conn);
+static void schedule_display_in_rect(rdcConnection conn, NSRect r);
 
 static RDCBitmap *nullCursor = nil;
 
@@ -112,8 +113,8 @@ void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, H
 		CHECKOPCODE(opcode);
 	}
 	
-	[v memblt:r from:[bmp image] withOrigin:p];
-	schedule_display_in_rect(v, r);
+	[v memblt:r from:bmp withOrigin:p];
+	schedule_display_in_rect(conn, r);
 }
 
 void ui_destroy_bitmap(HBITMAP bmp)
@@ -154,26 +155,34 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	
 	
 	// Translate the 32-bit RGBA screen dump into RDP colors
-	uint8 *data, *o, *src, *p;
+	// NSBitmapImageRep seems to ignore bitmapFormat:NSAlphaFirstBitmapFormat, so
+	// vImage acceleration isn't possible
+	uint8 *output, *o, *src, *p;
 	uint16 k;
-	int i=0, j, q, len=cx*cy, bytespp = conn->serverBpp/8;
+	int i=0, len=cx*cy, bytespp = conn->serverBpp/8;
 	
 	src = p = [deskScrape bitmapData];
-	data = o = malloc(cx*cy*bytespp);
-	unsigned int *colorMap = [v colorMap];
+	output = o = malloc(cx*cy*bytespp);
+	unsigned int *colorMap = [v colorMap], j, q;
 	
-	while (i++ < len)
+	if (bytespp == 2)
 	{
-		if (conn->serverBpp == 16)
-		{			
-			*((unsigned short *)o) = 
-					(((p[0] * 31 + 127) / 255) << 11) |
-					(((p[1] * 63 + 127) / 255) << 5)  |
-					((p[2] * 31 + 127) / 255);
-		} 
-		else if (conn->serverBpp == 8)
+		while (i++ < len)
 		{
-			// Find color's index on colormap, use it as color
+			*((unsigned short *)o) =
+							(((p[0] * 31 + 127) / 255) << 11) |
+							(((p[1] * 63 + 127) / 255) << 5)  |
+							((p[2] * 31 + 127) / 255);
+			p += 4;
+			o += bytespp;
+		}	
+	}
+	else if (bytespp == 1)
+	{
+		// Find color's index on colormap, use it as color/
+		// xxx: this (or something influencing 8bit desktop cache) is broken: sometimes causes blackness in places where image was blitted. example: explorer menu
+		while (i++ < len)
+		{
 			j = (p[2] << 16) | (p[1] << 8) | p[0];
 			o[0] = 0;
 			for (q = 0; q < 0xff; q++) {
@@ -181,25 +190,30 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 					o[0] = q;
 					break;
 				}
-			}		
+			}
+			
+			p += 4;
+			o += bytespp;
 		}
-		else
+	}
+	else // 24
+	{
+		while (i++ < len)
 		{
 			o[2] = p[0];
 			o[1] = p[1];
 			o[0] = p[2];
-			if (conn->serverBpp == 32)
-				o[3] = p[3];
+			
+			p += 4;
+			o += bytespp;
 		}
-		p += 4;
-		o += bytespp;
 	}
 	
 	// Put the translated screen dump into the rdesktop bitmap cache
 	offset *= bytespp;
-	cache_put_desktop(conn, offset, cx, cy, cx*bytespp, bytespp, data);
+	cache_put_desktop(conn, offset, cx, cy, cx*bytespp, bytespp, output);
 	
-	free(data);
+	free(output);
 	[deskScrape release];
 }
 
@@ -224,8 +238,50 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx,
 	[img drawInRect:r fromRect:NSMakeRect(0,0,cx,cy) operation:NSCompositeCopy fraction:1.0];	
 	[back unlockFocus];
 	
-	schedule_display_in_rect(v, r);
+	schedule_display_in_rect(conn, r);
 	[b release];
+}
+
+
+#pragma mark -
+#pragma mark Managing Draw Session
+
+void ui_begin_update(rdcConnection conn)
+{
+	[(id)conn->rectsNeedingUpdate release];
+	conn->rectsNeedingUpdate = [[NSMutableArray alloc] init];
+	conn->updateEntireScreen = NO;
+}
+
+void ui_end_update(rdcConnection conn)
+{
+	RDCView *v = (RDCView *)conn->ui;
+	
+	if (conn->updateEntireScreen)
+	{
+		[v performSelectorOnMainThread:@selector(setNeedsDisplay:)
+			withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
+	}
+	else
+	{
+		[(id)conn->rectsNeedingUpdate retain];
+		[v performSelectorOnMainThread:@selector(setNeedsDisplayInRects:)
+				withObject:(id)conn->rectsNeedingUpdate waitUntilDone:NO];
+	}
+
+	[(id)conn->rectsNeedingUpdate release];
+	conn->rectsNeedingUpdate = NULL;
+	conn->updateEntireScreen = NO;
+}
+
+static void schedule_display(rdcConnection conn)
+{
+	conn->updateEntireScreen = YES;
+}
+
+static void schedule_display_in_rect(rdcConnection conn, NSRect r)
+{
+	[(id)conn->rectsNeedingUpdate addObject:[NSValue valueWithRect:r]];
 }
 
 
@@ -237,7 +293,7 @@ void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour)
 	RDCView *v = conn->ui;
 	NSRect r = NSMakeRect(x , y, cx, cy);
 	[v fillRect:r withColor:[v nscolorForRDCColor:colour]];
-	schedule_display_in_rect(v, r);
+	schedule_display_in_rect(conn, r);
 }
 
 void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, int endx, int endy, PEN * pen)
@@ -254,9 +310,9 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, int endx,
 	
 	CHECKOPCODE(opcode);
 	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
-	schedule_display(v);
+	schedule_display(conn);
 	// xxx: this should work quicker, but I haven't been able to test it (never called by rdesktop in use)
-	//schedule_display_in_rect(v, NSMakeRect(startx, starty, endx, endy));
+	//schedule_display_in_rect(conn, NSMakeRect(startx, starty, endx, endy));
 }
 
 void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, int srcx, int srcy)
@@ -267,7 +323,7 @@ void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy
 	
 	CHECKOPCODE(opcode);
 	[v screenBlit:src to:dest];
-	schedule_display_in_rect(v, NSMakeRect(x, y, cx, cy));
+	schedule_display_in_rect(conn, NSMakeRect(x, y, cx, cy));
 }
 
 void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy)
@@ -291,7 +347,7 @@ void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy)
 			break;
 	}
 	
-	schedule_display_in_rect(v, r);
+	schedule_display_in_rect(conn, r);
 }
 
 void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, PEN *pen)
@@ -299,7 +355,7 @@ void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, 
 	RDCView *v = conn->ui;
 	CHECKOPCODE(opcode);
 	[v polyline:points npoints:npoints color:[v nscolorForRDCColor:pen->colour] width:pen->width];
-	schedule_display(v);
+	schedule_display(conn);
 }
 
 void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH *brush, int bgcolour, int fgcolour)
@@ -334,7 +390,7 @@ void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point,
 			break;
 	}
 	
-	schedule_display(v);
+	schedule_display(conn);
 }
 
 
@@ -363,7 +419,7 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 	if (opcode == 6)
 	{
 		[v swapRect:dest];
-		schedule_display_in_rect(v, dest);
+		schedule_display_in_rect(conn, dest);
 		return;
 	}
 	
@@ -423,7 +479,7 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 			unimpl("brush %d\n", brush->style);
 			break;
 	}
-	schedule_display_in_rect(v, dest);
+	schedule_display_in_rect(conn, dest);
 }
 
 
@@ -561,7 +617,7 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 	}  
 	
 	[v stopUpdate];
-	schedule_display_in_rect(v, box);
+	schedule_display_in_rect(conn, box);
 }
 
 
@@ -944,7 +1000,7 @@ void ui_ellipse(rdcConnection conn, uint8 opcode, uint8 fillmode, int x, int y, 
 			UNIMPL;
 			return;
 	}
-	schedule_display_in_rect(v, r);
+	schedule_display_in_rect(conn, r);
 }
 
 void save_licence(unsigned char *data, int length)
@@ -1044,25 +1100,5 @@ void ui_clip_set_mode(rdcConnection conn, const char *optarg)
 {
 
 }
-
-
-#pragma mark -
-#pragma mark Internal Use
-
-// Convenience functions to make setNeedsDisplay calls run in main thread
-void schedule_display(NSView *v)
-{
-	[v performSelectorOnMainThread:@selector(setNeedsDisplay:)
-			withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
-}
-
-void schedule_display_in_rect(NSView *v, NSRect r)
-{
-	[v performSelectorOnMainThread:@selector(setNeedsDisplayInRectAsValue:)
-			withObject:[NSValue valueWithRect:r] waitUntilDone:NO];
-}
-
-
-
 
 
