@@ -75,7 +75,6 @@
 	if (selectedRow == -1)
 		return;
 	
-	RDInstance *inst = [g_appController serverInstanceForRow:selectedRow];
 	NSRect drawRect = [self rectOfRow:selectedRow];
 	
 	NSColor *topColor, *bottomColor;
@@ -364,7 +363,6 @@
 	int numRows = [self numberOfRows], i;
 	float delta = [super rectOfRow:rowIndex].size.height;
 
-	NSRect realRowRect;
 	NSPoint startRowOrigin, endRowOrigin;
 	NSMutableArray *endBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
 	NSMutableArray *startBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];

@@ -74,7 +74,6 @@ void keychain_update_password(const char *origServer, const char *origUser,
 	
 	SecKeychainItemRef origItem = NULL;
 	OSStatus status;
-	const char *oldPass;
 	
 	if (strlen(origServer) && strlen(origUser))
 	{
@@ -87,7 +86,6 @@ void keychain_update_password(const char *origServer, const char *origUser,
 	if (origItem != NULL || newItem != NULL)
 	{
 		// Modify the existing password
-		
 		SecKeychainItemRef keychainItem = (origItem) ? origItem : newItem;
 			
 		// use 7 instead of kSecLabelItemAttr because of a Carbon bug

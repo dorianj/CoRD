@@ -54,7 +54,7 @@
 	const uint8 *p, *end;
 	unsigned realLength, newLength;
 	unsigned int *colorMap;
-	int width = (int)s.width, height = (int)s.height, t;
+	int width = (int)s.width, height = (int)s.height;
 	
 	realLength = width * height * bytesPerPixel;
 	newLength = width * height * 4;

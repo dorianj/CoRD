@@ -159,11 +159,7 @@ static NSDictionary *windowsKeymapTable = nil;
 // Returns YES if any keys are handled, otherwise NO
 - (BOOL)handleSpecialKeys:(NSEvent *)ev
 {
-	uint16 flags = [RDCKeyboard modifiersForEvent:ev];
-	uint16 keycode = [ev keyCode];
-	
 	/* This may be needed in the future for things like pause/break */
-	
 	return NO;
 }
 
@@ -202,8 +198,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"keymap" ofType:@"txt"];
 	NSArray *fileLines = [[NSString stringWithContentsOfFile:filePath] componentsSeparatedByString:@"\n"];
 		
-	NSCharacterSet *whitespaceSet    = [NSCharacterSet whitespaceCharacterSet],
-				   *whiteAndHashSet  = [NSCharacterSet characterSetWithCharactersInString:@" \t#"];
+	NSCharacterSet *whiteAndHashSet  = [NSCharacterSet characterSetWithCharactersInString:@" \t#"];
 	NSScanner *scanner;
 	NSString *directive;
 	unsigned int osxVKValue, scancode;
@@ -258,9 +253,9 @@ static NSDictionary *windowsKeymapTable = nil;
 
 #pragma mark Class methods
 
-// This method isn't threadsafe.
-+ (int) windowsKeymapForMacKeymap:(NSString *)keymapName {
-	
+// This method isn't fully re-entrant but shouldn't be a problem in practice
++ (unsigned) windowsKeymapForMacKeymap:(NSString *)keymapName
+{
 	// Load 'OSX keymap name' --> 'Windows keymap number' lookup table if it isn't already loaded
 	if (windowsKeymapTable == nil)
 	{
@@ -269,7 +264,7 @@ static NSDictionary *windowsKeymapTable = nil;
 		NSArray *lines = [[NSString stringWithContentsOfFile:filename] componentsSeparatedByString:@"\n"];
 		NSScanner *scanner;
 		NSString *n;
-		int i;
+		unsigned i;
 		
 		id line;
 		NSEnumerator *enumerator = [lines objectEnumerator];
@@ -277,17 +272,15 @@ static NSDictionary *windowsKeymapTable = nil;
 		{
 			line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 			scanner = [NSScanner scannerWithString:line];
-			[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@" \t="]];
+			[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 			[scanner scanUpToString:@"=" intoString:&n];
-			[scanner scanHexInt:(unsigned*)&i];
+			[scanner scanHexInt:&i];
 			
 			if (i != 0 && n != nil)
-				[dict setObject:[NSNumber numberWithInt:i] forKey:n];			
-
+				[dict setObject:[NSNumber numberWithUnsignedInt:i] forKey:n];
 		}
 		windowsKeymapTable = dict;
 	}
-	
 	
 	
 	/* First, look up directly in the table. If not found, try a fuzzy match
@@ -318,7 +311,7 @@ static NSDictionary *windowsKeymapTable = nil;
 		}
 	}
 	
-	return windowsKeymap == nil ? 0x409 : [windowsKeymap intValue];
+	return (windowsKeymap == nil) ? 0x409 : [windowsKeymap unsignedIntValue];
 }
 
 + (NSString *) currentKeymapName

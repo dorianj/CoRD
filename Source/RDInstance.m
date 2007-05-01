@@ -17,6 +17,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import "RDInstance.h"
+#import "RDCView.h"
 #import "RDCKeyboard.h"
 #import "CRDServerCell.h"
 #import "keychain.h"
@@ -397,8 +398,8 @@
 	NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"],
 				   *emptySet = [NSCharacterSet characterSetWithCharactersInString:@""];
 				   
-	NSString *name, *type, *value, *stringVal;
-	int numVal;
+	NSString *name, *type, *value;
+	int numVal = 0;
 	BOOL b;
 	
 	// Loop through each line, extracting the name, type, and value
@@ -523,7 +524,6 @@
 	write_string(@"cord label", label);
 	
 	// Write all entries in otherAttributes
-	NSString *type;
 	NSEnumerator *enumerator = [otherAttributes keyEnumerator];
 	id key, value;
 	while ( (key = [enumerator nextObject]) && (value = [otherAttributes valueForKey:key]) )

@@ -37,7 +37,7 @@
 - (void)sendKeycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down;
 - (void)sendScancode:(uint8)scancode flags:(uint16)flags;
 
-+ (int) windowsKeymapForMacKeymap:(NSString *)keymapName;
++ (unsigned)windowsKeymapForMacKeymap:(NSString *)keymapName;
 + (NSString *) currentKeymapName;
 + (uint16)modifiersForEvent:(NSEvent *)ev; 
 

@@ -158,7 +158,6 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	// NSBitmapImageRep seems to ignore bitmapFormat:NSAlphaFirstBitmapFormat, so
 	// vImage acceleration isn't possible
 	uint8 *output, *o, *src, *p;
-	uint16 k;
 	int i=0, len=cx*cy, bytespp = conn->serverBpp/8;
 	
 	src = p = [deskScrape bitmapData];
@@ -1018,7 +1017,7 @@ int load_licence(unsigned char **data)
 int ui_select(rdcConnection conn)
 {
 
-	int n = 0, i = 0;
+	int n = 0;
 	fd_set rfds, wfds;
 	struct timeval tv;
 	RDCBOOL s_timeout = False;

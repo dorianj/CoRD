@@ -464,7 +464,7 @@
 
 - (NSColor *)nscolorForRDCColor:(int)col
 {
-	int r, g, b, t;
+	int r, g, b;
 	if (bitdepth == 16)
 	{
 		r = (( (col >> 11) & 0x1f) * 255 + 15) / 31;

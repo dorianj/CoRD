@@ -18,12 +18,12 @@
 
 
 #import <Cocoa/Cocoa.h>
-#import "RDCView.h"
 
 #import "rdesktop.h"
 #import "miscellany.h"
 
 @class CRDServerCell;
+@class RDCView;
 
 @interface RDInstance : NSObject
 {

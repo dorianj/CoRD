@@ -17,7 +17,6 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #import <Cocoa/Cocoa.h>
-#import <ApplicationServices/ApplicationServices.h>
 
 @class RDCView;
 

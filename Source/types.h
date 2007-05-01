@@ -324,7 +324,7 @@ struct rdcConn
 	int screenHeight;
 	int serverBpp;
 	int shareID;
-	int keyLayout;
+	unsigned int keyLayout;
 	int serverRdpVersion;
 	int packetNumber;
 	int pstcacheBpp;

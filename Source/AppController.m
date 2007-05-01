@@ -20,6 +20,8 @@
 
 #import "AppController.h"
 #import "RDInstance.h"
+#import "RDCView.h"
+
 #import "CRDServerList.h"
 #import "CRDFullScreenWindow.h"
 #import "miscellany.h"
@@ -283,7 +285,6 @@ static NSImage *shared_documentIcon = nil;
 	if (inst == nil || [inst temporary] || [inst status] != CRDConnectionClosed)
 		return;
 	
-	NSString *msg = [NSString stringWithFormat:@"Are you sure you wish to delete the saved server '%@'?", [inst label]];
 	NSAlert *alert = [NSAlert alertWithMessageText:@"Delete saved server" defaultButton:@"Delete" 
 			alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Are you sure you wish to delete the saved server '%@'?", [inst label]];
 	[alert setAlertStyle:NSCriticalAlertStyle];
@@ -1141,8 +1142,7 @@ static NSImage *shared_documentIcon = nil;
 	}
 	else
 	{
-		BOOL retry = NO;
-		
+
 		[self cellNeedsDisplay:(NSCell *)[inst cellRepresentation]];
 		ConnectionErrorCode errorCode = [inst conn]->errorCode;
 		
@@ -1279,7 +1279,6 @@ static NSImage *shared_documentIcon = nil;
 		[gui_unifiedWindow setContentAspectRatio:newContentSize];
 	else
 		[gui_unifiedWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
-	//	xxx: need a way to cancel setContentResizeIncrements
 	
 	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = windowFrame.size.height - [[gui_unifiedWindow contentView] frame].size.height;
