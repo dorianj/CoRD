@@ -33,8 +33,6 @@
 // Padding between image and text
 #define SEPARATOR_PADDING 4
 
-
-
 @implementation CRDServerCell
 
 static NSDictionary *boldTextAtrributes;

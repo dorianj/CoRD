@@ -72,7 +72,7 @@
 - (void)highlightSelectionInClipRect:(NSRect)clipRect
 {	
 	int selectedRow = [self selectedRow];
-	if (selectedRow == -1)
+	if ( (selectedRow == -1) || (selectedRow == draggedRow))
 		return;
 	
 	NSRect drawRect = [self rectOfRow:selectedRow];
@@ -94,6 +94,12 @@
 			NSMakePoint(drawRect.origin.x, drawRect.origin.y),
 			NSMakePoint(drawRect.origin.x + drawRect.size.width, drawRect.origin.y ));
 	[self unlockFocus];
+}
+
+- (void)drawRow:(int)rowIndex clipRect:(NSRect)clipRect
+{
+	if (rowIndex != draggedRow)
+		[super drawRow:rowIndex clipRect:clipRect];
 }
 
 - (void)selectRowIndexes:(NSIndexSet *)indexes byExtendingSelection:(BOOL)extend
@@ -251,9 +257,10 @@
 		return retOperation = NSDragOperationNone;
 	else
 		retOperation = NSDragOperationCopy;
+		
+	NSLog(@"row=%d, dragged=%d, empty=%d", row, draggedRow, emptyRowIndex);
 	
-	
-	if ( (row != -1) && (row != emptyRowIndex) )
+	if ( (row != -1) && (row != emptyRowIndex) /*|| ( (draggedRow != -1) && (draggedRow != emptyRowIndex) ))*/ )
 	{
 		[self createNewRowOriginsAboveRow:row];
 		[self startAnimation];
@@ -372,7 +379,7 @@
 		startRowOrigin = [self rectOfRow:i].origin;
 		endRowOrigin = [super rectOfRow:i].origin;
 		
-		if (i >= emptyRowIndex)
+		if ( i >= emptyRowIndex/*&& (draggedRow==-1 || i <= draggedRow)*/)
 			endRowOrigin.y += delta;
 			
 		[startBuilder addObject:[NSValue valueWithPoint:startRowOrigin]];
