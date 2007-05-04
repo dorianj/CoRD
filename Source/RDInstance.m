@@ -38,6 +38,7 @@
 #pragma mark NSObject methods
 - (id)init
 {
+	screenDepth = 16;
 	themes = cacheBitmaps = YES;
 	fileEncoding = NSASCIIStringEncoding;
 	return [self initWithRDPFile:nil];
@@ -206,10 +207,11 @@
 	conn->bitmapCache = cacheBitmaps;
 	conn->serverBpp = screenDepth;
 	conn->consoleSession = consoleSession;
-	conn->screenWidth = screenWidth;
-	conn->screenHeight = screenHeight;
+	conn->screenWidth = screenWidth ? screenWidth : 1024;
+	conn->screenHeight = screenHeight ? screenHeight : 768;
 	conn->tcpPort = (port==0 || port>=65536) ? DEFAULT_PORT : port;
 	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
+	
 	
 	// Set remote keymap to match local OS X input type
 	conn->keyLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];

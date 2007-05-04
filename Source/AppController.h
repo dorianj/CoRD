@@ -113,6 +113,8 @@
 - (IBAction)performUnified:(id)sender;
 - (IBAction)startWindowed:(id)sender;
 - (IBAction)startUnified:(id)sender;
+- (IBAction)takeScreenCapture:(id)sender;
+- (IBAction)performQuickConnect:(id)sender;
 
 
 // Other methods, in no particular order

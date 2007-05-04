@@ -178,8 +178,8 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	}
 	else if (bytespp == 1)
 	{
-		// Find color's index on colormap, use it as color/
-		// xxx: this (or something influencing 8bit desktop cache) is broken: sometimes causes blackness in places where image was blitted. example: explorer menu
+		// Find color's index on colormap, use it as color
+		// xxx: still broken, it's not finding some colors (almost always white)
 		while (i++ < len)
 		{
 			j = (p[2] << 16) | (p[1] << 8) | p[0];
@@ -190,7 +190,7 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 					break;
 				}
 			}
-			
+				
 			p += 4;
 			o += bytespp;
 		}

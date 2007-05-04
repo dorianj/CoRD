@@ -66,6 +66,7 @@ void fill_default_connection(rdcConnection conn);
 #define DEFAULTS_SHOW_DRAWER @"show_drawer"
 #define DEFAULTS_DRAWER_WIDTH @"drawer_width"
 #define DEFAULTS_DISPLAY_MODE @"windowed_mode"
+#define DEFAULTS_RECENT_SERVERS @"RecentServers"
 
 #define PREFS_FULLSCREEN_RECONNECT @"reconnectFullScreen"
 #define PREFS_RESIZE_VIEWS @"resizeViewToFit"

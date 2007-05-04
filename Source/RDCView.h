@@ -62,6 +62,7 @@
 - (void)releaseRemoteModifiers;
 - (void)setNeedsDisplayInRects:(NSArray *)rects;
 - (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
+- (void)writeScreenCaptureToFile:(NSString *)path;
 
 // Accessors
 - (void)setController:(RDInstance *)instance;

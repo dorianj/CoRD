@@ -116,7 +116,7 @@ void ensure_directory_exists(NSString *path, NSFileManager *manager)
 /* Keeps trying filenames until it finds one that isn't taken.. eg: given "Untitled","rdp", if 
 	'Untitled.rdp' is taken, it will try 'Untitled 1.rdp', 'Untitled 2.rdp', etc until one is found,
 	then it returns the found filename. Useful for duplicating files. */
-NSString * increment_file_name(NSString *path, NSString *base, NSString *extension)
+NSString *increment_file_name(NSString *path, NSString *base, NSString *extension)
 {
 	NSString *filename = [base stringByAppendingString:extension];
 	NSFileManager *fileManager = [NSFileManager defaultManager];

@@ -68,13 +68,14 @@
 	memset(colorMap, 0, 0xff * sizeof(unsigned int));
 	keyTranslator = [[RDCKeyboard alloc] init];
 	
-	// Fill background with default
+	// Fill background with blackness
 	[self resetClip];
-	[back lockFocus];
+	[self focusBackingStore];
 	[[NSColor blackColor] set];
 	[NSBezierPath fillRect:frame];
-	[back unlockFocus];
+	[self releaseBackingStore];
     
+	
 	[self setBounds:NSMakeRect(0.0, 0.0, frame.size.width, frame.size.height)];
 	screenSize = frame.size;
 	
@@ -268,8 +269,6 @@
 {
 	if ([self checkMouseInBounds:ev])
 		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_MOVE param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
-	else
-		[super mouseMoved:ev];
 }
 
 
@@ -521,6 +520,37 @@
 	r.size.height = (int)r.size.height + 2.0;
 
 	[self setNeedsDisplayInRect:r];
+}
+
+- (void)writeScreenCaptureToFile:(NSString *)path
+{
+	int width = [self width], height = [self height];
+	NSBitmapImageRep *img = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
+			pixelsWide:width
+			pixelsHigh:height
+			bitsPerSample:8
+			samplesPerPixel:4
+			hasAlpha:YES
+			isPlanar:NO
+			colorSpaceName:NSDeviceRGBColorSpace
+			bytesPerRow:width*4
+			bitsPerPixel:32];
+			
+	[NSGraphicsContext saveGraphicsState];
+	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:img]]; 
+	{
+		NSAffineTransform *xform = [NSAffineTransform transform];
+		[xform translateXBy:0.0 yBy:height];
+		[xform scaleXBy:1.0 yBy:-1.0];
+		[xform concat];
+		[back drawInRect:NSMakeRect(0,0,width,height) fromRect:NSMakeRect(0,0,width,height)
+					operation:NSCompositeCopy fraction:1.0];
+	} [NSGraphicsContext restoreGraphicsState];
+	
+	NSData *fileContent = [img representationUsingType:NSPNGFileType properties:nil];
+	[fileContent writeToFile:path atomically:YES];
+	
+	[img release];
 }
 
 

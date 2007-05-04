@@ -9,6 +9,7 @@
                 fieldEdited = id; 
                 keepSelectedServer = id; 
                 performFullScreen = id; 
+                performQuickConnect = id; 
                 performUnified = id; 
                 removeSelectedSavedServer = id; 
                 selectNext = id; 
@@ -17,6 +18,7 @@
                 startFullscreen = id; 
                 startUnified = id; 
                 startWindowed = id; 
+                takeScreenCapture = id; 
                 toggleDrawer = id; 
                 toggleInspector = id; 
                 togglePerformanceDisclosure = id; 

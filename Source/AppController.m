@@ -34,7 +34,6 @@ static NSImage *shared_documentIcon = nil;
 #define TOOLBAR_UNIFIED @"Windowed"
 #define TOOLBAR_QUICKCONNECT @"Quick connect"
 
-
 #pragma mark -
 
 @interface AppController (Private)
@@ -118,8 +117,8 @@ static NSImage *shared_documentIcon = nil;
 	NSSize qcSize = [gui_quickConnect frame].size;
 	[quickConnectItem setMinSize:NSMakeSize(110.0, qcSize.height)];
 	[quickConnectItem setMaxSize:NSMakeSize(150.0, qcSize.height)];
-	[quickConnectItem setLabel:@"Quick connect"];
-	[quickConnectItem setToolTip:@"Connect to a host with default settings. Uses 'host[:port]' syntax."];
+	[quickConnectItem setLabel:@"Quick Connect"];
+	[quickConnectItem setToolTip:@"Connect to a computer with default settings. Uses 'host[:port]' syntax."];
 	
 	toolbarItems = [[NSMutableDictionary alloc] init];
 	
@@ -585,6 +584,55 @@ static NSImage *shared_documentIcon = nil;
 		[gui_unifiedWindow setTitle:@"CoRD"];
 	
 	[self autosizeUnifiedWindowWithAnimation:(sender != self)];
+}
+
+- (IBAction)takeScreenCapture:(id)sender
+{
+	RDInstance *inst = [self viewedServer];
+	
+	if (inst == nil)
+		return;
+	
+	NSString *desktopFolder = [NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES)
+				objectAtIndex:0];
+	
+	NSString *path = increment_file_name(desktopFolder,
+				[[inst label] stringByAppendingString:@" Screen Capture"], @".png");
+	
+	[[inst view] writeScreenCaptureToFile:path];
+}
+
+- (IBAction)performQuickConnect:(id)sender
+{
+	NSString *address = [gui_quickConnect stringValue], *hostname;
+	int port;
+	
+	split_hostname(address, &hostname, &port);
+	
+	RDInstance *newInst = [[[RDInstance alloc] init] autorelease];
+	
+	[newInst setValue:[NSNumber numberWithInt:16] forKey:@"screenDepth"];
+	[newInst setValue:hostname forKey:@"label"];
+	[newInst setValue:hostname forKey:@"hostName"];
+	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
+	
+	[connectedServers addObject:newInst];
+	[gui_serverList deselectAll:self];
+	[self listUpdated];
+	[self connectInstance:newInst];
+	
+	
+	NSMutableArray *recent = [NSMutableArray arrayWithArray:[userDefaults arrayForKey:DEFAULTS_RECENT_SERVERS]];
+	
+	if ([recent containsObject:address])
+		[recent removeObject:address];
+	
+	if ([recent count] > 10)
+		[recent removeLastObject];
+	
+	[recent insertObject:address atIndex:0];
+	[userDefaults setObject:recent forKey:DEFAULTS_RECENT_SERVERS];
+	[userDefaults synchronize];
 }
 
 
@@ -1138,7 +1186,10 @@ static NSImage *shared_documentIcon = nil;
 		}
 		
 		if (displayMode == CRDDisplayUnified)
+		{
 			[self autosizeUnifiedWindow];
+		}
+		
 	}
 	else
 	{
@@ -1510,7 +1561,6 @@ static NSImage *shared_documentIcon = nil;
 	if (shared_documentIcon == nil)
 	{
 		// The stored icon is loaded flipped for whatever reason, so flip it back
-		// xxx: maybe use nscopybits?
 		NSImage *icon = [NSImage imageNamed:@"rdp document.icns"];
 		shared_documentIcon = [[NSImage alloc] initWithSize:[icon size]];
 		[icon setFlipped:YES];

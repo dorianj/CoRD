@@ -102,7 +102,7 @@
 - (void)destroyWindow;
 
 - (BOOL)readRDPFile:(NSString *)path;
-- (BOOL)writeRDPFile:(NSString *)pathconf;
+- (BOOL)writeRDPFile:(NSString *)path;
 
 // Accessors
 - (rdcConnection)conn;

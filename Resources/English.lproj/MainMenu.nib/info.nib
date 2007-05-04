@@ -9,11 +9,11 @@
 		<key>1104</key>
 		<string>208 631 128 87 0 0 1440 878 </string>
 		<key>1122</key>
-		<string>819 285 439 297 0 0 1680 1028 </string>
+		<string>537 436 439 297 0 0 1440 878 </string>
 		<key>29</key>
-		<string>109 956 378 44 0 0 1680 1028 </string>
+		<string>74 811 378 44 0 0 1440 878 </string>
 		<key>741</key>
-		<string>572 526 220 422 0 0 1680 1028 </string>
+		<string>647 374 220 422 0 0 1440 878 </string>
 	</dict>
 	<key>IBFramework Version</key>
 	<string>446.1</string>
@@ -23,8 +23,8 @@
 	</array>
 	<key>IBOpenObjects</key>
 	<array>
-		<integer>29</integer>
 		<integer>741</integer>
+		<integer>29</integer>
 		<integer>1122</integer>
 	</array>
 	<key>IBSystem Version</key>
