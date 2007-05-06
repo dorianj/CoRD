@@ -51,6 +51,12 @@
 	return self;
 }
 
+- (void)dealloc
+{
+	[NSMenu setMenuBarVisible:YES];
+	[super dealloc];
+}
+
 - (void)startFullScreen
 {
 	NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
