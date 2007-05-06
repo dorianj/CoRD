@@ -98,6 +98,18 @@
 
 - (void)drawRow:(int)rowIndex clipRect:(NSRect)clipRect
 {
+	// Lightly highlight the visible server if not selected
+	if ([[self delegate] tableView:self objectValueForTableColumn:nil row:rowIndex] == [g_appController viewedServer]
+		&& [self selectedRow] != rowIndex && [g_appController displayMode] == CRDDisplayUnified)
+	{
+		[NSGraphicsContext saveGraphicsState];
+		[[[NSColor selectedTextBackgroundColor] blendedColorWithFraction:0.4 ofColor:[NSColor whiteColor]] set];
+		[NSBezierPath fillRect:[self rectOfRow:rowIndex]];		
+		[NSGraphicsContext restoreGraphicsState];	
+	}
+
+
+	// xxx: this is part of the hack that is the current shoddy d'n'd
 	if (rowIndex != draggedRow)
 		[super drawRow:rowIndex clipRect:clipRect];
 }
@@ -258,7 +270,7 @@
 	else
 		retOperation = NSDragOperationCopy;
 		
-	NSLog(@"row=%d, dragged=%d, empty=%d", row, draggedRow, emptyRowIndex);
+//	NSLog(@"row=%d, dragged=%d, empty=%d", row, draggedRow, emptyRowIndex);
 	
 	if ( (row != -1) && (row != emptyRowIndex) /*|| ( (draggedRow != -1) && (draggedRow != emptyRowIndex) ))*/ )
 	{
@@ -379,7 +391,7 @@
 		startRowOrigin = [self rectOfRow:i].origin;
 		endRowOrigin = [super rectOfRow:i].origin;
 		
-		if ( i >= emptyRowIndex/*&& (draggedRow==-1 || i <= draggedRow)*/)
+		if ( i >= emptyRowIndex)
 			endRowOrigin.y += delta;
 			
 		[startBuilder addObject:[NSValue valueWithPoint:startRowOrigin]];

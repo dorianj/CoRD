@@ -173,6 +173,10 @@ tcp_connect(rdcConnection conn, const char *server)
 		conn->errorCode = ConnectionErrorTimeOut;
 		return False;
 	}
+	else if (conn->errorCode == ConnectionErrorCanceled)
+	{
+		return False;
+	}
 	
 	[is retain];
 	[os retain];

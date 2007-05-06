@@ -383,7 +383,7 @@ struct rdcConn
 	void *ui;
 	void *controller;
 	
-	ConnectionErrorCode errorCode;
+	volatile ConnectionErrorCode errorCode;
 	
 	// Managing current draw session (used by ui_stubs)
 	void *rectsNeedingUpdate;

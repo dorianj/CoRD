@@ -104,6 +104,8 @@
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
 - (IBAction)disconnect:(id)sender;
+- (IBAction)performStop:(id)sender;
+- (IBAction)stopConnection:(id)sender;
 - (IBAction)connect:(id)sender;
 - (IBAction)showOpen:(id)sender;
 - (IBAction)toggleDrawer:(id)sender;
@@ -118,11 +120,15 @@
 
 
 // Other methods, in no particular order
+- (void)validateControls;
 - (void)cellNeedsDisplay:(NSCell *)cell;
 
 - (id)tableColumn:(NSTableColumn *)column inTableView:(NSTableView *)tableView dataCellForRow:(int)row;
 
+- (void)connectInstance:(RDInstance *)inst;
 - (void)disconnectInstance:(RDInstance *)inst;
+- (void)cancelConnectingInstance:(RDInstance *)inst;
+
 - (RDInstance *)serverInstanceForRow:(int)row;
 - (RDInstance *)selectedServerInstance;
 - (RDInstance *)viewedServer;

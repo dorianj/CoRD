@@ -69,6 +69,7 @@
 	[viewAnim release];	
 	
 	[self display];
+	[self toggleMenuBarVisible:NO];
 }
 
 // Windows that use the NSBorderlessWindowMask can't become key by default.
@@ -135,10 +136,16 @@
 	float menuBarHeight = [NSMenuView menuBarHeight];
 		
 	NSRect winFrame = [self frame];
-	winFrame.origin.y += (visible? -1 : 1) * menuBarHeight;		
+	winFrame.origin.y += (visible ? -1 : 1) * menuBarHeight;
+	
+	if (visible)
+		[NSMenu setMenuBarVisible:YES];
 		
 	[self setFrame:winFrame display:YES animate:YES];
-		
+	
+	if (!visible)
+		[NSMenu setMenuBarVisible:NO];
+	
 	menuVisible = visible;
 }
 

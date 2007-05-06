@@ -10,6 +10,7 @@
                 keepSelectedServer = id; 
                 performFullScreen = id; 
                 performQuickConnect = id; 
+                performStop = id; 
                 performUnified = id; 
                 removeSelectedSavedServer = id; 
                 selectNext = id; 
@@ -18,6 +19,7 @@
                 startFullscreen = id; 
                 startUnified = id; 
                 startWindowed = id; 
+                stopConnection = id; 
                 takeScreenCapture = id; 
                 toggleDrawer = id; 
                 toggleInspector = id; 

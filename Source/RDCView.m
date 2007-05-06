@@ -156,7 +156,6 @@
 
 - (BOOL)resignFirstResponder
 {
-	[self releaseRemoteModifiers];
 	return [super resignFirstResponder];
 }
 
@@ -177,7 +176,7 @@
 }
 
 - (void)flagsChanged:(NSEvent *)ev
-{ 		
+{ 	
 	[keyTranslator handleFlagsChanged:ev];
 }
 
@@ -186,6 +185,7 @@
 	int flags = [ev modifierFlags];
 	if ((flags & NSShiftKeyMask) && (flags & NSControlKeyMask))
 	{
+		// xxx: this doesn't respect left or right			
 		[keyTranslator sendScancode:SCANCODE_CHAR_LSHIFT flags:RDP_KEYRELEASE];
 		[keyTranslator sendScancode:SCANCODE_CHAR_LCTRL flags:RDP_KEYRELEASE];
 		[self rightMouseDown:ev];
@@ -487,15 +487,6 @@
 
 #pragma mark -
 #pragma mark Other
-
-// Assures that all modifier keys are released
-- (void)releaseRemoteModifiers
-{
-	NSEvent *releaseModsEv = [NSEvent keyEventWithType:NSFlagsChanged location:NSZeroPoint
-				modifierFlags:0 timestamp:nil windowNumber:0 context:nil characters:@""
-				charactersIgnoringModifiers:@"" isARepeat:NO keyCode:0];
-	[keyTranslator handleFlagsChanged:releaseModsEv];
-}
 
 - (void)setNeedsDisplayInRects:(NSArray *)rects
 {

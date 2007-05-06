@@ -38,11 +38,9 @@ static NSImage *shared_documentIcon = nil;
 
 @interface AppController (Private)
 	- (void)listUpdated;
-	- (void)validateControls;
 	- (void)saveInspectedServer;
 	- (void)updateInstToMatchInspector:(RDInstance *)inst;
 	- (void)setInspectorSettings:(RDInstance *)newSettings;
-	- (void)connectInstance:(RDInstance *)inst;
 	- (void)completeConnection:(RDInstance *)inst;
 	- (void)connectAsync:(RDInstance *)inst;
 	- (void)autosizeUnifiedWindow;
@@ -81,7 +79,7 @@ static NSImage *shared_documentIcon = nil;
 	savedServersLabel = [[CRDLabelCell alloc] initTextCell:@"Saved Servers"];
 
 	inspectedServer = nil;
-	
+
 	return self;
 }
 - (void) dealloc
@@ -103,7 +101,7 @@ static NSImage *shared_documentIcon = nil;
 - (void)awakeFromNib
 {
 	g_appController = self;
-	
+
 	displayMode = CRDDisplayUnified;
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
@@ -111,82 +109,84 @@ static NSImage *shared_documentIcon = nil;
 	
 	
 	// Create the toolbar 
-	
-	NSToolbarItem *quickConnectItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECT] autorelease];
-	[quickConnectItem setView:gui_quickConnect];
-	NSSize qcSize = [gui_quickConnect frame].size;
-	[quickConnectItem setMinSize:NSMakeSize(110.0, qcSize.height)];
-	[quickConnectItem setMaxSize:NSMakeSize(150.0, qcSize.height)];
-	[quickConnectItem setLabel:@"Quick Connect"];
-	[quickConnectItem setToolTip:@"Connect to a computer with default settings. Uses 'host[:port]' syntax."];
-	
-	toolbarItems = [[NSMutableDictionary alloc] init];
-	
-	[toolbarItems 
-		setObject:create_static_toolbar_item(TOOLBAR_DRAWER, @"Show Servers",
-			@"Hide or show the servers drawer", @selector(toggleDrawer:))
-		forKey:TOOLBAR_DRAWER];
-	[toolbarItems 
-		setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT, @"Disconnect", 
-			@"Close the selected connection", @selector(disconnect:))
-		forKey:TOOLBAR_DISCONNECT];	
-	[toolbarItems
-		setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN, @"Full Screen",
-			@"Enter fullscreen mode", @selector(startFullscreen:))
-		forKey:TOOLBAR_FULLSCREEN];
-	[toolbarItems
-		setObject:create_static_toolbar_item(TOOLBAR_UNIFIED, @"Windowed",
-			@"Toggle between unified mode and windowed mode", @selector(performUnified:))
-		forKey:TOOLBAR_UNIFIED];
-	[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
-	
-	gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
-	[gui_toolbar setDelegate:self];
-	
-	[gui_toolbar setAllowsUserCustomization:YES];
-	[gui_toolbar setAutosavesConfiguration:YES];
-	
-	[gui_unifiedWindow setToolbar:gui_toolbar];
-		
-	
-	displayMode = [[userDefaults objectForKey:DEFAULTS_DISPLAY_MODE] intValue];
-	
-	// Load saved servers from the CoRD Application Support folder
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	
-	// Assure that the CoRD application support folder is created, locate and store other useful paths
-	NSString *appSupport = 
-		[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-			NSUserDomainMask, YES) objectAtIndex:0];
-	NSString *cordDirectory = [[appSupport stringByAppendingPathComponent:@"CoRD"] retain];
-	serversDirectory = [[cordDirectory stringByAppendingPathComponent:@"Servers"] retain];
-	resourcePath = [[NSBundle mainBundle] resourcePath];
-	
-	ensure_directory_exists(cordDirectory, fileManager);
-	ensure_directory_exists(serversDirectory, fileManager);
-
-	// Read each .rdp file
-	RDInstance *rdpinfo;
-	NSString *path;
-	NSArray *files = [fileManager directoryContentsAtPath:serversDirectory];
-	NSEnumerator *enumerator = [files objectEnumerator];
-	id filename;
-	while ( (filename = [enumerator nextObject]) )
 	{
-		if ([[filename pathExtension] isEqualToString:@"rdp"])
-		{
-			path = [serversDirectory stringByAppendingPathComponent:filename];
-			rdpinfo = [[RDInstance alloc] initWithRDPFile:path];
-			if (rdpinfo != nil)
-				[savedServers addObject:rdpinfo];
-			else
-				NSLog(@"RDP file '%@' failed to load!", filename);
-				
-			[rdpinfo release];
-		}
+		NSToolbarItem *quickConnectItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECT] autorelease];
+		[quickConnectItem setView:gui_quickConnect];
+		NSSize qcSize = [gui_quickConnect frame].size;
+		[quickConnectItem setMinSize:NSMakeSize(110.0, qcSize.height)];
+		[quickConnectItem setMaxSize:NSMakeSize(150.0, qcSize.height)];
+		[quickConnectItem setLabel:@"Quick Connect"];
+		[quickConnectItem setToolTip:@"Connect to a computer with default settings. Uses 'host[:port]' syntax."];
+		
+		toolbarItems = [[NSMutableDictionary alloc] init];
+		
+		[toolbarItems 
+			setObject:create_static_toolbar_item(TOOLBAR_DRAWER, @"Show Servers",
+				@"Hide or show the servers drawer", @selector(toggleDrawer:))
+			forKey:TOOLBAR_DRAWER];
+		[toolbarItems 
+			setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT, @"Disconnect", 
+				@"Close the selected connection", @selector(performStop:))
+			forKey:TOOLBAR_DISCONNECT];	
+		[toolbarItems
+			setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN, @"Full Screen",
+				@"Enter fullscreen mode", @selector(startFullscreen:))
+			forKey:TOOLBAR_FULLSCREEN];
+		[toolbarItems
+			setObject:create_static_toolbar_item(TOOLBAR_UNIFIED, @"Windowed",
+				@"Toggle between unified mode and windowed mode", @selector(performUnified:))
+			forKey:TOOLBAR_UNIFIED];
+		[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
+		
+		gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
+		[gui_toolbar setDelegate:self];
+		
+		[gui_toolbar setAllowsUserCustomization:YES];
+		[gui_toolbar setAutosavesConfiguration:YES];
+		
+		[gui_unifiedWindow setToolbar:gui_toolbar];
 	}
 	
-	// Register for all the types of drag operations
+	
+	// Load saved servers from the CoRD Application Support folder
+	{
+		NSFileManager *fileManager = [NSFileManager defaultManager];
+		
+		// Assure that the CoRD application support folder is created, locate and store other useful paths
+		NSString *appSupport = 
+			[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+				NSUserDomainMask, YES) objectAtIndex:0];
+		NSString *cordDirectory = [[appSupport stringByAppendingPathComponent:@"CoRD"] retain];
+		serversDirectory = [[cordDirectory stringByAppendingPathComponent:@"Servers"] retain];
+		resourcePath = [[NSBundle mainBundle] resourcePath];
+		
+		ensure_directory_exists(cordDirectory, fileManager);
+		ensure_directory_exists(serversDirectory, fileManager);
+
+		// Read each .rdp file
+		RDInstance *rdpinfo;
+		NSString *path;
+		NSArray *files = [fileManager directoryContentsAtPath:serversDirectory];
+		NSEnumerator *enumerator = [files objectEnumerator];
+		id filename;
+		while ( (filename = [enumerator nextObject]) )
+		{
+			if ([[filename pathExtension] isEqualToString:@"rdp"])
+			{
+				path = [serversDirectory stringByAppendingPathComponent:filename];
+				rdpinfo = [[RDInstance alloc] initWithRDPFile:path];
+				if (rdpinfo != nil)
+					[savedServers addObject:rdpinfo];
+				else
+					NSLog(@"RDP file '%@' failed to load!", filename);
+					
+				[rdpinfo release];
+			}
+		}
+		
+	}
+	
+	// Register for drag operations. xxx: could be done in CRDServersList
 	NSArray *types = [NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
 	[gui_serverList registerForDraggedTypes:types];
 
@@ -194,7 +194,8 @@ static NSImage *shared_documentIcon = nil;
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 
-
+	// Load this separately from other user defaults because it needs to be loaded before anything is displayed
+	displayMode = [[userDefaults objectForKey:DEFAULTS_DISPLAY_MODE] intValue];
 
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
@@ -213,8 +214,6 @@ static NSImage *shared_documentIcon = nil;
         return (inst != nil) && [inst status] == CRDConnectionClosed;
     else if (action == @selector(disconnect:))
 		return (inst != nil) && [inst status] != CRDConnectionClosed;
-	else if (action == @selector(keepSelectedServer:))
-		return (inst != nil) && [inst status] == CRDConnectionConnected;
 	else if (action == @selector(selectNext:))
 		return [gui_tabView numberOfTabViewItems] > 2; /* Greater than 2 because 1 blank is added */ 
 	else if (action == @selector(selectPrevious:))
@@ -231,7 +230,7 @@ static NSImage *shared_documentIcon = nil;
 	else if (action == @selector(keepSelectedServer:))
 	{
 		[item setState:([inst temporary] ? NSOffState : NSOnState)];
-		return [item state] == CRDConnectionConnected;
+		return [inst status] == CRDConnectionConnected;
 	}
 	else if (action == @selector(performFullScreen:)) 
 	{
@@ -327,8 +326,23 @@ static NSImage *shared_documentIcon = nil;
 - (IBAction)disconnect:(id)sender
 {
 	RDInstance *inst = [self viewedServer];
-	
 	[self disconnectInstance:inst];
+}
+
+// Either disconnects the viewed session, or cancels a pending connection
+- (IBAction)performStop:(id)sender
+{
+	RDInstance *inst = [self viewedServer];
+	
+	if ([[self viewedServer] status]  == CRDConnectionConnected)
+		[self disconnect:nil];
+	else if ([[self selectedServerInstance] status] == CRDConnectionConnecting)
+		[self stopConnection:nil];
+}
+
+- (IBAction)stopConnection:(id)sender
+{
+	[self cancelConnectingInstance:[self selectedServerInstance]];
 }
 
 
@@ -681,8 +695,6 @@ static NSImage *shared_documentIcon = nil;
 	
 	if ([itemId isEqualToString:TOOLBAR_DRAWER])
 		[toolbarItem setLabel:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Servers" : @"Show Servers")];
-	else if ([itemId isEqualToString:TOOLBAR_DISCONNECT])
-		return (viewedInst != nil) && (displayMode == CRDDisplayUnified);
 	else if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
 		return ([connectedServers count] > 0);
 	else if ([itemId isEqualToString:TOOLBAR_UNIFIED] && (displayMode != CRDDisplayFullscreen))
@@ -690,6 +702,14 @@ static NSImage *shared_documentIcon = nil;
 		NSString *label = (displayMode == CRDDisplayUnified) ? @"Windowed" : @"Unified";
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
 		[toolbarItem setLabel:label];	
+	}
+	else if ([itemId isEqualToString:TOOLBAR_DISCONNECT])
+	{
+		NSString *label = ([inst status] == CRDConnectionConnecting) ? @"Stop" : @"Disconnect";
+		[toolbarItem setLabel:label];
+		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
+		return ([inst status] == CRDConnectionConnecting) || 
+				( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
 	}
 	
 	return YES;
@@ -737,12 +757,15 @@ static NSImage *shared_documentIcon = nil;
 	// Save drawer state to user defaults
 	[userDefaults setBool:drawer_is_visisble(gui_serversDrawer) forKey:DEFAULTS_SHOW_DRAWER];
 	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:DEFAULTS_DRAWER_WIDTH];
+	
+	if (displayMode == CRDDisplayFullscreen)
+		displayMode = displayModeBeforeFullscreen;
 	[userDefaults setInteger:displayMode forKey:DEFAULTS_DISPLAY_MODE];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {	
-	// Make sure the drawer is in the user-saved position. Do it here so that it displays nicely
+	// Make sure the drawer is in the user-saved position. Do it here (not awakeFromNib) so that it displays nicely
 	if ([userDefaults objectForKey:DEFAULTS_SHOW_DRAWER] != nil)
 	{		
 		float width = [userDefaults floatForKey:DEFAULTS_DRAWER_WIDTH];
@@ -776,14 +799,12 @@ static NSImage *shared_documentIcon = nil;
 	else if (rowIndex == [connectedServers count] + 1)
 		return [savedServersLabel attributedStringValue];
 	else
-		return @"";
+		return [self serverInstanceForRow:rowIndex]; 
 }
 
 - (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info
 		proposedRow:(int)row proposedDropOperation:(NSTableViewDropOperation)op
-{
-	//TRACE_FUNC;
-	
+{	
 	if ([info draggingSource] == gui_serverList)
 	{
 		// Inner list drag
@@ -1089,14 +1110,6 @@ static NSImage *shared_documentIcon = nil;
 	}
 }
 
-- (void)windowDidResignKey:(NSNotification *)sender
-{
-	if ( ([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) )
-	{
-		[[[self viewedServer] view] releaseRemoteModifiers];	
-	}
-}
-
 - (void)windowDidBecomeKey:(NSNotification *)sender
 {
 	if ( ([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) )
@@ -1258,13 +1271,24 @@ static NSImage *shared_documentIcon = nil;
 	
 	if (![inst temporary])
 	{
+		if ([inst rdpFilename] == nil)
+		{
+			NSString *path = increment_file_name(serversDirectory, [inst label], @".rdp");
+			[inst setRdpFilename:path];
+			[inst writeRDPFile:path];
+		}
+		
 		[savedServers addObject:inst];
 		NSIndexSet *index = [NSIndexSet indexSetWithIndex:(2 + [connectedServers count] + [savedServers indexOfObjectIdenticalTo:inst])];
 		[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
 	} 
 	else
 	{
-		// xxx: remove file (gracefully, though. It might not have started as a saved server)
+		if ( [[[inst rdpFilename] stringByDeletingLastPathComponent] isEqualToString:serversDirectory])
+		{
+			[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
+		}
+		
 		[gui_serverList deselectAll:self];
 	}
 	
@@ -1281,6 +1305,14 @@ static NSImage *shared_documentIcon = nil;
 	{
 		[self autosizeUnifiedWindow];
 	}
+}
+
+- (void)cancelConnectingInstance:(RDInstance *)inst
+{
+	if ([inst status] != CRDConnectionConnecting)
+		return;
+	
+	[inst cancelConnection];
 }
 
 
@@ -1309,7 +1341,6 @@ static NSImage *shared_documentIcon = nil;
 
 - (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate
 {
-
 	RDInstance *inst = [self viewedServer];
 	NSSize newContentSize;
 	if ([self displayMode] == CRDDisplayUnified && inst != nil)

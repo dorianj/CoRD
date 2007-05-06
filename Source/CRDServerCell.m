@@ -91,7 +91,7 @@ static BOOL staticsInitialized;
 
 
 #pragma mark -
-#pragma mark NSCell methods
+#pragma mark NSCell
 
 - (void) drawWithFrame:(NSRect)frame inView:(NSView *)controlView
 {	
@@ -172,6 +172,10 @@ static BOOL staticsInitialized;
 	return image;
 }
 
+- (void)setObjectValue:(id)obj
+{
+	// RDInstance doesn't conform to NSCopying, thus, make sure super doesn't try to copy it here
+}
 
 #pragma mark -
 

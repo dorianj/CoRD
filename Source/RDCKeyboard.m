@@ -38,6 +38,7 @@ static NSDictionary *windowsKeymapTable = nil;
 @interface RDCKeyboard (Private)
 	- (BOOL)readKeymap;
 	- (BOOL)scancodeIsModifier:(uint8)scancode;
+	- (void)setRemoteModifiers:(unsigned)newMods;
 @end
 
 #pragma mark -
@@ -71,15 +72,80 @@ static NSDictionary *windowsKeymapTable = nil;
 	uint16 keycode = [ev keyCode];
 	
 	DEBUG_KEYBOARD( (@"handleKeyEvent: virtual key 0x%x %spressed", keycode, (down) ? "" : "de") );
-
+	unsigned savedMods = remoteModifiers;
+	[self setRemoteModifiers:[ev modifierFlags]];
 	[self sendKeycode:keycode modifiers:rdflags pressed:down];
+	[self setRemoteModifiers:savedMods];
 }
 
 
 - (void)handleFlagsChanged:(NSEvent *)ev
 {
-	static unsigned lastMods = 0;
-	int newMods = [ev modifierFlags], changedMods = newMods ^ lastMods;
+	NSLog(@"  ");
+	DEBUG_KEYBOARD( (@"handleFlagsChanged entered with keycode 0x%x", [ev keyCode]) );
+	
+	// Filter KeyDown events for the Windows key, instead, send both on key up
+	static int windowsKeySuppressed = 0;
+	unsigned newMods = [ev modifierFlags];
+	
+	if ( (newMods & NSCommandKeyMask) && !(remoteModifiers & NSCommandKeyMask) )
+	{
+		// suppress keydown event for windows key
+		newMods &= !NSCommandKeyMask;
+		windowsKeySuppressed = 1;
+		DEBUG_KEYBOARD( (@"supressing windows key") );
+
+	}
+	else if ( !(newMods & NSCommandKeyMask) && windowsKeySuppressed )
+	{
+		DEBUG_KEYBOARD( (@"Sending Windows key down/up") );
+		[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYPRESS];
+		[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYRELEASE];
+		windowsKeySuppressed = 0;
+		remoteModifiers &= !NSCommandKeyMask;
+		return;
+	}
+	
+	[self setRemoteModifiers:newMods];
+}
+
+
+#pragma mark -
+#pragma mark Sending events to server
+
+- (void)sendKeycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down
+{
+	if ([virtualKeymap objectForKey:[NSNumber numberWithInt:keyCode]] != nil)
+	{
+		if (down)
+			[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYPRESS)];
+		else
+			[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYRELEASE)];
+			
+		return;
+	}
+}
+
+- (void)sendScancode:(uint8)scancode flags:(uint16)flags
+{
+	if (scancode & SCANCODE_EXTENDED)
+	{
+		DEBUG_KEYBOARD((@"Sending extended scancode=0x%x, flags=0x%x\n", scancode & ~SCANCODE_EXTENDED, flags));
+		[controller sendInput:RDP_INPUT_SCANCODE flags:(flags | KBD_FLAG_EXT) param1:(scancode & ~SCANCODE_EXTENDED) param2:0];
+	}
+	else
+	{
+		DEBUG_KEYBOARD( (@"Sending scancode=0x%x flags=0x%x", scancode, flags) );
+		[controller sendInput:RDP_INPUT_SCANCODE flags:flags param1:scancode param2:0];
+	}
+}
+
+#pragma mark -
+#pragma mark Internal use
+
+- (void)setRemoteModifiers:(unsigned)newMods
+{
+	unsigned changedMods = newMods ^ remoteModifiers;
 	BOOL keySent;
 		
 	#define UP_OR_DOWN(b) ( (b) ? RDP_KEYPRESS : RDP_KEYRELEASE )
@@ -118,63 +184,20 @@ static NSDictionary *windowsKeymapTable = nil;
 
 
 	// Windows key
-	if ( (keySent = changedMods & NX_DEVICELCMDKEYMASK) )
-		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NX_DEVICELCMDKEYMASK)];
-	else if ( (keySent = changedMods & NX_DEVICERCMDKEYMASK) )
-		[self sendScancode:SCANCODE_CHAR_RWIN flags:UP_OR_DOWN(newMods & NX_DEVICERCMDKEYMASK)];
-
-	if (!keySent && (changedMods & NSCommandKeyMask))
+	if (changedMods & NSCommandKeyMask)
 		[self sendScancode:SCANCODE_CHAR_LWIN flags:UP_OR_DOWN(newMods & NSCommandKeyMask)];
 
-	// Caps lock, which is only sent once per change
+
+	// Caps lock, for which flagsChanged is only raised once
 	if (changedMods & NSAlphaShiftKeyMask)
 	{
 		[self sendScancode:SCANCODE_CHAR_CAPSLOCK flags:RDP_KEYPRESS];
 		[self sendScancode:SCANCODE_CHAR_CAPSLOCK flags:RDP_KEYRELEASE];
 	}
 
-   lastMods = newMods;
+   remoteModifiers = newMods;
 
    #undef UP_OR_DOWN(x)
-}
-
-
-#pragma mark -
-#pragma mark Sending events to server
-
-- (void)sendKeycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down
-{
-	if ([virtualKeymap objectForKey:[NSNumber numberWithInt:keyCode]] != nil)
-	{
-		if (down)
-			[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYPRESS)];
-		else
-			[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYRELEASE)];
-			
-		return;
-	}
-}
-
-
-// Returns YES if any keys are handled, otherwise NO
-- (BOOL)handleSpecialKeys:(NSEvent *)ev
-{
-	/* This may be needed in the future for things like pause/break */
-	return NO;
-}
-
-- (void)sendScancode:(uint8)scancode flags:(uint16)flags
-{
-	if (scancode & SCANCODE_EXTENDED)
-	{
-		DEBUG_KEYBOARD((@"Sending extended scancode=0x%x, flags=0x%x\n", scancode & ~SCANCODE_EXTENDED, flags));
-		[controller sendInput:RDP_INPUT_SCANCODE flags:(flags | KBD_FLAG_EXT) param1:(scancode & ~SCANCODE_EXTENDED) param2:0];
-	}
-	else
-	{
-		DEBUG_KEYBOARD( (@"Sending scancode=0x%x flags=0x%x", scancode, flags) );
-		[controller sendInput:RDP_INPUT_SCANCODE flags:flags param1:scancode param2:0];
-	}
 }
 
 

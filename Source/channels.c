@@ -55,7 +55,7 @@ channel_register(rdcConnection conn, char *name, uint32 flags, void (*callback) 
 	channel->mcs_id = MCS_GLOBAL_CHANNEL + 1 + conn->numChannels;
 	strncpy(channel->name, name, 8);
 	channel->flags = flags;
-	channel->process = callback;
+	channel->process = (void*)callback;
 	conn->numChannels++;
 	return channel;
 }

@@ -73,8 +73,8 @@
 	// Some internal stuff
 	uint32 cFlags;
 	NSString *cCommand, *cDirectory;
-	rdcConnection conn;
 	NSString *remoteClipboardContents;
+	rdcConnection conn;
 
 	// UI elements (only valid if connected)
 	CRDServerCell *cellRepresentation;
@@ -103,6 +103,8 @@
 
 - (BOOL)readRDPFile:(NSString *)path;
 - (BOOL)writeRDPFile:(NSString *)path;
+
+- (void)cancelConnection;
 
 // Accessors
 - (rdcConnection)conn;

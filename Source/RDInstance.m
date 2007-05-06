@@ -171,6 +171,9 @@
 	[self performSelectorOnMainThread:@selector(setStatusAsNumber:)
 			withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
 	
+	[g_appController performSelectorOnMainThread:@selector(validateControls)
+			withObject:nil waitUntilDone:NO];
+	
 	
 	// Clear out the bitmap cache
 	int i, k;
@@ -685,17 +688,24 @@
 		[g_appController disconnectInstance:self];
 }
 
-- (void)windowDidResignKey:(NSNotification *)sender
-{
-	[view releaseRemoteModifiers];	
-}
-
 - (void)windowDidBecomeKey:(NSNotification *)sender
 {
 	if ([sender object] == window)
 	{
 		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_TEXT];
 	}
+}
+
+
+#pragma mark -
+#pragma mark Working With CoRD
+
+- (void)cancelConnection
+{
+	if ( (connectionStatus != CRDConnectionConnecting) || (conn == NULL))
+		return;
+	
+	conn->errorCode = ConnectionErrorCanceled;
 }
 
 
