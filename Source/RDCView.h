@@ -34,6 +34,11 @@
 	RDCKeyboard *keyTranslator;
 	unsigned int *colorMap;	// always a size of 0xff
 	NSSize screenSize;
+	
+	// For mouse event throttling
+	NSDate *lastMouseEventSentAt;
+	NSEvent *deferredMouseEvent;
+	NSTimer *mouseInputScheduler;
 }
 
 // Drawing
@@ -53,6 +58,9 @@
 - (void)resetClip;
 - (void)startUpdate;
 - (void)stopUpdate;
+
+- (BOOL)checkMouseInBounds:(NSEvent *)ev;
+- (void)sendMouseInput:(unsigned short)flags;
 
 // Converting colors
 - (void)rgbForRDCColor:(int)col r:(unsigned char *)r g:(unsigned char *)g b:(unsigned char *)b;

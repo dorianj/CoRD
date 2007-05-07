@@ -359,7 +359,7 @@ mppc_expand(rdcConnection conn, uint8 * data, uint32 clen, uint8 ctype, uint32 *
 		{
 			return -1;
 		}
-		/* memory areas can overlap - meaning we can't use memXXX functions */
+		/* memory areas can overlap - meaning we can't use mem*** functions */
 		k = (next_offset - match_off) & (big ? 65535 : 8191);
 		do
 		{

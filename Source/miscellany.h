@@ -61,6 +61,8 @@ void fill_default_connection(rdcConnection conn);
 #define WINDOW_START_X 50
 #define WINDOW_START_Y 20
 #define SAVED_SERVER_DRAG_TYPE @"savedServerDragType"
+#define SNAP_WINDOW_SIZE 30.0
+#define MOUSE_EVENTS_PER_SEC 15.0
 
 /* User defaults (NSUserDefaults) keys */
 #define DEFAULTS_SHOW_DRAWER @"show_drawer"
@@ -93,7 +95,7 @@ AppController *g_appController;
 
 
 /* General mid-level debugging */
-#define WITH_DEBUG_KEYBOARD 1
+//#define WITH_DEBUG_KEYBOARD 1
 //#define WITH_DEBUG_UI 1
 #define WITH_MID_LEVEL_DEBUG 1
 

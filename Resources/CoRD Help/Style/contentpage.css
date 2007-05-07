@@ -1,0 +1,43 @@
+body {	margin: 0;
+		font-family:"Lucida Grande","Helvetica Neue",sans-serif; }
+
+h1 {	font-size: 12pt; 
+		font-family: "Lucida Grande", Arial, sans-serif; 
+		font-weight: 600;
+		margin: 12px auto; }
+		
+h2 {	font-size: 11pt;
+		font-family: "Lucida Grande", Arial, sans-serif; 
+		font-weight: 500;
+		margin: 20px auto 8px auto; }
+
+h4 {	font-size: 9pt;
+		font-family: "Lucida Grande", Arial, sans-serif; 
+		font-weight: 300;
+		margin: 25px auto; }
+
+p {	font-size: 9pt;
+	font-family: "Lucida Grande", Arial, sans-serif;
+	line-height: 12pt;
+	text-decoration: none; }
+		
+a { color: #00f;
+	font-size: 9pt;
+	font-family: "Lucida Grande", Arial, sans-serif;
+	line-height: 12pt;
+	text-decoration: none; }
+
+ul {	list-style: none; 
+		margin: 1px 0;
+		padding: 0; }
+		
+p {	font-size: 9pt; }
+
+li {	font-size: 9pt;
+		margin: 5px auto;}
+
+a:hover {	color: #00f;
+			text-decoration: underline; }
+strong {	font-weight: bold; }
+
+#entirepage { margin: 25px 20px; }

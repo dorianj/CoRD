@@ -30,6 +30,7 @@
 	- (void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
 	- (void)focusBackingStore;
 	- (void)releaseBackingStore;
+	- (void)recheckScheduledMouseInput:(NSTimer*)timer;
 @end
 
 #pragma mark -
@@ -194,8 +195,8 @@
 		return;
 	}
 	
-	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON1 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	if ([self checkMouseInBounds:ev])
+		[self sendMouseInput:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON1];
 }
 
 - (void)mouseUp:(NSEvent *)ev
@@ -211,47 +212,82 @@
 		return;
 	}
 	
-	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_BUTTON1 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	if ([self checkMouseInBounds:ev])
+		[self sendMouseInput:MOUSE_FLAG_BUTTON1];
 }
 
 - (void)rightMouseDown:(NSEvent *)ev
 {
-	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON2 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	if ([self checkMouseInBounds:ev])
+		[self sendMouseInput:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON2];
 }
 
 - (void)rightMouseUp:(NSEvent *)ev
 {
-	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_BUTTON2 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	if ([self checkMouseInBounds:ev])
+		[self sendMouseInput:MOUSE_FLAG_BUTTON2];
 }
 
 - (void)otherMouseDown:(NSEvent *)ev
 {
-	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON3 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	if ([self checkMouseInBounds:ev])
+		[self sendMouseInput:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON3];
 }
 
 - (void)otherMouseUp:(NSEvent *)ev
 {
-	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_BUTTON3 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	if ([self checkMouseInBounds:ev])
+		[self sendMouseInput:MOUSE_FLAG_BUTTON3];
 }
 
 - (void)scrollWheel:(NSEvent *)ev
 {
 	if ([ev deltaY] > 0)
 	{
-		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON4 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
-		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_BUTTON4 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+		[self sendMouseInput:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON4];
+		[self sendMouseInput:MOUSE_FLAG_BUTTON4];
 	}
 	else if ([ev deltaY] < 0)
 	{
-		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON5 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
-		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_BUTTON5 param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+		[self sendMouseInput:MOUSE_FLAG_DOWN | MOUSE_FLAG_BUTTON5];
+		[self sendMouseInput:MOUSE_FLAG_BUTTON5];
 	}
 }
+
+- (void)mouseDragged:(NSEvent *)ev
+{
+	[self mouseMoved:ev];
+}
+
+- (void)mouseMoved:(NSEvent *)ev
+{
+
+	if ([self checkMouseInBounds:ev])
+	{
+		if ([mouseInputScheduler isValid])
+			[mouseInputScheduler invalidate];
+				
+		[mouseInputScheduler release];
+		mouseInputScheduler = nil;
+		
+		if ( [[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0/MOUSE_EVENTS_PER_SEC) )
+		{
+			[lastMouseEventSentAt release];
+			lastMouseEventSentAt = [[NSDate date] retain];
+			[self sendMouseInput:MOUSE_FLAG_MOVE];
+		}
+		else
+		{
+			mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:(1.0/MOUSE_EVENTS_PER_SEC)
+					target:self selector:@selector(recheckScheduledMouseInput:)
+					userInfo:nil repeats:NO] retain];
+		}		
+	}
+}
+
+
+#pragma mark -
+#pragma mark Translating Input Events
 
 - (BOOL)checkMouseInBounds:(NSEvent *)ev
 { 
@@ -259,17 +295,16 @@
 	return NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self bounds]);
 }
 
-- (void)mouseDragged:(NSEvent *)ev
+- (void)sendMouseInput:(unsigned short)flags
 {
-	if ([self checkMouseInBounds:ev])
-		[self mouseMoved:ev];
+	[controller sendInput:RDP_INPUT_MOUSE flags:flags param1:lrintf(mouseLoc.x) param2:lrintf(mouseLoc.y)];
 }
 
-- (void)mouseMoved:(NSEvent *)ev
+- (void)recheckScheduledMouseInput:(NSTimer*)timer
 {
-	if ([self checkMouseInBounds:ev])
-		[controller sendInput:RDP_INPUT_MOUSE flags:MOUSE_FLAG_MOVE param1:(int)mouseLoc.x param2:(int)mouseLoc.y];
+	[self mouseMoved:deferredMouseEvent];
 }
+
 
 
 #pragma mark -

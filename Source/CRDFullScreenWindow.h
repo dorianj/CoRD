@@ -18,8 +18,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#define MENU_HOTSPOT_HEIGHT 3.0
-#define MENU_HOTSPOT_WAIT 0.5
+#define MENU_HOTSPOT_HEIGHT 2.0
+#define MENU_HOTSPOT_WAIT 0.50
 
 @interface CRDFullScreenWindow : NSWindow
 {

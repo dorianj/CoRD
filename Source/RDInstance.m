@@ -112,6 +112,9 @@
 	STREAM s;
 	uint32 ext_disc_reason;
 	
+	if (connectionStatus != CRDConnectionConnected)
+		return;
+	
 	do
 	{
 		s = rdp_recv(conn, &type);
@@ -694,6 +697,20 @@
 	{
 		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_TEXT];
 	}
+}
+
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
+{
+	NSSize realSize = [view bounds].size;
+	realSize.height += [sender frame].size.height - [[sender contentView] frame].size.height;
+	
+	if (realSize.width-proposedFrameSize.width <= SNAP_WINDOW_SIZE &&
+		realSize.height-proposedFrameSize.height <= SNAP_WINDOW_SIZE)
+	{
+		return realSize;	
+	}
+		
+	return proposedFrameSize;
 }
 
 

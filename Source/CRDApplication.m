@@ -71,9 +71,7 @@
 			break;
 			
 		case NSMouseMoved:
-			if ([g_appController displayMode] == CRDDisplayFullscreen &&
-				([fullScreenWindow pointIsInMouseHotSpot:[fullScreenWindow mouseLocationOutsideOfEventStream]] ||
-				[fullScreenWindow menuVisible]) )
+			if ([g_appController displayMode] == CRDDisplayFullscreen)
 			{
 				[fullScreenWindow mouseMoved:ev];
 				return;

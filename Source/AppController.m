@@ -273,14 +273,12 @@ static NSImage *shared_documentIcon = nil;
 }
 
 
-/* Removes the currently selected server, and deletes the file.
-	todo: allow this to work with connected servers
-*/
+// Removes the currently selected server, and deletes the file.
 - (IBAction)removeSelectedSavedServer:(id)sender
 {
 	RDInstance *inst = [self selectedServerInstance];
 	
-	if (inst == nil || [inst temporary] || [inst status] != CRDConnectionClosed)
+	if (inst == nil || [inst temporary])
 		return;
 	
 	NSAlert *alert = [NSAlert alertWithMessageText:@"Delete saved server" defaultButton:@"Delete" 
@@ -289,6 +287,9 @@ static NSImage *shared_documentIcon = nil;
 	
 	if ([alert runModal] == NSAlertAlternateReturn)
 		return;
+	
+	if ([inst status] != CRDConnectionClosed)
+		[self performStop:nil];
 		
 	[gui_serverList deselectAll:self];
 	
@@ -297,6 +298,7 @@ static NSImage *shared_documentIcon = nil;
 	[savedServers removeObject:inst];
 	
 	[self listUpdated];
+	[self autosizeUnifiedWindowWithAnimation:NO];
 }
 
 // Connects to the currently selected saved server
@@ -304,10 +306,18 @@ static NSImage *shared_documentIcon = nil;
 {
 	RDInstance *inst = [self selectedServerInstance];
 	
-	if (inst == nil || [inst status] != CRDConnectionClosed)
+	if (inst == nil)
 		return;
-	
-	[self connectInstance:inst];
+		
+	if ( ([inst status] == CRDConnectionConnected) && (displayMode == CRDDisplayWindowed) )
+	{
+		[[inst window] makeKeyAndOrderFront:self];
+		[[inst window] makeFirstResponder:[inst view]];
+	}
+	else 
+	{
+		[self connectInstance:inst];
+	}	
 }
 
 // Toggles whether or not the selected server is kept after disconnect
@@ -474,9 +484,9 @@ static NSImage *shared_documentIcon = nil;
 	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
 	[gui_fullScreenWindow setInitialFirstResponder:serverView];
 	[gui_tabView release];	
-	
-	NSSize serverViewSize = [serverView bounds].size;
-	[gui_tabView setFrame:NSMakeRect(0.0, 0.0, serverViewSize.width, serverViewSize.height)];
+
+	[gui_tabView setFrame:NSMakeRect(0.0, 0.0, [serverView width], [serverView height])];
+	[serverView setFrame:NSMakeRect(0.0, 0.0, [serverView width], [serverView height])];
 	
 	[gui_fullScreenWindow startFullScreen];
 
@@ -491,6 +501,8 @@ static NSImage *shared_documentIcon = nil;
 		return;
 	
 	displayMode = CRDDisplayUnified;
+	[NSMenu setMenuBarVisible:YES];
+	
 	[self autosizeUnifiedWindowWithAnimation:NO];
 	
 	[gui_tabView retain];
@@ -591,11 +603,6 @@ static NSImage *shared_documentIcon = nil;
 	}	
 	
 	[gui_tabView selectLastTabViewItem:self];
-	
-	if ([self selectedServerInstance])
-		[gui_unifiedWindow setTitle:[[self viewedServer] label]];
-	else
-		[gui_unifiedWindow setTitle:@"CoRD"];
 	
 	[self autosizeUnifiedWindowWithAnimation:(sender != self)];
 }
@@ -901,16 +908,11 @@ static NSImage *shared_documentIcon = nil;
 	// If the new selection is an active session and this wasn't called from self, change the selected view
 	if (inst != nil && aNotification != nil && [inst status] == CRDConnectionConnected)
 	{
-		if (displayMode == CRDDisplayWindowed)
-		{
-			[[inst window] makeKeyAndOrderFront:self];
-			[[inst window] makeFirstResponder:[inst view]];
-		}
-		else if ([gui_tabView indexOfTabViewItem:[inst tabViewRepresentation]] != NSNotFound)
+		if ( ([gui_tabView indexOfTabViewItem:[inst tabViewRepresentation]] != NSNotFound) &&
+					([self viewedServer] != inspectedServer) )
 		{
 			[gui_tabView selectTabViewItem:[inspectedServer tabViewRepresentation]];
 			[gui_unifiedWindow makeFirstResponder:[[self viewedServer] view]];
-			[gui_unifiedWindow setTitle:[inspectedServer label]];
 			[self autosizeUnifiedWindow];
 		}
 	}
@@ -1107,6 +1109,9 @@ static NSImage *shared_documentIcon = nil;
 		[self saveInspectedServer];
 		inspectedServer = nil;
 		[self validateControls];
+		
+		if ([self viewedServer] == nil && drawer_is_visisble(gui_serversDrawer))
+			[gui_unifiedWindow makeFirstResponder:gui_serverList];
 	}
 }
 
@@ -1116,6 +1121,23 @@ static NSImage *shared_documentIcon = nil;
 	{
 		[[self viewedServer] synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_TEXT];
 	}
+}
+
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
+{
+	if ( (sender == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) &&
+		 ([self viewedServer] != nil) )
+	{
+		NSSize realSize = [[[self viewedServer] view] bounds].size;
+		realSize.height += [gui_unifiedWindow frame].size.height - [[gui_unifiedWindow contentView] frame].size.height;
+		if (realSize.width-proposedFrameSize.width <= SNAP_WINDOW_SIZE &&
+			realSize.height-proposedFrameSize.height <= SNAP_WINDOW_SIZE)
+		{
+			return realSize;	
+		}
+	}
+	
+	return proposedFrameSize;
 }
 
 
@@ -1183,7 +1205,6 @@ static NSImage *shared_documentIcon = nil;
 			[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
 			[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
 			[gui_tabView selectLastTabViewItem:self];
-			[gui_unifiedWindow setTitle:[inst label]];
 			[gui_unifiedWindow makeFirstResponder:[inst view]];
 		}
 		else
@@ -1304,6 +1325,9 @@ static NSImage *shared_documentIcon = nil;
 	else if (displayMode == CRDDisplayUnified)
 	{
 		[self autosizeUnifiedWindow];
+		
+		if ([self viewedServer] == nil && drawer_is_visisble(gui_serversDrawer))
+			[gui_unifiedWindow makeFirstResponder:gui_serverList];
 	}
 }
 
@@ -1450,6 +1474,11 @@ static NSImage *shared_documentIcon = nil;
 				newWindowFrame.size.width = newWindowFrame.size.height * realAspect;			
 		}
 	}
+	
+	if ( ([self displayMode] != CRDDisplayUnified) || ([self viewedServer] == nil))
+		[gui_unifiedWindow setTitle:@"CoRD"];
+	else
+		[gui_unifiedWindow setTitle:[[self viewedServer] label]];
 	
 	[gui_unifiedWindow setFrame:newWindowFrame display:YES animate:animate];
 }

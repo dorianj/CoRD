@@ -1,0 +1,44 @@
+body {	margin: 0; }
+
+h1 {	font-size: 18pt; 
+		font-family: "Lucida Grande", Arial, sans-serif; 
+		font-weight: 500;
+		letter-spacing: -1pt;
+		margin: 12px auto; }
+		
+h2 {	font-size: 11pt;
+		font-family: "Lucida Grande", Arial, sans-serif; 
+		font-weight: 300;
+		margin: 12px auto 0 auto; }
+
+h4 {	font-size: 9pt;
+		font-family: "Lucida Grande", Arial, sans-serif; 
+		font-weight: 300;
+		margin: 25px auto; }
+
+p {	font-size: 9pt;
+	font-family: "Lucida Grande", Arial, sans-serif;
+	line-height: 12pt;
+	text-decoration: none; }
+		
+a { color: #00f;
+	font-size: 9pt;
+	font-family: "Lucida Grande", Arial, sans-serif;
+	line-height: 12pt;
+	text-decoration: none; }
+
+ul {	list-style: none; 
+		margin: 1px 0;
+		padding: 0;}
+
+a:hover {	color: #00f;
+			text-decoration: underline; }
+
+#entirepage {	width: 550px;
+				margin: 25px auto; }
+
+#leftcontent {	float: left; 
+				padding-right: 21px; 
+				border-right: 1px solid #757575; }
+#rightcontent {	float: left;
+	 			padding-left: 27px; }

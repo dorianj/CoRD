@@ -42,7 +42,7 @@
 	[self setAcceptsMouseMovedEvents:YES];
 	[self setReleasedWhenClosed:YES];
 	[self setHasShadow:NO];
-	[[self contentView] setAutoresizesSubviews:YES];
+	[[self contentView] setAutoresizesSubviews:NO];
 	
 	// Could use NSScreenSaverWindowLevel, but NSPopUpMenuWindowLevel achieves the same effect while
 	//	allowing the menu to display over it. Change to NSNormalWindowLevel for debugging fullscreen
@@ -87,7 +87,7 @@
 
 - (void)menuHotspotTracker:(NSTimer*)timer
 {
-	if ([[NSDate date] timeIntervalSinceDate:timeMouseEnteredMenuHotspot] > MENU_HOTSPOT_WAIT &&
+	if ([timeMouseEnteredMenuHotspot timeIntervalSinceNow] < -MENU_HOTSPOT_WAIT &&
 		[self pointIsInMouseHotSpot:[self mouseLocationOutsideOfEventStream]])
 	{
 		[self toggleMenuBarVisible:YES];
@@ -98,7 +98,6 @@
 {
 	if ([self pointIsInMouseHotSpot:[ev locationInWindow]])
 	{
-	
 		NSDate *curTime = [NSDate date];
 		if (timeMouseEnteredMenuHotspot == nil && !menuVisible)
 		{
@@ -106,14 +105,13 @@
 			
 			// Schedule a check back in case the mouse doesn't move again
 			[NSTimer scheduledTimerWithTimeInterval:MENU_HOTSPOT_WAIT target:self selector:@selector(menuHotspotTracker:) userInfo:nil repeats:NO];
-			
 		}
 		else if ([curTime timeIntervalSinceDate:timeMouseEnteredMenuHotspot] > MENU_HOTSPOT_WAIT && !menuVisible)
 		{
 			[self toggleMenuBarVisible:YES];
 		}
 	} 
-	else 
+	else if (!menuVisible || ([self frame].size.height - [ev locationInWindow].y > [NSMenuView menuBarHeight]))
 	{
 		[self toggleMenuBarVisible:NO];
 		
@@ -121,14 +119,13 @@
 		timeMouseEnteredMenuHotspot = nil;
 	}
 	
-	[super mouseMoved:ev];
+	[[self firstResponder] mouseMoved:ev];
 }
 
 - (BOOL)pointIsInMouseHotSpot:(NSPoint)point
 {
 	return [self frame].size.height - point.y <= MENU_HOTSPOT_HEIGHT;
 }
-
 
 - (void)toggleMenuBarVisible:(BOOL)visible
 {
@@ -138,7 +135,7 @@
 	[timeMouseEnteredMenuHotspot release];
 	timeMouseEnteredMenuHotspot = nil;
 	
-	 // -[NSMenu menuBarHeight] has a bug in 10.4 and returns 0.0 always
+	// -[NSMenu menuBarHeight] has a bug in OS X 10.4 and always returns 0.0
 	float menuBarHeight = [NSMenuView menuBarHeight];
 		
 	NSRect winFrame = [self frame];
@@ -147,7 +144,7 @@
 	if (visible)
 		[NSMenu setMenuBarVisible:YES];
 		
-	[self setFrame:winFrame display:YES animate:YES];
+	[self setFrame:winFrame display:NO animate:YES];
 	
 	if (!visible)
 		[NSMenu setMenuBarVisible:NO];

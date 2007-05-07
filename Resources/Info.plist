@@ -27,6 +27,10 @@
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleHelpBookFolder</key>
+	<string>CoRD Help</string>
+	<key>CFBundleHelpBookName</key>
+	<string>CoRD Help</string>
 	<key>CFBundleIconFile</key>
 	<string>rdesktop</string>
 	<key>CFBundleIdentifier</key>

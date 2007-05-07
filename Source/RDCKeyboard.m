@@ -73,16 +73,14 @@ static NSDictionary *windowsKeymapTable = nil;
 	
 	DEBUG_KEYBOARD( (@"handleKeyEvent: virtual key 0x%x %spressed", keycode, (down) ? "" : "de") );
 	unsigned savedMods = remoteModifiers;
+	
 	[self setRemoteModifiers:[ev modifierFlags]];
 	[self sendKeycode:keycode modifiers:rdflags pressed:down];
-	[self setRemoteModifiers:savedMods];
 }
-
 
 - (void)handleFlagsChanged:(NSEvent *)ev
 {
-	NSLog(@"  ");
-	DEBUG_KEYBOARD( (@"handleFlagsChanged entered with keycode 0x%x", [ev keyCode]) );
+	DEBUG_KEYBOARD( (@"handleFlagsChanged entered") );
 	
 	// Filter KeyDown events for the Windows key, instead, send both on key up
 	static int windowsKeySuppressed = 0;
@@ -94,12 +92,12 @@ static NSDictionary *windowsKeymapTable = nil;
 		newMods &= !NSCommandKeyMask;
 		windowsKeySuppressed = 1;
 		DEBUG_KEYBOARD( (@"supressing windows key") );
-
 	}
-	else if ( !(newMods & NSCommandKeyMask) && windowsKeySuppressed )
+	else if ( !(newMods & NSCommandKeyMask) && (windowsKeySuppressed || (remoteModifiers & NSCommandKeyMask)) )
 	{
 		DEBUG_KEYBOARD( (@"Sending Windows key down/up") );
-		[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYPRESS];
+		if ( !(remoteModifiers & NSCommandKeyMask))
+			[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYPRESS];
 		[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYRELEASE];
 		windowsKeySuppressed = 0;
 		remoteModifiers &= !NSCommandKeyMask;
