@@ -7,6 +7,7 @@
                 disconnect = id; 
                 endFullscreen = id; 
                 fieldEdited = id; 
+                helpForConnectionOptions = id; 
                 keepSelectedServer = id; 
                 performFullScreen = id; 
                 performQuickConnect = id; 

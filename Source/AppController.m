@@ -26,8 +26,6 @@
 #import "CRDFullScreenWindow.h"
 #import "miscellany.h"
 
-static NSImage *shared_documentIcon = nil;
-
 #define TOOLBAR_DISCONNECT	@"Disconnect"
 #define TOOLBAR_DRAWER @"Servers"
 #define TOOLBAR_FULLSCREEN @"Fullscreen"
@@ -84,9 +82,6 @@ static NSImage *shared_documentIcon = nil;
 }
 - (void) dealloc
 {
-	[resourcePath release];
-	[serversDirectory release];
-	
 	[connectedServers release];
 	[savedServers release];
 	
@@ -157,23 +152,21 @@ static NSImage *shared_documentIcon = nil;
 			[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
 				NSUserDomainMask, YES) objectAtIndex:0];
 		NSString *cordDirectory = [[appSupport stringByAppendingPathComponent:@"CoRD"] retain];
-		serversDirectory = [[cordDirectory stringByAppendingPathComponent:@"Servers"] retain];
-		resourcePath = [[NSBundle mainBundle] resourcePath];
 		
 		ensure_directory_exists(cordDirectory, fileManager);
-		ensure_directory_exists(serversDirectory, fileManager);
+		ensure_directory_exists([AppController savedServersPath], fileManager);
 
 		// Read each .rdp file
 		RDInstance *rdpinfo;
 		NSString *path;
-		NSArray *files = [fileManager directoryContentsAtPath:serversDirectory];
+		NSArray *files = [fileManager directoryContentsAtPath:[AppController savedServersPath]];
 		NSEnumerator *enumerator = [files objectEnumerator];
 		id filename;
 		while ( (filename = [enumerator nextObject]) )
 		{
 			if ([[filename pathExtension] isEqualToString:@"rdp"])
 			{
-				path = [serversDirectory stringByAppendingPathComponent:filename];
+				path = [[AppController savedServersPath] stringByAppendingPathComponent:filename];
 				rdpinfo = [[RDInstance alloc] initWithRDPFile:path];
 				if (rdpinfo != nil)
 					[savedServers addObject:rdpinfo];
@@ -254,7 +247,7 @@ static NSImage *shared_documentIcon = nil;
 {
 	RDInstance *inst = [[[RDInstance alloc] init] autorelease];
 	
-	NSString *path = increment_file_name(serversDirectory, @"New Server", @".rdp");
+	NSString *path = increment_file_name([AppController savedServersPath], @"New Server", @".rdp");
 		
 	[inst setTemporary:NO];
 	[inst setRdpFilename:path];
@@ -654,6 +647,12 @@ static NSImage *shared_documentIcon = nil;
 	[recent insertObject:address atIndex:0];
 	[userDefaults setObject:recent forKey:DEFAULTS_RECENT_SERVERS];
 	[userDefaults synchronize];
+}
+
+- (IBAction)helpForConnectionOptions:(id)sender
+{
+    [[NSHelpManager sharedHelpManager] openHelpAnchor: @"ConnectionOptions"
+        inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"]];
 }
 
 
@@ -1294,7 +1293,7 @@ static NSImage *shared_documentIcon = nil;
 	{
 		if ([inst rdpFilename] == nil)
 		{
-			NSString *path = increment_file_name(serversDirectory, [inst label], @".rdp");
+			NSString *path = increment_file_name([AppController savedServersPath], [inst label], @".rdp");
 			[inst setRdpFilename:path];
 			[inst writeRDPFile:path];
 		}
@@ -1305,7 +1304,7 @@ static NSImage *shared_documentIcon = nil;
 	} 
 	else
 	{
-		if ( [[[inst rdpFilename] stringByDeletingLastPathComponent] isEqualToString:serversDirectory])
+		if ( [[[inst rdpFilename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
 		{
 			[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
 		}
@@ -1618,6 +1617,7 @@ static NSImage *shared_documentIcon = nil;
 #pragma mark Application-wide resources
 + (NSImage *)sharedDocumentIcon
 {
+	static NSImage *shared_documentIcon = nil;
 	if (shared_documentIcon == nil)
 	{
 		// The stored icon is loaded flipped for whatever reason, so flip it back
@@ -1630,11 +1630,18 @@ static NSImage *shared_documentIcon = nil;
 		[icon drawInRect:r fromRect:r operation:NSCompositeSourceOver fraction:1.0];
 		
 		[shared_documentIcon unlockFocus];
-		
 	}
 	
 	return shared_documentIcon;
 }
+
++ (NSString *)savedServersPath
+{
+	NSString *appSupport = 
+			[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+	return [appSupport stringByAppendingPathComponent:@"CoRD/Servers"];
+}
+
 
 
 @end

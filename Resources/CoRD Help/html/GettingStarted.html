@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html>
+<a name="GettingStarted"></a>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="AppleTitle" content="GettingStarted" />
+	<meta name="AppleIcon" content="images/CoRDIcon.png" />
+	<title>Getting Started With CoRD</title>
+	<link rel="stylesheet" type="text/css" href="../Style/contentpage.css" />
+</head>
+
+<body>
+<div id="entirepage">
+	<h1>Getting Started</h1>
+	
+	<p>CoRD is a remote desktop client for Microsoft Terminal Services servers. This means you can connect to a computer running Windows and control the desktop remotely. CoRD, however, doesn't work with the built in Apple remote desktop client or server, nor VNC servers.</p>
+	
+	<h2>How do I connect to a server?</h2>
+	<p>The quickest way to connect to a server is to type the IP address or host name of the computer you want to connect to into the Quick Connect toolbar item and press enter. That will connect you immediately with the default options. If you need to customize the connection (to change the screen size or configure it with a user name and password to automatically log in), you can create a saved server. Saved servers are kept after CoRD is closed and allow you to customize many options. To create a saved server, click the '+' button in the servers drawer. An inspector editing this new server will open. For details on all the options, visit the <a href="ConnectionOptions.html">Connections options reference</a>. After you're done editing, close the inspector. You can connect to saved servers by double clicking on one or selecting one and clicking the play button (or pressing enter).
+		
+		
+	<h2>Working with Microsoft Remote Desktop Connection</h2>
+	<p>Although CoRD does most of the things MS RDC does, you may find that you need to use the MS client from time to time (or to use CoRD settings on a Windows computer). To open a CoRD saved server in MS RDC, you can find the rdp file in /Users/&lt;your username&gt;/Library/Application Support/CoRD/Servers. Changes made to the file while CoRD is running will be overwritten, but if you save changes to it while CoRD isn't open, they will apply to your saved servers. Almost all settings are preserved between CoRD and MS RDC, with the exception of saved passwords.</p>
+</div>
+</body>
+</html>

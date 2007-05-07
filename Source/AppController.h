@@ -27,71 +27,42 @@
 
 @interface AppController : NSObject
 {
-	// Inspector elements    
-	IBOutlet NSTextField *gui_label;
-    IBOutlet NSTextField *gui_host;
-	IBOutlet NSTextField *gui_username;
-    IBOutlet NSTextField *gui_password;
-    IBOutlet NSButton *gui_savePassword;
-	IBOutlet NSTextField *gui_domain;
-	IBOutlet NSButton *gui_consoleSession;
-	
-	IBOutlet NSButton *gui_forwardDisks;
-    IBOutlet NSPopUpButton *gui_screenResolution;
-    IBOutlet CRDServerList *gui_serverList;
-    
-	IBOutlet NSButton *gui_cacheBitmaps;
-    IBOutlet NSPopUpButton *gui_colorCount;
-    IBOutlet NSButton *gui_displayDragging;
-    IBOutlet NSButton *gui_drawDesktop;
-    IBOutlet NSButton *gui_enableAnimations;
-    IBOutlet NSButton *gui_enableThemes;
-
-	IBOutlet NSButton *gui_connectButton;
-	IBOutlet NSButton *gui_inspectorButton;
-	IBOutlet NSButton *gui_addNewButton;
-	
+	// Inspector
 	IBOutlet NSWindow *gui_inspector;
-	IBOutlet NSWindow *gui_unifiedWindow;
-	
-	// Other interface elements
+	IBOutlet NSTextField *gui_label, *gui_host, *gui_username, *gui_password, *gui_domain;
+    IBOutlet NSButton *gui_savePassword, *gui_consoleSession, *gui_forwardDisks,
+						*gui_cacheBitmaps, *gui_displayDragging, *gui_drawDesktop,
+						*gui_enableAnimations, *gui_enableThemes;
+
+    IBOutlet NSPopUpButton *gui_screenResolution, *gui_colorCount;
 	IBOutlet NSBox *gui_performanceOptions;
-	IBOutlet NSTabView *gui_tabView;
+    RDInstance *inspectedServer;
+	
+	// Drawer
 	IBOutlet NSDrawer *gui_serversDrawer;
-	IBOutlet NSComboBox *gui_quickConnect;
-	
-	IBOutlet NSUserDefaultsController *userDefaultsController;
-	NSUserDefaults *userDefaults;
-	
-	// The list of connected servers (may contain some saved servers)
-	NSMutableArray *connectedServers;
-	
-	// The list of unconnected saved servers
-	NSMutableArray *savedServers;
-	
-	RDInstance *instanceReconnectingForFullscreen;
-	CRDFullScreenWindow *gui_fullScreenWindow;
-	CRDDisplayMode displayMode;
-	CRDDisplayMode displayModeBeforeFullscreen;
-	
-	NSPoint windowCascadePoint;
-	
-	// Label cells
+	IBOutlet CRDServerList *gui_serverList;
+	IBOutlet NSButton *gui_connectButton, *gui_inspectorButton, *gui_addNewButton;
 	CRDLabelCell *connectedServersLabel;
 	CRDLabelCell *savedServersLabel;
 	
-	// The instance that the inspector is currently viewing/editing
-	RDInstance *inspectedServer;
-	
-	// Some constant file paths
-	NSString *serversDirectory;
-	NSString *resourcePath;
-	
-	// Toolbar stuff
+	// Unified window
+	IBOutlet NSWindow *gui_unifiedWindow;
+	IBOutlet NSComboBox *gui_quickConnect;
+	IBOutlet NSTabView *gui_tabView;
 	NSToolbar *gui_toolbar;
 	NSMutableDictionary *toolbarItems;
+
+	// Other display modes
+	CRDFullScreenWindow *gui_fullScreenWindow;
+	CRDDisplayMode displayMode;
+	CRDDisplayMode displayModeBeforeFullscreen;
+	NSPoint windowCascadePoint;
+	IBOutlet NSUserDefaultsController *userDefaultsController;
+	NSUserDefaults *userDefaults;
+	RDInstance *instanceReconnectingForFullscreen;
 	
-	
+	// Active sessions and disconnected saved servers
+	NSMutableArray *connectedServers, *savedServers;
 }
 
 // Actions
@@ -117,6 +88,7 @@
 - (IBAction)startUnified:(id)sender;
 - (IBAction)takeScreenCapture:(id)sender;
 - (IBAction)performQuickConnect:(id)sender;
+- (IBAction)helpForConnectionOptions:(id)sender;
 
 
 // Other methods, in no particular order
@@ -140,6 +112,7 @@
 
 
 + (NSImage *)sharedDocumentIcon;
++ (NSString *)savedServersPath;
 
 @end
 
