@@ -55,7 +55,7 @@
     GXset				15 1
 */
 
-// For managing the current draw session (the time bracketed between ui_begin_update and _end)
+// For managing the current draw session (the time bracketed between ui_begin_update and ui_end_update)
 static void schedule_display(rdcConnection conn);
 static void schedule_display_in_rect(rdcConnection conn, NSRect r);
 
@@ -184,7 +184,7 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 		{
 			j = (p[2] << 16) | (p[1] << 8) | p[0];
 			o[0] = 0;
-			for (q = 0; q < 0xff; q++) {
+			for (q = 0; q <= 0xff; q++) {
 				if (colorMap[q] == j) {
 					o[0] = q;
 					break;
@@ -675,6 +675,7 @@ void ui_destroy_cursor(HCURSOR cursor)
 void ui_move_pointer(int x, int y)
 {
 	UNIMPL;
+	NSLog(@"Should move mouse to %d, %d", x, y);
 }
 
 

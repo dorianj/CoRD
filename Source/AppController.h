@@ -61,6 +61,9 @@
 	NSUserDefaults *userDefaults;
 	RDInstance *instanceReconnectingForFullscreen;
 	
+	// Menu
+	IBOutlet NSMenu *gui_serversMenu;
+	
 	// Active sessions and disconnected saved servers
 	NSMutableArray *connectedServers, *savedServers;
 }
@@ -89,6 +92,7 @@
 - (IBAction)takeScreenCapture:(id)sender;
 - (IBAction)performQuickConnect:(id)sender;
 - (IBAction)helpForConnectionOptions:(id)sender;
+- (IBAction)performServerMenuItem:(id)sender;
 
 
 // Other methods, in no particular order

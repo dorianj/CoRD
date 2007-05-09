@@ -168,7 +168,7 @@
 	// Fail quickly if it's a totally bogus host
 	if ([hostName length] < 2)
 	{
-		conn->errorCode = ConnectionErrorGeneral;
+		conn->errorCode = ConnectionErrorHostResolution;
 		return NO;
 	}
 	

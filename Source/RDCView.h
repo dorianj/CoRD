@@ -32,7 +32,7 @@
 	NSCursor *cursor;
 	int bitdepth;
 	RDCKeyboard *keyTranslator;
-	unsigned int *colorMap;	// always a size of 0xff
+	unsigned int *colorMap;	// always a size of 0xff+1
 	NSSize screenSize;
 	
 	// For mouse event throttling

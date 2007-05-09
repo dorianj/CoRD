@@ -116,7 +116,7 @@
 		toolbarItems = [[NSMutableDictionary alloc] init];
 		
 		[toolbarItems 
-			setObject:create_static_toolbar_item(TOOLBAR_DRAWER, @"Show Servers",
+			setObject:create_static_toolbar_item(TOOLBAR_DRAWER, @"Servers",
 				@"Hide or show the servers drawer", @selector(toggleDrawer:))
 			forKey:TOOLBAR_DRAWER];
 		[toolbarItems 
@@ -197,6 +197,7 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
+	BOOL drawerVisible = drawer_is_visisble(gui_serversDrawer);
 	RDInstance *inst = [self selectedServerInstance];
 	RDInstance *viewedInst = [self viewedServer];
 	SEL action = [item action];
@@ -211,6 +212,8 @@
 		return [gui_tabView numberOfTabViewItems] > 2; /* Greater than 2 because 1 blank is added */ 
 	else if (action == @selector(selectPrevious:))
 		return [gui_tabView numberOfTabViewItems] > 2;
+	else if (action == @selector(takeScreenCapture:))
+		return viewedInst != nil;
 	else if (action == @selector(toggleInspector:))
 	{
 		[item setTitle:([gui_inspector isVisible] ? @"Hide Inspector" : @"Show Inspector")];
@@ -235,6 +238,12 @@
 			return [connectedServers count] > 0;			
 		}
 	}
+	else if (action == @selector(performServerMenuItem:))
+	{
+		RDInstance *representedInst = [item representedObject];
+		[item setState:([connectedServers indexOfObject:representedInst] != NSNotFound ? NSOnState : NSOffState)];	
+	
+	}
 	
 	return YES;
 }
@@ -245,6 +254,9 @@
 
 - (IBAction)addNewSavedServer:(id)sender
 {
+	if (!drawer_is_visisble(gui_serversDrawer))
+		[self toggleDrawer:nil visible:YES];
+		
 	RDInstance *inst = [[[RDInstance alloc] init] autorelease];
 	
 	NSString *path = increment_file_name([AppController savedServersPath], @"New Server", @".rdp");
@@ -262,7 +274,7 @@
 	[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
 	
 	if (![gui_inspector isVisible])
-		[self toggleInspector:self];
+		[self toggleInspector:nil];
 }
 
 
@@ -339,13 +351,13 @@
 	
 	if ([[self viewedServer] status]  == CRDConnectionConnected)
 		[self disconnect:nil];
-	else if ([[self selectedServerInstance] status] == CRDConnectionConnecting)
+	else if ([[self serverInstanceForRow:[gui_serverList selectedRow]] status] == CRDConnectionConnecting)
 		[self stopConnection:nil];
 }
 
 - (IBAction)stopConnection:(id)sender
 {
-	[self cancelConnectingInstance:[self selectedServerInstance]];
+	[self cancelConnectingInstance:[self serverInstanceForRow:[gui_serverList selectedRow]]];
 }
 
 
@@ -655,6 +667,35 @@
         inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"]];
 }
 
+- (IBAction)performServerMenuItem:(id)sender
+{
+
+	RDInstance *inst = [sender representedObject];
+	
+	if (inst == nil)
+		return;
+		
+	if ([connectedServers indexOfObject:inst] != NSNotFound)
+	{
+		// connected server, switch to it
+		if (displayMode == CRDDisplayUnified)
+		{
+			[gui_tabView selectTabViewItem:[inst tabViewRepresentation]];
+			[gui_unifiedWindow makeFirstResponder:[inst view]];
+			[self autosizeUnifiedWindow];
+		}
+		else if (displayMode == CRDDisplayWindowed)
+		{
+			[[inst window] makeKeyAndOrderFront:nil];
+			[[inst window] makeFirstResponder:[inst view]];
+		}
+	}
+	else
+	{
+		[self connectInstance:inst];
+	}
+}
+
 
 #pragma mark -
 #pragma mark Toolbar methods
@@ -699,9 +740,7 @@
 	RDInstance *inst = [self selectedServerInstance];
 	RDInstance *viewedInst = [self viewedServer];
 	
-	if ([itemId isEqualToString:TOOLBAR_DRAWER])
-		[toolbarItem setLabel:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Servers" : @"Show Servers")];
-	else if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
+	if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
 		return ([connectedServers count] > 0);
 	else if ([itemId isEqualToString:TOOLBAR_UNIFIED] && (displayMode != CRDDisplayFullscreen))
 	{
@@ -882,7 +921,7 @@
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
 	int selectedRow = [gui_serverList selectedRow];
-	RDInstance *inst = [self selectedServerInstance];
+	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
 	
 	[self validateControls];
 	[self fieldEdited:nil];
@@ -1488,6 +1527,37 @@
 {	
 	[gui_serverList reloadData];
 	[gui_serverList setNeedsDisplay:YES];
+	
+	
+	// Update servers menu
+	int separatorIndex = [gui_serversMenu indexOfItemWithTag:SERVERS_SEPARATOR_TAG], i; 
+	
+	while ( (i = [gui_serversMenu numberOfItems]-1) > separatorIndex)
+		[gui_serversMenu removeItemAtIndex:i];
+	
+	NSMenuItem *menuItem;
+	NSEnumerator *enumerator;
+	RDInstance *inst;
+	
+	enumerator = [connectedServers objectEnumerator];
+	while ( (inst = [enumerator nextObject]) )
+	{
+		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
+					action:@selector(performServerMenuItem:) keyEquivalent:@""];
+		[menuItem setRepresentedObject:inst];
+		[gui_serversMenu addItem:menuItem];
+		[menuItem autorelease];
+	}
+	
+	enumerator = [savedServers objectEnumerator];
+	while ( (inst = [enumerator nextObject]) )
+	{
+		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
+					action:@selector(performServerMenuItem:) keyEquivalent:@""];
+		[menuItem setRepresentedObject:inst];
+		[gui_serversMenu addItem:menuItem];
+		[menuItem autorelease];
+	}
 }
 
 - (RDInstance *)serverInstanceForRow:(int)row
@@ -1504,7 +1574,10 @@
 
 - (RDInstance *)selectedServerInstance
 {
-	return [self serverInstanceForRow:[gui_serverList selectedRow]];
+	if (!drawer_is_visisble(gui_serversDrawer))
+		return nil;
+	else
+		return [self serverInstanceForRow:[gui_serverList selectedRow]];
 }
 
 // Returns the connected server that the tab view is displaying

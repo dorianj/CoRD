@@ -51,6 +51,7 @@
                 "gui_screenResolution" = NSPopUpButton; 
                 "gui_serverList" = CRDServerList; 
                 "gui_serversDrawer" = NSDrawer; 
+                "gui_serversMenu" = NSMenu; 
                 "gui_tabView" = NSTabView; 
                 "gui_unifiedWindow" = NSWindow; 
                 "gui_username" = NSTextField; 

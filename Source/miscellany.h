@@ -63,6 +63,8 @@ void fill_default_connection(rdcConnection conn);
 #define SAVED_SERVER_DRAG_TYPE @"savedServerDragType"
 #define SNAP_WINDOW_SIZE 30.0
 #define MOUSE_EVENTS_PER_SEC 15.0
+#define SERVERS_SEPARATOR_TAG 19991
+#define SERVERS_ITEM_TAG 20001
 
 /* User defaults (NSUserDefaults) keys */
 #define DEFAULTS_SHOW_DRAWER @"show_drawer"
