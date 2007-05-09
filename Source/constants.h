@@ -336,6 +336,7 @@ enum RDP_INPUT_DEVICE
 #define CF_PRIVATELAST  767
 #define CF_GDIOBJFIRST  768
 #define CF_GDIOBJLAST   1023
+#define CF_AUTODETECT	16661
 
 /* Sound format constants */
 #define WAVE_FORMAT_PCM		1

@@ -20,6 +20,8 @@
 
 #import "disk.h"
 
+#import "miscellany.h"
+
 #import <sys/types.h>
 #import <sys/stat.h>
 #import <unistd.h>
@@ -542,7 +544,7 @@ disk_read(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint
 {
 	int n;
 
-#if 0
+#if 1
 	/* browsing dir ????        */
 	/* each request is 24 bytes */
 	if (conn->fileInfo[handle].flags_and_attributes & FILE_DIRECTORY_FILE)
@@ -893,7 +895,6 @@ disk_check_notify(rdcConnection conn, NTHANDLE handle)
 NTSTATUS
 disk_create_notify(rdcConnection conn, NTHANDLE handle, uint32 info_class)
 {
-
 	struct fileinfo *pfinfo;
 	NTSTATUS ret = STATUS_PENDING;
 

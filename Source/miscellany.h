@@ -93,6 +93,7 @@ typedef enum _CRDDisplayMode
 /* Global variables */
 AppController *g_appController;
 
+#define DISK_FORWARDING_DISABLED 1
 
 /* General mid-level debugging */
 //#define WITH_DEBUG_KEYBOARD 1

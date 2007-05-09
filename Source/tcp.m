@@ -109,8 +109,6 @@ tcp_recv(rdcConnection conn, STREAM s, uint32 length)
 
 	while (length > 0)
 	{
-		if (conn->numDevices > 0)
-			ui_select(conn);
 		rcvd = [is read:s->end maxLength:length];
 		if (rcvd < 0)
 		{

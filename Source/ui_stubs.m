@@ -1016,12 +1016,12 @@ int load_licence(unsigned char **data)
 #pragma mark Disk forwarding
 int ui_select(rdcConnection conn)
 {
-
 	int n = 0;
 	fd_set rfds, wfds;
 	struct timeval tv;
 	RDCBOOL s_timeout = False;
 	
+	// If there are no pending IO requests, no need to check any files
 	if (!conn->ioRequest)
 		return 1;
 	
@@ -1030,7 +1030,11 @@ int ui_select(rdcConnection conn)
 
 	rdpdr_add_fds(conn, &n, &rfds, &wfds, &tv, &s_timeout);
 	
-	switch (select(n, &rfds, &wfds, NULL, NULL))
+	struct timeval noTimeout;
+	noTimeout.tv_sec = 0;
+	noTimeout.tv_usec = 500; // one millisecond is 1000
+
+	switch (select(n, &rfds, &wfds, NULL, &noTimeout))
 	{
 		case -1:
 			error("select: %s\n", strerror(errno));

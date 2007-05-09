@@ -25,6 +25,9 @@
 // for sharedDocumentIcon
 #import "AppController.h"
 
+// Number of polls per second to check IO
+#define NOTIFY_POLL_SPEED 10.0
+
 @interface RDInstance (Private)
 	- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force;
 	- (void)setStatus:(CRDConnectionStatus)status;
@@ -223,7 +226,7 @@
 	conn->keyLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
 
 	// Set up disk redirection
-	if (forwardDisks)
+	if (forwardDisks && !DISK_FORWARDING_DISABLED)
 	{
 		NSArray *localDrives = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
 		NSMutableArray *validDrives = [NSMutableArray arrayWithCapacity:5];
@@ -249,8 +252,6 @@
 	
 	cliprdr_init(conn);
 	
-	
-	
 	// Make the connection
 	BOOL connected = rdp_connect(conn, safe_string_conv(hostName), 
 							logonFlags, 
@@ -259,7 +260,7 @@
 							safe_string_conv(cCommand), 
 							safe_string_conv(cDirectory));
 							
-	// Upon success, set up our incoming socket
+	// Upon success, set up the input socket
 	if (connected)
 	{
 		inputRunLoop = [NSRunLoop currentRunLoop];
@@ -277,7 +278,7 @@
 		
 		[self setStatus:CRDConnectionConnected];
 		
-		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_TEXT];	
+		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_AUTODETECT];	
 	}
 	else
 	{	
@@ -337,14 +338,17 @@
 	if ([toPasteboard availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
 	{
 		NSString *pasteContent = convert_line_endings([toPasteboard stringForType:NSStringPboardType], YES);
-	
-		const char *data = [pasteContent UTF8String];
 		
-		cliprdr_send_data(conn, (unsigned char *)data, strlen(data)+1);				
-		cliprdr_send_simple_native_format_announce(conn, CF_TEXT);
-		
-		[remoteClipboardContents release];
-		remoteClipboardContents = [pasteContent retain];
+		if (![remoteClipboardContents isEqualToString:pasteContent] || (format != CF_AUTODETECT) )
+		{
+			const char *data = [pasteContent UTF8String];
+			
+			cliprdr_send_data(conn, (unsigned char *)data, strlen(data)+1);				
+			cliprdr_send_simple_native_format_announce(conn, CF_TEXT);
+			
+			[remoteClipboardContents release];
+			remoteClipboardContents = [pasteContent retain];
+		}
 	}
 }
 
@@ -356,12 +360,29 @@
 	[pb setString:convert_line_endings([NSString stringWithUTF8String:[data bytes]], NO) forType:NSStringPboardType];
 }
 
+- (void)pollDiskNotifyRequests:(NSTimer *)timer
+{
+	if (connectionStatus != CRDConnectionConnected)
+	{
+		[timer invalidate];
+		return;
+	}
+	
+	ui_select(conn);
+}
 
 #pragma mark -
 #pragma mark Run loop management
 - (void)startInputRunLoop
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	if (forwardDisks && !DISK_FORWARDING_DISABLED)
+	{
+		[NSTimer scheduledTimerWithTimeInterval:(1.0/NOTIFY_POLL_SPEED) target:self
+					selector:@selector(pollDiskNotifyRequests:) userInfo:nil repeats:YES];
+	}
+	
 	BOOL gotInput;
 	unsigned x = 0;
 	do
@@ -695,7 +716,7 @@
 {
 	if ([sender object] == window)
 	{
-		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_TEXT];
+		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_AUTODETECT];
 	}
 }
 
