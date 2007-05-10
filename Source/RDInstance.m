@@ -41,6 +41,7 @@
 #pragma mark NSObject methods
 - (id)init
 {
+	preferredRowIndex = -1;
 	screenDepth = 16;
 	themes = cacheBitmaps = YES;
 	fileEncoding = NSASCIIStringEncoding;
@@ -106,7 +107,7 @@
 
 
 #pragma mark -
-#pragma mark RDP methods
+#pragma mark Working with rdesktop
 
 // Invoked on incoming data arrival, starts the processing of incoming packets
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)streamEvent
@@ -150,8 +151,7 @@
 				unimpl("PDU %d\n", type);
 		}
 		
-	} while (conn->nextPacket < s->end);
-
+	} while ( (conn->nextPacket < s->end) && (connectionStatus == CRDConnectionConnected) );
 }
 
 // Using the current properties, attempt to connect to a server. Blocks until timeout on failure.
@@ -214,13 +214,12 @@
 	
 	// Other various settings
 	conn->bitmapCache = cacheBitmaps;
-	conn->serverBpp = screenDepth;
+	conn->serverBpp = screenDepth ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
-	conn->tcpPort = (port==0 || port>=65536) ? DEFAULT_PORT : port;
+	conn->tcpPort = (!port || port>=65536) ? DEFAULT_PORT : port;
 	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
-	
 	
 	// Set remote keymap to match local OS X input type
 	conn->keyLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
@@ -244,8 +243,8 @@
 			}
 		}
 		
-		disk_enum_devices(conn,convert_string_array(validDrives),
-						  convert_string_array(validNames),[validDrives count]);
+		disk_enum_devices(conn, convert_string_array(validDrives),
+						  convert_string_array(validNames), [validDrives count]);
 	}
 	
 	rdpdr_init(conn);
@@ -257,12 +256,14 @@
 							logonFlags, 
 							safe_string_conv(domain), 
 							safe_string_conv(password), 
-							safe_string_conv(cCommand), 
-							safe_string_conv(cDirectory));
+							"",  /* xxx: command on logon */
+							"" /* xxx: session directory*/ );
 							
 	// Upon success, set up the input socket
 	if (connected)
 	{
+		[self setStatus:CRDConnectionConnected];
+		
 		inputRunLoop = [NSRunLoop currentRunLoop];
 	
 		NSStream *is = conn->inputStream;
@@ -275,8 +276,6 @@
 							   withObject:[NSNumber numberWithBool:YES]
 							waitUntilDone:NO];
 		conn->ui = view;
-		
-		[self setStatus:CRDConnectionConnected];
 		
 		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_AUTODETECT];	
 	}
@@ -372,7 +371,7 @@
 }
 
 #pragma mark -
-#pragma mark Run loop management
+#pragma mark Working with the input run loop
 - (void)startInputRunLoop
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -400,7 +399,7 @@
 }
 
 #pragma mark -
-#pragma mark Reading/writing RDP files
+#pragma mark Working with the represented file
 
 // This probably isn't safe to call from anywhere other than initWith.. in its current form
 - (BOOL) readRDPFile:(NSString *)path
@@ -486,6 +485,8 @@
 				startDisplay = numVal;
 			else if ([name isEqualToString:@"cord label"])
 				label = [value retain];			
+			else if ([name isEqualToString:@"cord row index"])
+				preferredRowIndex = numVal;
 			else if ([name isEqualToString:@"full address"]) {
 				split_hostname(value, &hostName, &port);
 				[hostName retain];
@@ -546,6 +547,7 @@
 	write_int(@"cord save password", savePassword);
 	write_int(@"startdisplay", startDisplay);
 	write_int(@"cord fullscreen", fullscreen);
+	write_int(@"cord row index", preferredRowIndex);
 	
 	write_string(@"full address", full_host_name(hostName, port));
 	write_string(@"username", username);
@@ -744,6 +746,16 @@
 		return;
 	
 	conn->errorCode = ConnectionErrorCanceled;
+}
+
+- (NSComparisonResult)compareUsingPreferredOrder:(id)compareTo
+{
+	int otherOrder = [[compareTo valueForKey:@"prefereredRowIndex"] intValue];
+	
+	if (preferredRowIndex == otherOrder)
+		return [[compareTo label] compare:label];
+	else
+		return (preferredRowIndex - otherOrder > 0) ? NSOrderedDescending : NSOrderedAscending;
 }
 
 

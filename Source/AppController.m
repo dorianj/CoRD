@@ -47,6 +47,12 @@
 	- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled;
 	- (void)createWindowForInstance:(RDInstance *)inst;
 	- (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
+	- (void)addSavedServer:(RDInstance *)inst;
+	- (void)addSavedServer:(RDInstance *)inst atIndex:(int)index;
+	- (void)addSavedServer:(RDInstance *)inst atIndex:(int)index select:(BOOL)select;
+	- (void)sortSavedServers;
+	- (void)storeSavedServerPositions;
+	- (void)removeSavedServer:(RDInstance *)inst deleteFile:(BOOL)deleteFile;
 @end
 
 
@@ -169,15 +175,18 @@
 				path = [[AppController savedServersPath] stringByAppendingPathComponent:filename];
 				rdpinfo = [[RDInstance alloc] initWithRDPFile:path];
 				if (rdpinfo != nil)
-					[savedServers addObject:rdpinfo];
+					[self addSavedServer:rdpinfo];
 				else
 					NSLog(@"RDP file '%@' failed to load!", filename);
 					
 				[rdpinfo release];
 			}
 		}
-		
 	}
+	
+	[gui_serverList deselectAll:nil];
+	[self sortSavedServers];
+	[self storeSavedServerPositions];
 	
 	// Register for drag operations. xxx: could be done in CRDServersList
 	NSArray *types = [NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
@@ -242,7 +251,6 @@
 	{
 		RDInstance *representedInst = [item representedObject];
 		[item setState:([connectedServers indexOfObject:representedInst] != NSNotFound ? NSOnState : NSOffState)];	
-	
 	}
 	
 	return YES;
@@ -266,15 +274,12 @@
 	[inst setLabel:[[path lastPathComponent] stringByDeletingPathExtension]];
 	[inst writeRDPFile:nil];
 	
-	[savedServers addObject:inst];
-
-	[self listUpdated];
-	
-	NSIndexSet *index = [NSIndexSet indexSetWithIndex:2 + [savedServers indexOfObjectIdenticalTo:inst]];
-	[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
+	[self addSavedServer:inst];
 	
 	if (![gui_inspector isVisible])
 		[self toggleInspector:nil];
+		
+	[self storeSavedServerPositions];
 }
 
 
@@ -298,9 +303,7 @@
 		
 	[gui_serverList deselectAll:self];
 	
-	// Remove the server from the list, delete its backing file
-	[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
-	[savedServers removeObject:inst];
+	[self removeSavedServer:inst deleteFile:YES];
 	
 	[self listUpdated];
 	[self autosizeUnifiedWindowWithAnimation:NO];
@@ -850,38 +853,46 @@
 - (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info
 		proposedRow:(int)row proposedDropOperation:(NSTableViewDropOperation)op
 {	
-	if ([info draggingSource] == gui_serverList)
+	NSPasteboard *pb = [info draggingPasteboard];
+	NSString *pbDataType = [gui_serverList pasteboardDataType:pb];
+	
+	if ([pbDataType isEqualToString:SAVED_SERVER_DRAG_TYPE])
 	{
-		// Inner list drag
-		return NSDragOperationNone;
-	} 
-	else
+		return NSDragOperationMove;
+	}
+	else if ([pbDataType isEqualToString:NSFilenamesPboardType])
 	{
-		// External drag, make sure there's at least one RDP file in there
 		NSArray *files = [[info draggingPasteboard] propertyListForType:NSFilenamesPboardType];
 		NSArray *rdpFiles = filter_filenames(files, [NSArray arrayWithObjects:@"rdp",nil]);
-		
 		return ([rdpFiles count] > 0) ? NSDragOperationCopy : NSDragOperationNone;
 	}
+	
+	return NSDragOperationNone;
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id <NSDraggingInfo>)info
 		row:(int)row dropOperation:(NSTableViewDropOperation)operation
 {
-	//TRACE_FUNC;
-
-	if ([info draggingSource] == gui_serverList)
+	NSPasteboard *pb = [info draggingPasteboard];
+	NSString *pbDataType = [gui_serverList pasteboardDataType:pb];
+	int newRow = -1;
+	
+	if ([pbDataType isEqualToString:SAVED_SERVER_DRAG_TYPE])
 	{
-		// inner list drag, currently ignoring. Todo: allow for item moving
-		return NO;
-	} 
-	else
+		newRow = [[pb stringForType:SAVED_SERVER_DRAG_TYPE] intValue];
+	}
+	else if ([pbDataType isEqualToString:NSFilenamesPboardType])
 	{
 		// External drag, load all rdp files passed
 		NSArray *files = [[info draggingPasteboard] propertyListForType:NSFilenamesPboardType];
 		NSArray *rdpFiles = filter_filenames(files, [NSArray arrayWithObjects:@"rdp",nil]);
 		
-		RDInstance *inst, *base = [self serverInstanceForRow:row];
+		RDInstance *inst;
+		int insertIndex = [savedServers indexOfObject:[self serverInstanceForRow:row]];
+		
+		if (insertIndex == NSNotFound)
+			insertIndex = [savedServers count];
+		
 		NSEnumerator *enumerator = [rdpFiles objectEnumerator];
 		id file;
 		
@@ -890,29 +901,46 @@
 			inst = [[RDInstance alloc] initWithRDPFile:file];
 			
 			if (inst != nil)
-				[savedServers insertObject:inst atIndex:[savedServers indexOfObject:base]];
+				[savedServers insertObject:inst atIndex:insertIndex];
 			
 			[inst release];
 		}
 		
 		return YES;
 	}
+	
+	if ([info draggingSource] == gui_serverList)
+		[self reinsertHeldSavedServer:newRow];
+	
+	return NO;
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes
 		toPasteboard:(NSPasteboard*)pboard
 {
-	//TRACE_FUNC;
-
 	RDInstance *inst = [self serverInstanceForRow:[rowIndexes firstIndex]];
 	
-	if (inst == nil || [inst temporary]) // xxx: currently bails if not a saved server
+	if (inst == nil)
 		return NO;
-			
-	[pboard declareTypes:[NSArray arrayWithObject:NSFilenamesPboardType] owner:nil];
+	
+	int row = [rowIndexes firstIndex];
+	
+	[pboard declareTypes:[NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, nil] owner:nil];
 	[pboard setPropertyList:[NSArray arrayWithObject:[inst rdpFilename]] forType:NSFilenamesPboardType];
+	[pboard setString:[NSString stringWithFormat:@"%d", row] forType:SAVED_SERVER_DRAG_TYPE];
 	
 	return YES;
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView canDragRow:(unsigned)rowIndex
+{	
+	// xxx: currently, can't drag connected servers at all
+	return [savedServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
+}
+
+- (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(unsigned)rowIndex
+{
+	return rowIndex >= 2 + [connectedServers count];
 }
 
 
@@ -1016,12 +1044,12 @@
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)	forKey:@"consoleSession"];
 	
 	// Text fields
-	[inst setValue:[gui_label stringValue] forKey:@"label"];
-	[inst setValue:[gui_username stringValue] forKey:@"username"];
-	[inst setValue:[gui_domain stringValue]	 forKey:@"domain"];	
-	[inst setValue:[gui_password stringValue] forKey:@"password"];
+	[inst setValue:[gui_label stringValue]		forKey:@"label"];
+	[inst setValue:[gui_username stringValue]	forKey:@"username"];
+	[inst setValue:[gui_domain stringValue]		forKey:@"domain"];	
+	[inst setValue:[gui_password stringValue]	forKey:@"password"];
 	
-	// Host/port
+	// Host
 	int port;
 	NSString *s;
 	split_hostname([gui_host stringValue], &s, &port);
@@ -1051,7 +1079,7 @@
 	
 }
 
-/* Sets the inspector options to match an RDInstance */
+// Sets the inspector options to match an RDInstance
 - (void)setInspectorSettings:(RDInstance *)newSettings
 {
 	if (newSettings == nil)
@@ -1064,7 +1092,7 @@
 		[gui_inspector setTitle:[@"Inspector: " stringByAppendingString:[newSettings label]]];
 	}
 		
-	// Set the checkboxes 
+	// All checkboxes 
 	[gui_cacheBitmaps		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"cacheBitmaps"])];
 	[gui_displayDragging	setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"windowDrags"])];
 	[gui_drawDesktop		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"drawDesktop"])];
@@ -1074,23 +1102,22 @@
 	[gui_forwardDisks		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"forwardDisks"])];
 	[gui_consoleSession		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"consoleSession"])];
 	
-	// Set some of the textfield inputs
+	// Most of the text fields
 	[gui_label    setStringValue:[newSettings valueForKey:@"label"]];
 	[gui_username setStringValue:[newSettings valueForKey:@"username"]];
 	[gui_domain   setStringValue:[newSettings valueForKey:@"domain"]];
 	[gui_password setStringValue:[newSettings valueForKey:@"password"]];
 	
-	// Set host
+	// Host
 	int port = [[newSettings valueForKey:@"port"] intValue];
 	NSString *host = [newSettings valueForKey:@"hostName"];
-	
 	[gui_host setStringValue:full_host_name(host, port)];
 	
-	// Set the color depth
+	// Color depth
 	int colorDepth = [[newSettings valueForKey:@"screenDepth"] intValue];
 	[gui_colorCount selectItemAtIndex:(colorDepth/8-1)];
 	
-	// Set the resolution
+	// Screen resolution
 	if ([[newSettings valueForKey:@"fullscreen"] boolValue])
 	{
 		[gui_screenResolution selectItemAtIndex:0];
@@ -1163,13 +1190,12 @@
 
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
 {
-	if ( (sender == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) &&
-		 ([self viewedServer] != nil) )
+	if ( (sender == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) && ([self viewedServer] != nil) )
 	{
 		NSSize realSize = [[[self viewedServer] view] bounds].size;
 		realSize.height += [gui_unifiedWindow frame].size.height - [[gui_unifiedWindow contentView] frame].size.height;
-		if (realSize.width-proposedFrameSize.width <= SNAP_WINDOW_SIZE &&
-			realSize.height-proposedFrameSize.height <= SNAP_WINDOW_SIZE)
+		if ( (realSize.width-proposedFrameSize.width <= SNAP_WINDOW_SIZE) &&
+			 (realSize.height-proposedFrameSize.height <= SNAP_WINDOW_SIZE) )
 		{
 			return realSize;	
 		}
@@ -1227,18 +1253,16 @@
 		// Move it into the proper list
 		if (![inst temporary])
 		{
-			[inst retain];
+			[[inst retain] autorelease];
 			[savedServers removeObject:inst];
 			[connectedServers addObject:inst];
-			[inst release];
 		}
 		
-		NSIndexSet *index = [NSIndexSet indexSetWithIndex:1 + [connectedServers indexOfObject:inst]];
-		[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
+		[gui_serverList selectRow:(1 + [connectedServers indexOfObject:inst])];
 		[self listUpdated];
 		
 		// Create gui
-		if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
+		if ( (displayMode == CRDDisplayUnified) || (displayMode == CRDDisplayFullscreen) )
 		{
 			[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
 			[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
@@ -1254,13 +1278,11 @@
 		if ([[inst valueForKey:@"fullscreen"] boolValue] || [[inst valueForKey:@"temporarilyFullscreen"] boolValue])
 		{
 			[self startFullscreen:self];	
-			return;	
+			return;
 		}
 		
 		if (displayMode == CRDDisplayUnified)
-		{
 			[self autosizeUnifiedWindow];
-		}
 		
 	}
 	else
@@ -1270,13 +1292,7 @@
 		ConnectionErrorCode errorCode = [inst conn]->errorCode;
 		
 		if (errorCode != ConnectionErrorNone && errorCode != ConnectionErrorCanceled)
-		{
-			if ([inst temporary])
-			{
-				[connectedServers removeObject:inst];
-				[self listUpdated];
-			}
-			
+		{			
 			NSString *descs[] = {
 					@"No error",
 					@"The connection timed out.",
@@ -1294,7 +1310,7 @@
 			{
 				[self connectInstance:inst];
 			}
-			else if ([inst temporary]) // Temporary items are added to the active session before connecting, so remove on failure
+			else if ([inst temporary]) // Temporary items may be in connectedServers even though connection failed
 			{
 				[connectedServers removeObject:inst];
 				[self listUpdated];
@@ -1323,13 +1339,13 @@
 		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"temporarilyFullscreen"];
 	}
 	
-	// If it's not temporary, move it to the saved servers list. Update the table view
-	//	and selection as needed.
-	[inst retain];
+
+	[[inst retain] autorelease];
 	[connectedServers removeObject:inst];
 	
 	if (![inst temporary])
 	{
+		// Move to saved servers
 		if ([inst rdpFilename] == nil)
 		{
 			NSString *path = increment_file_name([AppController savedServersPath], [inst label], @".rdp");
@@ -1337,12 +1353,11 @@
 			[inst writeRDPFile:path];
 		}
 		
-		[savedServers addObject:inst];
-		NSIndexSet *index = [NSIndexSet indexSetWithIndex:(2 + [connectedServers count] + [savedServers indexOfObjectIdenticalTo:inst])];
-		[gui_serverList selectRowIndexes:index byExtendingSelection:NO];
+		[self addSavedServer:inst];
 	} 
 	else
 	{
+		// If temporary and in the CoRD servers directory, delete it
 		if ( [[[inst rdpFilename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
 		{
 			[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
@@ -1350,12 +1365,10 @@
 		
 		[gui_serverList deselectAll:self];
 	}
-	
-	[inst release];
 
 	[self listUpdated];
 		
-	if (displayMode == CRDDisplayFullscreen && [gui_tabView numberOfTabViewItems] == 1)
+	if ( (displayMode == CRDDisplayFullscreen) && ([gui_tabView numberOfTabViewItems] == 1) )
 	{
 		[self autosizeUnifiedWindowWithAnimation:NO];
 		[self endFullscreen:self];
@@ -1379,7 +1392,85 @@
 
 
 #pragma mark -
-#pragma mark Other methods
+#pragma mark Managing saved servers
+
+- (void)addSavedServer:(RDInstance *)inst
+{
+	[self addSavedServer:inst atIndex:[savedServers count] select:YES];
+}
+
+- (void)addSavedServer:(RDInstance *)inst atIndex:(int)index
+{
+	[self addSavedServer:inst atIndex:index select:NO];
+}
+
+- (void)addSavedServer:(RDInstance *)inst atIndex:(int)index select:(BOOL)select
+{
+	if ( (inst == nil) || (index < 0) || (index > [savedServers count]) )
+		return;
+		
+	[savedServers insertObject:inst atIndex:index];
+
+	if (select)
+		[gui_serverList selectRow:(2 + [connectedServers count] + index)];
+	
+	[gui_serverList noteNumberOfRowsChanged];
+}
+
+- (void)removeSavedServer:(RDInstance *)inst deleteFile:(BOOL)deleteFile
+{
+	if (deleteFile)
+		[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
+		
+	[savedServers removeObject:inst];
+	
+	[self listUpdated];
+}
+
+- (void)sortSavedServers
+{
+	[savedServers sortUsingSelector:@selector(compareUsingPreferredOrder:)];
+}
+
+- (void)storeSavedServerPositions
+{
+	NSEnumerator *enumerator = [savedServers objectEnumerator];
+	RDInstance *inst;
+	
+	while ( (inst = [enumerator nextObject]) )
+		[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObject:inst]] forKey:@"preferredRowIndex"];	
+}
+
+
+#pragma mark -
+#pragma mark Support for dragging of saved servers
+
+- (void)holdSavedServer:(int)row
+{
+	RDInstance *inst = [self serverInstanceForRow:row];
+	
+	if ( (inst == nil) || ([savedServers indexOfObjectIdenticalTo:inst] == NSNotFound) )
+		return;
+		
+	dumpedInstance = [inst retain];
+	[inst setValue:[NSNumber numberWithInt:row] forKey:@"preferredRowIndex"];
+
+	[savedServers removeObject:inst];
+	//[self listUpdated];	
+}
+
+- (void)reinsertHeldSavedServer:(int)intoRow
+{
+	int row = (intoRow == -1) ? [[dumpedInstance valueForKey:@"preferredRowIndex"] intValue] : intoRow,
+		index = row - 2 - [connectedServers count];
+	[self addSavedServer:dumpedInstance atIndex:index];
+	
+	[dumpedInstance setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
+}
+
+
+#pragma mark -
+#pragma mark Other
 
 - (BOOL)mainWindowIsFocused
 {
@@ -1614,7 +1705,7 @@
 	return nil;
 }
 
-// Enables/disables gui controls as needed
+// Enables/disables non-inspector gui controls as needed
 - (void)validateControls
 {
 	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
@@ -1688,6 +1779,7 @@
 
 #pragma mark -
 #pragma mark Application-wide resources
+
 + (NSImage *)sharedDocumentIcon
 {
 	static NSImage *shared_documentIcon = nil;

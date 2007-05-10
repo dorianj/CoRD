@@ -42,7 +42,6 @@
 #pragma mark -
 
 @interface CRDServerList (Private)
-	- (NSString *)pasteboardDataType:(NSPasteboard *)draggingPasteboard;
 	- (BOOL)pasteboardHasValidData:(NSPasteboard *)draggingPasteboard;
 	- (void)createNewRowOriginsAboveRow:(int)rowIndex;
 	- (void)startAnimation;
@@ -59,7 +58,7 @@
 
 - (void)awakeFromNib
 {
-	draggedRow = emptyRowIndex = -1;
+	draggedRow = selectedRow = emptyRowIndex = -1;
 	[self setVerticalMotionCanBeginDrag:YES];
 }
 
@@ -71,10 +70,9 @@
 
 - (void)highlightSelectionInClipRect:(NSRect)clipRect
 {	
-	int selectedRow = [self selectedRow];
-	if ( (selectedRow == -1) || (selectedRow == draggedRow))
+	if (selectedRow == -1)
 		return;
-	
+
 	NSRect drawRect = [self rectOfRow:selectedRow];
 	
 	NSColor *topColor, *bottomColor;
@@ -100,51 +98,53 @@
 {
 	// Lightly highlight the visible server if not selected
 	if ([[self delegate] tableView:self objectValueForTableColumn:nil row:rowIndex] == [g_appController viewedServer]
-		&& [self selectedRow] != rowIndex && [g_appController displayMode] == CRDDisplayUnified)
+		&& (selectedRow != rowIndex) && ([g_appController displayMode] == CRDDisplayUnified) )
 	{
 		[NSGraphicsContext saveGraphicsState];
 		[[[NSColor selectedTextBackgroundColor] blendedColorWithFraction:0.4 ofColor:[NSColor whiteColor]] set];
 		[NSBezierPath fillRect:[self rectOfRow:rowIndex]];		
 		[NSGraphicsContext restoreGraphicsState];	
 	}
-
-
-	// xxx: this is part of the hack that is the current shoddy d'n'd
-	if (rowIndex != draggedRow)
-		[super drawRow:rowIndex clipRect:clipRect];
+	
+	[[[[self tableColumns] objectAtIndex:0] dataCellForRow:rowIndex] setHighlighted:[self isRowSelected:rowIndex]];
+	
+	[super drawRow:rowIndex clipRect:clipRect];
 }
 
 - (void)selectRowIndexes:(NSIndexSet *)indexes byExtendingSelection:(BOOL)extend
 {
-	int selectedRow, i, count;
-	
-	selectedRow = (indexes != nil) ? [indexes firstIndex] : -1;
-
-	for (i = 0, count = [self numberOfRows]; i < count; i++)
-		[[[[self tableColumns] objectAtIndex:0] dataCellForRow:i] setHighlighted:(i == selectedRow)];
-
-	[super selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO];
-	[self setNeedsDisplay:YES];
+	[self selectRow:[indexes firstIndex]];
 }
 
 - (void)selectRow:(int)index
 {
-	if (index > -1 && [[self delegate] tableView:self shouldSelectRow:index])
-		[self selectRowIndexes:[NSIndexSet indexSetWithIndex:(unsigned)index] byExtendingSelection:NO];
-	else
-		[self deselectAll:self];
+	selectedRow = index;	
+	[self setNeedsDisplay:YES];
 }
 
 - (void)deselectRow:(int)rowIndex
 {
-	if (rowIndex != -1)
-		[[self cellForRow:rowIndex] setHighlighted:NO];
+	[self deselectAll:nil];
 }
 
 - (void)deselectAll:(id)sender
 {
-	[self selectRowIndexes:nil byExtendingSelection:NO];
-	[super deselectAll:sender];
+	[self selectRow:-1];
+}
+
+- (BOOL)isRowSelected:(int)rowIndex
+{
+	return rowIndex == selectedRow;
+}
+
+- (int)selectedRow
+{
+	return selectedRow;
+}
+
+- (NSIndexSet *)selectedRowIndexes
+{
+	return [NSIndexSet indexSetWithIndex:selectedRow];
 }
 
 - (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows tableColumns:(NSArray *)tableColumns
@@ -157,14 +157,14 @@
 	
 	NSRect rowRect = [self rectOfRow:row];	
 	NSImage *dragImage = [[NSImage alloc] initWithSize:rowRect.size];
+	[dragImage setFlipped:YES];
 	
-	[dragImage lockFocus]; {
-
-		//CGContextTranslateCTM([[NSGraphicsContext currentContext] graphicsPort], rowRect.origin.x,  rowRect.origin.y-rowRect.origin.y);
-		/*NSAffineTransform *xform = [NSAffineTransform transform];
+	[dragImage lockFocus];
+	{
+		NSAffineTransform *xform = [NSAffineTransform transform];
 		[xform translateXBy:0.0 yBy:rowRect.size.height];
 		[xform scaleXBy:1.0 yBy:-1.0];
-		[xform concat];*/
+		[xform concat]; 
 		
 		BOOL highlighted = [[self cellForRow:row] isHighlighted];
 		[[self cellForRow:row] setHighlighted:NO];
@@ -174,7 +174,12 @@
 	} [dragImage unlockFocus];
 	
 
-	return [dragImage autorelease];;
+	return [dragImage autorelease];
+}
+
+- (BOOL)canDragRowsWithIndexes:(NSIndexSet *)rowIndexes atPoint:(NSPoint)mouseDownPoint
+{
+	return [[self delegate] tableView:self canDragRow:[rowIndexes firstIndex]];
 }
 
 
@@ -222,7 +227,29 @@
 		[self selectRow:row];
 	}
 	
-	[super mouseDown:ev];
+//	[super mouseDown:ev];
+}
+
+- (void)mouseDragged:(NSEvent *)ev
+{
+	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+	NSRect rowRect = [self rectOfRow:row];
+	NSIndexSet *index = [NSIndexSet indexSetWithIndex:row];
+	NSPoint offset = NSZeroPoint, imageStart = rowRect.origin;
+	imageStart.y+=rowRect.size.height;
+	NSPasteboard *pboard;
+
+	pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+	[[self delegate] tableView:self writeRowsWithIndexes:index toPasteboard:pboard];
+
+	NSImage *dragImage = [self dragImageForRowsWithIndexes:index tableColumns:nil event:ev offset:&offset];
+	
+	[g_appController holdSavedServer:row];
+	[self noteNumberOfRowsChanged];
+	draggedRow = row;
+	[self deselectAll:nil];
+	
+	[self dragImage:dragImage at:imageStart offset:NSZeroSize event:ev pasteboard:pboard source:self slideBack:YES];
 }
 
 // Assure that the row the right click is over is selected so that the context menu is correct
@@ -253,26 +280,61 @@
 
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
-	return [self draggingUpdated:sender];
+	if ([sender draggingSource] == self)
+	{
+		//NSLog(@"doing custom anim for self");
+		
+		emptyRowIndex = draggedRow;
+		
+		int numRows = [self numberOfRows], i;
+		float delta = [super rectOfRow:emptyRowIndex].size.height;
+
+		NSPoint endRowOrigin;
+		NSMutableArray *endBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
+		NSMutableArray *startBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
+		
+		for (i = 0; i <= numRows; i++)
+		{
+			endRowOrigin = [super rectOfRow:i].origin;
+			
+			if ( i >= emptyRowIndex)
+				endRowOrigin.y += delta;
+				
+			[startBuilder addObject:[NSValue valueWithPoint:endRowOrigin]];
+			[endBuilder addObject:[NSValue valueWithPoint:endRowOrigin]];
+		}
+
+		[autoexpansionStartRowOrigins release];
+		[autoexpansionEndRowOrigins release];
+		
+		autoexpansionStartRowOrigins = [startBuilder retain];
+		autoexpansionEndRowOrigins = [endBuilder retain];
+		
+		[self animation:nil didReachProgressMark:1.0];
+		
+		return NSDragOperationMove;
+	}
+	else
+		return [self draggingUpdated:sender];
 }
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
-{	
+{
 	int row = [super rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
-	NSDragOperation retOperation;
 		
+	NSDragOperation retOperation;
+	BOOL innerListDrag = [sender draggingSource] == self;
+
 	inLiveDrag = YES;
 	
-	if ([sender draggingSource] == self)
-		retOperation = NSDragOperationMove;
-	else if ([[[[self tableColumns] objectAtIndex:0] dataCellForRow:row] isKindOfClass:[CRDLabelCell class]])
-		return retOperation = NSDragOperationNone;
-	else
-		retOperation = NSDragOperationCopy;
+	if ([[self delegate] tableView:self canDropAboveRow:row])
+		retOperation = innerListDrag ? NSDragOperationMove : NSDragOperationCopy;
+	else 
+		return NSDragOperationNone;
 		
 //	NSLog(@"row=%d, dragged=%d, empty=%d", row, draggedRow, emptyRowIndex);
 	
-	if ( (row != -1) && (row != emptyRowIndex) /*|| ( (draggedRow != -1) && (draggedRow != emptyRowIndex) ))*/ )
+	if ( (row != -1) && (row != emptyRowIndex) )
 	{
 		[self createNewRowOriginsAboveRow:row];
 		[self startAnimation];
@@ -291,20 +353,43 @@
 	[self concludeDrag];
 }
 
+/*
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
 {
-	[self concludeDrag];
-	return NO;//[self pasteboardHasValidData:[sender draggingPasteboard]];
+	return [super prepareForDragOperation:sender];
 }
+
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
+	NSString *pbDataType = [self pasteboardDataType:sender];
 	
-	return NO;//[self pasteboardHasValidData:[sender draggingPasteboard]];
-}
+	if (pbDataType == nil)
+		return NO;
+	
+	if ([pbDataType isEqualToString:SAVED_SERVER_DRAG_TYPE])
+	{
+	
+	
+	}
+	else if ([pbDataType isEqualToString:NSFilenamesPboardType])
+	{
+	
+	
+	}
+	else if ([pbDataType isEqualToString:NSFilesPromisePboardType])
+	{
+	
+	
+	}
+	
+	
+	return YES;
+}*/
 
 - (void)concludeDragOperation:(id <NSDraggingInfo>)sender
 {
+	[super concludeDragOperation:sender];
 	[self concludeDrag];
 }
 
@@ -318,15 +403,15 @@
 #pragma mark -
 #pragma mark NSDraggingSource
 
-- (void)draggedImage:(NSImage *)anImage beganAt:(NSPoint)aPoint
+- (void)draggedImage:(NSImage *)anImage beganAt:(NSPoint)point
 {
-	draggedRow = [self rowAtPoint:[self convertPoint:[[self window] mouseLocationOutsideOfEventStream] fromView:nil]];
-	[super draggedImage:anImage beganAt:aPoint];	
+	int row = [self rowAtPoint:point];
+	
+	[super draggedImage:anImage beganAt:point];	
 }
 
 - (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
 {
-	draggedRow = -1;
 	[super draggedImage:anImage endedAt:aPoint operation:operation];
 }
 

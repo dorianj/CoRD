@@ -66,6 +66,9 @@
 	
 	// Active sessions and disconnected saved servers
 	NSMutableArray *connectedServers, *savedServers;
+	
+	// Support for server dragging
+	RDInstance *dumpedInstance;
 }
 
 // Actions
@@ -114,6 +117,8 @@
 - (NSWindow *)unifiedWindow;
 - (CRDFullScreenWindow *)fullScreenWindow;
 
+- (void)holdSavedServer:(int)row;
+- (void)reinsertHeldSavedServer:(int)intoRow;
 
 + (NSImage *)sharedDocumentIcon;
 + (NSString *)savedServersPath;

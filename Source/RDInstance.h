@@ -27,66 +27,42 @@
 
 @interface RDInstance : NSObject
 {
-	RDCView *view;
-	NSRunLoop *inputRunLoop;
-	
-	// All user-settable options
-	NSString *label;
-	NSString *hostName;
-	NSString *username; 
-	NSString *password; 
-	NSString *domain;	
-	
-	BOOL savePassword;
-	BOOL forwardDisks; 
-	BOOL cacheBitmaps; 
-	BOOL drawDesktop; 
-	BOOL windowDrags; 
-	BOOL windowAnimation; 
-	BOOL themes; 
-	BOOL consoleSession;
-	BOOL fullscreen;
-	
-	int startDisplay;
-	int forwardAudio; 
-	int screenDepth;
-	int screenWidth;
-	int screenHeight;
-	int port;
-	
-	
-	// Used to store attributes that RDP files may define but aren't handled in 
-	//	instance variables so when the file is written out those attributes are
-	//	retained
+	// Represented rdesktop object
+	rdcConnection conn;
+
+	// User configurable RDP settings
+	NSString *label, *hostName, *username, *password, *domain;	
+	BOOL savePassword, forwardDisks, cacheBitmaps, drawDesktop, windowDrags,
+			windowAnimation, themes, consoleSession, fullscreen;
+	int startDisplay, forwardAudio, screenDepth, screenWidth, screenHeight, port;
 	NSMutableDictionary *otherAttributes;
 	
-	// Flags used by ServersManager (and possibly others)
-	BOOL temporary;
-	BOOL modified;
-	BOOL temporarilyFullscreen;
+	// Allows disconnect to be called from any thread
+	NSRunLoop *inputRunLoop;
+
+	// General information about instance
+	BOOL temporary, modified, temporarilyFullscreen;
+	int preferredRowIndex;
 	CRDConnectionStatus connectionStatus;
 	
-	// Path to the RDP File backing this RDInstance, if any.
+	// Represented file
 	NSString *rdpFilename;
 	NSStringEncoding fileEncoding;
 	
-	// Some internal stuff
-	uint32 cFlags;
-	NSString *cCommand, *cDirectory;
+	// Clipboard
 	NSString *remoteClipboardContents;
-	rdcConnection conn;
 
-	// UI elements (only valid if connected)
+	// UI elements
+	RDCView *view;
+	NSScrollView *scrollEnclosure;
 	CRDServerCell *cellRepresentation;
 	NSTabViewItem *tabViewRepresentation;
-	
-	// Used when in windowed mode
 	NSWindow *window;
-	NSScrollView *scrollEnclosure;
 }
+
 - (id)initWithRDPFile:(NSString *)path;
 
-// RDP-related
+// Working with rdesktop
 - (BOOL)connect;
 - (void)disconnect;
 - (void)sendInput:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
@@ -94,17 +70,21 @@
 - (void)synchronizeRemoteClipboard:(NSPasteboard *)toPasteboard suggestedFormat:(int)format;
 - (void)synchronizeLocalClipboard:(NSData *)data;
 
-// GUI
+// Working with the rest of CoRD
+- (void)cancelConnection;
+- (NSComparisonResult)compareUsingPreferredOrder:(id)compareTo;
+
+// Working with GUI
 - (void)updateCellData;
 - (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure;
 - (void)createWindow:(BOOL)useScrollView;
 - (void)destroyUnified;
 - (void)destroyWindow;
 
+// Working with the represented file
 - (BOOL)readRDPFile:(NSString *)path;
 - (BOOL)writeRDPFile:(NSString *)path;
 
-- (void)cancelConnection;
 
 // Accessors
 - (rdcConnection)conn;

@@ -85,7 +85,7 @@ NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn)
 
 #pragma mark -
 #pragma mark AppController
-NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action)
+NSToolbarItem *create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action)
 {
 	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
 	[item setPaletteLabel:name];
@@ -166,11 +166,11 @@ NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 	return ([returnFiles count] > 0) ? [[returnFiles copy] autorelease] : nil;
 }
 
-
 #pragma mark -
 #pragma mark RDInstance
-// converts a NSArray of strings to a 2d c string array. You are responsible to 
-//	free the returned pointer array.
+
+// Converts a NSArray of strings to an array of C strings. You are responsible to 
+//	free the returned array of pointers (but not the data themselves).
 char **convert_string_array(NSArray *conv)
 {
 	int count, i = 0;
@@ -219,6 +219,5 @@ void fill_default_connection(rdcConnection conn)
 	conn->rdp5PerformanceFlags	= RDP5_NO_WALLPAPER | RDP5_NO_FULLWINDOWDRAG | RDP5_NO_MENUANIMATIONS;
 	conn->rectsNeedingUpdate = NULL;
 	conn->updateEntireScreen = 0;
-		
 }
 

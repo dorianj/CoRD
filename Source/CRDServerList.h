@@ -21,15 +21,23 @@
 
 @interface CRDServerList : NSTableView
 {
+	// Animated dragging
 	NSAnimation *autoexpansionAnimation;
 	BOOL inLiveDrag;
-	int emptyRowIndex, oldEmptyRowIndex;
-	int draggedRow;
+	int emptyRowIndex, oldEmptyRowIndex, draggedRow;
+	
+	int selectedRow;
 	
 	// Arrays of NSValues encapsulating NSPoints
 	NSArray *autoexpansionStartRowOrigins, *autoexpansionEndRowOrigins, *autoexpansionCurrentRowOrigins;
-	
-	
 }
 - (void)selectRow:(int)index;
+- (NSString *)pasteboardDataType:(NSPasteboard *)draggingPasteboard;
+
+@end
+
+
+@interface NSObject (CRDServerListDataSource)
+	- (BOOL)tableView:(NSTableView *)aTableView canDragRow:(unsigned)rowIndex;
+	- (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(unsigned)rowIndex;
 @end
