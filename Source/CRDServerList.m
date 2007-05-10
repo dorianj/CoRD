@@ -19,6 +19,9 @@
 /*	Notes:
 		- I could have used CoreGraphics for the gradients. Drawing my own was easier.
 			It's the same exact result: a calculated gradient.
+		- In its current form, this isn't as abstracted as a view object should be. 
+			The delegate is assumed to respond to messages, it references g_appController
+			often, etc.
 */
 
 #import "CRDServerList.h"
@@ -118,7 +121,9 @@
 
 - (void)selectRow:(int)index
 {
-	selectedRow = index;	
+	selectedRow = [[self delegate] tableView:self shouldSelectRow:index] ? index : -1;
+	NSNotification *not = [NSNotification notificationWithName:NSTableViewSelectionDidChangeNotification object:nil];
+	[[self delegate] tableViewSelectionDidChange:not];
 	[self setNeedsDisplay:YES];
 }
 
