@@ -901,7 +901,6 @@
 	
 	if ([pbDataType isEqualToString:SAVED_SERVER_DRAG_TYPE])
 	{
-	
 		newRow = row;
 	}
 	else if ([pbDataType isEqualToString:NSFilenamesPboardType])
@@ -924,7 +923,10 @@
 			inst = [[RDInstance alloc] initWithRDPFile:file];
 			
 			if (inst != nil)
-				[savedServers insertObject:inst atIndex:insertIndex];
+			{
+				[inst setRdpFilename:increment_file_name([AppController savedServersPath], [inst label], @".rdp")];
+				[self addSavedServer:inst atIndex:insertIndex];
+			}
 			
 			[inst release];
 		}
@@ -954,7 +956,7 @@
 	[pboard declareTypes:[NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, nil] owner:nil];
 	[pboard setPropertyList:[NSArray arrayWithObject:[inst rdpFilename]] forType:NSFilenamesPboardType];
 	[pboard setString:[NSString stringWithFormat:@"%d", row] forType:SAVED_SERVER_DRAG_TYPE];
-	
+
 	return YES;
 }
 
@@ -1434,7 +1436,9 @@
 {
 	if ( (inst == nil) || (index < 0) || (index > [savedServers count]) )
 		return;
-		
+	
+	[inst setTemporary:NO];
+	
 	[savedServers insertObject:inst atIndex:index];
 
 	if (select)

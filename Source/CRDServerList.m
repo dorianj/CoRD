@@ -20,8 +20,9 @@
 		- I could have used CoreGraphics for the gradients. Drawing my own was easier.
 			It's the same exact result: a calculated gradient.
 		- In its current form, this isn't as abstracted as a view object should be. 
-			The delegate is assumed to respond to messages, it references g_appController
-			often, etc.
+			The delegate is assumed to respond to messages, it delves into the controller
+			realm, etc.
+		- Some of this code is downright ugly/hacky - especially the drag and drop code
 */
 
 #import "CRDServerList.h"
@@ -256,7 +257,7 @@
 	NSRect rowRect = [self rectOfRow:row];
 	NSIndexSet *index = [NSIndexSet indexSetWithIndex:row];
 	NSPoint offset = NSZeroPoint, imageStart = rowRect.origin;
-	imageStart.y+=rowRect.size.height;
+	imageStart.y += rowRect.size.height;
 	NSPasteboard *pboard;
 
 	pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
@@ -269,9 +270,7 @@
 	[self noteNumberOfRowsChanged];
 	draggedRow = row;
 	
-	
 	[self createNewRowOriginsAboveRow:draggedRow];
-	
 	[autoexpansionStartRowOrigins release];
 	autoexpansionStartRowOrigins = [autoexpansionEndRowOrigins retain];
 	[self createConvolvedRowRects:1.0];
@@ -397,19 +396,32 @@
 
 #pragma mark -
 #pragma mark NSDraggingSource
-
+/*
 - (void)draggedImage:(NSImage *)anImage beganAt:(NSPoint)point
 {
 	int row = [self rowAtPoint:point];
 	
 	[super draggedImage:anImage beganAt:point];	
 }
-
+*/
 - (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
 {
+	if ( (operation == NSDragOperationCopy) || (operation == NSDragOperationNone) )
+	{
+		int row = [[[g_appController valueForKey:@"dumpedInstance"] valueForKey:@"preferredRowIndex"] intValue];
+		[g_appController reinsertHeldSavedServer:row];
+		
+	//	[self createNewRowOriginsAboveRow:row+1];
+	//	[self startAnimation];
+	}
+	
 	[super draggedImage:anImage endedAt:aPoint operation:operation];
 }
 
+- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+{
+	return isLocal ? NSDragOperationMove : NSDragOperationCopy;
+}
 
 #pragma mark -
 #pragma mark Dragging internal use
