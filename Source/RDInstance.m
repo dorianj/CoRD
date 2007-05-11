@@ -750,7 +750,7 @@
 
 - (NSComparisonResult)compareUsingPreferredOrder:(id)compareTo
 {
-	int otherOrder = [[compareTo valueForKey:@"prefereredRowIndex"] intValue];
+	int otherOrder = [[compareTo valueForKey:@"preferredRowIndex"] intValue];
 	
 	if (preferredRowIndex == otherOrder)
 		return [[compareTo label] compare:label];

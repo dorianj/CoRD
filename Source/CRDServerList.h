@@ -28,6 +28,8 @@
 	
 	int selectedRow;
 	
+	NSPoint mouseDragStart;
+	
 	// Arrays of NSValues encapsulating NSPoints
 	NSArray *autoexpansionStartRowOrigins, *autoexpansionEndRowOrigins, *autoexpansionCurrentRowOrigins;
 }

@@ -186,7 +186,7 @@
 	
 	[gui_serverList deselectAll:nil];
 	[self sortSavedServers];
-	[self storeSavedServerPositions];
+//	[self storeSavedServerPositions];
 	
 	// Register for drag operations. xxx: could be done in CRDServersList
 	NSArray *types = [NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
@@ -212,7 +212,7 @@
 	SEL action = [item action];
 	
     if (action == @selector(removeSelectedSavedServer:))
-		return (inst != nil) && ![inst temporary] && [inst status] == CRDConnectionClosed;
+		return (inst != nil) && ![inst temporary] && ([inst status] == CRDConnectionClosed);
     else if (action == @selector(connect:))
         return (inst != nil) && [inst status] == CRDConnectionClosed;
     else if (action == @selector(disconnect:))
@@ -288,7 +288,7 @@
 {
 	RDInstance *inst = [self selectedServerInstance];
 	
-	if (inst == nil || [inst temporary])
+	if (inst == nil || [inst temporary] || ([inst status] != CRDConnectionClosed) )
 		return;
 	
 	NSAlert *alert = [NSAlert alertWithMessageText:@"Delete saved server" defaultButton:@"Delete" 
@@ -802,13 +802,35 @@
 {
 	[self tableViewSelectionDidChange:nil];
 	
-	// Save drawer state to user defaults
+	// Save current state to user defaults
 	[userDefaults setBool:drawer_is_visisble(gui_serversDrawer) forKey:DEFAULTS_SHOW_DRAWER];
 	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:DEFAULTS_DRAWER_WIDTH];
 	
 	if (displayMode == CRDDisplayFullscreen)
 		displayMode = displayModeBeforeFullscreen;
 	[userDefaults setInteger:displayMode forKey:DEFAULTS_DISPLAY_MODE];
+	
+	
+	// Other cleanup
+	NSEnumerator *enumerator;
+	RDInstance *inst;
+	
+	// Disconnect all connected servers
+	enumerator = [connectedServers objectEnumerator];
+	
+	while ( (inst = [enumerator nextObject]) )
+	{
+		[self disconnectInstance:inst];
+	}
+	
+	// Flush each saved server to file (so that the perferred row will be saved)
+	[self storeSavedServerPositions];
+	enumerator = [savedServers objectEnumerator];
+	
+	while ( (inst = [enumerator nextObject]) )
+	{
+		[inst writeRDPFile:[inst rdpFilename]];
+	}	
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -879,7 +901,8 @@
 	
 	if ([pbDataType isEqualToString:SAVED_SERVER_DRAG_TYPE])
 	{
-		newRow = [[pb stringForType:SAVED_SERVER_DRAG_TYPE] intValue];
+	
+		newRow = row;
 	}
 	else if ([pbDataType isEqualToString:NSFilenamesPboardType])
 	{
@@ -910,8 +933,11 @@
 	}
 	
 	if ([info draggingSource] == gui_serverList)
+	{
 		[self reinsertHeldSavedServer:newRow];
-	
+		return YES;
+	}
+
 	return NO;
 }
 
@@ -1424,6 +1450,9 @@
 		
 	[savedServers removeObject:inst];
 	
+	if (inspectedServer == inst)
+		inspectedServer = nil;
+	
 	[self listUpdated];
 }
 
@@ -1456,13 +1485,13 @@
 	[inst setValue:[NSNumber numberWithInt:row] forKey:@"preferredRowIndex"];
 
 	[savedServers removeObject:inst];
-	//[self listUpdated];	
 }
 
 - (void)reinsertHeldSavedServer:(int)intoRow
 {
 	int row = (intoRow == -1) ? [[dumpedInstance valueForKey:@"preferredRowIndex"] intValue] : intoRow,
 		index = row - 2 - [connectedServers count];
+		
 	[self addSavedServer:dumpedInstance atIndex:index];
 	
 	[dumpedInstance setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];

@@ -49,7 +49,9 @@
 	- (void)createNewRowOriginsAboveRow:(int)rowIndex;
 	- (void)startAnimation;
 	- (void)concludeDrag;
+	- (void)createConvolvedRowRects:(float)fraction;
 	- (CRDServerCell *)cellForRow:(int)row;
+	- (NSDragOperation)dragOperationForSource:(id <NSDraggingInfo>)info;
 @end
 
 
@@ -75,11 +77,9 @@
 {	
 	if (selectedRow == -1)
 		return;
-
-	NSRect drawRect = [self rectOfRow:selectedRow];
 	
 	NSColor *topColor, *bottomColor;
-	if ([g_appController mainWindowIsFocused] || inLiveDrag)
+	if ([g_appController mainWindowIsFocused])
 	{
 		topColor = HIGHLIGHT_START;
 		bottomColor = HIGHLIGHT_END;
@@ -87,6 +87,8 @@
 		topColor = UNFOCUSED_START;
 		bottomColor = UNFOCUSED_END;	
 	}
+	
+	NSRect drawRect = [self rectOfRow:selectedRow];
 	
 	[self lockFocus];	
 	NSRectClip(drawRect);
@@ -122,8 +124,9 @@
 - (void)selectRow:(int)index
 {
 	selectedRow = [[self delegate] tableView:self shouldSelectRow:index] ? index : -1;
-	NSNotification *not = [NSNotification notificationWithName:NSTableViewSelectionDidChangeNotification object:nil];
-	[[self delegate] tableViewSelectionDidChange:not];
+	
+	[super selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO];
+	
 	[self setNeedsDisplay:YES];
 }
 
@@ -150,6 +153,11 @@
 - (NSIndexSet *)selectedRowIndexes
 {
 	return [NSIndexSet indexSetWithIndex:selectedRow];
+}
+
+- (int)numberOfSelectedRows
+{
+	return ([self selectedRow] == -1) ? 0 : 1;
 }
 
 - (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows tableColumns:(NSArray *)tableColumns
@@ -222,6 +230,7 @@
 - (void)mouseDown:(NSEvent *)ev
 {
 	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+	mouseDragStart = [ev locationInWindow];
 	if ([ev clickCount] == 2 && row == [self selectedRow])
 	{
 		[g_appController connect:self];
@@ -232,12 +241,18 @@
 		[self selectRow:row];
 	}
 	
+	
+	[[self window] makeFirstResponder:self];
+	
 //	[super mouseDown:ev];
 }
 
 - (void)mouseDragged:(NSEvent *)ev
 {
-	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+	if (POINT_DISTANCE(mouseDragStart, [ev locationInWindow]) < 4.0)
+		return;
+
+	int row = [self rowAtPoint:[self convertPoint:mouseDragStart fromView:nil]];
 	NSRect rowRect = [self rectOfRow:row];
 	NSIndexSet *index = [NSIndexSet indexSetWithIndex:row];
 	NSPoint offset = NSZeroPoint, imageStart = rowRect.origin;
@@ -250,9 +265,16 @@
 	NSImage *dragImage = [self dragImageForRowsWithIndexes:index tableColumns:nil event:ev offset:&offset];
 	
 	[g_appController holdSavedServer:row];
+	selectedRow = -1;
 	[self noteNumberOfRowsChanged];
 	draggedRow = row;
-	[self deselectAll:nil];
+	
+	
+	[self createNewRowOriginsAboveRow:draggedRow];
+	
+	[autoexpansionStartRowOrigins release];
+	autoexpansionStartRowOrigins = [autoexpansionEndRowOrigins retain];
+	[self createConvolvedRowRects:1.0];
 	
 	[self dragImage:dragImage at:imageStart offset:NSZeroSize event:ev pasteboard:pboard source:self slideBack:YES];
 }
@@ -271,7 +293,7 @@
 {
 	NSRect realRect = [super rectOfRow:rowIndex];
 	
-	if ((rowIndex != -1) && (autoexpansionCurrentRowOrigins != nil))
+	if ((rowIndex != -1) && (autoexpansionCurrentRowOrigins != nil) && ([autoexpansionCurrentRowOrigins count] > rowIndex))
 	{
 		realRect.origin = [[autoexpansionCurrentRowOrigins objectAtIndex:rowIndex] pointValue];
 	}
@@ -287,36 +309,6 @@
 {
 	if ([sender draggingSource] == self)
 	{
-		//NSLog(@"doing custom anim for self");
-		
-		emptyRowIndex = draggedRow;
-		
-		int numRows = [self numberOfRows], i;
-		float delta = [super rectOfRow:emptyRowIndex].size.height;
-
-		NSPoint endRowOrigin;
-		NSMutableArray *endBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
-		NSMutableArray *startBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
-		
-		for (i = 0; i <= numRows; i++)
-		{
-			endRowOrigin = [super rectOfRow:i].origin;
-			
-			if ( i >= emptyRowIndex)
-				endRowOrigin.y += delta;
-				
-			[startBuilder addObject:[NSValue valueWithPoint:endRowOrigin]];
-			[endBuilder addObject:[NSValue valueWithPoint:endRowOrigin]];
-		}
-
-		[autoexpansionStartRowOrigins release];
-		[autoexpansionEndRowOrigins release];
-		
-		autoexpansionStartRowOrigins = [startBuilder retain];
-		autoexpansionEndRowOrigins = [endBuilder retain];
-		
-		[self animation:nil didReachProgressMark:1.0];
-		
 		return NSDragOperationMove;
 	}
 	else
@@ -336,8 +328,6 @@
 		retOperation = innerListDrag ? NSDragOperationMove : NSDragOperationCopy;
 	else 
 		return NSDragOperationNone;
-		
-//	NSLog(@"row=%d, dragged=%d, empty=%d", row, draggedRow, emptyRowIndex);
 	
 	if ( (row != -1) && (row != emptyRowIndex) )
 	{
@@ -358,46 +348,46 @@
 	[self concludeDrag];
 }
 
-/*
+
 - (BOOL)prepareForDragOperation:(id <NSDraggingInfo>)sender
 {
-	return [super prepareForDragOperation:sender];
+	if ([self pasteboardHasValidData:[sender draggingPasteboard]])
+		return YES;
+	else 
+	{
+		[self concludeDrag];
+		return NO;
+	}
 }
-
 
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
-	NSString *pbDataType = [self pasteboardDataType:sender];
-	
-	if (pbDataType == nil)
+	if ([self pasteboardHasValidData:[sender draggingPasteboard]])
+	{
+		NSString *pbDataType = [self pasteboardDataType:[sender draggingPasteboard]];
+		
+		int row = [self rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
+		
+		if (row == -1)
+			row = [self numberOfRows];
+		
+		[[self delegate] tableView:self acceptDrop:sender row:row dropOperation:[self dragOperationForSource:sender]];
+		[self createNewRowOriginsAboveRow:[self numberOfRows]];
+		[self createConvolvedRowRects:1.0];
+		
+		return YES;
+	}
+	else 
+	{
+		[self concludeDrag];
 		return NO;
-	
-	if ([pbDataType isEqualToString:SAVED_SERVER_DRAG_TYPE])
-	{
-	
-	
 	}
-	else if ([pbDataType isEqualToString:NSFilenamesPboardType])
-	{
-	
-	
-	}
-	else if ([pbDataType isEqualToString:NSFilesPromisePboardType])
-	{
-	
-	
-	}
-	
-	
-	return YES;
-}*/
+}
 
 - (void)concludeDragOperation:(id <NSDraggingInfo>)sender
 {
-	[super concludeDragOperation:sender];
 	[self concludeDrag];
 }
-
 
 - (BOOL)wantsPeriodicDraggingUpdates
 {
@@ -437,6 +427,18 @@
 	return [self pasteboardDataType:draggingPasteboard] != nil;
 }
 
+- (NSDragOperation)dragOperationForSource:(id <NSDraggingInfo>)info
+{
+	NSString *type = [self pasteboardDataType:[info draggingPasteboard]];
+	
+	if (type == nil)
+		return NSDragOperationNone;
+	if ([type isEqualToString:SAVED_SERVER_DRAG_TYPE])
+		return NSDragOperationMove;
+	else
+		return NSDragOperationCopy;
+}
+
 - (void)startAnimation
 {
 	if (autoexpansionAnimation != nil)
@@ -466,6 +468,12 @@
 	if (emptyRowIndex == rowIndex || rowIndex == -1) 
 		return;
 		
+	if ([self numberOfRows] != [autoexpansionCurrentRowOrigins count])
+	{
+		[autoexpansionCurrentRowOrigins release];
+		autoexpansionCurrentRowOrigins = nil;
+	}
+		
 	oldEmptyRowIndex = (emptyRowIndex == -1) ? [self numberOfRows] : emptyRowIndex;
 	emptyRowIndex = rowIndex;
 	
@@ -476,7 +484,7 @@
 	NSMutableArray *endBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
 	NSMutableArray *startBuilder = [NSMutableArray arrayWithCapacity:numRows-emptyRowIndex];
 	
-	for (i = 0; i <= numRows; i++)
+	for (i = 0; i < numRows; i++)
 	{
 		startRowOrigin = [self rectOfRow:i].origin;
 		endRowOrigin = [super rectOfRow:i].origin;
@@ -496,7 +504,7 @@
 }
 
 - (void)concludeDrag
-{
+{ 
 	if (inLiveDrag)
 	{
 		if (emptyRowIndex != [self numberOfRows])
@@ -523,15 +531,9 @@
 	[self setNeedsDisplay];
 }
 
-
-#pragma mark -
-#pragma mark NSAnimation delegate
-
-- (void)animation:(NSAnimation*)animation didReachProgressMark:(NSAnimationProgress)progress
+// Create a new autoexpansionCurrentRowOrigins by convolving the start origins to the end
+- (void)createConvolvedRowRects:(float)fraction
 {
-	// Create new autoexpansionCurrentRowOrigins by convolving the start origins to the end
-	float fraction = [animation currentValue];
-
 	NSMutableArray *currentPointsBuilder = [[NSMutableArray alloc] init];
 	
 	NSEnumerator *startEnum = [autoexpansionStartRowOrigins objectEnumerator],
@@ -551,8 +553,15 @@
 	
 	[autoexpansionCurrentRowOrigins release];
 	autoexpansionCurrentRowOrigins = [currentPointsBuilder retain];
-	
-	[self setNeedsDisplay:YES];
+}
+
+#pragma mark -
+#pragma mark NSAnimation delegate
+
+- (void)animation:(NSAnimation*)animation didReachProgressMark:(NSAnimationProgress)progress
+{
+	[self createConvolvedRowRects:[animation currentValue]];
+	[self setNeedsDisplay];
 }
 
 

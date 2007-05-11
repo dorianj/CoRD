@@ -33,6 +33,7 @@ void draw_line(NSColor *color, NSPoint start, NSPoint end);
 #define RECT_FROM_SIZE(r) NSMakeRect(0.0, 0.0, (r).width, (r).height)
 #define PRINT_RECT(s, r) NSLog(@"%@: (%.1f, %.1f) size %.1f x %.1f", s, (r).origin.x, (r).origin.y, (r).size.width, (r).size.height)
 #define PRINT_POINT(s, p) NSLog(@"%@: (%.1f, %.1f)", s, (p).x, (p).y)
+#define POINT_DISTANCE(p1, p2) ( sqrt( pow( (p1).x - (p2).x, 2) + pow( (p1).y - (p2).y, 2) ) )
 NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn);
 
 NSString *full_host_name(NSString *host, int port);
