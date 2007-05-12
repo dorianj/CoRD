@@ -211,7 +211,7 @@
 	
 	// Other various settings
 	conn->bitmapCache = cacheBitmaps;
-	conn->serverBpp = screenDepth ? screenDepth : 16;
+	conn->serverBpp = (screenDepth==8 || screenDepth==24) ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
@@ -593,7 +593,16 @@
 	BOOL success = [o writeToFile:path atomically:YES encoding:fileEncoding error:NULL];
 	
 	if (!success)
+		success = [o writeToFile:path atomically:YES encoding:(fileEncoding = NSUTF8StringEncoding) error:NULL];
+
+	if (!success)
 		NSLog(@"Error writing to '%@'", path);
+	else
+	{
+		NSDictionary *newAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:'RDP ']
+					forKey:NSFileHFSTypeCode];
+		[[NSFileManager defaultManager] changeFileAttributes:newAttrs atPath:path];
+	}
 	
 	[o release];
 
@@ -787,7 +796,7 @@
 #pragma mark -
 #pragma mark Keychain
 
-// Force flag makes it save data to keychain regardless if it has changed. savePassword  is always respected.
+// Force makes it save data to keychain regardless if it has changed. savePassword  is always respected.
 - (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force
 {
 	if (savePassword && (force || ![hostName isEqualToString:newHost] || 

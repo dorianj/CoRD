@@ -18,19 +18,13 @@
 
 #import <Cocoa/Cocoa.h>
 
-#define MENU_HOTSPOT_HEIGHT 2.0
-#define MENU_HOTSPOT_WAIT 0.50
-
 @interface CRDFullScreenWindow : NSWindow
 {
-	NSDate *timeMouseEnteredMenuHotspot;
-	BOOL menuVisible;
 }
 
 
 - (void)startFullScreen;
+- (void)prepareForExit;
+- (void)exitFullScreen;
 - (id)initWithScreen:(NSScreen *)screen;
-
-- (BOOL)pointIsInMouseHotSpot:(NSPoint)point;
-- (BOOL)menuVisible;
 @end

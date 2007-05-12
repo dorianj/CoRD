@@ -69,6 +69,7 @@ void fill_default_connection(rdcConnection conn);
 
 /* User defaults (NSUserDefaults) keys */
 #define DEFAULTS_SHOW_DRAWER @"show_drawer"
+#define DEFAULTS_DRAWER_SIDE @"preferred_drawer_side"
 #define DEFAULTS_DRAWER_WIDTH @"drawer_width"
 #define DEFAULTS_DISPLAY_MODE @"windowed_mode"
 #define DEFAULTS_RECENT_SERVERS @"RecentServers"

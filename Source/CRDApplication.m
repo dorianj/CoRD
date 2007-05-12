@@ -70,14 +70,6 @@
 			
 			break;
 			
-		case NSMouseMoved:
-			if ([g_appController displayMode] == CRDDisplayFullscreen)
-			{
-				[fullScreenWindow mouseMoved:ev];
-				return;
-			}
-			
-			break;
 		default:
 			break;
 	}

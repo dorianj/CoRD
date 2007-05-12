@@ -11,6 +11,10 @@
 			<array>
 				<string>rdp</string>
 			</array>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>RDP </string>
+			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>rdp document</string>
 			<key>CFBundleTypeName</key>

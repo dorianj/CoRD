@@ -323,7 +323,7 @@
 		[[inst window] makeKeyAndOrderFront:self];
 		[[inst window] makeFirstResponder:[inst view]];
 	}
-	else 
+	else if ([inst status] != CRDConnectionConnected)
 	{
 		[self connectInstance:inst];
 	}	
@@ -509,8 +509,8 @@
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
 	
+	[gui_fullScreenWindow prepareForExit];
 	displayMode = CRDDisplayUnified;
-	[NSMenu setMenuBarVisible:YES];
 	
 	[self autosizeUnifiedWindowWithAnimation:NO];
 	
@@ -527,27 +527,18 @@
 	
 	[gui_unifiedWindow display];
 	
-	
 	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
 		[self startWindowed:self];
 		
 	// Animate the fullscreen window fading away
-	NSDictionary *fadeWindow = [NSDictionary dictionaryWithObjectsAndKeys:
-						gui_fullScreenWindow, NSViewAnimationTargetKey,
-						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
-						nil];
-	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:fadeWindow]];
-	[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
-	[viewAnim setDuration:0.5];
-	[viewAnim setAnimationCurve:NSAnimationEaseOut];
+	[gui_fullScreenWindow exitFullScreen];
 	
-	[viewAnim startAnimation];
-	[viewAnim release];	
-
-	[gui_fullScreenWindow close];
 	gui_fullScreenWindow = nil;
 
 	displayMode = displayModeBeforeFullscreen;
+	
+	if (displayMode == CRDDisplayUnified)
+		[gui_unifiedWindow makeKeyAndOrderFront:nil];
 }
 
 // Toggles between fullscreen and previous state
@@ -806,6 +797,7 @@
 	[self tableViewSelectionDidChange:nil];
 	
 	// Save current state to user defaults
+	[userDefaults setInteger:[gui_serversDrawer edge] forKey:DEFAULTS_DRAWER_SIDE];
 	[userDefaults setBool:drawer_is_visisble(gui_serversDrawer) forKey:DEFAULTS_SHOW_DRAWER];
 	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:DEFAULTS_DRAWER_WIDTH];
 	
@@ -839,6 +831,7 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {	
 	// Make sure the drawer is in the user-saved position. Do it here (not awakeFromNib) so that it displays nicely
+	[gui_serversDrawer setPreferredEdge:[userDefaults integerForKey:DEFAULTS_DRAWER_SIDE]];
 	if ([userDefaults objectForKey:DEFAULTS_SHOW_DRAWER] != nil)
 	{		
 		float width = [userDefaults floatForKey:DEFAULTS_DRAWER_WIDTH];
@@ -847,7 +840,10 @@
 			[gui_serversDrawer setContentSize:NSMakeSize(width, height)];
 			
 		if ([userDefaults boolForKey:DEFAULTS_SHOW_DRAWER])
-			[self toggleDrawer:self visible:YES];
+		{
+			[gui_serversDrawer openOnEdge:[userDefaults integerForKey:DEFAULTS_DRAWER_SIDE]];
+			[self validateControls];
+		}
 	}
 	else
 	{
@@ -1392,6 +1388,7 @@
 		// If temporary and in the CoRD servers directory, delete it
 		if ( [[[inst rdpFilename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
 		{
+			[inst clearKeychainData];
 			[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
 		}
 		
@@ -1412,7 +1409,7 @@
 		if ([self viewedServer] == nil && drawer_is_visisble(gui_serversDrawer))
 			[gui_unifiedWindow makeFirstResponder:gui_serverList];
 	}
-	else if ( (displayMode == CRDDisplayWindowed))
+	else if (displayMode == CRDDisplayWindowed)
 	{
 		if ( ([connectedServers count] == 0) && ![gui_unifiedWindow isVisible])
 			[gui_unifiedWindow makeKeyAndOrderFront:nil];
@@ -1471,8 +1468,11 @@
 - (void)removeSavedServer:(RDInstance *)inst deleteFile:(BOOL)deleteFile
 {
 	if (deleteFile)
+	{
+		[inst clearKeychainData];
 		[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
-		
+	}
+	
 	[savedServers removeObject:inst];
 	
 	if (inspectedServer == inst)
