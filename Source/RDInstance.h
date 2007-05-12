@@ -38,6 +38,7 @@
 	NSMutableDictionary *otherAttributes;
 	
 	// Allows disconnect to be called from any thread
+	BOOL inputLoopFinished;
 	NSRunLoop *inputRunLoop;
 
 	// General information about instance
@@ -65,6 +66,7 @@
 // Working with rdesktop
 - (BOOL)connect;
 - (void)disconnect;
+- (void) disconnectAsync:(NSNumber *)block;
 - (void)sendInput:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
 - (void)startInputRunLoop;
 - (void)synchronizeRemoteClipboard:(NSPasteboard *)toPasteboard suggestedFormat:(int)format;

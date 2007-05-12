@@ -17,7 +17,7 @@
 //  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 /*	Purpose: various stubs which support the controller layer.
-	Note: Assume that all of these functions require an NSAutoReleasePool be allocated.
+	Note: All of these functions require an NSAutoReleasePool be allocated.
 */
 
 
@@ -72,6 +72,8 @@ void fill_default_connection(rdcConnection conn);
 #define DEFAULTS_DRAWER_WIDTH @"drawer_width"
 #define DEFAULTS_DISPLAY_MODE @"windowed_mode"
 #define DEFAULTS_RECENT_SERVERS @"RecentServers"
+#define DEFAULTS_UNIFIED_AUTOSAVE @"UnfiedWindowFrameAutosave"
+#define DEFAULTS_INSPECTOR_AUTOSAVE @"InspectorWindowFrameAutosave"
 
 #define PREFS_FULLSCREEN_RECONNECT @"reconnectFullScreen"
 #define PREFS_RESIZE_VIEWS @"resizeViewToFit"
@@ -93,7 +95,7 @@ typedef enum _CRDDisplayMode
 } CRDDisplayMode;
 
 
-/* Global variables */
+/* Globals */
 AppController *g_appController;
 
 #define DISK_FORWARDING_DISABLED 1

@@ -69,6 +69,9 @@
 	
 	// Support for server dragging
 	RDInstance *dumpedInstance;
+	BOOL dumpedInstanceWasSelected;
+	
+	BOOL isTerminating;
 }
 
 // Actions

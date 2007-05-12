@@ -149,7 +149,7 @@ static BOOL staticsInitialized;
 	int overallWidth = PADDING_LEFT + OUTER_PADDING*2 + CELL_IMAGE_WIDTH + SEPARATOR_PADDING + textWidth;
 	int overallHeight = OUTER_PADDING*2 + MAX(textHeight, CELL_IMAGE_HEIGHT);
 	
-	return NSMakeSize(overallWidth, overallHeight);
+	return NSMakeSize(overallWidth, /*overallHeight*/ 46); 
 }
 
 - (void)setHighlighted:(BOOL)flag

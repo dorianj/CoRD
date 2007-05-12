@@ -179,7 +179,6 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	else if (bytespp == 1)
 	{
 		// Find color's index on colormap, use it as color
-		// xxx: still broken, it's not finding some colors (almost always white)
 		while (i++ < len)
 		{
 			j = (p[2] << 16) | (p[1] << 8) | p[0];
@@ -744,6 +743,7 @@ void * xmalloc(int size)
     if (mem == NULL)
     {
         error("xmalloc %d\n", size);
+		Debugger();
         exit(1);
     }
     return mem;
@@ -761,6 +761,7 @@ void * xrealloc(void *oldmem, int size)
     if (mem == NULL)
     {
         error("xrealloc %d\n", size);
+		Debugger();
         exit(1);
     }
     return mem;

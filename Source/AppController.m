@@ -82,8 +82,6 @@
 	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:@"Active sessions"];
 	savedServersLabel = [[CRDLabelCell alloc] initTextCell:@"Saved Servers"];
 
-	inspectedServer = nil;
-
 	return self;
 }
 - (void) dealloc
@@ -110,94 +108,96 @@
 	
 	
 	// Create the toolbar 
-	{
-		NSToolbarItem *quickConnectItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECT] autorelease];
-		[quickConnectItem setView:gui_quickConnect];
-		NSSize qcSize = [gui_quickConnect frame].size;
-		[quickConnectItem setMinSize:NSMakeSize(110.0, qcSize.height)];
-		[quickConnectItem setMaxSize:NSMakeSize(150.0, qcSize.height)];
-		[quickConnectItem setLabel:@"Quick Connect"];
-		[quickConnectItem setToolTip:@"Connect to a computer with default settings. Uses 'host[:port]' syntax."];
-		
-		toolbarItems = [[NSMutableDictionary alloc] init];
-		
-		[toolbarItems 
-			setObject:create_static_toolbar_item(TOOLBAR_DRAWER, @"Servers",
-				@"Hide or show the servers drawer", @selector(toggleDrawer:))
-			forKey:TOOLBAR_DRAWER];
-		[toolbarItems 
-			setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT, @"Disconnect", 
-				@"Close the selected connection", @selector(performStop:))
-			forKey:TOOLBAR_DISCONNECT];	
-		[toolbarItems
-			setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN, @"Full Screen",
-				@"Enter fullscreen mode", @selector(startFullscreen:))
-			forKey:TOOLBAR_FULLSCREEN];
-		[toolbarItems
-			setObject:create_static_toolbar_item(TOOLBAR_UNIFIED, @"Windowed",
-				@"Toggle between unified mode and windowed mode", @selector(performUnified:))
-			forKey:TOOLBAR_UNIFIED];
-		[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
-		
-		gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
-		[gui_toolbar setDelegate:self];
-		
-		[gui_toolbar setAllowsUserCustomization:YES];
-		[gui_toolbar setAutosavesConfiguration:YES];
-		
-		[gui_unifiedWindow setToolbar:gui_toolbar];
-	}
+	NSToolbarItem *quickConnectItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECT] autorelease];
+	[quickConnectItem setView:gui_quickConnect];
+	NSSize qcSize = [gui_quickConnect frame].size;
+	[quickConnectItem setMinSize:NSMakeSize(160.0, qcSize.height)];
+	[quickConnectItem setMaxSize:NSMakeSize(160.0, qcSize.height)];
+	[quickConnectItem setLabel:@"Quick Connect"];
+	[quickConnectItem setToolTip:@"Connect to a computer with default settings. Uses 'host[:port]' syntax."];
 	
+	toolbarItems = [[NSMutableDictionary alloc] init];
+	
+	[toolbarItems 
+		setObject:create_static_toolbar_item(TOOLBAR_DRAWER, @"Servers",
+			@"Hide or show the servers drawer", @selector(toggleDrawer:))
+		forKey:TOOLBAR_DRAWER];
+	[toolbarItems 
+		setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT, @"Disconnect", 
+			@"Close the selected connection", @selector(performStop:))
+		forKey:TOOLBAR_DISCONNECT];	
+	[toolbarItems
+		setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN, @"Full Screen",
+			@"Enter fullscreen mode", @selector(startFullscreen:))
+		forKey:TOOLBAR_FULLSCREEN];
+	[toolbarItems
+		setObject:create_static_toolbar_item(TOOLBAR_UNIFIED, @"Windowed",
+			@"Toggle between unified mode and windowed mode", @selector(performUnified:))
+		forKey:TOOLBAR_UNIFIED];
+	[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
+	
+	gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
+	[gui_toolbar setDelegate:self];
+	
+	[gui_toolbar setAllowsUserCustomization:YES];
+	[gui_toolbar setAutosavesConfiguration:YES];
+	
+	[gui_unifiedWindow setToolbar:gui_toolbar];
+
+
 	
 	// Load saved servers from the CoRD Application Support folder
-	{
-		NSFileManager *fileManager = [NSFileManager defaultManager];
-		
-		// Assure that the CoRD application support folder is created, locate and store other useful paths
-		NSString *appSupport = 
-			[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-				NSUserDomainMask, YES) objectAtIndex:0];
-		NSString *cordDirectory = [[appSupport stringByAppendingPathComponent:@"CoRD"] retain];
-		
-		ensure_directory_exists(cordDirectory, fileManager);
-		ensure_directory_exists([AppController savedServersPath], fileManager);
+	
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	
+	// Assure that the CoRD application support folder is created, locate and store other useful paths
+	NSString *appSupport = 
+		[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
+			NSUserDomainMask, YES) objectAtIndex:0];
+	NSString *cordDirectory = [[appSupport stringByAppendingPathComponent:@"CoRD"] retain];
+	
+	ensure_directory_exists(cordDirectory, fileManager);
+	ensure_directory_exists([AppController savedServersPath], fileManager);
 
-		// Read each .rdp file
-		RDInstance *rdpinfo;
-		NSString *path;
-		NSArray *files = [fileManager directoryContentsAtPath:[AppController savedServersPath]];
-		NSEnumerator *enumerator = [files objectEnumerator];
-		id filename;
-		while ( (filename = [enumerator nextObject]) )
+	// Read each .rdp file
+	RDInstance *rdpinfo;
+	NSString *path;
+	NSArray *files = [fileManager directoryContentsAtPath:[AppController savedServersPath]];
+	NSEnumerator *enumerator = [files objectEnumerator];
+	id filename;
+	while ( (filename = [enumerator nextObject]) )
+	{
+		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
-			if ([[filename pathExtension] isEqualToString:@"rdp"])
-			{
-				path = [[AppController savedServersPath] stringByAppendingPathComponent:filename];
-				rdpinfo = [[RDInstance alloc] initWithRDPFile:path];
-				if (rdpinfo != nil)
-					[self addSavedServer:rdpinfo];
-				else
-					NSLog(@"RDP file '%@' failed to load!", filename);
-					
-				[rdpinfo release];
-			}
+			path = [[AppController savedServersPath] stringByAppendingPathComponent:filename];
+			rdpinfo = [[RDInstance alloc] initWithRDPFile:path];
+			if (rdpinfo != nil)
+				[self addSavedServer:rdpinfo];
+			else
+				NSLog(@"RDP file '%@' failed to load!", filename);
+				
+			[rdpinfo release];
 		}
 	}
 	
 	[gui_serverList deselectAll:nil];
 	[self sortSavedServers];
-//	[self storeSavedServerPositions];
+	[self storeSavedServerPositions];
 	
-	// Register for drag operations. xxx: could be done in CRDServersList
+	
+	// Register for drag operations.
 	NSArray *types = [NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
 	[gui_serverList registerForDraggedTypes:types];
 
-	// Since it's a custom class, the attributes pane isn't available for the password entry box in IB.
+	// Custom gui settings not accessable from IB
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
+	[gui_unifiedWindow setExcludedFromWindowsMenu:YES];
 
-	// Load this separately from other user defaults because it needs to be loaded before anything is displayed
+	// Load a few user defaults that need to be loaded before anything is displayed
 	displayMode = [[userDefaults objectForKey:DEFAULTS_DISPLAY_MODE] intValue];
+	[gui_unifiedWindow setFrameAutosaveName:DEFAULTS_UNIFIED_AUTOSAVE];
+	[gui_inspector setFrameAutosaveName:DEFAULTS_INSPECTOR_AUTOSAVE];
 
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
@@ -276,10 +276,11 @@
 	
 	[self addSavedServer:inst];
 	
+	[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObjectIdenticalTo:inst]] forKey:@"preferredRowIndex"];
+	
 	if (![gui_inspector isVisible])
 		[self toggleInspector:nil];
-		
-	[self storeSavedServerPositions];
+	
 }
 
 
@@ -364,7 +365,7 @@
 }
 
 
-/* Hides or shows the inspector. */
+// Hides or shows the inspector.
 - (IBAction)toggleInspector:(id)sender
 {
 	BOOL nowVisible = ![gui_inspector isVisible];
@@ -402,7 +403,7 @@
 
 // Called whenever anything in the inspector is edited
 - (IBAction)fieldEdited:(id)sender
-{			
+{
 	if (inspectedServer != nil)
 	{
 		[self updateInstToMatchInspector:inspectedServer];
@@ -800,6 +801,8 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
+	isTerminating = YES;
+	
 	[self tableViewSelectionDidChange:nil];
 	
 	// Save current state to user defaults
@@ -849,6 +852,18 @@
 	else
 	{
 		[self toggleDrawer:self visible:YES];
+	}
+}
+
+- (void)applicationDidBecomeActive:(NSNotification *)aNotification
+{
+	if (displayMode == CRDDisplayUnified)
+	{
+		[gui_unifiedWindow makeKeyAndOrderFront:nil];	
+	}
+	if ( (displayMode == CRDDisplayWindowed) && ([connectedServers count] == 0) )
+	{
+		[gui_unifiedWindow makeKeyAndOrderFront:nil];	
 	}
 }
 
@@ -962,7 +977,6 @@
 
 - (BOOL)tableView:(NSTableView *)aTableView canDragRow:(unsigned)rowIndex
 {	
-	// xxx: currently, can't drag connected servers at all
 	return [savedServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
 }
 
@@ -988,14 +1002,14 @@
 		[self setInspectorSettings:nil];	
 		inspectedServer = nil;
 		[self setInspectorEnabled:NO];
-		
+
 		return;
 	} else {
 		[inspectedServer writeRDPFile:nil];	
 	}
 
 	[self setInspectorEnabled:YES];
-	
+
 	inspectedServer =  inst;
 	[self setInspectorSettings:inst];
 	
@@ -1179,31 +1193,16 @@
 #pragma mark -
 #pragma mark NSWindow delegate
 
-- (BOOL)windowShouldClose:(id)sender
-{
-	if (sender == gui_unifiedWindow)
-	{
-		// todo: fix this up so unified window is always accessable to users, but can
-		//	be closed during windowed mode (also, show it when the last active session closes)
-		//if (displayMode == CRDDisplayUnified || ([connectedServers count] == 0))
-			[[NSApplication sharedApplication] hide:self];
-			
-		return NO;
-	}
-		
-	return YES;
-}
-
 - (void)windowWillClose:(NSNotification *)sender
 {
 	if ([sender object] == gui_inspector)
 	{
 		[self fieldEdited:nil];
 		[self saveInspectedServer];
-		inspectedServer = nil;
+
 		[self validateControls];
 		
-		if ([self viewedServer] == nil && drawer_is_visisble(gui_serversDrawer))
+		if ( ([self viewedServer] == nil) && drawer_is_visisble(gui_serversDrawer))
 			[gui_unifiedWindow makeFirstResponder:gui_serverList];
 	}
 }
@@ -1268,6 +1267,11 @@
 					
 	if (connected)	
 		[inst startInputRunLoop];
+		
+	if ([inst status] == CRDConnectionConnected)
+	{
+		[self disconnectInstance:inst];
+	}
 
 	[inst release];
 	[pool release];
@@ -1381,8 +1385,8 @@
 			[inst writeRDPFile:path];
 		}
 		
-		[self addSavedServer:inst];
-	} 
+		[self addSavedServer:inst atIndex:[[inst valueForKey:@"preferredRowIndex"] intValue] select:YES];
+	}
 	else
 	{
 		// If temporary and in the CoRD servers directory, delete it
@@ -1403,10 +1407,15 @@
 	}
 	else if (displayMode == CRDDisplayUnified)
 	{
-		[self autosizeUnifiedWindow];
+		[self autosizeUnifiedWindowWithAnimation:!isTerminating];
 		
 		if ([self viewedServer] == nil && drawer_is_visisble(gui_serversDrawer))
 			[gui_unifiedWindow makeFirstResponder:gui_serverList];
+	}
+	else if ( (displayMode == CRDDisplayWindowed))
+	{
+		if ( ([connectedServers count] == 0) && ![gui_unifiedWindow isVisible])
+			[gui_unifiedWindow makeKeyAndOrderFront:nil];
 	}
 }
 
@@ -1416,6 +1425,11 @@
 		return;
 	
 	[inst cancelConnection];
+	
+	[gui_serverList deselectAll:nil];
+	[connectedServers removeObject:inst];
+	inspectedServer = nil;
+	[self listUpdated];
 }
 
 
@@ -1437,14 +1451,21 @@
 	if ( (inst == nil) || (index < 0) || (index > [savedServers count]) )
 		return;
 	
+	
+	if (![inst isKindOfClass:[RDInstance class]])
+	{
+		NSLog(@"Wrong class!");
+		Debugger();
+		
+	}
+	
 	[inst setTemporary:NO];
 	
 	[savedServers insertObject:inst atIndex:index];
-
-	if (select)
-		[gui_serverList selectRow:(2 + [connectedServers count] + index)];
-	
 	[gui_serverList noteNumberOfRowsChanged];
+	
+	if (select)
+		[gui_serverList selectRow:(2 + [connectedServers count] + index)];	
 }
 
 - (void)removeSavedServer:(RDInstance *)inst deleteFile:(BOOL)deleteFile
@@ -1481,22 +1502,22 @@
 - (void)holdSavedServer:(int)row
 {
 	RDInstance *inst = [self serverInstanceForRow:row];
+	int index = [savedServers indexOfObjectIdenticalTo:inst];
 	
-	if ( (inst == nil) || ([savedServers indexOfObjectIdenticalTo:inst] == NSNotFound) )
+	if ( (inst == nil) || (index == NSNotFound) )
 		return;
-		
+	
+	dumpedInstanceWasSelected = [self selectedServerInstance] == inst;
 	dumpedInstance = [inst retain];
-	[inst setValue:[NSNumber numberWithInt:row] forKey:@"preferredRowIndex"];
-
+	[inst setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
+	
 	[savedServers removeObject:inst];
 }
 
 - (void)reinsertHeldSavedServer:(int)intoRow
 {
-	int row = (intoRow == -1) ? [[dumpedInstance valueForKey:@"preferredRowIndex"] intValue] : intoRow,
-		index = row - 2 - [connectedServers count];
-		
-	[self addSavedServer:dumpedInstance atIndex:index];
+	int index = (intoRow == -1) ? [[dumpedInstance valueForKey:@"preferredRowIndex"] intValue] : (intoRow - 2 - [connectedServers count]);
+	[self addSavedServer:dumpedInstance atIndex:index select:dumpedInstanceWasSelected];
 	
 	[dumpedInstance setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
 }
@@ -1633,7 +1654,9 @@
 				newWindowFrame.origin.y += oldHeight - newWindowFrame.size.height;
 			}
 			else
-				newWindowFrame.size.width = newWindowFrame.size.height * realAspect;			
+			{
+				newWindowFrame.size.width = bareWindowHeight * realAspect;
+			}
 		}
 	}
 	
@@ -1649,7 +1672,7 @@
 #pragma mark Internal use
 - (void) listUpdated
 {	
-	[gui_serverList reloadData];
+	[gui_serverList noteNumberOfRowsChanged];
 	[gui_serverList setNeedsDisplay:YES];
 	
 	
@@ -1839,7 +1862,6 @@
 			[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
 	return [appSupport stringByAppendingPathComponent:@"CoRD/Servers"];
 }
-
 
 
 @end

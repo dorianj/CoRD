@@ -27,11 +27,9 @@
 
 #import "CRDServerList.h"
 #import "miscellany.h"
+#import "AppController.h"
 #import "CRDServerCell.h"
 #import "RDInstance.h"
-
-// For mainWindowIsFocused
-#import "AppController.h"
 
 
 // Start is top, end is bottom
@@ -53,6 +51,7 @@
 	- (void)createConvolvedRowRects:(float)fraction;
 	- (CRDServerCell *)cellForRow:(int)row;
 	- (NSDragOperation)dragOperationForSource:(id <NSDraggingInfo>)info;
+	- (void)startDragForEvent:(NSEvent *)ev;
 @end
 
 
@@ -124,11 +123,16 @@
 
 - (void)selectRow:(int)index
 {
+	int oldSelection = selectedRow;
 	selectedRow = [[self delegate] tableView:self shouldSelectRow:index] ? index : -1;
 	
-	[super selectRowIndexes:[NSIndexSet indexSetWithIndex:selectedRow] byExtendingSelection:NO];
+	// Bit hacky, but works better than calling super (this way, we control the notification)
+	_selectedRows = [[NSIndexSet indexSetWithIndex:selectedRow] mutableCopy];
 	
 	[self setNeedsDisplay:YES];
+	
+	if (  (oldSelection != selectedRow) )
+		[[NSNotificationCenter defaultCenter] postNotificationName:NSTableViewSelectionDidChangeNotification object:self];	
 }
 
 - (void)deselectRow:(int)rowIndex
@@ -237,45 +241,27 @@
 		[g_appController connect:self];
 		return;
 	}
-	else if ([self selectedRow] != row)
+	
+	[[self window] makeFirstResponder:self];
+}
+
+- (void)mouseUp:(NSEvent *)ev
+{
+	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+
+	if ([self selectedRow] != row)
 	{
 		[self selectRow:row];
 	}
-	
-	
-	[[self window] makeFirstResponder:self];
-	
-//	[super mouseDown:ev];
 }
 
 - (void)mouseDragged:(NSEvent *)ev
 {
 	if (POINT_DISTANCE(mouseDragStart, [ev locationInWindow]) < 4.0)
 		return;
-
-	int row = [self rowAtPoint:[self convertPoint:mouseDragStart fromView:nil]];
-	NSRect rowRect = [self rectOfRow:row];
-	NSIndexSet *index = [NSIndexSet indexSetWithIndex:row];
-	NSPoint offset = NSZeroPoint, imageStart = rowRect.origin;
-	imageStart.y += rowRect.size.height;
-	NSPasteboard *pboard;
-
-	pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
-	[[self delegate] tableView:self writeRowsWithIndexes:index toPasteboard:pboard];
-
-	NSImage *dragImage = [self dragImageForRowsWithIndexes:index tableColumns:nil event:ev offset:&offset];
 	
-	[g_appController holdSavedServer:row];
-	selectedRow = -1;
-	[self noteNumberOfRowsChanged];
-	draggedRow = row;
-	
-	[self createNewRowOriginsAboveRow:draggedRow];
-	[autoexpansionStartRowOrigins release];
-	autoexpansionStartRowOrigins = [autoexpansionEndRowOrigins retain];
-	[self createConvolvedRowRects:1.0];
-	
-	[self dragImage:dragImage at:imageStart offset:NSZeroSize event:ev pasteboard:pboard source:self slideBack:YES];
+	[self startDragForEvent:ev];
+
 }
 
 // Assure that the row the right click is over is selected so that the context menu is correct
@@ -396,23 +382,12 @@
 
 #pragma mark -
 #pragma mark NSDraggingSource
-/*
-- (void)draggedImage:(NSImage *)anImage beganAt:(NSPoint)point
-{
-	int row = [self rowAtPoint:point];
-	
-	[super draggedImage:anImage beganAt:point];	
-}
-*/
+
 - (void)draggedImage:(NSImage *)anImage endedAt:(NSPoint)aPoint operation:(NSDragOperation)operation
 {
 	if ( (operation == NSDragOperationCopy) || (operation == NSDragOperationNone) )
 	{
-		int row = [[[g_appController valueForKey:@"dumpedInstance"] valueForKey:@"preferredRowIndex"] intValue];
-		[g_appController reinsertHeldSavedServer:row];
-		
-	//	[self createNewRowOriginsAboveRow:row+1];
-	//	[self startAnimation];
+		[g_appController reinsertHeldSavedServer:-1];
 	}
 	
 	[super draggedImage:anImage endedAt:aPoint operation:operation];
@@ -566,6 +541,41 @@
 	[autoexpansionCurrentRowOrigins release];
 	autoexpansionCurrentRowOrigins = [currentPointsBuilder retain];
 }
+
+- (void)startDragForEvent:(NSEvent *)ev
+{	
+	int row = [self rowAtPoint:[self convertPoint:mouseDragStart fromView:nil]];
+	
+	if (![[self delegate] tableView:self canDragRow:row])
+		return;
+
+	NSRect rowRect = [self rectOfRow:row];
+	NSIndexSet *index = [NSIndexSet indexSetWithIndex:row];
+	NSPoint offset = NSZeroPoint, imageStart = rowRect.origin;
+	imageStart.y += rowRect.size.height;
+	NSPasteboard *pboard;
+
+	pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
+	[[self delegate] tableView:self writeRowsWithIndexes:index toPasteboard:pboard];
+
+	NSImage *dragImage = [self dragImageForRowsWithIndexes:index tableColumns:nil event:ev offset:&offset];
+	
+	[g_appController holdSavedServer:row];
+	selectedRow = -1;
+	[self noteNumberOfRowsChanged];
+	draggedRow = row;
+	
+	[self createNewRowOriginsAboveRow:draggedRow];
+	[autoexpansionStartRowOrigins release];
+	autoexpansionStartRowOrigins = [autoexpansionEndRowOrigins retain];
+	[self createConvolvedRowRects:1.0];
+	
+	[self dragImage:dragImage at:imageStart offset:NSZeroSize event:ev pasteboard:pboard source:self slideBack:YES];
+	
+	[autoexpansionCurrentRowOrigins release];
+	autoexpansionCurrentRowOrigins = nil;
+}
+
 
 #pragma mark -
 #pragma mark NSAnimation delegate

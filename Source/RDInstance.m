@@ -112,6 +112,13 @@
 // Invoked on incoming data arrival, starts the processing of incoming packets
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)streamEvent
 {
+	if (streamEvent == NSStreamEventErrorOccurred)
+	{
+		[g_appController performSelectorOnMainThread:@selector(disconnectInstance:)
+				withObject:self waitUntilDone:NO];
+		return;
+	}
+
 	uint8 type;
 	STREAM s;
 	uint32 ext_disc_reason;
@@ -154,7 +161,7 @@
 	} while ( (conn->nextPacket < s->end) && (connectionStatus == CRDConnectionConnected) );
 }
 
-// Using the current properties, attempt to connect to a server. Blocks until timeout on failure.
+// Using the current properties, attempt to connect to a server. Blocks until timeout or failure.
 - (BOOL) connect
 {
 	if (connectionStatus != CRDConnectionClosed)
@@ -172,25 +179,15 @@
 		return NO;
 	}
 	
-	// Set status to connecting. Do so on main thread to assure that the cell's progress
+	// Set status to connecting. Do on main thread so that the cell's progress
 	//	indicator timer is on the main thread.
 	[self performSelectorOnMainThread:@selector(setStatusAsNumber:)
 			withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
 	
 	[g_appController performSelectorOnMainThread:@selector(validateControls)
 			withObject:nil waitUntilDone:NO];
-	
-	
-	// Clear out the bitmap cache
-	int i, k;
-	for (i = 0; i < NBITMAPCACHE; i++)
-	{
-		for (k = 0; k < NBITMAPCACHEENTRIES; k++)
-			conn->bmpcache[i][k].bitmap = NULL;
-	}
-	
 
-	// Set RDP5 performance flags
+	// RDP5 performance flags
 	int performanceFlags = RDP5_DISABLE_NOTHING;
 	if (!windowDrags)
 		performanceFlags |= RDP5_NO_FULLWINDOWDRAG;
@@ -207,7 +204,7 @@
 	conn->rdp5PerformanceFlags = performanceFlags;
 	
 
-	// Set RDP logon flags
+	// RDP logon flags
 	int logonFlags = RDP_LOGON_NORMAL;
 	if ([username length] > 0 && ([password length] > 0 || savePassword))
 		logonFlags |= RDP_LOGON_AUTO;
@@ -290,37 +287,57 @@
 - (void) disconnect
 {
 	[self setStatus:CRDConnectionClosed];
+	[self retain];
+	[self disconnectAsync:[NSNumber numberWithBool:NO]];
+}
 
-	// Low level removal
-	NSStream *is = conn->inputStream;
-	[is removeFromRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
-	tcp_disconnect(conn);
+- (void) disconnectAsync:(NSNumber *)block
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	// UI cleanup
-	[window close];
-	[window release];
-	window = nil;
-	[tabViewRepresentation release];
-	tabViewRepresentation = nil;	
-	[scrollEnclosure release];
-	scrollEnclosure = nil;
-	[view release];
-	view = nil;
-	conn->ui = NULL;
-	
-	// Clear out the bitmap cache
-	int i, k;
-	for (i = 0; i < NBITMAPCACHE; i++)
+	if (inputLoopFinished || [block boolValue])
 	{
-		for (k = 0; k < NBITMAPCACHEENTRIES; k++)
-		{	
-			ui_destroy_bitmap(conn->bmpcache[i][k].bitmap);
-			conn->bmpcache[i][k].bitmap = NULL;
+		while (!inputLoopFinished)
+			usleep(1000);
+		
+		// Low level removal
+		tcp_disconnect(conn);
+		
+		// UI cleanup
+		[window close];
+		[window release];
+		window = nil;
+		[tabViewRepresentation release];
+		tabViewRepresentation = nil;	
+		[scrollEnclosure release];
+		scrollEnclosure = nil;
+		[view release];
+		view = nil;
+		
+		// Clear out the bitmap cache
+		int i, k;
+		for (i = 0; i < NBITMAPCACHE; i++)
+		{
+			for (k = 0; k < NBITMAPCACHEENTRIES; k++)
+			{	
+				ui_destroy_bitmap(conn->bmpcache[i][k].bitmap);
+				conn->bmpcache[i][k].bitmap = NULL;
+			}
 		}
+		
+		memset(conn, 0, sizeof(struct rdcConn));
+		free(conn);
+		conn = NULL;
+	}
+	else
+	{
+		[self retain];
+		[NSThread detachNewThreadSelector:@selector(disconnectAsync:) toTarget:self
+					withObject:[NSNumber numberWithBool:YES]];	
 	}
 	
-	free(conn);
-	conn = NULL;
+	[pool release];
+	[self release];
 }
 
 - (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2
@@ -376,6 +393,8 @@
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
+	inputLoopFinished = NO;
+	
 	if (forwardDisks && !DISK_FORWARDING_DISABLED)
 	{
 		[NSTimer scheduledTimerWithTimeInterval:(1.0/NOTIFY_POLL_SPEED) target:self
@@ -392,8 +411,14 @@
 			pool = [[NSAutoreleasePool alloc] init];
 		}
 		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode 
-					beforeDate:[NSDate dateWithTimeIntervalSinceNow:3.0]];
+					beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
+	
+	if (conn != NULL)
+		[(id)conn->inputStream removeFromRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
+	
+	
+	inputLoopFinished = YES;
 	
 	[pool release];
 }
