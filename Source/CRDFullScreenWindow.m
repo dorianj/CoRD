@@ -43,8 +43,6 @@
 
 - (void)startFullScreen
 {
-	
-	
 	NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
 						self, NSViewAnimationTargetKey,
 						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,

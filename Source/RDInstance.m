@@ -164,9 +164,14 @@
 // Using the current properties, attempt to connect to a server. Blocks until timeout or failure.
 - (BOOL) connect
 {
-	if (connectionStatus != CRDConnectionClosed)
+	if (connectionStatus == CRDConnectionDisconnecting)
+	{
+		while (connectionStatus == CRDConnectionDisconnecting)
+			usleep(1000);
+	}
+	else if (connectionStatus != CRDConnectionClosed)
 		return NO;
-	
+		
 	free(conn);
 	conn = malloc(sizeof(struct rdcConn));
 	fill_default_connection(conn);
@@ -286,7 +291,6 @@
 
 - (void) disconnect
 {
-	[self setStatus:CRDConnectionClosed];
 	[self retain];
 	[self disconnectAsync:[NSNumber numberWithBool:NO]];
 }
@@ -294,7 +298,7 @@
 - (void) disconnectAsync:(NSNumber *)block
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
+	[self setStatus:CRDConnectionDisconnecting];
 	if (inputLoopFinished || [block boolValue])
 	{
 		while (!inputLoopFinished)
@@ -328,6 +332,7 @@
 		memset(conn, 0, sizeof(struct rdcConn));
 		free(conn);
 		conn = NULL;
+		[self setStatus:CRDConnectionClosed];
 	}
 	else
 	{

@@ -85,7 +85,8 @@ typedef enum _CRDConnectionStatus
 {
    CRDConnectionClosed = 0,
    CRDConnectionConnecting = 1,
-   CRDConnectionConnected = 2
+   CRDConnectionConnected = 2,
+   CRDConnectionDisconnecting = 3
 } CRDConnectionStatus;
 
 typedef enum _CRDDisplayMode
@@ -104,7 +105,7 @@ AppController *g_appController;
 /* General mid-level debugging */
 //#define WITH_DEBUG_KEYBOARD 1
 //#define WITH_DEBUG_UI 1
-#define WITH_MID_LEVEL_DEBUG 1
+//#define WITH_MID_LEVEL_DEBUG 1
 
 #ifdef WITH_MID_LEVEL_DEBUG
 	#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
