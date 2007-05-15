@@ -1,20 +1,19 @@
-//  Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
-//  Permission is hereby granted, free of charge, to any person obtaining a 
-//  copy of this software and associated documentation files (the "Software"), 
-//  to deal in the Software without restriction, including without limitation 
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//  and/or sell copies of the Software, and to permit persons to whom the 
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in 
-//  all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
-//  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/*	Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
+	
+	This file is part of CoRD.
+	CoRD is free software; you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation; either version 2 of the License, or (at your option) any later
+	version.
+
+	CoRD is distributed in the hope that it will be useful, but WITHOUT ANY
+	WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+	FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along with
+	CoRD; if not, write to the Free Software Foundation, Inc., 51 Franklin St,
+	Fifth Floor, Boston, MA 02110-1301 USA
+*/
 
 /*	Purpose: various stubs which support the controller layer.
 	Note: All of these functions require an NSAutoReleasePool be allocated.
@@ -110,6 +109,7 @@ AppController *g_appController;
 #ifdef WITH_MID_LEVEL_DEBUG
 	#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
 	#define TRACE_FUNC NSLog(@"%s (%@@%u) entered", __func__, [[NSString stringWithCString:__FILE__] lastPathComponent], __LINE__)
+	#define WITH_ANY_DEBUG 1
 #else
 	#define UNIMPL
 	#define TRACE_FUNC
@@ -117,6 +117,7 @@ AppController *g_appController;
 
 #ifdef WITH_DEBUG_KEYBOARD
 	#define DEBUG_KEYBOARD(args) NSLog args 
+	#define WITH_ANY_DEBUG 1
 #else
 	#define DEBUG_KEYBOARD(args)
 #endif 
@@ -124,10 +125,13 @@ AppController *g_appController;
 #ifdef WITH_DEBUG_UI
 	#define DEBUG_UI(args) NSLog args
 	#define CHECKOPCODE(x) if ((x)!=12 && (x) < 16) { NSLog(@"Unimplemented opcode %d in function %s", (x), __func__); }
+	#define WITH_ANY_DEBUG 1
 #else
 	#define DEBUG_UI(args)
 	#define CHECKOPCODE(x) 
 #endif
 
 
-
+#if defined(WITH_ANY_DEBUG) && defined(CORD_RELEASE_BUILD)
+	#error Debugging is enabled and building release
+#endif

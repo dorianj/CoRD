@@ -1,26 +1,27 @@
-//  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
-//  Permission is hereby granted, free of charge, to any person obtaining a 
-//  copy of this software and associated documentation files (the "Software"), 
-//  to deal in the Software without restriction, including without limitation 
-//  the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-//  and/or sell copies of the Software, and to permit persons to whom the 
-//  Software is furnished to do so, subject to the following conditions:
-//
-//  The above copyright notice and this permission notice shall be included in 
-//  all copies or substantial portions of the Software.
-//  
-//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
-//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-//  WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
-//  CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+/*	Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+	
+	This file is part of CoRD.
+	CoRD is free software; you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation; either version 2 of the License, or (at your option) any later
+	version.
+
+	CoRD is distributed in the hope that it will be useful, but WITHOUT ANY
+	WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+	FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along with
+	CoRD; if not, write to the Free Software Foundation, Inc., 51 Franklin St,
+	Fifth Floor, Boston, MA 02110-1301 USA
+*/
 
 /*	Notes:
 		- The ivar 'data' is used because NSBitmapImageRep does not copy the bitmap data.
 		- The stored bitmap is ARGB8888 with alpha data regardless if source has
 			alpha as a memory-speed tradeoff: vImage can convert RGB565 directly
-			only to ARGB8888 (or planar, which would add complexity)
+			only to ARGB8888 (or planar, which would add complexity). Also, (to my
+			knowledge from inspecting Shark dumps), Cocoa will translate whatever
+			we paint into a 32 bitmap internally, so there's no disadvantage there.
 		- Using an accelerated buffer would speed up drawing. An option could be used
 			for the situations where an NSImage is required. My tests on a machine
 			with a capable graphics card show that CGImage would speed
@@ -28,10 +29,10 @@
 			The hassle is that some situations, a normal NSImage is needed
 			(eg: when using the image as a pattern for NSColor and patblt), so it would 
 			either have to create both or have a switch for which to create, and 
-			neither CGImage nor CGLayer have a way to specify the source origin,
-			when drawing so	the only way to do it is clip drawing to match the origin.
-			I've written some basic code to use CFLayer (not committed currently),
-			but I'll need to sit down with it again to make it work well.
+			neither CGImage nor CGLayer have a way to draw only a portion of itself,
+			meaning the only way to do it is clip drawing to match the origin.
+			I've written some basic code to use CFLayer, but it needs more work
+			before I commit it.
 */
 
 #import "RDCBitmap.h"
