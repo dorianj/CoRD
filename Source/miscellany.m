@@ -74,6 +74,9 @@ void print_bitfield(unsigned v, int bits)
 
 NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn)
 {
+	if ([orig length] == 0)
+		return nil;
+		
 	NSMutableString *new = [[orig mutableCopy] autorelease];
 	NSString *replace = withCarriageReturn ? @"\n" : @"\r\n",
 			 *with = withCarriageReturn ? @"\r\n" : @"\n";

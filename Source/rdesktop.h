@@ -45,8 +45,7 @@
 #define DEBUG_RDP5(args)
 #endif
 
-#define WITH_DEBUG_CLIPBOARD
-
+//#define WITH_DEBUG_CLIPBOARD
 #ifdef WITH_DEBUG_CLIPBOARD
 #define DEBUG_CLIPBOARD(args) printf args;
 #else

@@ -348,48 +348,6 @@
 		rdp_send_input(conn, time(NULL), type, flags, param1, param2);
 }
 
-// Assures that the remote clipboard is the same as the passed pasteboard, sending new
-//	clipboard as needed
-- (void)synchronizeRemoteClipboard:(NSPasteboard *)toPasteboard suggestedFormat:(int)format
-{
-	// Currently, only look for text
-	if ([toPasteboard availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
-	{
-		NSString *pasteContent = convert_line_endings([toPasteboard stringForType:NSStringPboardType], YES);
-		
-		if (![remoteClipboardContents isEqualToString:pasteContent] || (format != CF_AUTODETECT) )
-		{
-			const char *orig = [pasteContent cStringUsingEncoding:NSUnicodeStringEncoding];
-			int dataLen;
-			
-			if ( (orig != NULL) && ( (dataLen = strlen(orig)+1) > 1) )
-			{
-				char *data = malloc(dataLen);
-				memcpy(data, orig, dataLen-1);
-				*(data+dataLen) = '\0';
-				
-				cliprdr_send_data(conn, (unsigned char *)data, dataLen);				
-				cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);
-				
-				[remoteClipboardContents release];
-				remoteClipboardContents = [pasteContent retain];
-				
-				free(data);		
-			}
-			else
-				NSLog(@"Couldn't convert '%@' to UTF-16 for remote clipboard.", pasteContent);
-		}
-	}
-}
-
-// Sets the local clipboard to match the server provided data
-- (void)synchronizeLocalClipboard:(NSData *)data
-{
-	NSPasteboard *pb = [NSPasteboard generalPasteboard];
-	[pb declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-	[pb setString:convert_line_endings([NSString stringWithCString:[data bytes] encoding:NSUnicodeStringEncoding], NO) forType:NSStringPboardType];
-}
-
 - (void)pollDiskNotifyRequests:(NSTimer *)timer
 {
 	if (connectionStatus != CRDConnectionConnected)
@@ -436,6 +394,74 @@
 	
 	[pool release];
 }
+
+
+#pragma mark - 
+#pragma mark Clipboard synchronization
+
+- (void)announceNewClipboardData
+{
+	cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);
+}
+
+// Assures that the remote clipboard is the same as the passed pasteboard, sending new
+//	clipboard as needed
+- (void)setRemoteClipboard:(int)suggestedFormat
+{
+	NSPasteboard *pb = [NSPasteboard generalPasteboard];
+	if ([pb availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
+	{
+		NSString *pasteContent = convert_line_endings([pb stringForType:NSStringPboardType], YES);
+		
+		if (![remoteClipboardContents isEqualToString:pasteContent])
+		{
+			NSData *unicodePasteContent = [pasteContent dataUsingEncoding:NSUnicodeStringEncoding allowLossyConversion:YES];
+			
+			if ([unicodePasteContent length] > 0)
+			{
+				cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes] + 2 /* skip endianess marker */,
+						[unicodePasteContent length]);
+				
+				[remoteClipboardContents release];
+				remoteClipboardContents = [pasteContent retain];
+			}
+		}
+	}
+}
+
+- (void)requestRemoteClipboardData
+{
+	conn->clipboardRequestType = CF_UNICODETEXT;
+	cliprdr_send_data_request(conn, CF_UNICODETEXT);
+}
+
+// Sets the local clipboard to match the server provided data
+- (void)setLocalClipboard:(NSData *)data format:(int)format
+{
+	if ( ((format != CF_UNICODETEXT) && (format != CF_AUTODETECT)) || ([data length] == 0) )
+		return;
+	
+	NSMutableData *rawClipboardData = [[NSMutableData alloc] initWithCapacity:[data length]];
+	
+	unsigned char endiannessMarker[] = {0xFF, 0xFE};
+	[rawClipboardData appendBytes:endiannessMarker length:2];
+	[rawClipboardData appendBytes:[data bytes] length:[data length]-2];
+	
+	NSPasteboard *pb = [NSPasteboard generalPasteboard];
+	[pb declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
+	
+	NSString *temp = [[NSString alloc] initWithData:rawClipboardData encoding:NSUnicodeStringEncoding];
+	
+	[rawClipboardData release];
+	
+	NSString *remoteStr = convert_line_endings(temp, NO);
+
+	[remoteClipboardContents release];
+	remoteClipboardContents = [remoteStr retain];
+	
+	[pb setString:remoteStr forType:NSStringPboardType];	
+}
+
 
 #pragma mark -
 #pragma mark Working with the represented file
@@ -766,7 +792,15 @@
 {
 	if ([sender object] == window)
 	{
-		[self synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_AUTODETECT];
+		[self announceNewClipboardData];
+	}
+}
+
+- (void)windowDidResignKey:(NSNotification *)sender
+{
+	if ([sender object] == window)
+	{
+		[self requestRemoteClipboardData];
 	}
 }
 

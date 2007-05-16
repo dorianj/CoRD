@@ -332,6 +332,7 @@ struct rdcConn
 	int bmpcacheCount[3];
 	int encUseCount;
 	int decUseCount;
+	int clipboardRequestType;
 	unsigned char licenseKey[16];
 	unsigned char licenseSignKey[16];
 	unsigned short mcsUserid;

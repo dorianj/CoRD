@@ -154,16 +154,18 @@
 	return YES;
 }
 
+- (BOOL)becomeFirstResponder
+{
+	[controller announceNewClipboardData];
+	return YES;
+}
+
 - (BOOL)resignFirstResponder
 {
+	[controller requestRemoteClipboardData];	
 	return [super resignFirstResponder];
 }
 
-- (BOOL)becomeFirstResponder
-{
-	[controller synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:0];
-	return YES;
-}
 
 - (void)keyDown:(NSEvent *)ev
 {

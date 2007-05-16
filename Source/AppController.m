@@ -1206,7 +1206,15 @@
 {
 	if ( ([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) )
 	{
-		[[self viewedServer] synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:CF_UNICODETEXT];
+		[[self viewedServer] announceNewClipboardData];
+	}
+}
+
+- (void)windowDidResignKey:(NSNotification *)sender
+{
+	if ( ([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) )
+	{
+		[[self viewedServer] requestRemoteClipboardData];
 	}
 }
 

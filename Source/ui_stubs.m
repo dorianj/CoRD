@@ -1069,23 +1069,21 @@ unsigned short ui_get_numlock_state(unsigned int state)
 
 void ui_clip_format_announce(rdcConnection conn, uint8 *data, uint32 length) 
 {
-	cliprdr_send_data_request(conn, CF_UNICODETEXT);
+
 }
 
 void ui_clip_handle_data(rdcConnection conn, uint8 *data, uint32 length) 
 {	
 	RDInstance *inst = (RDInstance *)conn->controller;
-	[inst synchronizeLocalClipboard:[NSData dataWithBytes:data length:length]];
+	[inst setLocalClipboard:[NSData dataWithBytes:data length:length] format:conn->clipboardRequestType];
 }
 
 void ui_clip_request_data(rdcConnection conn, uint32 format) 
 {	
 	RDInstance *inst = (RDInstance *)conn->controller;
 	 
-	if (format == CF_UNICODETEXT || format == CF_TEXT)
-	{
-		[inst synchronizeRemoteClipboard:[NSPasteboard generalPasteboard] suggestedFormat:format];
-	}
+	if ( (format == CF_UNICODETEXT) || (format == CF_TEXT) )
+		[inst setRemoteClipboard:format];
 }
 
 void ui_clip_sync(rdcConnection conn) 
