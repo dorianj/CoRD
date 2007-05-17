@@ -208,11 +208,11 @@ void fill_default_connection(rdcConnection conn)
 	conn->polygonEllipseOrders	= 1;
 	conn->desktopSave	= 1;
 	conn->serverRdpVersion	= 1;
-	conn->keyLayout		= 0x409;
+	conn->keyboardLayout		= 0x409;
 	conn->packetNumber	= 0;
 	conn->licenseIssued	= 0;
 	conn->pstcacheEnumerated	= 0;
-	conn->rdpdrClientname	= NULL;
+	conn->rdpdrClientname	= NULL; // xxx: need to set to hostname?
 	conn->ioRequest	= NULL;
 	conn->bmpcacheLru[0] = conn->bmpcacheLru[1] = conn->bmpcacheLru[2] = NOT_SET;
 	conn->bmpcacheMru[0] = conn->bmpcacheMru[1] = conn->bmpcacheMru[2] = NOT_SET;

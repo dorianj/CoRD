@@ -70,7 +70,6 @@
 		return nil;
 	
 	// Use some safe defaults. The docs say it's fine to release a static string (@"").
-	startDisplay = forwardAudio = screenDepth = screenWidth = screenHeight = port = 0;
 	label = hostName = username = password = domain = @"";
 	temporary = YES;
 	[self setStatus:CRDConnectionClosed];
@@ -223,7 +222,7 @@
 	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
 	
 	// Set remote keymap to match local OS X input type
-	conn->keyLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
+	conn->keyboardLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
 
 	// Set up disk redirection
 	if (forwardDisks && !DISK_FORWARDING_DISABLED)

@@ -110,20 +110,6 @@ typedef struct _DATABLOB
 }
 DATABLOB;
 
-typedef struct _uni_key_translation
-{	
-	
-	/* For normal scancode translations */
-	uint16 unicode;
-	uint8 scancode;
-	uint16 modifiers;
-	
-	/* For sequences. If keysym is nonzero, the fields above are not used. */
-	uint16 seq_unicode;
-	struct _uni_key_translation *next;
-}
-uni_key_translation;
-
 typedef struct rdcConn * rdcConnection;
 
 typedef struct _VCHANNEL
@@ -324,7 +310,7 @@ struct rdcConn
 	int screenHeight;
 	int serverBpp;
 	int shareID;
-	unsigned int keyLayout;
+	unsigned int keyboardLayout;
 	int serverRdpVersion;
 	int packetNumber;
 	int pstcacheBpp;

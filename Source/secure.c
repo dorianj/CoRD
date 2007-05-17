@@ -403,16 +403,16 @@ sec_out_mcs_data(rdcConnection conn, STREAM s)
 	out_uint16_le(s, conn->screenHeight);
 	out_uint16_le(s, 0xca01);
 	out_uint16_le(s, 0xaa03);
-	out_uint32_le(s, conn->keyLayout);
+	out_uint32_le(s, conn->keyboardLayout);
 	out_uint32_le(s, 2600);	/* Client build. We are now 2600 compatible :-) */
 
 	/* Unicode name of client, padded to 32 bytes */
 	rdp_out_unistr(s, conn->hostname, hostlen);
 	out_uint8s(s, 30 - hostlen);
 
-	out_uint32_le(s, 4);
-	out_uint32(s, 0);
-	out_uint32_le(s, 12);
+	out_uint32_le(s, 4); /* keyboard type */
+	out_uint32_le(s, 0); /* keyboard subtype */
+	out_uint32_le(s, 12); /* keyboard function key count */
 	out_uint8s(s, 64);	/* reserved? 4 + 12 doublewords */
 	out_uint16_le(s, 0xca01);	/* colour depth? */
 	out_uint16_le(s, 1);

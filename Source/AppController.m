@@ -1457,7 +1457,7 @@
 	
 	[inst setTemporary:NO];
 	
-	index = MAX(index, [savedServers count]);
+	index = MIN(MAX(index, 0), [savedServers count]);
 		
 	[savedServers insertObject:inst atIndex:index];
 	[gui_serverList noteNumberOfRowsChanged];
@@ -1519,7 +1519,6 @@
 {
 	int index = (intoRow == -1) ? [[dumpedInstance valueForKey:@"preferredRowIndex"] intValue] : (intoRow - 2 - [connectedServers count]);
 	[self addSavedServer:dumpedInstance atIndex:index select:dumpedInstanceWasSelected];
-	
 	[dumpedInstance setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
 }
 

@@ -108,11 +108,9 @@ AppController *g_appController;
 
 #ifdef WITH_MID_LEVEL_DEBUG
 	#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
-	#define TRACE_FUNC NSLog(@"%s (%@@%u) entered", __func__, [[NSString stringWithCString:__FILE__] lastPathComponent], __LINE__)
 	#define WITH_ANY_DEBUG 1
 #else
 	#define UNIMPL
-	#define TRACE_FUNC
 #endif
 
 #ifdef WITH_DEBUG_KEYBOARD
@@ -135,3 +133,9 @@ AppController *g_appController;
 #if defined(WITH_ANY_DEBUG) && defined(CORD_RELEASE_BUILD)
 	#error Debugging is enabled and building release
 #endif
+
+#ifdef CORD_DEBUG_BUILD
+	#define TRACE_FUNC NSLog(@"%s (%@@%u) entered", __func__, [[NSString stringWithCString:__FILE__] lastPathComponent], __LINE__)
+#endif
+
+
