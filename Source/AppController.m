@@ -75,8 +75,10 @@
 	connectedServers = [[NSMutableArray alloc] init];
 	savedServers = [[NSMutableArray alloc] init];
 	
-	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:@"Active sessions"];
-	savedServersLabel = [[CRDLabelCell alloc] initTextCell:@"Saved Servers"];
+	connectedServersLabel = [[CRDLabelCell alloc] 
+			initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
+	savedServersLabel = [[CRDLabelCell alloc]
+			initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
 
 	return self;
 }
@@ -109,26 +111,34 @@
 	NSSize qcSize = [gui_quickConnect frame].size;
 	[quickConnectItem setMinSize:NSMakeSize(160.0, qcSize.height)];
 	[quickConnectItem setMaxSize:NSMakeSize(160.0, qcSize.height)];
-	[quickConnectItem setLabel:@"Quick Connect"];
-	[quickConnectItem setToolTip:@"Connect to a computer with default settings. Uses 'host[:port]' syntax."];
+	[quickConnectItem setLabel:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label")];
+	[quickConnectItem setToolTip:NSLocalizedString(@"Quick Connect Tooltip", @"Quick Connect toolbar item -> tooltip")];
 	
 	toolbarItems = [[NSMutableDictionary alloc] init];
 	
 	[toolbarItems 
-		setObject:create_static_toolbar_item(TOOLBAR_DRAWER, @"Servers",
-			@"Hide or show the servers drawer", @selector(toggleDrawer:))
+		setObject:create_static_toolbar_item(TOOLBAR_DRAWER, 
+			NSLocalizedString(@"Servers", @"Hide/show drawer toolbar item -> label"),
+			NSLocalizedString(@"Toggle Servers Drawer", @"Hide/show drawer toolbar item -> tooltip"),
+			@selector(toggleDrawer:))
 		forKey:TOOLBAR_DRAWER];
 	[toolbarItems 
-		setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT, @"Disconnect", 
-			@"Close the selected connection", @selector(performStop:))
+		setObject:create_static_toolbar_item(TOOLBAR_DISCONNECT,
+			NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> label"), 
+			NSLocalizedString(@"Close selected connection", @"Disconnect toolbar item -> tooltip"),
+			@selector(performStop:))
 		forKey:TOOLBAR_DISCONNECT];	
 	[toolbarItems
-		setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN, @"Full Screen",
-			@"Enter fullscreen mode", @selector(startFullscreen:))
+		setObject:create_static_toolbar_item(TOOLBAR_FULLSCREEN,
+			NSLocalizedString(@"Full Screen", @"Full Screen toolbar item -> label"),
+			NSLocalizedString(@"Enter fullscreen mode", @"Disconnect toolbar item -> tool tip"),
+			@selector(startFullscreen:))
 		forKey:TOOLBAR_FULLSCREEN];
 	[toolbarItems
-		setObject:create_static_toolbar_item(TOOLBAR_UNIFIED, @"Windowed",
-			@"Toggle between unified mode and windowed mode", @selector(performUnified:))
+		setObject:create_static_toolbar_item(TOOLBAR_UNIFIED,
+			NSLocalizedString(@"Windowed", @"Display Mode toolbar item -> label"),
+			NSLocalizedString(@"Switch between unified and windowed mode", @"Display Mode toolbar item -> tool tip"),
+			@selector(performUnified:))
 		forKey:TOOLBAR_UNIFIED];
 	[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
 	
@@ -219,12 +229,18 @@
 		return viewedInst != nil;
 	else if (action == @selector(toggleInspector:))
 	{
-		[item setTitle:([gui_inspector isVisible] ? @"Hide Inspector" : @"Show Inspector")];
+		NSString *hideOrShow = [gui_inspector isVisible]
+				? NSLocalizedString(@"Hide Inspector", @"View menu -> Show Inspector")
+				: NSLocalizedString(@"Show Inspector", @"View menu -> Hide Inspector");
+		[item setTitle:hideOrShow];
 		return inst != nil;
 	}
 	else if (action == @selector(toggleDrawer:))
 	{
-		[item setTitle:(drawer_is_visisble(gui_serversDrawer) ? @"Hide Servers Drawer" : @"Show Servers Drawer")];
+		NSString *hideOrShow = drawer_is_visisble(gui_serversDrawer)
+				? NSLocalizedString(@"Hide Servers Drawer", @"View menu -> Show Servers Drawer")
+				: NSLocalizedString(@"Show Servers Drawer", @"View menu -> Hide Servers Drawer");
+		[item setTitle:hideOrShow];
 	}
 	else if (action == @selector(keepSelectedServer:))
 	{
@@ -234,10 +250,10 @@
 	else if (action == @selector(performFullScreen:)) 
 	{
 		if ([self displayMode] == CRDDisplayFullscreen) {
-			[item setTitle:@"Exit Full Screen"];
+			[item setTitle:NSLocalizedString(@"Exit Full Screen", @"View menu -> Exit Full Screen")];
 			return YES;
 		} else {
-			[item setTitle:@"Start Full Screen"];
+			[item setTitle:NSLocalizedString(@"Start Full Screen", @"View menu -> Start Full Screen")];
 			return [connectedServers count] > 0;			
 		}
 	}
@@ -261,7 +277,8 @@
 		
 	RDInstance *inst = [[[RDInstance alloc] init] autorelease];
 	
-	NSString *path = increment_file_name([AppController savedServersPath], @"New Server", @".rdp");
+	NSString *path = increment_file_name([AppController savedServersPath],
+			NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
 		
 	[inst setTemporary:NO];
 	[inst setRdpFilename:path];
@@ -286,8 +303,13 @@
 	if (inst == nil || [inst temporary] || ([inst status] != CRDConnectionClosed) )
 		return;
 	
-	NSAlert *alert = [NSAlert alertWithMessageText:@"Delete saved server" defaultButton:@"Delete" 
-			alternateButton:@"Cancel" otherButton:nil informativeTextWithFormat:@"Are you sure you wish to delete the saved server '%@'?", [inst label]];
+	NSAlert *alert = [NSAlert alertWithMessageText:
+				NSLocalizedString(@"Delete saved server", @"Delete server confirm alert -> Title")
+			defaultButton:NSLocalizedString(@"Delete", @"Delete server confirm alert -> Yes button") 
+			alternateButton:NSLocalizedString(@"Cancel", @"Delete server confirm alert -> Cancel button")
+			otherButton:nil
+			informativeTextWithFormat:NSLocalizedString(@"Really delete", @"Delete server confirm alert -> Detail text"),
+			[inst label]];
 	[alert setAlertStyle:NSCriticalAlertStyle];
 	
 	if ([alert runModal] == NSAlertAlternateReturn)
@@ -612,7 +634,8 @@
 				objectAtIndex:0];
 	
 	NSString *path = increment_file_name(desktopFolder,
-				[[inst label] stringByAppendingString:@" Screen Capture"], @".png");
+				[[inst label] stringByAppendingString:
+				NSLocalizedString(@" Screen Capture", @"File name for screen captures")], @".png");
 	
 	[[inst view] writeScreenCaptureToFile:path];
 }
@@ -652,8 +675,8 @@
 
 - (IBAction)helpForConnectionOptions:(id)sender
 {
-    [[NSHelpManager sharedHelpManager] openHelpAnchor: @"ConnectionOptions"
-        inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleHelpBookName"]];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ConnectionOptions"
+			inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
 }
 
 - (IBAction)performServerMenuItem:(id)sender
@@ -734,14 +757,22 @@
 	else if ([itemId isEqualToString:TOOLBAR_UNIFIED] && (displayMode != CRDDisplayFullscreen))
 	{
 		NSString *label = (displayMode == CRDDisplayUnified) ? @"Windowed" : @"Unified";
+		NSString *localizedLabel = (displayMode == CRDDisplayUnified) 
+				? NSLocalizedString(@"Windowed", @"Display Mode toolbar item -> Windowed label")
+				: NSLocalizedString(@"Unified", @"Display Mode toolbar item -> Unified label");
+				
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
-		[toolbarItem setLabel:label];	
+		[toolbarItem setLabel:localizedLabel];	
 	}
 	else if ([itemId isEqualToString:TOOLBAR_DISCONNECT])
 	{
 		NSString *label = ([inst status] == CRDConnectionConnecting) ? @"Stop" : @"Disconnect";
-		[toolbarItem setLabel:label];
+		NSString *localizedLabel = ([inst status] == CRDConnectionConnecting)
+				? NSLocalizedString(@"Stop", @"Disconnect toolbar item -> Stop label")
+				: NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> Disconnect label");
+				
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
+		[toolbarItem setLabel:localizedLabel];
 		return ([inst status] == CRDConnectionConnecting) || 
 				( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
 	}
@@ -1116,12 +1147,13 @@
 {
 	if (newSettings == nil)
 	{
-		[gui_inspector setTitle:@"Inspector: No Server Selected"];
+		[gui_inspector setTitle:NSLocalizedString(@"Inspector: No Server Selected", @"Inspector -> Disabled title")];
 		newSettings = [[[RDInstance alloc] init] autorelease];
 	}
 	else
 	{
-		[gui_inspector setTitle:[@"Inspector: " stringByAppendingString:[newSettings label]]];
+		[gui_inspector setTitle:[NSLocalizedString(@"Inspector: ", @"Inspector -> Enabled title")
+				stringByAppendingString:[newSettings label]]];
 	}
 		
 	// All checkboxes 
@@ -1323,16 +1355,20 @@
 		
 		if (errorCode != ConnectionErrorNone && errorCode != ConnectionErrorCanceled)
 		{			
-			NSString *descs[] = {
-					@"No error",
-					@"The connection timed out.",
-					@"The host name could not be resolved.",
-					@"There was an error connecting.",
-					@"You canceled the connection." };
-			NSString *title = [NSString stringWithFormat:@"Couldn't connect to %@", [inst label]];
+			NSString *localizedErrorDescriptions[] = {
+					@"No error", /* shouldn't ever occur */
+					NSLocalizedString(@"The connection timed out.", @"Connection errors -> Timeout"),
+					NSLocalizedString(@"The host name could not be resolved.", @"Connection errors -> Host not found"), 
+					NSLocalizedString(@"There was an error connecting.", @"Connection errors -> Couldn't connect"),
+					NSLocalizedString(@"You canceled the connection.", @"Connection errors -> User canceled")
+					};
+			NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Couldn't connect to %@",
+					@"Connection error alert -> Title"), [inst label]];
 			
 			NSAlert *alert = [NSAlert alertWithMessageText:title defaultButton:nil
-						alternateButton:@"Retry" otherButton:nil informativeTextWithFormat:descs[errorCode]];
+						alternateButton:NSLocalizedString(@"Retry", @"Connection errors -> Retry button")
+						otherButton:nil
+						informativeTextWithFormat:localizedErrorDescriptions[errorCode]];
 			[alert setAlertStyle:NSCriticalAlertStyle];
 			
 			// Retry if requested

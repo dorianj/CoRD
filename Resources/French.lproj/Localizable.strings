@@ -1,0 +1,104 @@
+/* File name for screen captures */
+" Screen Capture" = " Screen Capture";
+
+/* Servers list label 1 */
+"Active sessions" = "Active sessions";
+
+/* Delete server confirm alert -> Cancel button */
+"Cancel" = "Cancel";
+
+/* Disconnect toolbar item -> tooltip */
+"Close selected connection" = "Close selected connection";
+
+/* Connection error alert -> Title */
+"Couldn't connect to %@" = "Couldn't connect to %@";
+
+/* Delete server confirm alert -> Yes button */
+"Delete" = "Delete";
+
+/* Delete server confirm alert -> Title */
+"Delete saved server" = "Delete saved server";
+
+/* Disconnect toolbar item -> Disconnect label
+   Disconnect toolbar item -> label */
+"Disconnect" = "Disconnect";
+
+/* Disconnect toolbar item -> tool tip */
+"Enter fullscreen mode" = "Enter fullscreen mode";
+
+/* View menu -> Exit Full Screen */
+"Exit Full Screen" = "Exit Full Screen";
+
+/* Full Screen toolbar item -> label */
+"Full Screen" = "Full Screen";
+
+/* View menu -> Show Inspector */
+"Hide Inspector" = "Hide Inspector";
+
+/* View menu -> Show Servers Drawer */
+"Hide Servers Drawer" = "Hide Servers Drawer";
+
+/* Inspector -> Enabled title */
+"Inspector: " = "Inspector: ";
+
+/* Inspector -> Disabled title */
+"Inspector: No Server Selected" = "Inspector: No Server Selected";
+
+/* Name of newly added servers */
+"New Server" = "New Server";
+
+/* Quick Connect toolbar item -> label */
+"Quick Connect" = "Quick Connect";
+
+/* Quick Connect toolbar item -> tooltip */
+"Quick Connect Tooltip" = "Connect to a computer with default settings. Can optionally use :port.";
+
+/* Delete server confirm alert -> Detail text */
+"Really delete" = "Are you sure you wish to delete the saved server '%@'?";
+
+/* Connection errors -> Retry button */
+"Retry" = "Retry";
+
+/* Servers list label 2 */
+"Saved Servers" = "Saved Servers";
+
+/* Hide/show drawer toolbar item -> label */
+"Servers" = "Servers";
+
+/* View menu -> Hide Inspector */
+"Show Inspector" = "Show Inspector";
+
+/* View menu -> Hide Servers Drawer */
+"Show Servers Drawer" = "Show Servers Drawer";
+
+/* View menu -> Start Full Screen */
+"Start Full Screen" = "Start Full Screen";
+
+/* Disconnect toolbar item -> Stop label */
+"Stop" = "Stop";
+
+/* Display Mode toolbar item -> tool tip */
+"Switch between unified and windowed mode" = "Switch between unified and windowed mode";
+
+/* Connection errors -> Timeout */
+"The connection timed out." = "The connection timed out.";
+
+/* Connection errors -> Host not found */
+"The host name could not be resolved." = "The host name could not be resolved.";
+
+/* Connection errors -> Couldn't connect */
+"There was an error connecting." = "There was an error connecting.";
+
+/* Hide/show drawer toolbar item -> tooltip */
+"Toggle Servers Drawer" = "Hide or show the servers drawer";
+
+/* Display Mode toolbar item -> Unified label */
+"Unified" = "Unified";
+
+/* Display Mode toolbar item -> label
+   Display Mode toolbar item -> Windowed label */
+"Windowed" = "Windowed";
+
+/* Connection errors -> User canceled */
+"You canceled the connection." = "You canceled the connection.";
+

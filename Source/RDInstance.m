@@ -475,7 +475,6 @@
 	
 	[remoteClipboard release];
 	remoteClipboard = [convert_line_endings(temp, NO) retain];
-	NSLog(@"setting local to %@", remoteClipboard);
 	[[NSPasteboard generalPasteboard] setString:remoteClipboard forType:NSStringPboardType];
 }
 
@@ -500,14 +499,6 @@
 {
 	isClipboardOwner = NO;
 }
-/*
-- (void)pasteboard:(NSPasteboard *)sender provideDataForType:(NSString *)type
-{
-	if ([type isEqualToString:NSStringPboardType] || (remoteClipboard == nil) )
-		[sender setString:remoteClipboard forType:NSStringPboardType];
-	else
-		[sender setString:@"" forType:NSStringPboardType];
-}*/
 
 
 #pragma mark -
