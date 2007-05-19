@@ -50,7 +50,9 @@
 	NSStringEncoding fileEncoding;
 	
 	// Clipboard
-	NSString *remoteClipboardContents;
+	BOOL isClipboardOwner;
+	NSString *remoteClipboard;
+	int clipboardChangeCount;
 
 	// UI elements
 	RDCView *view;
@@ -74,6 +76,8 @@
 - (void)setRemoteClipboard:(int)suggestedFormat;
 - (void)setLocalClipboard:(NSData *)data format:(int)format;
 - (void)requestRemoteClipboardData;
+- (void)gotNewRemoteClipboardData;
+- (void)informServerOfPasteboardType;
 
 // Working with the rest of CoRD
 - (void)cancelConnection;

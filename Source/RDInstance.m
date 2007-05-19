@@ -38,13 +38,63 @@
 @implementation RDInstance
 
 #pragma mark NSObject methods
+
 - (id)init
 {
+	if (![super init])
+		return nil;
+	
+	// Defaults
+	label = hostName = username = password = domain = @"";
 	preferredRowIndex = -1;
 	screenDepth = 16;
-	themes = cacheBitmaps = YES;
-	fileEncoding = NSASCIIStringEncoding;
-	return [self initWithRDPFile:nil];
+	temporary = themes = cacheBitmaps = YES;
+	fileEncoding = NSUTF8StringEncoding;
+	
+	// Other initialization
+	otherAttributes = [[NSMutableDictionary alloc] init];
+	cellRepresentation = [[CRDServerCell alloc] init];
+	[cellRepresentation setImage:[AppController sharedDocumentIcon]];
+	
+	
+	[self setStatus:CRDConnectionClosed];
+	
+	return self;
+}
+
+- (id)initWithRDPFile:(NSString *)path
+{
+	if (![self init])
+		return nil;
+	
+	if (![self readRDPFile:path])
+	{
+		[self autorelease];
+		return nil;
+	}
+	
+	return self;
+}
+
+- (id)initWithArgumentsForAddress:(NSString *)address
+{
+	if (![self init] || (hostName == nil) )
+		return nil;
+	
+	
+	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
+	
+	split_hostname(address, &hostName, &port);
+	
+	if ([args objectForKey:@"testItem"])
+	{
+		NSLog(@"Test item was there");
+	}
+	
+	if ([args objectForKey:@"fullscreen"])
+		NSLog(@"fullscreen was there");
+	
+	return self;
 }
 
 - (void)dealloc
@@ -62,31 +112,6 @@
 		
 	[cellRepresentation release];
 	[super dealloc];
-}
-
-- (id)initWithRDPFile:(NSString *)path
-{
-	if (![super init])
-		return nil;
-	
-	// Use some safe defaults. The docs say it's fine to release a static string (@"").
-	label = hostName = username = password = domain = @"";
-	temporary = YES;
-	[self setStatus:CRDConnectionClosed];
-	
-	// Other initializations
-	otherAttributes = [[NSMutableDictionary alloc] init];
-	cellRepresentation = [[CRDServerCell alloc] init];
-	
-	[cellRepresentation setImage:[AppController sharedDocumentIcon]];
-	
-	if (path != nil && ![self readRDPFile:path])
-	{
-		[self autorelease];
-		return nil;
-	}
-	
-	return self;
 }
 
 - (id)valueForUndefinedKey:(NSString *)key
@@ -400,7 +425,12 @@
 
 - (void)announceNewClipboardData
 {
-	cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);
+	int newChangeCount = [[NSPasteboard generalPasteboard] changeCount];
+
+	if (newChangeCount != clipboardChangeCount)
+		[self informServerOfPasteboardType];
+
+	clipboardChangeCount = newChangeCount;
 }
 
 // Assures that the remote clipboard is the same as the passed pasteboard, sending new
@@ -411,19 +441,13 @@
 	if ([pb availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
 	{
 		NSString *pasteContent = convert_line_endings([pb stringForType:NSStringPboardType], YES);
+
+		NSData *unicodePasteContent = [pasteContent dataUsingEncoding:NSUnicodeStringEncoding allowLossyConversion:YES];
 		
-		if (![remoteClipboardContents isEqualToString:pasteContent])
+		if ([unicodePasteContent length] > 0)
 		{
-			NSData *unicodePasteContent = [pasteContent dataUsingEncoding:NSUnicodeStringEncoding allowLossyConversion:YES];
-			
-			if ([unicodePasteContent length] > 0)
-			{
-				cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes] + 2 /* skip endianess marker */,
-						[unicodePasteContent length]);
-				
-				[remoteClipboardContents release];
-				remoteClipboardContents = [pasteContent retain];
-			}
+			cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes] + 2 /* skip endianess marker */, 
+					[unicodePasteContent length]);
 		}
 	}
 }
@@ -434,32 +458,56 @@
 	cliprdr_send_data_request(conn, CF_UNICODETEXT);
 }
 
-// Sets the local clipboard to match the server provided data
+// Sets the local clipboard to match the server provided data. Only called by server 
+//	(via ui_stubs) when new data has actually arrived
 - (void)setLocalClipboard:(NSData *)data format:(int)format
 {
 	if ( ((format != CF_UNICODETEXT) && (format != CF_AUTODETECT)) || ([data length] == 0) )
 		return;
 	
-	NSMutableData *rawClipboardData = [[NSMutableData alloc] initWithCapacity:[data length]];
-	
 	unsigned char endiannessMarker[] = {0xFF, 0xFE};
+	
+	NSMutableData *rawClipboardData = [[NSMutableData alloc] initWithCapacity:[data length]];	
 	[rawClipboardData appendBytes:endiannessMarker length:2];
 	[rawClipboardData appendBytes:[data bytes] length:[data length]-2];
-	
-	NSPasteboard *pb = [NSPasteboard generalPasteboard];
-	[pb declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:nil];
-	
 	NSString *temp = [[NSString alloc] initWithData:rawClipboardData encoding:NSUnicodeStringEncoding];
-	
 	[rawClipboardData release];
 	
-	NSString *remoteStr = convert_line_endings(temp, NO);
-
-	[remoteClipboardContents release];
-	remoteClipboardContents = [remoteStr retain];
-	
-	[pb setString:remoteStr forType:NSStringPboardType];	
+	[remoteClipboard release];
+	remoteClipboard = [convert_line_endings(temp, NO) retain];
+	NSLog(@"setting local to %@", remoteClipboard);
+	[[NSPasteboard generalPasteboard] setString:remoteClipboard forType:NSStringPboardType];
 }
+
+// Informs the receiver that the server has new data and is about to send it
+- (void)gotNewRemoteClipboardData
+{
+	isClipboardOwner = YES;
+	[[NSPasteboard generalPasteboard] declareTypes:[NSArray arrayWithObject:NSStringPboardType] owner:self];
+}
+
+- (void)informServerOfPasteboardType
+{
+	if ([[NSPasteboard generalPasteboard] availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]] == nil)
+	{
+		return;
+	}
+	
+	cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);	
+}
+
+- (void)pasteboardChangedOwner:(NSPasteboard *)sender
+{
+	isClipboardOwner = NO;
+}
+/*
+- (void)pasteboard:(NSPasteboard *)sender provideDataForType:(NSString *)type
+{
+	if ([type isEqualToString:NSStringPboardType] || (remoteClipboard == nil) )
+		[sender setString:remoteClipboard forType:NSStringPboardType];
+	else
+		[sender setString:@"" forType:NSStringPboardType];
+}*/
 
 
 #pragma mark -
@@ -790,17 +838,13 @@
 - (void)windowDidBecomeKey:(NSNotification *)sender
 {
 	if ([sender object] == window)
-	{
 		[self announceNewClipboardData];
-	}
 }
 
 - (void)windowDidResignKey:(NSNotification *)sender
 {
 	if ([sender object] == window)
-	{
 		[self requestRemoteClipboardData];
-	}
 }
 
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize

@@ -60,14 +60,11 @@
 
 + (void)initialize
 {
-	NSDictionary *defaults = [NSDictionary dictionaryWithObjectsAndKeys:
-			[NSNumber numberWithBool:YES], PREFS_RESIZE_VIEWS,
-			[NSNumber numberWithBool:YES], PREFS_FULLSCREEN_RECONNECT,
-			nil];
-	[[NSUserDefaultsController sharedUserDefaultsController] setInitialValues:defaults];	
+	[[NSUserDefaults standardUserDefaults] registerDefaults: [NSDictionary dictionaryWithContentsOfFile:
+		[[NSBundle mainBundle] pathForResource: @"Defaults" ofType: @"plist"]]];
 }
 
-#pragma mark NSObject methods
+
 - (id)init
 {
 	if (![super init])
@@ -195,8 +192,6 @@
 
 	// Load a few user defaults that need to be loaded before anything is displayed
 	displayMode = [[userDefaults objectForKey:DEFAULTS_DISPLAY_MODE] intValue];
-	[gui_unifiedWindow setFrameAutosaveName:DEFAULTS_UNIFIED_AUTOSAVE];
-	[gui_inspector setFrameAutosaveName:DEFAULTS_INSPECTOR_AUTOSAVE];
 
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];

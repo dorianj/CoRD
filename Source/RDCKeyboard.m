@@ -125,6 +125,12 @@ static NSDictionary *windowsKeymapTable = nil;
 
 - (void)sendScancode:(uint8)scancode flags:(uint16)flags
 {
+	if ( ((scancode == SCANCODE_CHAR_LWIN) || (scancode == SCANCODE_CHAR_RWIN)) &&
+		!PREFERENCE_ENABLED(DEFAULTS_SEND_WINKEY))
+	{
+		return;
+	}
+	
 	if (scancode & SCANCODE_EXTENDED)
 	{
 		DEBUG_KEYBOARD((@"Sending extended scancode=0x%x, flags=0x%x\n", scancode & ~SCANCODE_EXTENDED, flags));
@@ -148,7 +154,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	#define UP_OR_DOWN(b) ( (b) ? RDP_KEYPRESS : RDP_KEYRELEASE )
 	
 	// keySent is used because some older keyboards may not specify right or left.
-	//	It is unknown if it is actually needed.
+	//	I don't know if it is actually needed.
 	
 	// Shift key
 	if ( (keySent = changedMods & NX_DEVICELSHIFTKEYMASK) )

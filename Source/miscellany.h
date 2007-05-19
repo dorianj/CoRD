@@ -36,13 +36,14 @@ void draw_line(NSColor *color, NSPoint start, NSPoint end);
 NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn);
 
 NSString *full_host_name(NSString *host, int port);
+void split_hostname(NSString *address, NSString **host, int *port);
 
 /* AppController */
 NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);
 BOOL drawer_is_visisble(NSDrawer *drawer);
 void ensure_directory_exists(NSString *directory, NSFileManager *manager);
 NSString *increment_file_name(NSString *path, NSString *base, NSString *extension);
-void split_hostname(NSString *address, NSString **host, int *port);
+
 NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
 #define NUMBER_AS_BSTATE(b) ( ([(b) boolValue]) ? NSOnState : NSOffState)
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
@@ -72,13 +73,14 @@ void fill_default_connection(rdcConnection conn);
 #define DEFAULTS_DRAWER_WIDTH @"drawer_width"
 #define DEFAULTS_DISPLAY_MODE @"windowed_mode"
 #define DEFAULTS_RECENT_SERVERS @"RecentServers"
+#define DEFAULTS_SEND_WINKEY @"SendWindowsKey"
 #define DEFAULTS_UNIFIED_AUTOSAVE @"UnfiedWindowFrameAutosave"
 #define DEFAULTS_INSPECTOR_AUTOSAVE @"InspectorWindowFrameAutosave"
 
 #define PREFS_FULLSCREEN_RECONNECT @"reconnectFullScreen"
 #define PREFS_RESIZE_VIEWS @"resizeViewToFit"
 
-#define PREFERENCE_ENABLED(prefName) [[[[NSUserDefaultsController sharedUserDefaultsController] values] valueForKey:(prefName)] boolValue]
+#define PREFERENCE_ENABLED(prefName) [[NSUserDefaults standardUserDefaults] boolForKey:(prefName)]
 
 typedef enum _CRDConnectionStatus
 {

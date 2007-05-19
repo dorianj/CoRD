@@ -37,6 +37,9 @@
 	[self setHasShadow:NO];
 	[[self contentView] setAutoresizesSubviews:NO];
 	
+	if ( ([[NSScreen screens] count] > 0) && (screen == [[NSScreen screens] objectAtIndex:0]))
+		hideMenu = YES;
+	
 	return self;
 }
 
@@ -58,7 +61,9 @@
 	[viewAnim startAnimation];
 	[viewAnim release];	
 	
-	SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
+	if (hideMenu)
+		SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
+	
 	[self setLevel:NSNormalWindowLevel];
 	
 	[self display];
@@ -67,7 +72,9 @@
 - (void)prepareForExit
 {
 	[self setLevel:NSPopUpMenuWindowLevel];
-	SetSystemUIMode(kUIModeNormal, 0);
+	
+	if (hideMenu)
+		SetSystemUIMode(kUIModeNormal, 0);
 }
 
 - (void)exitFullScreen

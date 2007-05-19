@@ -1069,7 +1069,8 @@ unsigned short ui_get_numlock_state(unsigned int state)
 
 void ui_clip_format_announce(rdcConnection conn, uint8 *data, uint32 length) 
 {
-
+	RDInstance *inst = (RDInstance *)conn->controller;
+	[inst gotNewRemoteClipboardData];
 }
 
 void ui_clip_handle_data(rdcConnection conn, uint8 *data, uint32 length) 
@@ -1088,7 +1089,8 @@ void ui_clip_request_data(rdcConnection conn, uint32 format)
 
 void ui_clip_sync(rdcConnection conn) 
 {
-	cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);	
+	RDInstance *inst = (RDInstance *)conn->controller;
+	[inst informServerOfPasteboardType];
 }
 
 void ui_clip_request_failed(rdcConnection conn)
