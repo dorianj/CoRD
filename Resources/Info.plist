@@ -53,6 +53,10 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>CRDApplication</string>
+	<key>NSAppleScriptEnabled</key>
+    <string>YES</string>
+    <key>OSAScriptingDefinition</key>
+    <string>CoRD.sdef</string>
 	<key>SUFeedURL</key>
 	<string>http://cord.sourceforge.net/sparkle.xml</string>
 </dict>

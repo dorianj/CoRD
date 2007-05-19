@@ -13,6 +13,7 @@
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
 		9816F5320BEE938600E439BE /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 9816F5220BEE938600E439BE /* CoRD Help */; };
 		98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98520EEB0BFEB77700DD732F /* Defaults.plist */; };
+		98520FE80BFEC70800DD732F /* CoRD.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 98520FE70BFEC70800DD732F /* CoRD.sdef */; };
 		9881A4290BE9439D0073D189 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		9881A42A0BE9439E0073D189 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 981739840BACE45D00EAB48A /* Carbon.framework */; };
 		9881A42B0BE943A00073D189 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98FF84CD0BE557C4002E5228 /* ApplicationServices.framework */; };
@@ -93,7 +94,10 @@
 		9816F5220BEE938600E439BE /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
 		981739840BACE45D00EAB48A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		98520EEB0BFEB77700DD732F /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.xml; name = Defaults.plist; path = Resources/Defaults.plist; sourceTree = "<group>"; };
+		98520FE70BFEC70800DD732F /* CoRD.sdef */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text.sdef; name = CoRD.sdef; path = Resources/CoRD.sdef; sourceTree = "<group>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
+		9890EF670BFF802100665800 /* German */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = German; path = Resources/German.lproj/MainMenu.nib; sourceTree = "<group>"; };
+		9890EF6A0BFF813900665800 /* French */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = French; path = Resources/French.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		98B7F09C0BE03B0C006BDCDA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = /System/Library/Frameworks/Accelerate.framework; sourceTree = "<absolute>"; };
 		98E972240BD9D9DF0041110D /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = Source/AppController.h; sourceTree = "<group>"; };
 		98E972250BD9D9DF0041110D /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = AppController.m; path = Source/AppController.m; sourceTree = "<group>"; };
@@ -266,6 +270,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				98520FE70BFEC70800DD732F /* CoRD.sdef */,
 				98520EEB0BFEB77700DD732F /* Defaults.plist */,
 				9816F5220BEE938600E439BE /* CoRD Help */,
 				9816F0BF0BEE506000E439BE /* Stop.png */,
@@ -427,6 +432,7 @@
 				9816F0C00BEE506000E439BE /* Stop.png in Resources */,
 				9816F5320BEE938600E439BE /* CoRD Help in Resources */,
 				98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */,
+				98520FE80BFEC70800DD732F /* CoRD.sdef in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -490,6 +496,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				98E972E60BD9DA9F0041110D /* English */,
+				9890EF670BFF802100665800 /* German */,
+				9890EF6A0BFF813900665800 /* French */,
 			);
 			name = MainMenu.nib;
 			sourceTree = "<group>";
