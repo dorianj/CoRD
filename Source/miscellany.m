@@ -201,6 +201,9 @@ void fill_default_connection(rdcConnection conn)
 	conn->desktopSave	= 1;
 	conn->serverRdpVersion	= 1;
 	conn->keyboardLayout		= 0x409;
+	conn->keyboardType = 4;
+	conn->keyboardSubtype  = 0;
+	conn->keyboardFunctionkeys = 12;
 	conn->packetNumber	= 0;
 	conn->licenseIssued	= 0;
 	conn->pstcacheEnumerated	= 0;

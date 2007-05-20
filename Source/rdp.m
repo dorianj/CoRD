@@ -81,7 +81,7 @@ rdp_recv(rdcConnection conn, uint8 * type)
 	in_uint8s(rdp_s, 2);	/* userid */
 	*type = pdu_type & 0xf;
 
-#if WITH_DEBUG
+#ifdef WITH_DEBUG
 	DEBUG(("RDP packet #%d, (type %x)\n", ++conn->packetNumber, *type));
 	hexdump(conn->nextPacket, length);
 #endif /*  */
@@ -396,8 +396,6 @@ rdp_send_client_window_status(rdcConnection conn, int status)
    }
 
    s_mark_end(s);
-   
-#define RDP_DATA_PDU_CLIENT_WINDOW_STATUS 35
    rdp_send_data(conn, s, RDP_DATA_PDU_CLIENT_WINDOW_STATUS);
    conn->currentStatus = status;
 }
@@ -1088,7 +1086,7 @@ process_update_pdu(rdcConnection conn, STREAM s)
 
 /* Process a disconnect PDU */
 void
-process_disconnect_pdu(STREAM s, uint32 * ext_disc_reason)
+process_disconnect_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 {
 	in_uint32_le(s, *ext_disc_reason);
 
@@ -1166,7 +1164,7 @@ process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 			break;
 
 		case RDP_DATA_PDU_DISCONNECT:
-			process_disconnect_pdu(s, ext_disc_reason);
+			process_disconnect_pdu(conn, s, ext_disc_reason);
 
          /* We used to return true and disconnect immediately here, but
             * Windows Vista sends a disconnect PDU with reason 0 when
@@ -1179,6 +1177,54 @@ process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 			unimpl("data PDU %d\n", data_pdu_type);
 	}
 	return False;
+}
+
+/* Process redirect PDU from Session Directory */
+RDCBOOL
+process_redirect_pdu(rdcConnection conn, STREAM s /*, uint32 * ext_disc_reason */ )
+{
+	uint32 len;
+
+	/* these 2 bytes are unknown, seem to be zeros */
+	in_uint8s(s, 2);
+
+	/* read connection flags */
+	in_uint32_le(s, conn->sessionDirFlags);
+
+	/* read length of ip string */
+	in_uint32_le(s, len);
+
+	/* read ip string */
+	rdp_in_unistr(s, conn->sessionDirServer, len);
+
+	/* read length of cookie string */
+	in_uint32_le(s, len);
+
+	/* read cookie string (plain ASCII) */
+	in_uint8a(s, conn->sessionDirCookie, len);
+	conn->sessionDirCookie[len] = '\0';
+
+	/* read length of username string */
+	in_uint32_le(s, len);
+
+	/* read username string */
+	rdp_in_unistr(s, conn->sessionDirUsername, len);
+
+	/* read length of domain string */
+	in_uint32_le(s, len);
+
+	/* read domain string */
+	rdp_in_unistr(s, conn->sessionDirDomain, len);
+
+	/* read length of password string */
+	in_uint32_le(s, len);
+
+	/* read password string */
+	rdp_in_unistr(s, conn->sessionDirPassword, len);
+
+	conn->sessionDirRedirect = True;
+
+	return True;
 }
 
 /* Establish a connection up to the RDP layer */
@@ -1194,16 +1240,24 @@ rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *do
 }
 
 /* Establish a reconnection up to the RDP layer */
-/* RDCBOOL
-rdp_reconnect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password,
-			const char *command, const char *directory, char *cookie)
+RDCBOOL
+rdp_reconnect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password, const char *command, const char *directory, char *cookie)
 {
-	if (!sec_reconnect(conn, server))
+	if (!sec_reconnect(conn, (char *)server))
 		return False;
 	
 	rdp_send_logon_info(conn, flags, domain, conn->username, password, command, directory);
 	return True;
-} */
+} 
+
+/* Called during redirection to reset the state to support redirection */
+void
+rdp_reset_state(rdcConnection conn)
+{
+	conn->nextPacket = NULL;	/* reset the packet information */
+	conn->shareID = 0;
+	sec_reset_state(conn);
+}
 
 /* Disconnect from the RDP layer */
 void

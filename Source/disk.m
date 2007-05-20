@@ -145,10 +145,10 @@ dummy_statfs(struct dummy_statfs_t *buf)
 
 typedef struct
 {
-	char name[256];
-	char label[256];
+	char name[PATH_MAX];
+	char label[PATH_MAX];
 	unsigned long serial;
-	char type[256];
+	char type[PATH_MAX];
 } FsInfoType;
 
 static NTSTATUS NotifyInfo(rdcConnection conn, NTHANDLE handle, uint32 info_class, NOTIFY * p);
@@ -202,7 +202,7 @@ ftruncate_growable(int fd, off_t length)
 {
 	int ret;
 	off_t pos;
-	static const char zero;
+	static const char zero = 0;
 
 	/* Try the simple method first */
 	if ((ret = ftruncate(fd, length)) != -1)
@@ -337,7 +337,7 @@ disk_create(rdcConnection conn, uint32 device_id, uint32 accessmask, uint32 shar
 	NTHANDLE handle;
 	DIR *dirp;
 	int flags, mode;
-	char path[256];
+	char path[PATH_MAX];
 	struct stat filestat;
 
 	handle = 0;
@@ -484,7 +484,7 @@ disk_create(rdcConnection conn, uint32 device_id, uint32 accessmask, uint32 shar
 	conn->fileInfo[handle].device_id = device_id;
 	conn->fileInfo[handle].flags_and_attributes = flags_and_attributes;
 	conn->fileInfo[handle].accessmask = accessmask;
-	strncpy(conn->fileInfo[handle].path, path, 255);
+	strncpy(conn->fileInfo[handle].path, path, PATH_MAX - 1);
 	conn->fileInfo[handle].delete_on_close = False;
 	conn->notifyStamp = True;
 
@@ -691,7 +691,7 @@ NTSTATUS
 disk_set_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STREAM in, STREAM out)
 {
 	uint32 length, file_attributes, ft_high, ft_low, delete_on_close;
-	char newname[256], fullpath[256];
+	char newname[PATH_MAX], fullpath[PATH_MAX];
 	struct fileinfo *pfinfo;
 	int mode;
 	struct stat filestat;
@@ -990,7 +990,7 @@ FsVolumeInfo(char *fpath)
 
 	while ((e = getmntent(fdfs)))
 	{
-		if (strncmp(fpath, e->mnt_dir, strlen(fpath)) == 0)
+		if (str_startswith(e->mnt_dir, fpath))
 		{
 			strcpy(info.type, e->mnt_type);
 			strcpy(info.name, e->mnt_fsname);
@@ -1009,13 +1009,13 @@ FsVolumeInfo(char *fpath)
 						info.serial =
 							(buf[42] << 24) + (buf[41] << 16) +
 							(buf[40] << 8) + buf[39];
-						strncpy(info.label, buf + 43, 10);
+						strncpy(info.label, (char *)buf + 43, 10);
 						info.label[10] = '\0';
 					}
 					else if (lseek(fd, 32767, SEEK_SET) >= 0)	/* ISO9660 */
 					{
 						read(fd, buf, sizeof(buf));
-						strncpy(info.label, buf + 41, 32);
+						strncpy(info.label, (char *)buf + 41, 32);
 						info.label[32] = '\0';
 						/* info.Serial = (buf[128]<<24)+(buf[127]<<16)+(buf[126]<<8)+buf[125]; */
 					}
@@ -1106,7 +1106,7 @@ disk_query_directory(rdcConnection conn, NTHANDLE handle, uint32 info_class, cha
 {
 	uint32 file_attributes, ft_low, ft_high;
 	const char *dirname;
-	char fullpath[256];
+	char fullpath[PATH_MAX];
 	DIR *pdir;
 	struct dirent *pdirent;
 	struct stat fstat;
@@ -1124,7 +1124,7 @@ disk_query_directory(rdcConnection conn, NTHANDLE handle, uint32 info_class, cha
 			/* If a search pattern is received, remember this pattern, and restart search */
 			if (pattern[0] != 0)
 			{
-				strncpy(pfinfo->pattern, 1 + strrchr(pattern, '/'), 64);
+				strncpy(pfinfo->pattern, 1 + strrchr(pattern, '/'), PATH_MAX - 1);
 				rewinddir(pdir);
 			}
 

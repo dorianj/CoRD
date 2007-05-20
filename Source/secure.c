@@ -215,15 +215,15 @@ sec_update(rdcConnection conn, uint8 * key, uint8 * update_key)
 static void
 sec_encrypt(rdcConnection conn, uint8 * data, int length)
 {
-	if (conn->encUseCount == 4096)
+	if (conn->secEncryptUseCount == 4096)
 	{
 		sec_update(conn, conn->secEncryptKey, conn->secEncryptUpdateKey);
 		RC4_set_key(&conn->rc4EncryptKey, conn->rc4KeyLen, conn->secEncryptKey);
-		conn->encUseCount = 0;
+		conn->secEncryptUseCount = 0;
 	}
 
 	RC4(&conn->rc4EncryptKey, length, data, data);
-	conn->encUseCount++;
+	conn->secEncryptUseCount++;
 }
 
 /* Decrypt data using RC4 */
@@ -231,15 +231,15 @@ void
 sec_decrypt(rdcConnection conn, uint8 * data, int length)
 {
 	
-	if (conn->decUseCount == 4096)
+	if (conn->secDecryptUseCount == 4096)
 	{
 		sec_update(conn, conn->secDecryptKey, conn->secDecryptUpdateKey);
 		RC4_set_key(&conn->rc4DecryptKey, conn->rc4KeyLen, conn->secDecryptKey);
-		conn->decUseCount = 0;
+		conn->secDecryptUseCount = 0;
 	}
 
 	RC4(&conn->rc4DecryptKey, length, data, data);
-	conn->decUseCount++;
+	conn->secDecryptUseCount++;
 }
 
 static void
@@ -258,14 +258,15 @@ reverse(uint8 * p, int len)
 
 /* Perform an RSA public key encryption operation */
 static void
-sec_rsa_encrypt(uint8 * out, uint8 * in, int len, uint8 * modulus, uint8 * exponent)
+sec_rsa_encrypt(uint8 * out, uint8 * in, int len, uint32 modulus_size, uint8 * modulus,
+		uint8 * exponent)
 {
 	BN_CTX *ctx;
 	BIGNUM mod, exp, x, y;
-	uint8 inr[SEC_MODULUS_SIZE];
+	uint8 inr[SEC_MAX_MODULUS_SIZE];
 	int outlen;
 
-	reverse(modulus, SEC_MODULUS_SIZE);
+	reverse(modulus, modulus_size);
 	reverse(exponent, SEC_EXPONENT_SIZE);
 	memcpy(inr, in, len);
 	reverse(inr, len);
@@ -276,14 +277,14 @@ sec_rsa_encrypt(uint8 * out, uint8 * in, int len, uint8 * modulus, uint8 * expon
 	BN_init(&x);
 	BN_init(&y);
 
-	BN_bin2bn(modulus, SEC_MODULUS_SIZE, &mod);
+	BN_bin2bn(modulus, modulus_size, &mod);
 	BN_bin2bn(exponent, SEC_EXPONENT_SIZE, &exp);
 	BN_bin2bn(inr, len, &x);
 	BN_mod_exp(&y, &x, &exp, &mod, ctx);
 	outlen = BN_bn2bin(&y, out);
 	reverse(out, outlen);
-	if (outlen < SEC_MODULUS_SIZE)
-		memset(out + outlen, 0, SEC_MODULUS_SIZE - outlen);
+	if (outlen < modulus_size)
+		memset(out + outlen, 0, modulus_size - outlen);
 
 	BN_free(&y);
 	BN_clear_free(&x);
@@ -349,14 +350,14 @@ sec_send(rdcConnection conn, STREAM s, uint32 flags)
 static void
 sec_establish_key(rdcConnection conn)
 {
-	uint32 length = SEC_MODULUS_SIZE + SEC_PADDING_SIZE;
+	uint32 length = conn->serverPublicKeyLen + SEC_PADDING_SIZE;
 	uint32 flags = SEC_CLIENT_RANDOM;
 	STREAM s;
 
-	s = sec_init(conn, flags, 76);
+	s = sec_init(conn, flags, length + 4);
 
 	out_uint32_le(s, length);
-	out_uint8p(s, conn->secCryptedRandom, SEC_MODULUS_SIZE);
+	out_uint8p(s, conn->secCryptedRandom, conn->serverPublicKeyLen);
 	out_uint8s(s, SEC_PADDING_SIZE);
 
 	s_mark_end(s);
@@ -410,9 +411,11 @@ sec_out_mcs_data(rdcConnection conn, STREAM s)
 	rdp_out_unistr(s, conn->hostname, hostlen);
 	out_uint8s(s, 30 - hostlen);
 
-	out_uint32_le(s, 4); /* keyboard type */
-	out_uint32_le(s, 0); /* keyboard subtype */
-	out_uint32_le(s, 12); /* keyboard function key count */
+	/* See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/wceddk40/html/cxtsksupportingremotedesktopprotocol.asp */
+	out_uint32_le(s, conn->keyboardType);
+	out_uint32_le(s, conn->keyboardSubtype);
+	out_uint32_le(s, conn->keyboardFunctionkeys);
+
 	out_uint8s(s, 64);	/* reserved? 4 + 12 doublewords */
 	out_uint16_le(s, 0xca01);	/* colour depth? */
 	out_uint16_le(s, 1);
@@ -454,7 +457,7 @@ sec_out_mcs_data(rdcConnection conn, STREAM s)
 
 /* Parse a public key structure */
 static RDCBOOL
-sec_parse_public_key(STREAM s, uint8 ** modulus, uint8 ** exponent)
+sec_parse_public_key(rdcConnection conn, STREAM s, uint8 ** modulus, uint8 ** exponent)
 {
 	uint32 magic, modulus_len;
 
@@ -466,17 +469,19 @@ sec_parse_public_key(STREAM s, uint8 ** modulus, uint8 ** exponent)
 	}
 
 	in_uint32_le(s, modulus_len);
-	if (modulus_len != SEC_MODULUS_SIZE + SEC_PADDING_SIZE)
+	modulus_len -= SEC_PADDING_SIZE;
+	if ((modulus_len < 64) || (modulus_len > SEC_MAX_MODULUS_SIZE))
 	{
-		error("modulus len 0x%x\n", modulus_len);
+		error("Bad server public key size (%u bits)\n", modulus_len * 8);
 		return False;
 	}
 
 	in_uint8s(s, 8);	/* modulus_bits, unknown */
 	in_uint8p(s, *exponent, SEC_EXPONENT_SIZE);
-	in_uint8p(s, *modulus, SEC_MODULUS_SIZE);
+	in_uint8p(s, *modulus, modulus_len);
 	in_uint8s(s, SEC_PADDING_SIZE);
-
+	conn->serverPublicKeyLen = modulus_len;
+	
 	return s_check(s);
 }
 
@@ -492,6 +497,7 @@ sec_parse_x509_key(rdcConnection conn, X509 * cert)
 	if (OBJ_obj2nid(cert->cert_info->key->algor->algorithm) == NID_md5WithRSAEncryption)
 	{
 		DEBUG_RDP5(("Re-setting algorithm type to RSA in server certificate\n"));
+		ASN1_OBJECT_free(cert->cert_info->key->algor->algorithm);
 		cert->cert_info->key->algor->algorithm = OBJ_nid2obj(NID_rsaEncryption);
 	}
 	epk = X509_get_pubkey(cert);
@@ -501,7 +507,14 @@ sec_parse_x509_key(rdcConnection conn, X509 * cert)
 		return False;
 	}
 
-	conn->serverPublicKey = (RSA *) epk->pkey.ptr;
+	conn->serverPublicKey = RSAPublicKey_dup((RSA *) epk->pkey.ptr);
+	
+	conn->serverPublicKeyLen = RSA_size(conn->serverPublicKey);
+	if ((conn->serverPublicKeyLen < 64) || (conn->serverPublicKeyLen > SEC_MAX_MODULUS_SIZE))
+	{
+		error("Bad server public key size (%u bits)\n", conn->serverPublicKeyLen * 8);
+		return False;
+	}
 
 	return True;
 }
@@ -554,7 +567,7 @@ sec_parse_crypt_info(rdcConnection conn, STREAM s, uint32 * rc4_key_size,
 			switch (tag)
 			{
 				case SEC_TAG_PUBKEY:
-					if (!sec_parse_public_key(s, modulus, exponent))
+					if (!sec_parse_public_key(conn, s, modulus, exponent))
 						return False;
 					DEBUG_RDP5(("Got Public key, RDP4-style\n"));
 
@@ -638,7 +651,8 @@ sec_parse_crypt_info(rdcConnection conn, STREAM s, uint32 * rc4_key_size,
 		   when we connect the next time, in order to prevent
 		   MITM-attacks.
 		 */
-
+		X509_free(cacert);
+		
 		in_uint32_le(s, cert_len);
 		DEBUG_RDP5(("Certificate length is %d\n", cert_len));
 		server_cert = d2i_X509(NULL, &(s->p), cert_len);
@@ -657,8 +671,10 @@ sec_parse_crypt_info(rdcConnection conn, STREAM s, uint32 * rc4_key_size,
 		if (!sec_parse_x509_key(conn, server_cert))
 		{
 			DEBUG_RDP5(("Didn't parse X509 correctly\n"));
+			X509_free(server_cert);
 			return False;
 		}
+		X509_free(server_cert);
 		return True;	/* There's some garbage here we don't care about */
 	}
 	return s_check_end(s);
@@ -668,10 +684,9 @@ sec_parse_crypt_info(rdcConnection conn, STREAM s, uint32 * rc4_key_size,
 static void
 sec_process_crypt_info(rdcConnection conn, STREAM s)
 {
-	uint8 *server_random, *modulus, *exponent;
+	uint8 *server_random, *modulus = NULL, *exponent = NULL;
 	uint8 client_random[SEC_RANDOM_SIZE];
 	uint32 rc4_key_size;
-	uint8 inr[SEC_MODULUS_SIZE];
 
 	if (!sec_parse_crypt_info(conn, s, &rc4_key_size, &server_random, &modulus, &exponent))
 	{
@@ -680,35 +695,37 @@ sec_process_crypt_info(rdcConnection conn, STREAM s)
 	}
 
 	DEBUG(("Generating client random\n"));
-	/* Generate a client random, and hence determine encryption keys */
-	/* This is what the MS client do: */
-	memset(inr, 0, SEC_RANDOM_SIZE);
-	/*  *ARIGL!* Plaintext attack, anyone?
-	   I tried doing:
-	   generate_random(inr);
-	   ..but that generates connection errors now and then (yes, 
-	   "now and then". Something like 0 to 3 attempts needed before a 
-	   successful connection. Nice. Not! 
-	 */
-
 	generate_random(client_random);
+	
 	if (NULL != conn->serverPublicKey)
 	{			/* Which means we should use 
 				   RDP5-style encryption */
+		uint8 inr[SEC_MAX_MODULUS_SIZE];
+		uint32 padding_len = conn->serverPublicKeyLen - SEC_RANDOM_SIZE;
 
-		memcpy(inr + SEC_RANDOM_SIZE, client_random, SEC_RANDOM_SIZE);
-		reverse(inr + SEC_RANDOM_SIZE, SEC_RANDOM_SIZE);
+		/* This is what the MS client do: */
+		memset(inr, 0, padding_len);
+		/*  *ARIGL!* Plaintext attack, anyone?
+		   I tried doing:
+		   generate_random(inr);
+		   ..but that generates connection errors now and then (yes, 
+		   "now and then". Something like 0 to 3 attempts needed before a 
+		   successful connection. Nice. Not! 
+		 */
+		 
+		memcpy(inr + padding_len, client_random, SEC_RANDOM_SIZE);
+		reverse(inr + padding_len, SEC_RANDOM_SIZE);
 
-		RSA_public_encrypt(SEC_MODULUS_SIZE,
-				   inr, conn->secCryptedRandom, conn->serverPublicKey, RSA_NO_PADDING);
+		RSA_public_encrypt(conn->serverPublicKeyLen, inr, conn->secCryptedRandom, conn->serverPublicKey, RSA_NO_PADDING);
 
-		reverse(conn->secCryptedRandom, SEC_MODULUS_SIZE);
-
+		reverse(conn->secCryptedRandom, conn->serverPublicKeyLen);
+		
+		RSA_free(conn->serverPublicKey);
+		conn->serverPublicKey = NULL;
 	}
 	else
 	{			/* RDP4-style encryption */
-		sec_rsa_encrypt(conn->secCryptedRandom,
-				client_random, SEC_RANDOM_SIZE, modulus, exponent);
+		sec_rsa_encrypt(conn->secCryptedRandom, client_random, SEC_RANDOM_SIZE, conn->serverPublicKeyLen, modulus, exponent);
 	}
 	sec_generate_keys(conn, client_random, server_random, rc4_key_size);
 }
@@ -812,6 +829,40 @@ sec_recv(rdcConnection conn, uint8 * rdpver)
 				licence_process(conn, s);
 				continue;
 			}
+			
+			if (sec_flags & 0x0400)	/* SEC_REDIRECT_ENCRYPT */
+			{
+				uint8 swapbyte;
+
+				in_uint8s(s, 8);	/* signature */
+				sec_decrypt(conn, s->p, s->end - s->p);
+
+				/* Check for a redirect packet, starts with 00 04 */
+				if (s->p[0] == 0 && s->p[1] == 4)
+				{
+					/* for some reason the PDU and the length seem to be swapped.
+					   This isn't good, but we're going to do a byte for byte
+					   swap.  So the first foure value appear as: 00 04 XX YY,
+					   where XX YY is the little endian length. We're going to
+					   use 04 00 as the PDU type, so after our swap this will look
+					   like: XX YY 04 00 */
+					swapbyte = s->p[0];
+					s->p[0] = s->p[2];
+					s->p[2] = swapbyte;
+
+					swapbyte = s->p[1];
+					s->p[1] = s->p[3];
+					s->p[3] = swapbyte;
+
+					swapbyte = s->p[2];
+					s->p[2] = s->p[3];
+					s->p[3] = swapbyte;
+				}
+#ifdef WITH_DEBUG
+				/* warning!  this debug statement will show passwords in the clear! */
+				hexdump(s->p, s->end - s->p);
+#endif
+			}
 		}
 
 		if (channel != MCS_GLOBAL_CHANNEL)
@@ -848,9 +899,40 @@ sec_connect(rdcConnection conn, const char *server, char *username)
 	return True;
 }
 
+/* Establish a secure connection */
+RDCBOOL
+sec_reconnect(rdcConnection conn, char *server)
+{
+	struct stream mcs_data;
+
+	/* We exchange some RDP data during the MCS-Connect */
+	mcs_data.size = 512;
+	mcs_data.p = mcs_data.data = (uint8 *) xmalloc(mcs_data.size);
+	sec_out_mcs_data(conn, &mcs_data);
+
+	if (!mcs_reconnect(conn, server, &mcs_data))
+		return False;
+
+	/*      sec_process_mcs_data(&mcs_data); */
+	if (conn->useEncryption)
+		sec_establish_key(conn);
+	xfree(mcs_data.data);
+	return True;
+}
+
 /* Disconnect a connection */
 void
 sec_disconnect(rdcConnection conn)
 {
 	mcs_disconnect(conn);
+}
+
+/* reset the state of the sec layer */
+void
+sec_reset_state(rdcConnection conn)
+{
+	conn->serverRdpVersion = 0;
+	conn->secEncryptUseCount = 0;
+	conn->secDecryptUseCount = 0;
+	mcs_reset_state(conn);
 }

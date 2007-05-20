@@ -234,3 +234,39 @@ tcp_get_address(rdcConnection conn)
         strcpy(ipaddr, "127.0.0.1");
     return ipaddr;
 }
+
+/* reset the state of the tcp layer */
+/* Support for Session Directory */
+void
+tcp_reset_state(rdcConnection conn)
+{
+	/* Clear the incoming stream */
+	[(id)conn->inputStream release];
+	conn->inputStream = NULL;
+	if (conn->inStream.data != NULL)
+		xfree(conn->inStream.data);
+	conn->inStream.p = NULL;
+	conn->inStream.end = NULL;
+	conn->inStream.data = NULL;
+	conn->inStream.size = 0;
+	conn->inStream.iso_hdr = NULL;
+	conn->inStream.mcs_hdr = NULL;
+	conn->inStream.sec_hdr = NULL;
+	conn->inStream.rdp_hdr = NULL;
+	conn->inStream.channel_hdr = NULL;
+
+	/* Clear the outgoing stream */
+	[(id)conn->outputStream release];
+	conn->outputStream = NULL;
+	if (conn->outStream.data != NULL)
+		xfree(conn->outStream.data);
+	conn->outStream.p = NULL;
+	conn->outStream.end = NULL;
+	conn->outStream.data = NULL;
+	conn->outStream.size = 0;
+	conn->outStream.iso_hdr = NULL;
+	conn->outStream.mcs_hdr = NULL;
+	conn->outStream.sec_hdr = NULL;
+	conn->outStream.rdp_hdr = NULL;
+	conn->outStream.channel_hdr = NULL;
+}

@@ -175,6 +175,9 @@
 					return;
 				}
 				break;
+			case RDP_PDU_REDIRECT:
+				process_redirect_pdu(conn, s);
+				break;
 			case 0:
 				break;
 			default:

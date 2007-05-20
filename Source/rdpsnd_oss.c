@@ -18,6 +18,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+/* NOTE: this file was neglected when I upgraded to 1.5.0. It is probably 1.4.1. */
 
 #import "rdesktop.h"
 #import <unistd.h>

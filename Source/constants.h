@@ -62,6 +62,7 @@ enum MCS_PDU_TYPE
 /* RDP secure transport constants */
 #define SEC_RANDOM_SIZE		32
 #define SEC_MODULUS_SIZE	64
+#define SEC_MAX_MODULUS_SIZE	256
 #define SEC_PADDING_SIZE	8
 #define SEC_EXPONENT_SIZE	4
 
@@ -106,6 +107,7 @@ enum RDP_PDU_TYPE
 {
 	RDP_PDU_DEMAND_ACTIVE = 1,
 	RDP_PDU_CONFIRM_ACTIVE = 3,
+	RDP_PDU_REDIRECT = 4,	/* MS Server 2003 Session Redirect */
 	RDP_PDU_DEACTIVATE = 6,
 	RDP_PDU_DATA = 7
 };
@@ -118,10 +120,12 @@ enum RDP_DATA_PDU_TYPE
 	RDP_DATA_PDU_INPUT = 28,
 	RDP_DATA_PDU_SYNCHRONISE = 31,
 	RDP_DATA_PDU_BELL = 34,
+	RDP_DATA_PDU_CLIENT_WINDOW_STATUS = 35,
 	RDP_DATA_PDU_LOGON = 38,
 	RDP_DATA_PDU_FONT2 = 39,
 	RDP_DATA_PDU_KEYBOARD_INDICATORS = 41,
 	RDP_DATA_PDU_DISCONNECT = 47
+	
 };
 
 enum RDP_CONTROL_PDU_TYPE
@@ -411,6 +415,9 @@ enum RDP_INPUT_DEVICE
 #define exDiscReasonLicenseCantUpgradeLicense		0x0109
 #define exDiscReasonLicenseNoRemoteConnections		0x010a
 
-// Time to wait for remote host in seconds
+// Time to wait for remote host in seconds - unused, real constant in miscellany.h
 #define TIMOUT_LENGTH 20
 
+#ifndef PATH_MAX
+	#define PATH_MAX 256
+#endif

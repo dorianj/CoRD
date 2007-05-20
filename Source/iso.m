@@ -194,10 +194,41 @@ iso_connect(rdcConnection conn, const char *server, char *username)
 	return True;
 }
 
+/* Establish a reconnection up to the ISO layer */
+RDCBOOL
+iso_reconnect(rdcConnection conn, char *server)
+{
+	uint8 code = 0;
+
+	if (!tcp_connect(conn, server))
+		return False;
+
+	iso_send_msg(conn, ISO_PDU_CR);
+
+	if (iso_recv_msg(conn, &code, NULL) == NULL)
+		return False;
+
+	if (code != ISO_PDU_CC)
+	{
+		error("expected CC, got 0x%x\n", code);
+		tcp_disconnect(conn);
+		return False;
+	}
+
+	return True;
+}
+
 /* Disconnect from the ISO layer */
 void
 iso_disconnect(rdcConnection conn)
 {
 	iso_send_msg(conn, ISO_PDU_DR);
 	tcp_disconnect(conn);
+}
+
+/* reset the state to support reconnecting */
+void
+iso_reset_state(rdcConnection conn)
+{
+	tcp_reset_state(conn);
 }

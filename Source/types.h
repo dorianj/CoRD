@@ -229,10 +229,10 @@ NOTIFY;
 typedef struct fileinfo
 {
 	uint32 device_id, flags_and_attributes, accessmask;
-	char path[256];
+	char path[PATH_MAX];
 	DIR *pdir;
 	struct dirent *pdirent;
-	char pattern[64];
+	char pattern[PATH_MAX];
 	RDCBOOL delete_on_close;
 	NOTIFY notify;
 	uint32 info_class;
@@ -287,69 +287,65 @@ typedef enum _ConnectionErrorCode
 
 struct rdcConn
 {
-	// State flags
-	int isConnected;
-	int useRdp5;
-	int useEncryption;
-	int useBitmapCompression;
-	int rdp5PerformanceFlags;
-	int consoleSession;
-	int bitmapCache;
-	int bitmapCachePersist;
-	int bitmapCachePrecache;
-	int desktopSave;
-	int polygonEllipseOrders;
-	int licenseIssued;
-	int notifyStamp;
-	int pstcacheEnumerated;
+	// Connection settings
+	char username[64];
+	char hostname[64];
 	
-	// Variables
-	int tcpPort;
-	int currentStatus;
-	int screenWidth;
-	int screenHeight;
-	int serverBpp;
-	int shareID;
+	// State flags
+	int isConnected, useRdp5, useEncryption, useBitmapCompression, rdp5PerformanceFlags, consoleSession, bitmapCache, bitmapCachePersist, bitmapCachePrecache, desktopSave, polygonEllipseOrders, licenseIssued, notifyStamp, pstcacheEnumerated;
+	
+	// Keyboard
 	unsigned int keyboardLayout;
-	int serverRdpVersion;
-	int packetNumber;
+	int keyboardType, keyboardSubtype, keyboardFunctionkeys;
+	
+	// Connection details
+	int tcpPort, currentStatus, screenWidth, screenHeight, serverBpp, shareID, serverRdpVersion;
+	
+	// Bitmap caches
 	int pstcacheBpp;
 	int pstcacheFd[8];
 	int bmpcacheCount[3];
-	int encUseCount;
-	int decUseCount;
-	int clipboardRequestType;
-	unsigned char licenseKey[16];
-	unsigned char licenseSignKey[16];
-	unsigned short mcsUserid;
-	unsigned int numChannels;
-	unsigned int numDevices;
 	unsigned char deskCache[0x38400 * 4];
-	char username[64];
-	char hostname[64];
-	char *rdpdrClientname;
-	RDPCOMP mppcDict;
-	NTHANDLE minTimeoutFd;
-	FILEINFO fileInfo[0x100];	// MAX_OPEN_FILES taken from disk.h
-	RDPDR_DEVICE rdpdrDevice[0x10]; //RDPDR_MAX_DEVICES taken from constants.h
-	RDP_ORDER_STATE orderState;
-	VCHANNEL channels[4];
-	VCHANNEL *rdpdrChannel;
-	VCHANNEL *cliprdrChannel;
 	HBITMAP volatileBc[3];
 	HCURSOR cursorCache[0x20];
 	DATABLOB textCache[256];
 	FONTGLYPH fontCache[12][256];
-	struct async_iorequest *ioRequest;
-	struct bmpcache_entry bmpcache[NBITMAPCACHE][NBITMAPCACHEENTRIES];
 	
+	// Device redirection
+	char *rdpdrClientname;
+	unsigned int numChannels, numDevices;
+	int clipboardRequestType;
+	NTHANDLE minTimeoutFd;
+	FILEINFO fileInfo[0x100];		// MAX_OPEN_FILES taken from disk.h
+	RDPDR_DEVICE rdpdrDevice[0x10];	//RDPDR_MAX_DEVICES taken from constants.h
+	VCHANNEL channels[6];
+	VCHANNEL *rdpdrChannel;
+	VCHANNEL *cliprdrChannel;
+	struct async_iorequest *ioRequest;
+	
+	// MCS/licence
+	unsigned char licenseKey[16], licenseSignKey[16];
+	unsigned short mcsUserid;
+	
+	// Session directory
+	RDCBOOL sessionDirRedirect;
+	char sessionDirServer[64];
+	char sessionDirDomain[16];
+	char sessionDirPassword[64];
+	char sessionDirUsername[64];
+	char sessionDirCookie[128];
+	unsigned int sessionDirFlags;
+	
+	// Bitmap cache
+	struct bmpcache_entry bmpcache[NBITMAPCACHE][NBITMAPCACHEENTRIES];
 	int bmpcacheLru[3];
 	int bmpcacheMru[3];
 	
 	// Network
+	int packetNumber;
 	unsigned char *nextPacket;
-	void *inputStream;
-	void *outputStream;
+	void *inputStream; // NSInputStream
+ 	void *outputStream; // NSOutputStream
 	void *host;
 	struct stream inStream, outStream;
 	STREAM rdpStream;
@@ -359,16 +355,22 @@ struct rdcConn
 	RC4_KEY rc4DecryptKey;
 	RC4_KEY rc4EncryptKey;
 	RSA *serverPublicKey;
+	uint32 serverPublicKeyLen;
 	uint8 secSignKey[16];
 	uint8 secDecryptKey[16];
 	uint8 secEncryptKey[16];
 	uint8 secDecryptUpdateKey[16];
 	uint8 secEncryptUpdateKey[16];
-	uint8 secCryptedRandom[SEC_MODULUS_SIZE];
+	uint8 secCryptedRandom[SEC_MAX_MODULUS_SIZE];
+	uint32 secEncryptUseCount, secDecryptUseCount;
+	
+	// Unknown
+	RDPCOMP mppcDict;
+	RDP_ORDER_STATE orderState;
 	
 	// UI
-	void *ui;
-	void *controller;
+	void *ui;	// the associated RDCView
+	void *controller; // the associated RDInstance
 	
 	volatile ConnectionErrorCode errorCode;
 	
@@ -391,5 +393,7 @@ struct _DEVICE_FNS
 					  uint32 * result);
 	NTSTATUS(*device_control) (rdcConnection conn, NTHANDLE handle, uint32 request, STREAM in, STREAM out);
 };
+
+typedef RDCBOOL(*str_handle_lines_t) (const char *line, void *data);
 
 #endif

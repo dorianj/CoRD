@@ -408,9 +408,58 @@ mcs_connect(rdcConnection conn, const char *server, STREAM mcs_data, char *usern
 	return False;
 }
 
+/* Establish a connection up to the MCS layer */
+RDCBOOL
+mcs_reconnect(rdcConnection conn, char *server, STREAM mcs_data)
+{
+	unsigned int i;
+
+	if (!iso_reconnect(conn, server))
+		return False;
+
+	mcs_send_connect_initial(conn, mcs_data);
+	if (!mcs_recv_connect_response(conn, mcs_data))
+		goto error;
+
+	mcs_send_edrq(conn);
+
+	mcs_send_aurq(conn);
+	if (!mcs_recv_aucf(conn))
+		goto error;
+
+	mcs_send_cjrq(conn, conn->mcsUserid + MCS_USERCHANNEL_BASE);
+
+	if (!mcs_recv_cjcf(conn))
+		goto error;
+
+	mcs_send_cjrq(conn, MCS_GLOBAL_CHANNEL);
+	if (!mcs_recv_cjcf(conn))
+		goto error;
+
+	for (i = 0; i < conn->numChannels; i++)
+	{
+		mcs_send_cjrq(conn, conn->channels[i].mcs_id);
+		if (!mcs_recv_cjcf(conn))
+			goto error;
+	}
+	return True;
+
+      error:
+	iso_disconnect(conn);
+	return False;
+}
+
 /* Disconnect from the MCS layer */
 void
 mcs_disconnect(rdcConnection conn)
 {
 	iso_disconnect(conn);
+}
+
+/* reset the state of the mcs layer */
+void
+mcs_reset_state(rdcConnection conn)
+{
+	conn->mcsUserid = 0;
+	iso_reset_state(conn);
 }
