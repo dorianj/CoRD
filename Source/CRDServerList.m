@@ -92,9 +92,8 @@
 	[self lockFocus];	
 	NSRectClip(drawRect);
 	draw_vertical_gradient(topColor, bottomColor, drawRect);
-	draw_line([bottomColor blendedColorWithFraction:0.6 ofColor:topColor], 
-			NSMakePoint(drawRect.origin.x, drawRect.origin.y),
-			NSMakePoint(drawRect.origin.x + drawRect.size.width, drawRect.origin.y ));
+	draw_horizontal_line([bottomColor blendedColorWithFraction:0.6 ofColor:topColor], 
+			NSMakePoint(drawRect.origin.x, drawRect.origin.y), drawRect.size.width);
 	[self unlockFocus];
 }
 

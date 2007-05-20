@@ -16,11 +16,7 @@
 */
 
 #import "CRDFullScreenWindow.h"
-
-@interface CRDFullScreenWindow (Private)
-	- (void)toggleMenuBarVisible:(BOOL)visible;
-@end
-
+#import "Carbon/Carbon.h"
 
 #pragma mark -
 @implementation CRDFullScreenWindow
@@ -37,14 +33,17 @@
 	[self setHasShadow:NO];
 	[[self contentView] setAutoresizesSubviews:NO];
 	
-	if ( ([[NSScreen screens] count] > 0) && (screen == [[NSScreen screens] objectAtIndex:0]))
-		hideMenu = YES;
+	hideMenu = ([[NSScreen screens] count] > 0) && (screen == [[NSScreen screens] objectAtIndex:0]);
 	
 	return self;
 }
 
 - (void)startFullScreen
 {
+	[self setAlphaValue:0.0];
+	[self setLevel:NSPopUpMenuWindowLevel];
+	[self makeKeyAndOrderFront:self];
+
 	NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
 						self, NSViewAnimationTargetKey,
 						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
@@ -53,10 +52,6 @@
 	[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
 	[viewAnim setDuration:0.5];
 	[viewAnim setAnimationCurve:NSAnimationEaseIn];
-	
-	[self setAlphaValue:0.0];
-	[self setLevel:NSPopUpMenuWindowLevel];
-	[self makeKeyAndOrderFront:self];
 	
 	[viewAnim startAnimation];
 	[viewAnim release];	

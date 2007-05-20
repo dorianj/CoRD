@@ -18,13 +18,13 @@
 #include "miscellany.h"
 
 #pragma mark -
-#pragma mark General purpose
-const char *safe_string_conv(void *src)
-{
-	return (src) ? [(NSString *)src UTF8String] : "";
-}
+#pragma mark Constants
+NSString *CRDMinimalViewDidChangeNotification = @"CRDMinimalServerListChanged";
+AppController *g_appController;
 
-// Must be called with a view focused
+#pragma mark -
+#pragma mark General purpose
+
 void draw_vertical_gradient(NSColor *topColor, NSColor *bottomColor, NSRect rect)
 {
 	float delta, cur = rect.origin.y, limit = rect.origin.y + rect.size.height;
@@ -32,101 +32,25 @@ void draw_vertical_gradient(NSColor *topColor, NSColor *bottomColor, NSRect rect
 	{
 		// Interpolate the colors, draw a line for this pixel
 		delta = (float)(cur - rect.origin.y) / rect.size.height;
-		draw_line([topColor blendedColorWithFraction:delta ofColor:bottomColor],
-					NSMakePoint(rect.origin.x, cur),
-					NSMakePoint(rect.origin.x + rect.size.width, cur));
+		draw_horizontal_line([topColor blendedColorWithFraction:delta ofColor:bottomColor],
+					NSMakePoint(rect.origin.x, cur), rect.size.width);
 							
 		cur += 1.0;
 	}
 }
 
-// Must be called with a view focused. Note that this is optimized for drawing horizontal lines
-void draw_line(NSColor *color, NSPoint start, NSPoint end)
+inline void draw_horizontal_line(NSColor *color, NSPoint start, float width)
 {
 	[color set];
-	
-	// Make sure the stroke is centered on the pixel so we get a clean line
-	start.y = (int)start.y + 0.5;
-	end.y = (int)end.y + 0.5;
-
-	[NSBezierPath strokeLineFromPoint:start toPoint:end];
+	NSRectFillUsingOperation( NSMakeRect(start.x, start.y, width, 1.0), NSCompositeSourceOver);
 }
 
-NSString *full_host_name(NSString *host, int port)
+inline NSString * join_host_name(NSString *host, int port)
 {
 	if (port && port != DEFAULT_PORT)
 		return [NSString stringWithFormat:@"%@:%d", host, port];
 	else
 		return [[host retain] autorelease];
-}
-
-void print_bitfield(unsigned v, int bits)
-{
-	int i;
-	for (i = sizeof(int) - (sizeof(int)-bits)-1; i >= 0; i--)
-	{
-		printf("%u", (v >> i) & 1);
-		if (i % 4 == 0)
-			printf(" ");
-	}
-	printf("\n");
-}
-
-NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn)
-{
-	if ([orig length] == 0)
-		return nil;
-		
-	NSMutableString *new = [[orig mutableCopy] autorelease];
-	NSString *replace = withCarriageReturn ? @"\n" : @"\r\n",
-			 *with = withCarriageReturn ? @"\r\n" : @"\n";
-	[new replaceOccurrencesOfString:replace withString:with options:NSLiteralSearch range:NSMakeRange(0, [orig length])];
-	return new;
-}
-
-
-#pragma mark -
-#pragma mark AppController
-NSToolbarItem *create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action)
-{
-	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
-	[item setPaletteLabel:name];
-	[item setLabel:label];
-	[item setToolTip:tooltip];
-	[item setAction:action];
-	[item setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%@.png", name]]];
-		
-	return item;
-}
-
-BOOL drawer_is_visisble(NSDrawer *drawer)
-{
-	int state = [drawer state];
-	return state == NSDrawerOpenState || state == NSDrawerOpeningState;
-}
-
-
-#pragma mark -
-#pragma mark ServersManager
-void ensure_directory_exists(NSString *path, NSFileManager *manager)
-{
-	BOOL isDir;
-	if (![manager fileExistsAtPath:path isDirectory:&isDir])
-		[manager createDirectoryAtPath:path attributes:nil];
-}
-
-/* Keeps trying filenames until it finds one that isn't taken.. eg: given "Untitled","rdp", if 
-	'Untitled.rdp' is taken, it will try 'Untitled 1.rdp', 'Untitled 2.rdp', etc until one is found,
-	then it returns the found filename. Useful for duplicating files. */
-NSString *increment_file_name(NSString *path, NSString *base, NSString *extension)
-{
-	NSString *filename = [base stringByAppendingString:extension];
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	int i = 0;
-	while ([fileManager fileExistsAtPath:[path stringByAppendingPathComponent:filename]] && ++i<100)
-		filename = [base stringByAppendingString:[NSString stringWithFormat:@" %d%@", i, extension]];
-		
-	return [path stringByAppendingPathComponent:filename];
 }
 
 void split_hostname(NSString *address, NSString **host, int *port)
@@ -137,13 +61,55 @@ void split_hostname(NSString *address, NSString **host, int *port)
 	
 	if (![scan scanUpToCharactersFromSet:colonSet intoString:host])
 		*host = @"";
+		
 	if (![scan scanInt:port])
 		*port = DEFAULT_PORT;
 }
 
-// Returns the paths in unfilteredFiles that are one of types. Extention and 
-//	HFS file type are checked.
-NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types)
+NSString * convert_line_endings(NSString *orig, BOOL withCarriageReturn)
+{
+	if ([orig length] == 0)
+		return @"";
+		
+	NSMutableString *new = [[orig mutableCopy] autorelease];
+	NSString *replace = withCarriageReturn ? @"\n" : @"\r\n",
+			 *with = withCarriageReturn ? @"\r\n" : @"\n";
+	[new replaceOccurrencesOfString:replace withString:with options:NSLiteralSearch range:NSMakeRange(0, [orig length])];
+	return new;
+}
+
+inline BOOL drawer_is_visisble(NSDrawer *drawer)
+{
+	int state = [drawer state];
+	return state == NSDrawerOpenState || state == NSDrawerOpeningState;
+}
+
+inline const char * safe_string_conv(void *src)
+{
+	return (src) ? [(NSString *)src UTF8String] : "";
+}
+
+inline void ensure_directory_exists(NSString *path)
+{
+	BOOL isDir;
+	if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir])
+		[[NSFileManager defaultManager] createDirectoryAtPath:path attributes:nil];
+}
+
+// Keeps trying filenames until it finds one that isn't taken.. eg: given "Untitled","rdp", if  'Untitled.rdp' is taken, it will try 'Untitled 1.rdp', 'Untitled 2.rdp', etc until one is found, then it returns the found filename. Useful for duplicating files.
+NSString * increment_file_name(NSString *path, NSString *base, NSString *extension)
+{
+	NSString *filename = [base stringByAppendingString:extension];
+	NSFileManager *fileManager = [NSFileManager defaultManager];
+	int i = 0;
+	while ([fileManager fileExistsAtPath:[path stringByAppendingPathComponent:filename]] && ++i<200)
+		filename = [base stringByAppendingString:[NSString stringWithFormat:@" %d%@", i, extension]];
+		
+	return [path stringByAppendingPathComponent:filename];
+}
+
+// Returns the paths in unfilteredFiles whose extention or HFS type match the passed types
+NSArray * filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 {
 	NSMutableArray *returnFiles = [NSMutableArray arrayWithCapacity:4];
 	NSEnumerator *fileEnumerator = [unfilteredFiles objectEnumerator];
@@ -168,12 +134,9 @@ NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 	return ([returnFiles count] > 0) ? [[returnFiles copy] autorelease] : nil;
 }
 
-#pragma mark -
-#pragma mark RDInstance
 
-// Converts a NSArray of strings to an array of C strings. You are responsible to 
-//	free the returned array of pointers (but not the data themselves).
-char **convert_string_array(NSArray *conv)
+// Converts a NSArray of NSStrings to an array of C-strings. You are responsible to free the returned array of pointers (but not the C-strings themselves as they are autoreleased).
+char ** convert_string_array(NSArray *conv)
 {
 	int count, i = 0;
 	if (conv != nil && (count = [conv count]) > 0)
@@ -182,12 +145,41 @@ char **convert_string_array(NSArray *conv)
 		NSEnumerator *enumerator = [conv objectEnumerator];
 		id o;
 		while ( (o = [enumerator nextObject]) )
-			strings[i++] = (char *)[[o description] UTF8String];
+			strings[i++] = (char *)[[o description] UTF8String]; // xxx: does rdesktop want cString or utf-8 for device labels?
 		return strings;
 	}
 	
 	return NULL;
 }
+
+inline void set_attributed_string_color(NSMutableAttributedString *as, NSColor *color)
+{
+	[as addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, [as length])];
+}
+
+inline void set_attributed_string_font(NSMutableAttributedString *as, NSFont *font)
+{
+	[as addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [as length])];
+}
+
+#pragma mark -
+#pragma mark AppController specific
+
+NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action)
+{
+	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
+	[item setPaletteLabel:name];
+	[item setLabel:label];
+	[item setToolTip:tooltip];
+	[item setAction:action];
+	[item setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%@.png", name]]];
+		
+	return item;
+}
+
+
+#pragma mark -
+#pragma mark RDInstance specific
 
 void fill_default_connection(rdcConnection conn)
 {

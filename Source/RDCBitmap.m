@@ -36,9 +36,8 @@
 */
 
 #import "RDCBitmap.h"
-#import <Accelerate/Accelerate.h>
-
 #import "AppController.h"
+#import <Accelerate/Accelerate.h> // must be included after rdesktop.h for some reason
 #import "miscellany.h"
 #import "RDCView.h"
 
@@ -49,7 +48,7 @@
 	if (![super init])
 		return nil;
 
-	int bytesPerPixel = [v bitsPerPixel] / 8;
+	int bitsPerPixel = [v bitsPerPixel],  bytesPerPixel = bitsPerPixel / 8;
 	
 	uint8 *outputBitmap, *nc;
 	const uint8 *p, *end;
@@ -65,7 +64,7 @@
 	
 	nc = outputBitmap = malloc(newLength);
 	
-	if (bytesPerPixel == 1)
+	if (bitsPerPixel == 8)
 	{
 		colorMap = [v colorMap];
 		while (p < end)
@@ -79,7 +78,7 @@
 			nc += 4;
 		}
 	}
-	else if (bytesPerPixel == 2)
+	else if (bitsPerPixel == 16)
 	{
 		vImage_Buffer newBuffer, sourceBuffer;
 		sourceBuffer.width = newBuffer.width = width;
@@ -93,7 +92,7 @@
 		
 		vImageConvert_RGB565toARGB8888(255, &sourceBuffer, &newBuffer, 0);		
 	}
-	else if (bytesPerPixel == 3 || bytesPerPixel == 4)
+	else if (bitsPerPixel == 24 || bitsPerPixel == 32)
 	{
 		while (p < end)
 		{
@@ -251,9 +250,11 @@
 
 -(void)setColor:(NSColor *)c
 {
-	[c retain];
+	if (c == color)
+		return;
+
 	[color release];
-	color = c;
+	color = [c retain];
 }
 
 -(NSColor *)color

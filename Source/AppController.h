@@ -70,7 +70,7 @@
 	RDInstance *dumpedInstance;
 	BOOL dumpedInstanceWasSelected;
 	
-	BOOL isTerminating;
+	BOOL isTerminating, useMinimalServersList;
 }
 
 // Actions
@@ -98,13 +98,12 @@
 - (IBAction)performQuickConnect:(id)sender;
 - (IBAction)helpForConnectionOptions:(id)sender;
 - (IBAction)performServerMenuItem:(id)sender;
+- (IBAction)toggleServerListMinimal:(id)sender;
 
 
 // Other methods, in no particular order
 - (void)validateControls;
 - (void)cellNeedsDisplay:(NSCell *)cell;
-
-- (id)tableColumn:(NSTableColumn *)column inTableView:(NSTableView *)tableView dataCellForRow:(int)row;
 
 - (void)connectInstance:(RDInstance *)inst;
 - (void)disconnectInstance:(RDInstance *)inst;

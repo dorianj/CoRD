@@ -128,7 +128,7 @@
 {	
 	[super setFrame:frame];
 	
-	NSRect bounds = NSMakeRect(0.0, 0.0, screenSize.width, screenSize.height);
+	NSRect bounds = RECT_FROM_SIZE(screenSize);
 
 	if (frame.size.width > bounds.size.width)
 		bounds.origin.x = (frame.size.width - bounds.size.width)/2.0;
@@ -377,7 +377,7 @@
 	[xform translateXBy:to.origin.x yBy:to.origin.y];
 	[xform concat];
 	
-	[image drawInRect:NSMakeRect(0.0, 0.0, to.size.width, to.size.height)
+	[image drawInRect:RECT_FROM_SIZE(to.size)
 			 fromRect:NSMakeRect(origin.x, origin.y, to.size.width, to.size.height)
 			operation:NSCompositeCopy];
 	[self releaseBackingStore];

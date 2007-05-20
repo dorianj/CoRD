@@ -652,7 +652,7 @@
 	write_int(@"cord fullscreen", fullscreen);
 	write_int(@"cord row index", preferredRowIndex);
 	
-	write_string(@"full address", full_host_name(hostName, port));
+	write_string(@"full address", join_host_name(hostName, port));
 	write_string(@"username", username);
 	write_string(@"domain", domain);
 	write_string(@"cord label", label);
@@ -704,31 +704,31 @@
 	[cellRepresentation setDisplayedText:label username:username address:fullHost];
 	
 	// Update the image
-	NSImage *base = [AppController sharedDocumentIcon];
-	NSImage *icon = [[[NSImage alloc] initWithSize:NSMakeSize(CELL_IMAGE_WIDTH, CELL_IMAGE_HEIGHT)] autorelease];
-
-	[icon lockFocus]; {
-		[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
-		[base drawInRect:RECT_FROM_SIZE([icon size]) fromRect:RECT_FROM_SIZE([base size]) operation:NSCompositeSourceOver fraction:1.0];	
-	} [icon unlockFocus];
-	
-	
-	// If this is temporary, badge the lower right corner of the image
-	if ([self temporary])
+	if (connectionStatus != CRDConnectionConnecting)
 	{
-		[icon lockFocus]; {
-		
-			NSImage *clockIcon = [NSImage imageNamed:@"Clock icon.png"];
-			NSSize clockSize = [clockIcon size], iconSize = [icon size];
-			NSRect src = NSMakeRect(0.0, 0.0, clockSize.width, clockSize.height);
-			NSRect dest = NSMakeRect(iconSize.width - clockSize.width - 1.0, iconSize.height - clockSize.height, clockSize.width, clockSize.height);
-			[clockIcon drawInRect:dest fromRect:src operation:NSCompositeSourceOver fraction:0.9];
+		NSImage *base = [AppController sharedDocumentIcon];
+		if ([self temporary])
+		{
+			// Copy the document image into a new image and badge it with the clock
+			NSImage *icon = [[base copy] autorelease];
+
+			[icon lockFocus]; {
+				[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
+				[base drawInRect:RECT_FROM_SIZE([icon size]) fromRect:RECT_FROM_SIZE([base size]) operation:NSCompositeSourceOver fraction:1.0];	
 			
-		} [icon unlockFocus];
+				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon.png"];
+				NSSize clockSize = [clockIcon size], iconSize = [icon size];
+				NSRect dest = NSMakeRect(iconSize.width - clockSize.width - 1.0, iconSize.height - clockSize.height, clockSize.width, clockSize.height);
+				[clockIcon drawInRect:dest fromRect:RECT_FROM_SIZE(clockSize) operation:NSCompositeSourceOver fraction:0.9];
+			} [icon unlockFocus];
+			
+			[cellRepresentation setImage:icon];
+		}
+		else
+		{
+			[cellRepresentation setImage:base];
+		}
 	}
-	
-	[cellRepresentation setImage:icon];
-			
 }
 
 - (void)createWindow:(BOOL)useScrollView
@@ -806,8 +806,7 @@
 	[scrollEnclosure release];
 	scrollEnclosure = [[NSScrollView alloc] initWithFrame:frame];
 	[view setAutoresizingMask:NSViewNotSizable];
-	[scrollEnclosure setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|
-				NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
+	[scrollEnclosure setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
 	[scrollEnclosure setDocumentView:view];
 	[scrollEnclosure setHasVerticalScroller:YES];
 	[scrollEnclosure setHasHorizontalScroller:YES];

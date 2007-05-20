@@ -16,5 +16,7 @@
 	<true/>
 	<key>resizeViewToFit</key>
 	<true/>
+	<key>MinimalServerList</key>
+	<false/>
 </dict>
 </plist>

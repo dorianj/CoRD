@@ -162,8 +162,8 @@
 			NSUserDomainMask, YES) objectAtIndex:0];
 	NSString *cordDirectory = [[appSupport stringByAppendingPathComponent:@"CoRD"] retain];
 	
-	ensure_directory_exists(cordDirectory, fileManager);
-	ensure_directory_exists([AppController savedServersPath], fileManager);
+	ensure_directory_exists(cordDirectory);
+	ensure_directory_exists([AppController savedServersPath]);
 
 	// Read each .rdp file
 	RDInstance *rdpinfo;
@@ -227,6 +227,8 @@
 		return [gui_tabView numberOfTabViewItems] > 2;
 	else if (action == @selector(takeScreenCapture:))
 		return viewedInst != nil;
+	else if (action == @selector(toggleServerListMinimal:))
+		[item setState:BOOL_AS_BSTATE(PREFERENCE_ENABLED(PREFS_MINIMAL_SERVER_LIST))];
 	else if (action == @selector(toggleInspector:))
 	{
 		NSString *hideOrShow = [gui_inspector isVisible]
@@ -244,7 +246,7 @@
 	}
 	else if (action == @selector(keepSelectedServer:))
 	{
-		[item setState:([inst temporary] ? NSOffState : NSOnState)];
+		[item setState:BOOL_AS_BSTATE([inst temporary])];
 		return [inst status] == CRDConnectionConnected;
 	}
 	else if (action == @selector(performFullScreen:)) 
@@ -510,8 +512,8 @@
 	[gui_fullScreenWindow setInitialFirstResponder:serverView];
 	[gui_tabView release];	
 
-	[gui_tabView setFrame:NSMakeRect(0.0, 0.0, [serverView width], [serverView height])];
-	[serverView setFrame:NSMakeRect(0.0, 0.0, [serverView width], [serverView height])];
+	[gui_tabView setFrame:RECT_FROM_SIZE([serverView bounds].size)];
+	[serverView setFrame:RECT_FROM_SIZE([serverView bounds].size)];
 	
 	[gui_fullScreenWindow startFullScreen];
 
@@ -536,7 +538,7 @@
 	NSSize contentSize = [[gui_unifiedWindow contentView] frame].size;
 	
 	// Autosizing will get screwed up if the size is bigger than the content view
-	[gui_tabView setFrame:NSMakeRect(0.0, 0.0, contentSize.width, contentSize.height)];
+	[gui_tabView setFrame:RECT_FROM_SIZE(contentSize)];
 	
 	[[gui_unifiedWindow contentView] addSubview:gui_tabView];
 	[gui_tabView release];
@@ -708,6 +710,15 @@
 	}
 }
 
+- (IBAction)toggleServerListMinimal:(id)sender
+{
+	SET_PREFERENCE_ENABLED(PREFS_MINIMAL_SERVER_LIST, !PREFERENCE_ENABLED(PREFS_MINIMAL_SERVER_LIST));
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName:CRDMinimalViewDidChangeNotification object:nil];
+	
+	[gui_serverList noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [gui_serverList numberOfRows])]];
+//	[gui_serverList setNeedsDisplay:YES];
+}
 
 #pragma mark -
 #pragma mark Toolbar methods
@@ -1175,7 +1186,7 @@
 	// Host
 	int port = [[newSettings valueForKey:@"port"] intValue];
 	NSString *host = [newSettings valueForKey:@"hostName"];
-	[gui_host setStringValue:full_host_name(host, port)];
+	[gui_host setStringValue:join_host_name(host, port)];
 	
 	// Color depth
 	int colorDepth = [[newSettings valueForKey:@"screenDepth"] intValue];
@@ -1878,7 +1889,7 @@
 		[icon setFlipped:YES];
 		[shared_documentIcon lockFocus];
 		
-		NSRect r = NSMakeRect(0.0,0.0, [icon size].width, [icon size].height);
+		NSRect r = RECT_FROM_SIZE([icon size]);
 		[icon drawInRect:r fromRect:r operation:NSCompositeSourceOver fraction:1.0];
 		
 		[shared_documentIcon unlockFocus];

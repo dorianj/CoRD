@@ -17,58 +17,43 @@
 
 #import "CRDLabelCell.h"
 
-#define PADDING_TOP 4
+#define PADDING_TOP 5
 #define PADDING_LEFT 6
 #define PADDING_RIGHT 5
-#define PADDING_BOTTOM 5
+#define PADDING_BOTTOM 6
 
 #define TEXT_COLOR [NSColor colorWithDeviceRed:(120/255.0) green:(120/255.0) blue:(135/255.0) alpha:1.0]
 #define TEXT_SIZE 11.0
 
-static NSDictionary *textAttributes;
+static NSDictionary *static_labelStyle;
 
 @implementation CRDLabelCell
-
-- (id) initTextCell:(NSString *)text
++ (void)initialize
 {
-	self = [super initTextCell:text];
-	if (self != nil)
-	{
-		if (textAttributes == nil)
-		{
-			textAttributes = [[NSMutableDictionary dictionaryWithObjectsAndKeys:
-					TEXT_COLOR, NSForegroundColorAttributeName,
-					[NSFont fontWithName:@"LucidaGrande" size:TEXT_SIZE], NSFontAttributeName,
-					nil] retain];
-		}
-	}
-	return self;
+	static_labelStyle = [[NSDictionary dictionaryWithObjectsAndKeys:
+			TEXT_COLOR, NSForegroundColorAttributeName,
+			[NSFont fontWithName:@"LucidaGrande" size:TEXT_SIZE], NSFontAttributeName,
+			nil] retain];
 }
 
-
-- (NSRect) titleRectForBounds:(NSRect)bounds
+- (NSRect)titleRectForBounds:(NSRect)bounds
 {
-	NSSize titleSize = [[self title] sizeWithAttributes:textAttributes];
 	NSRect titleRect = bounds;
-	
+	titleRect.size = [[self title] sizeWithAttributes:static_labelStyle];
 	titleRect.origin.x += PADDING_LEFT;
-	titleRect.origin.y += PADDING_TOP + (bounds.size.height - titleSize.height) / 2;
-	titleRect.size.width -= PADDING_RIGHT;
-	titleRect.size.height -= PADDING_BOTTOM;
-	
+	titleRect.origin.y += PADDING_TOP;
+
 	return titleRect;
 }
 
-- (void) drawWithFrame:(NSRect)frame inView:(NSView *)controlView
-{
-	[[textAttributes objectForKey:NSForegroundColorAttributeName] set];
-	[[[self title] capitalizedString] drawInRect:[self titleRectForBounds:frame] withAttributes:textAttributes];
-	
+- (void)drawWithFrame:(NSRect)frame inView:(NSView *)controlView
+{	
+	[[self title] drawWithRect:[self titleRectForBounds:frame] options:NSStringDrawingUsesLineFragmentOrigin attributes:static_labelStyle];
 }
 
 - (NSSize)cellSize
 {
-	NSSize s = [[self title] sizeWithAttributes:textAttributes];
+	NSSize s = [[self title] sizeWithAttributes:static_labelStyle];
 	return NSMakeSize(s.width + PADDING_RIGHT + PADDING_LEFT, s.height + PADDING_BOTTOM + PADDING_TOP);
 }
 

@@ -15,8 +15,8 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-/*	Purpose: various stubs which support the controller layer.
-	Note: All of these functions require an NSAutoReleasePool be allocated.
+/*	Purpose: General shared routines within CoRD.
+	Note: All of these routines require an NSAutoReleasePool be allocated.
 */
 
 
@@ -25,39 +25,40 @@
 
 @class AppController;
 
-/* General purpose */
-const char *safe_string_conv(void *src);
+// General purpose
 void draw_vertical_gradient(NSColor *topColor, NSColor *bottomColor, NSRect rect);
-void draw_line(NSColor *color, NSPoint start, NSPoint end);
+inline void draw_horizontal_line(NSColor *color, NSPoint start, float width);
+inline NSString *join_host_name(NSString *host, int port);
+void split_hostname(NSString *address, NSString **host, int *port);
+inline NSString *join_host_name(NSString *host, int port);
+NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn);
+inline BOOL drawer_is_visisble(NSDrawer *drawer);
+inline const char *safe_string_conv(void *src);
+inline void ensure_directory_exists(NSString *directory);
+NSString *increment_file_name(NSString *path, NSString *base, NSString *extension);
+NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
+char ** convert_string_array(NSArray *conv);
+inline void set_attributed_string_color(NSMutableAttributedString *as, NSColor *color);
+inline void set_attributed_string_font(NSMutableAttributedString *as, NSFont *font);
+
+// AppController specific
+NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);
+
+// RDInstance specific
+void fill_default_connection(rdcConnection conn);
+
+// Convenience macros
+#define BOOL_AS_BSTATE(b) ( (b) ? NSOnState : NSOffState)
+#define NUMBER_AS_BSTATE(b) BOOL_AS_BSTATE([(b) boolValue])
+#define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
+#define BUTTON_STATE_AS_NUMBER_INVERSE(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 0 : 1)]
+#define HEXSTRING_TO_INT(s, ret) [[NSScanner scannerWithString:(s)] scanHexInt:(ret)]
 #define RECT_FROM_SIZE(r) NSMakeRect(0.0, 0.0, (r).width, (r).height)
 #define PRINT_RECT(s, r) NSLog(@"%@: (%.1f, %.1f) size %.1f x %.1f", s, (r).origin.x, (r).origin.y, (r).size.width, (r).size.height)
 #define PRINT_POINT(s, p) NSLog(@"%@: (%.1f, %.1f)", s, (p).x, (p).y)
 #define POINT_DISTANCE(p1, p2) ( sqrt( pow( (p1).x - (p2).x, 2) + pow( (p1).y - (p2).y, 2) ) )
-NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn);
 
-NSString *full_host_name(NSString *host, int port);
-void split_hostname(NSString *address, NSString **host, int *port);
-
-/* AppController */
-NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);
-BOOL drawer_is_visisble(NSDrawer *drawer);
-void ensure_directory_exists(NSString *directory, NSFileManager *manager);
-NSString *increment_file_name(NSString *path, NSString *base, NSString *extension);
-
-NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
-#define NUMBER_AS_BSTATE(b) ( ([(b) boolValue]) ? NSOnState : NSOffState)
-#define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
-#define BUTTON_STATE_AS_NUMBER_INVERSE(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 0 : 1)]
-
-/* RDCKeyboard */
-void print_bitfield(unsigned v, int bits);
-#define HEXSTRING_TO_INT(s, ret) [[NSScanner scannerWithString:(s)] scanHexInt:(ret)]
-
-/* RDInstance */
-char **convert_string_array(NSArray *conv);
-void fill_default_connection(rdcConnection conn);
-
-/* Constants */
+// Constants
 #define DEFAULT_PORT 3389
 #define WINDOW_START_X 50
 #define WINDOW_START_Y 20
@@ -67,7 +68,7 @@ void fill_default_connection(rdcConnection conn);
 #define SERVERS_SEPARATOR_TAG 19991
 #define SERVERS_ITEM_TAG 20001
 
-/* User defaults (NSUserDefaults) keys */
+// User defaults keys
 #define DEFAULTS_SHOW_DRAWER @"show_drawer"
 #define DEFAULTS_DRAWER_SIDE @"preferred_drawer_side"
 #define DEFAULTS_DRAWER_WIDTH @"drawer_width"
@@ -77,10 +78,18 @@ void fill_default_connection(rdcConnection conn);
 #define DEFAULTS_UNIFIED_AUTOSAVE @"UnfiedWindowFrameAutosave"
 #define DEFAULTS_INSPECTOR_AUTOSAVE @"InspectorWindowFrameAutosave"
 
+// User-settable user default keys (preferences)
 #define PREFS_FULLSCREEN_RECONNECT @"reconnectFullScreen"
 #define PREFS_RESIZE_VIEWS @"resizeViewToFit"
+#define PREFS_MINIMAL_SERVER_LIST @"MinimalServerList"
 
-#define PREFERENCE_ENABLED(prefName) [[NSUserDefaults standardUserDefaults] boolForKey:(prefName)]
+#define PREFERENCE_ENABLED(pref) [[NSUserDefaults standardUserDefaults] boolForKey:(pref)]
+#define SET_PREFERENCE_ENABLED(pref, b) [[NSUserDefaults standardUserDefaults] setBool:(b) forKey:(pref)]
+
+
+// Used for readability in rdesktop code
+extern AppController *g_appController;
+
 
 typedef enum _CRDConnectionStatus
 {
@@ -97,13 +106,17 @@ typedef enum _CRDDisplayMode
 	CRDDisplayFullscreen = 2
 } CRDDisplayMode;
 
+// Notifications
+extern NSString *CRDMinimalViewDidChangeNotification;
 
-/* Globals */
-AppController *g_appController;
-
+// Temporary use
 #define DISK_FORWARDING_DISABLED 1
 
-/* General mid-level debugging */
+
+
+#pragma mark -
+#pragma mark Controlling debugging output
+
 //#define WITH_DEBUG_KEYBOARD 1
 //#define WITH_DEBUG_UI 1
 //#define WITH_MID_LEVEL_DEBUG 1
@@ -133,7 +146,7 @@ AppController *g_appController;
 
 
 #if defined(WITH_ANY_DEBUG) && defined(CORD_RELEASE_BUILD)
-	#error Debugging is enabled and building release
+	#error Debugging is enabled and building Release
 #endif
 
 #ifdef CORD_DEBUG_BUILD
