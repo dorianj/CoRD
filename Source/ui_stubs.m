@@ -53,12 +53,29 @@
     GXset				15 1
 */
 
+#define EXTRACT_USEFUL_VARS									\
+	RDCView *v = (RDCView *)conn->ui;						\
+	RDInstance *inst = (RDInstance *)conn->controller;
+	
+
 // For managing the current draw session (the time bracketed between ui_begin_update and ui_end_update)
 static void schedule_display(rdcConnection conn);
 static void schedule_display_in_rect(rdcConnection conn, NSRect r);
 
 static RDCBitmap *nullCursor = nil;
 
+#pragma mark -
+#pragma mark Resizing the Connection Window
+
+void ui_resize_window(rdcConnection conn)
+{
+	EXTRACT_USEFUL_VARS;
+	
+	[v setScreenSize:NSMakeSize(conn->screenWidth, conn->screenHeight)];
+	
+	// xxx: doesn't work with windowed mode
+	[g_appController performSelectorOnMainThread:@selector(autosizeUnifiedWindow) withObject:nil waitUntilDone:NO];
+}
 
 #pragma mark -
 #pragma mark Colormap 
@@ -78,7 +95,7 @@ HCOLOURMAP ui_create_colourmap(COLOURMAP * colors)
 
 void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	[v setColorMap:(unsigned int *)map];
 }
 
@@ -100,14 +117,15 @@ void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width
 
 void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, HBITMAP src, int srcx, int srcy)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
+	
 	RDCBitmap *bmp = (RDCBitmap *)src;
 	NSRect r = NSMakeRect(x, y, cx, cy);
 	NSPoint p = NSMakePoint(srcx, srcy);
 	
 	if (opcode != 0)
 	{ 
-		/* Treat opcode 0 just like copy */
+		/* Treat opcode 0 as copy */
 		CHECKOPCODE(opcode);
 	}
 	
@@ -129,7 +147,7 @@ void ui_destroy_bitmap(HBITMAP bmp)
 //	This is far less performance critical than -[RDCBitmap initWithBitmapData:]
 void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	NSImage *back = [v valueForKey:@"back"];
 	NSBitmapImageRep *deskScrape;
 	NSRect r = NSMakeRect(x,y,cx,cy);	
@@ -156,13 +174,13 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	// NSBitmapImageRep seems to ignore bitmapFormat:NSAlphaFirstBitmapFormat, so
 	// vImage acceleration isn't possible
 	uint8 *output, *o, *src, *p;
-	int i=0, len=cx*cy, bytespp = conn->serverBpp/8;
+	int i=0, len=cx*cy, bytespp = (conn->serverBpp+7)/8;
 	
 	src = p = [deskScrape bitmapData];
 	output = o = malloc(cx*cy*bytespp);
 	unsigned int *colorMap = [v colorMap], j, q;
 	
-	if (bytespp == 2)
+	if (conn->serverBpp == 16)
 	{
 		while (i++ < len)
 		{
@@ -174,7 +192,21 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 			o += bytespp;
 		}	
 	}
-	else if (bytespp == 1)
+	else if (conn->serverBpp == 15)
+	{
+		while (i++ < len)
+		{
+			*((unsigned short *)o) =
+							(1 << 15) |
+							(((p[0] * 31 + 127) / 255) << 10) |
+							(((p[1] * 31 + 127) / 255) << 5)  |
+							((p[2] * 31 + 127) / 255);
+			p += 4;
+			o += bytespp;
+		}		
+	
+	}
+	else if (conn->serverBpp == 8)
 	{
 		// Find color's index on colormap, use it as color
 		while (i++ < len)
@@ -215,7 +247,7 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 
 void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	NSImage *back = [v valueForKey:@"back"], *img;
 	uint8 *data;
 	
@@ -251,18 +283,27 @@ void ui_begin_update(rdcConnection conn)
 
 void ui_end_update(rdcConnection conn)
 {
-	RDCView *v = (RDCView *)conn->ui;
+	EXTRACT_USEFUL_VARS;
 	
+	if (v == NULL)
+		Debugger();
+		
 	if (conn->updateEntireScreen)
 	{
 		[v performSelectorOnMainThread:@selector(setNeedsDisplay:)
 			withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
+		NSLog(@"Updating entire screen");
 	}
-	else
+	else if ([(id)conn->rectsNeedingUpdate count] > 0)
 	{
 		[(id)conn->rectsNeedingUpdate retain];
 		[v performSelectorOnMainThread:@selector(setNeedsDisplayInRects:)
 				withObject:(id)conn->rectsNeedingUpdate waitUntilDone:NO];
+		NSLog(@"Updating %d rects", [(id)conn->rectsNeedingUpdate count]);
+	}
+	else
+	{
+		NSLog(@"No rects to be updated for this session.");
 	}
 
 	[(id)conn->rectsNeedingUpdate release];
@@ -286,7 +327,7 @@ static void schedule_display_in_rect(rdcConnection conn, NSRect r)
 
 void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	NSRect r = NSMakeRect(x , y, cx, cy);
 	[v fillRect:r withColor:[v nscolorForRDCColor:colour]];
 	schedule_display_in_rect(conn, r);
@@ -294,7 +335,7 @@ void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour)
 
 void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, int endx, int endy, PEN * pen)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	NSPoint start = NSMakePoint(startx + 0.5, starty + 0.5);
 	NSPoint end = NSMakePoint(endx + 0.5, endy + 0.5);
 	
@@ -313,7 +354,7 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, int endx,
 
 void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, int srcx, int srcy)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	NSRect src = NSMakeRect(srcx, srcy, cx, cy);
 	NSPoint dest = NSMakePoint(x, y);
 	
@@ -324,7 +365,7 @@ void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy
 
 void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	NSRect r = NSMakeRect(x, y, cx, cy);
 	/* XXX */
 	switch (opcode)
@@ -348,7 +389,7 @@ void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy)
 
 void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, PEN *pen)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	CHECKOPCODE(opcode);
 	[v polyline:points npoints:npoints color:[v nscolorForRDCColor:pen->colour] width:pen->width];
 	schedule_display(conn);
@@ -356,7 +397,8 @@ void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, 
 
 void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH *brush, int bgcolour, int fgcolour)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
+	
 	NSWindingRule r;
 	int style;
 	CHECKOPCODE(opcode);
@@ -404,7 +446,7 @@ static const uint8 hatch_patterns[] =
 /* XXX Still needs origins */
 void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, BRUSH * brush, int bgcolor, int fgcolor)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	NSRect dest = NSMakeRect(x, y, cx, cy);
 	NSRect glyphSize;
 	RDCBitmap *bitmap;
@@ -424,8 +466,8 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 	switch (brush->style)
 	{
 		case 0: /* Solid */
-			NSLog(@"fg %d bg %d opcode %d", fgcolor, bgcolor, opcode);
 			[v fillRect:dest withColor:[v nscolorForRDCColor:fgcolor]];
+			schedule_display_in_rect(conn, dest);
 			break;
 		case 2: /* Hatch */
 
@@ -478,6 +520,36 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 	schedule_display_in_rect(conn, dest);
 }
 
+void ui_triblt(uint8 opcode, 
+			   int x, int y, int cx, int cy,
+			   HBITMAP src, int srcx, int srcy,
+			   BRUSH *brush, int bgcolour, int fgcolour)
+{
+	CHECKOPCODE(opcode);
+	UNIMPL;
+}
+
+void ui_ellipse(rdcConnection conn, uint8 opcode, uint8 fillmode, int x, int y, int cx, int cy,
+				BRUSH *brush, int bgcolour, int fgcolour)
+{
+	EXTRACT_USEFUL_VARS;
+	NSRect r = NSMakeRect(x + 0.5, y + 0.5, cx, cy);
+	int style;
+	CHECKOPCODE(opcode);
+	
+	style = brush != NULL ? brush->style : 0;
+	
+	switch (style)
+	{
+		case 0:
+			[v ellipse:r color:[v nscolorForRDCColor:fgcolour]];
+			break;
+		default:
+			UNIMPL;
+			return;
+	}
+	schedule_display_in_rect(conn, r);
+}
 
 #pragma mark -
 #pragma mark Text drawing
@@ -497,7 +569,7 @@ void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *gly
 
 void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, RDCBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	NSRect r = NSMakeRect(x, y, w, h);
 	[v drawGlyph:glyph at:r fg:fgcolor bg:bgcolor];
 }
@@ -538,12 +610,12 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 				  int clipcx, int clipcy, int boxx, int boxy, int boxcx, int boxcy, BRUSH * brush, int bgcolour,
 				  int fgcolour, uint8 * text, uint8 length)
 {
+	EXTRACT_USEFUL_VARS;
 	int i = 0, j;
 	int xyoffset;
 	int x1, y1;
 	FONTGLYPH *glyph;
 	DATABLOB *entry;
-	RDCView *v = conn->ui;
 	NSRect box;
 	NSColor *foregroundColor = [v nscolorForRDCColor:fgcolour];
 	NSColor *backgroundColor = [v nscolorForRDCColor:bgcolour];
@@ -622,13 +694,13 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 
 void ui_set_clip(rdcConnection conn, int x, int y, int cx, int cy)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	[v setClip:NSMakeRect(x, y, cx, cy)];
 }
 
 void ui_reset_clip(rdcConnection conn)
 {
-	RDCView *v = conn->ui;
+	EXTRACT_USEFUL_VARS;
 	[v resetClip];
 }
 
@@ -658,7 +730,7 @@ void ui_set_null_cursor(rdcConnection conn)
 
 void ui_set_cursor(rdcConnection conn, HCURSOR cursor)
 {
-	RDCView *v = (RDCView *)conn->ui;
+	EXTRACT_USEFUL_VARS;
 	id c = (RDCBitmap *)cursor;
 	[v performSelectorOnMainThread:@selector(setCursor:) withObject:[c cursor] waitUntilDone:YES];
 }
@@ -931,11 +1003,6 @@ int rd_lock_file(int fd, int start, int len)
     return True;
 }
 
-void ui_resize_window(void)
-{
-	UNIMPL;
-}
-
 #define LTOA_BUFSIZE (sizeof(long) * 8 + 1)
 char *l_to_a(long N, int base)
 {
@@ -969,37 +1036,6 @@ char *l_to_a(long N, int base)
 
     strcpy(head, tail);
     return ret;
-}
-
-void ui_triblt(uint8 opcode, 
-			   int x, int y, int cx, int cy,
-			   HBITMAP src, int srcx, int srcy,
-			   BRUSH *brush, int bgcolour, int fgcolour)
-{
-	CHECKOPCODE(opcode);
-	UNIMPL;
-}
-
-void ui_ellipse(rdcConnection conn, uint8 opcode, uint8 fillmode, int x, int y, int cx, int cy,
-				BRUSH *brush, int bgcolour, int fgcolour)
-{
-	RDCView *v = conn->ui;
-	NSRect r = NSMakeRect(x + 0.5, y + 0.5, cx, cy);
-	int style;
-	CHECKOPCODE(opcode);
-	
-	style = brush != NULL ? brush->style : 0;
-	
-	switch (style)
-	{
-		case 0:
-			[v ellipse:r color:[v nscolorForRDCColor:fgcolour]];
-			break;
-		default:
-			UNIMPL;
-			return;
-	}
-	schedule_display_in_rect(conn, r);
 }
 
 void save_licence(unsigned char *data, int length)

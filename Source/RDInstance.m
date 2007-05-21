@@ -242,7 +242,7 @@
 	
 	// Other various settings
 	conn->bitmapCache = cacheBitmaps;
-	conn->serverBpp = (screenDepth==8 || screenDepth==24) ? screenDepth : 16;
+	conn->serverBpp = (screenDepth==8 || screenDepth == 15 || screenDepth==24) ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
@@ -278,6 +278,9 @@
 	rdpdr_init(conn);
 	
 	cliprdr_init(conn);
+	
+	if (TESTING_15_BIT_COLOR)
+		screenDepth = conn->serverBpp = 15;
 	
 	// Make the connection
 	BOOL connected = rdp_connect(conn, safe_string_conv(hostName), 

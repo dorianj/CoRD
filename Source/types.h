@@ -293,6 +293,7 @@ struct rdcConn
 	
 	// State flags
 	int isConnected, useRdp5, useEncryption, useBitmapCompression, rdp5PerformanceFlags, consoleSession, bitmapCache, bitmapCachePersist, bitmapCachePrecache, desktopSave, polygonEllipseOrders, licenseIssued, notifyStamp, pstcacheEnumerated;
+	RDP_ORDER_STATE orderState;
 	
 	// Keyboard
 	unsigned int keyboardLayout;
@@ -366,7 +367,6 @@ struct rdcConn
 	
 	// Unknown
 	RDPCOMP mppcDict;
-	RDP_ORDER_STATE orderState;
 	
 	// UI
 	void *ui;	// the associated RDCView

@@ -81,11 +81,6 @@ rdp_recv(rdcConnection conn, uint8 * type)
 	in_uint8s(rdp_s, 2);	/* userid */
 	*type = pdu_type & 0xf;
 
-#ifdef WITH_DEBUG
-	DEBUG(("RDP packet #%d, (type %x)\n", ++conn->packetNumber, *type));
-	hexdump(conn->nextPacket, length);
-#endif /*  */
-
 	conn->nextPacket += length;
 	return rdp_s;
 }
@@ -782,7 +777,7 @@ rdp_process_bitmap_caps(rdcConnection conn, STREAM s)
 			width, height);
 		conn->screenWidth = width;
 		conn->screenHeight = height;
-		ui_resize_window();
+		ui_resize_window(conn);
 	}
 }
 
@@ -824,7 +819,7 @@ rdp_process_server_caps(rdcConnection conn, STREAM s, uint16 length)
 	}
 }
 
-/* Respond to a demand active PDU */
+/* Respond to a  */
 void
 process_demand_active(rdcConnection conn, STREAM s)
 {
@@ -1058,7 +1053,9 @@ process_update_pdu(rdcConnection conn, STREAM s)
 	uint16 update_type, count;
 
 	in_uint16_le(s, update_type);
-
+	
+	ui_begin_update(conn);
+	
 	switch (update_type)
 	{
 		case RDP_UPDATE_ORDERS:
@@ -1082,6 +1079,8 @@ process_update_pdu(rdcConnection conn, STREAM s)
 		default:
 			unimpl("update %d\n", update_type);
 	}
+	
+	ui_end_update(conn);
 }
 
 /* Process a disconnect PDU */

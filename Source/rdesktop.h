@@ -42,7 +42,7 @@
 	#define DEBUG(args)
 #endif
 
-//#define WITH_DEBUG_RDP5
+//#define WITH_DEBUG_RDP5 1
 #ifdef WITH_DEBUG_RDP5
 #define DEBUG_RDP5(args) printf args;
 #else

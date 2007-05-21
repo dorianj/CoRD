@@ -31,7 +31,7 @@
 	NSCursor *cursor;
 	int bitdepth;
 	RDCKeyboard *keyTranslator;
-	unsigned int *colorMap;	// always a size of 0xff+1
+	unsigned int *colorMap;	// always a size of 256
 	NSSize screenSize;
 	
 	// For mouse event throttling
@@ -69,6 +69,7 @@
 - (void)setNeedsDisplayInRects:(NSArray *)rects;
 - (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
 - (void)writeScreenCaptureToFile:(NSString *)path;
+- (void)setScreenSize:(NSSize)newSize;
 
 // Accessors
 - (void)setController:(RDInstance *)instance;

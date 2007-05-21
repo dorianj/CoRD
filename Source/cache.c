@@ -160,7 +160,7 @@ cache_evict_bitmap(rdcConnection conn, uint8 id)
 
 	idx = conn->bmpcacheLru[id];
 	n_idx = conn->bmpcache[id][idx].next;
-	DEBUG_RDP5(("evict bitmap: id=%d idx=%d n_idx=%d bmp=0x%x\n", id, idx, n_idx,
+	DEBUG_RDP5(("evict bitmap: id=%d idx=%d n_idx=%d bmp=0x%p\n", id, idx, n_idx,
 		    conn->bmpcache[id][idx].bitmap));
 
 	ui_destroy_bitmap(conn->bmpcache[id][idx].bitmap);
@@ -275,6 +275,7 @@ void
 cache_put_font(rdcConnection conn, uint8 font, uint16 character, uint16 offset,
 	       uint16 baseline, uint16 width, uint16 height, HGLYPH pixmap)
 {
+	//debug: printf("Putting shit in font cache at %d:%d and pmap %p\n", font, character, pixmap);
 	FONTGLYPH *glyph;
 
 	if ((font < NUM_ELEMENTS(conn->fontCache)) && (character < NUM_ELEMENTS(conn->fontCache[0])))

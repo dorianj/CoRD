@@ -489,6 +489,13 @@
 		*b = ((col & 0x1f) * 255 + 15) / 31;
 		return;
 	}
+	else if (bitdepth == 15)
+	{
+		*r = (( (col >> 10) & 0x1f) * 255 + 15) / 31;
+		*g = (( (col >> 5) & 0x1f) * 255 + 15) / 31;
+		*b = ((col & 0x1f) * 255 + 15) / 31;
+		return;
+	}
 	
 	int t = (bitdepth == 8) ? colorMap[col] : col;
 
@@ -499,20 +506,8 @@
 
 - (NSColor *)nscolorForRDCColor:(int)col
 {
-	int r, g, b;
-	if (bitdepth == 16)
-	{
-		r = (( (col >> 11) & 0x1f) * 255 + 15) / 31;
-		g = (( (col >> 5) & 0x3f) * 255 + 31) / 63;
-		b = ((col & 0x1f) * 255 + 15) / 31;
-	}
-	else // 8, 24, 32
-	{
-		int t = (bitdepth == 8) ? colorMap[col] : col;
-		b = (t >> 16) & 0xff;
-		g = (t >> 8)  & 0xff;
-		r = t & 0xff;
-	}
+	unsigned char r, g, b;
+	[self rgbForRDCColor:col r:&r g:&g b:&b];
 	
 	return [NSColor colorWithDeviceRed:(float)r / 255.0
 								 green:(float)g / 255.0
@@ -578,6 +573,23 @@
 	[fileContent writeToFile:path atomically:YES];
 	
 	[img release];
+}
+
+- (void)setScreenSize:(NSSize)newSize
+{
+	screenSize = NSMakeSize(round(newSize.width), round(newSize.height));
+	[self setBounds:RECT_FROM_SIZE(screenSize)];
+	
+	[back release];
+	back = [[NSImage alloc] initWithSize:screenSize];
+	// Fill background with blackness
+	[self resetClip];
+	[self focusBackingStore];
+	[[NSColor blackColor] set];
+	[NSBezierPath fillRect:[self bounds]];
+	[self releaseBackingStore];
+	
+	[self setNeedsDisplay:YES];
 }
 
 

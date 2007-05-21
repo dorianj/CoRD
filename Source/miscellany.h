@@ -111,7 +111,7 @@ extern NSString *CRDMinimalViewDidChangeNotification;
 
 // Temporary use
 #define DISK_FORWARDING_DISABLED 1
-
+#define TESTING_15_BIT_COLOR 1
 
 
 #pragma mark -

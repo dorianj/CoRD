@@ -246,7 +246,7 @@ uint16 ui_get_numlock_state(unsigned int state);
 
 #pragma mark -
 #pragma mark ui_stubs.m (formerly xwin.c)
-void ui_resize_window(void);
+void ui_resize_window(rdcConnection conn);
 void ui_destroy_window(void);
 int ui_select(rdcConnection conn);
 void ui_move_pointer(int x, int y);

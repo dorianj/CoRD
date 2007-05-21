@@ -48,7 +48,7 @@
 	if (![super init])
 		return nil;
 
-	int bitsPerPixel = [v bitsPerPixel],  bytesPerPixel = bitsPerPixel / 8;
+	int bitsPerPixel = [v bitsPerPixel],  bytesPerPixel = (bitsPerPixel + 7) / 8;
 	
 	uint8 *outputBitmap, *nc;
 	const uint8 *p, *end;
@@ -91,6 +91,21 @@
 		sourceBuffer.rowBytes = width * bytesPerPixel;
 		
 		vImageConvert_RGB565toARGB8888(255, &sourceBuffer, &newBuffer, 0);		
+	}
+	else if (bitsPerPixel == 15)
+	{
+		// vImage won't let us set the alpha channel to one  (it reads it as ARGB1555, not paddded RGB555)
+		while (p < end)
+		{
+			unsigned short c = *((unsigned short *)p);
+			nc[0] = 255;
+			nc[1] = (( (c >> 10) & 0x1f) * 255 + 15) / 31;
+			nc[2] = (( (c >> 5) & 0x1f) * 255 + 15) / 31;
+			nc[3] = ((c & 0x1f) * 255 + 15) / 31;
+			
+			p += bytesPerPixel;
+			nc += 4;
+		}
 	}
 	else if (bitsPerPixel == 24 || bitsPerPixel == 32)
 	{
@@ -150,11 +165,12 @@
 												 colorSpaceName:NSDeviceBlackColorSpace
 													bytesPerRow:scanline
 												   bitsPerPixel:0];	
-
+	
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
 	[self setColor:[[NSColor blackColor] retain]];
+	
 	
 	return self;
 }
