@@ -181,6 +181,16 @@
 	if (![super init])
 		return nil;
 
+	
+	int w = s.width, h = s.height;
+	
+	if (w == 0 || h == 0)
+	{
+		image = [[NSImage alloc] initWithSize:NSMakeSize(1,1)];		
+		cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
+		return self;
+	}
+
 	int scanline = (int)s.width + 7 / 8;
 	uint8 *np;
 	const uint8 *p, *end;

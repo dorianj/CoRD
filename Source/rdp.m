@@ -924,7 +924,7 @@ process_pointer_pdu(rdcConnection conn, STREAM s)
 			in_uint16_le(s, x);
 			in_uint16_le(s, y);
 			if (s_check(s))
-				ui_move_pointer(x, y);
+				ui_move_pointer(conn, x, y);
 			break;
 
 		case RDP_POINTER_COLOR:

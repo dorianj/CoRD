@@ -369,7 +369,7 @@
 	[self releaseBackingStore];
 }
 
-- (void)memblt:(NSRect)to from:(RDCBitmap *)image withOrigin:(NSPoint)origin
+- (void)drawBitmap:(RDCBitmap *)image inRect:(NSRect)to from:(NSPoint)origin operation:(NSCompositingOperation)op
 {
 	[self focusBackingStore];
 	
@@ -379,7 +379,7 @@
 	
 	[image drawInRect:RECT_FROM_SIZE(to.size)
 			 fromRect:NSMakeRect(origin.x, origin.y, to.size.width, to.size.height)
-			operation:NSCompositeCopy];
+			operation:op];
 	[self releaseBackingStore];
 }
 

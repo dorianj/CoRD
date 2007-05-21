@@ -46,7 +46,7 @@
 - (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *)color;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *)color patternOrigin:(NSPoint)origin;
-- (void)memblt:(NSRect)to from:(RDCBitmap *)image withOrigin:(NSPoint)origin;
+- (void)drawBitmap:(RDCBitmap *)image inRect:(NSRect)r from:(NSPoint)origin operation:(NSCompositingOperation)op;
 - (void)screenBlit:(NSRect)from to:(NSPoint)to;
 - (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)width;
 - (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor;

@@ -249,7 +249,7 @@ uint16 ui_get_numlock_state(unsigned int state);
 void ui_resize_window(rdcConnection conn);
 void ui_destroy_window(void);
 int ui_select(rdcConnection conn);
-void ui_move_pointer(int x, int y);
+void ui_move_pointer(rdcConnection conn, int x, int y);
 HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 * data);
 void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width, int height, uint8 * data);
 void ui_destroy_bitmap(HBITMAP bmp);

@@ -122,14 +122,25 @@ void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, H
 	RDCBitmap *bmp = (RDCBitmap *)src;
 	NSRect r = NSMakeRect(x, y, cx, cy);
 	NSPoint p = NSMakePoint(srcx, srcy);
-	
-	if (opcode != 0)
-	{ 
-		/* Treat opcode 0 as copy */
-		CHECKOPCODE(opcode);
+	NSCompositingOperation compositingOp;
+	switch (opcode)
+	{
+		case 0:
+		case 12:
+			compositingOp = NSCompositeCopy;
+			break;
+		
+		case 6:
+			compositingOp = NSCompositeCopy;
+			break;
+		
+		default:
+			CHECKOPCODE(opcode);
+			compositingOp = NSCompositeCopy;
 	}
 	
-	[v memblt:r from:bmp withOrigin:p];
+	[v drawBitmap:bmp inRect:r from:p operation:compositingOp];
+
 	schedule_display_in_rect(conn, r);
 }
 
@@ -285,26 +296,18 @@ void ui_end_update(rdcConnection conn)
 {
 	EXTRACT_USEFUL_VARS;
 	
-	if (v == NULL)
-		Debugger();
-		
 	if (conn->updateEntireScreen)
 	{
 		[v performSelectorOnMainThread:@selector(setNeedsDisplay:)
 			withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
-		NSLog(@"Updating entire screen");
 	}
 	else if ([(id)conn->rectsNeedingUpdate count] > 0)
 	{
 		[(id)conn->rectsNeedingUpdate retain];
 		[v performSelectorOnMainThread:@selector(setNeedsDisplayInRects:)
 				withObject:(id)conn->rectsNeedingUpdate waitUntilDone:NO];
-		NSLog(@"Updating %d rects", [(id)conn->rectsNeedingUpdate count]);
 	}
-	else
-	{
-		NSLog(@"No rects to be updated for this session.");
-	}
+
 
 	[(id)conn->rectsNeedingUpdate release];
 	conn->rectsNeedingUpdate = NULL;
@@ -724,7 +727,7 @@ void ui_set_null_cursor(rdcConnection conn)
 {
 	if (nullCursor == nil)
 		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL);
-	
+		
 	ui_set_cursor(conn, nullCursor);
 }
 
@@ -741,10 +744,18 @@ void ui_destroy_cursor(HCURSOR cursor)
 	[c release];
 }
 
-void ui_move_pointer(int x, int y)
+void ui_move_pointer(rdcConnection conn, int x, int y)
 {
-	UNIMPL;
-	NSLog(@"Should move mouse to %d, %d", x, y);
+	EXTRACT_USEFUL_VARS;
+	//xxx: check if this conn is active
+	
+	NSPoint windowPoint = [v convertPoint:NSMakePoint(x,y) toView:nil];
+	NSPoint windowOrigin = [[v window] frame].origin;
+	
+	NSLog(@"Setting point to remote (%d, %d), or local screen %@", x, y, NSStringFromPoint(NSMakePoint(windowPoint.x+windowOrigin.x, windowPoint.y+windowPoint.y)));
+	CGWarpMouseCursorPosition(CGPointMake(windowPoint.x+windowOrigin.x, windowPoint.y+windowPoint.y));
+	
+	//NSLog(@"Should move mouse to %d, %d", x, y);
 }
 
 

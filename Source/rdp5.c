@@ -101,7 +101,7 @@ rdp5_process(rdcConnection conn, STREAM s)
 				in_uint16_le(ts, x);
 				in_uint16_le(ts, y);
 				if (s_check(ts))
-					ui_move_pointer(x, y);
+					ui_move_pointer(conn, x, y);
 				break;
 			case 9: /* color pointer */
 				process_colour_pointer_pdu(conn, ts);
