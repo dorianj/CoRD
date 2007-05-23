@@ -271,7 +271,7 @@
 		[mouseInputScheduler release];
 		mouseInputScheduler = nil;
 		
-		if ( [[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0/MOUSE_EVENTS_PER_SEC) )
+		if ( [[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0/CRDMouseEventLimit) )
 		{
 			[lastMouseEventSentAt release];
 			lastMouseEventSentAt = [[NSDate date] retain];
@@ -279,7 +279,7 @@
 		}
 		else
 		{
-			mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:(1.0/MOUSE_EVENTS_PER_SEC)
+			mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:(1.0/CRDMouseEventLimit)
 					target:self selector:@selector(recheckScheduledMouseInput:)
 					userInfo:nil repeats:NO] retain];
 		}		

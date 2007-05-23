@@ -11,6 +11,7 @@
                 keepSelectedServer = id; 
                 performFullScreen = id; 
                 performQuickConnect = id; 
+                performServerMenuItem = id; 
                 performStop = id; 
                 performUnified = id; 
                 removeSelectedSavedServer = id; 
@@ -25,6 +26,7 @@
                 toggleDrawer = id; 
                 toggleInspector = id; 
                 togglePerformanceDisclosure = id; 
+                toggleServerListMinimal = id; 
             }; 
             CLASS = AppController; 
             LANGUAGE = ObjC; 

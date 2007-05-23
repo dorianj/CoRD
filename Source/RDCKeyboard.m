@@ -126,7 +126,7 @@ static NSDictionary *windowsKeymapTable = nil;
 - (void)sendScancode:(uint8)scancode flags:(uint16)flags
 {
 	if ( ((scancode == SCANCODE_CHAR_LWIN) || (scancode == SCANCODE_CHAR_RWIN)) &&
-		!PREFERENCE_ENABLED(DEFAULTS_SEND_WINKEY))
+		!PREFERENCE_ENABLED(CRDDefaultsSendWindowsKey))
 	{
 		return;
 	}

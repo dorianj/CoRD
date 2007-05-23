@@ -241,7 +241,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 
 - (void)listStyleDidChange:(NSNotification *)notification
 {	
-	abbreviatedSize = PREFERENCE_ENABLED(PREFS_MINIMAL_SERVER_LIST);
+	abbreviatedSize = PREFERENCE_ENABLED(CRDPrefsMinimalisticServerList);
 }
 
 #pragma mark -

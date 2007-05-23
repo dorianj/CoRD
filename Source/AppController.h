@@ -53,8 +53,7 @@
 
 	// Other display modes
 	CRDFullScreenWindow *gui_fullScreenWindow;
-	CRDDisplayMode displayMode;
-	CRDDisplayMode displayModeBeforeFullscreen;
+	CRDDisplayMode displayMode, displayModeBeforeFullscreen;
 	NSPoint windowCascadePoint;
 	IBOutlet NSUserDefaultsController *userDefaultsController;
 	NSUserDefaults *userDefaults;
@@ -76,16 +75,17 @@
 // Actions
 - (IBAction)addNewSavedServer:(id)sender;
 - (IBAction)removeSelectedSavedServer:(id)sender;
+- (IBAction)connect:(id)sender;
+- (IBAction)disconnect:(id)sender;
+- (IBAction)performConnectOrDisconnect:(id)sender;
 - (IBAction)keepSelectedServer:(id)sender;
 - (IBAction)toggleInspector:(id)sender;
 - (IBAction)togglePerformanceDisclosure:(id)sender;
 - (IBAction)fieldEdited:(id)sender;
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
-- (IBAction)disconnect:(id)sender;
 - (IBAction)performStop:(id)sender;
 - (IBAction)stopConnection:(id)sender;
-- (IBAction)connect:(id)sender;
 - (IBAction)showOpen:(id)sender;
 - (IBAction)toggleDrawer:(id)sender;
 - (IBAction)startFullscreen:(id)sender;
@@ -99,7 +99,8 @@
 - (IBAction)helpForConnectionOptions:(id)sender;
 - (IBAction)performServerMenuItem:(id)sender;
 - (IBAction)toggleServerListMinimal:(id)sender;
-
+- (IBAction)performDisconnect:(id)sender;
+- (IBAction)saveSelectedServer:(id)sender;
 
 // Other methods, in no particular order
 - (void)validateControls;

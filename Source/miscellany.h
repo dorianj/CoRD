@@ -15,7 +15,7 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-/*	Purpose: General shared routines within CoRD.
+/*	Purpose: General shared routines and values within CoRD.
 	Note: All of these routines require an NSAutoReleasePool be allocated.
 */
 
@@ -25,6 +25,8 @@
 
 @class AppController;
 
+#pragma mark -
+#pragma mark Shared routines
 // General purpose
 void draw_vertical_gradient(NSColor *topColor, NSColor *bottomColor, NSRect rect);
 inline void draw_horizontal_line(NSColor *color, NSPoint start, float width);
@@ -58,38 +60,48 @@ void fill_default_connection(rdcConnection conn);
 #define PRINT_POINT(s, p) NSLog(@"%@: (%.1f, %.1f)", s, (p).x, (p).y)
 #define POINT_DISTANCE(p1, p2) ( sqrt( pow( (p1).x - (p2).x, 2) + pow( (p1).y - (p2).y, 2) ) )
 
+
+#pragma mark -
+#pragma mark Constants
+
 // Constants
-#define DEFAULT_PORT 3389
-#define WINDOW_START_X 50
-#define WINDOW_START_Y 20
-#define SAVED_SERVER_DRAG_TYPE @"savedServerDragType"
-#define SNAP_WINDOW_SIZE 30.0
-#define MOUSE_EVENTS_PER_SEC 15.0
+extern const int CRDDefaultPort;
+extern const int CRDMouseEventLimit;
+extern const NSPoint CRDWindowCascadeStart;
+extern const float CRDWindowSnapSize;
+extern NSString *CRDRowIndexPboardType;
+
+// Globals (used for readability in rdesktop code)
+extern AppController *g_appController;
+
+// NSUserDefaults keys
+extern NSString *CRDDefaultsUnifiedDrawerShown;
+extern NSString *CRDDefaultsUnifiedDrawerSide;
+extern NSString *CRDDefaultsUnifiedDrawerWidth;
+extern NSString *CRDDefaultsDisplayMode;
+extern NSString *CRDDefaultsQuickConnectServers;
+extern NSString *CRDDefaultsSendWindowsKey;
+
+// User-configurable NSUserDefaults keys (preferences)
+extern NSString *CRDPrefsReconnectIntoFullScreen;
+extern NSString *CRDPrefsReconnectOutOfFullScreen;
+extern NSString *CRDPrefsScaleSessions;
+extern NSString *CRDPrefsMinimalisticServerList;
+
+// Notifications
+extern NSString *CRDMinimalViewDidChangeNotification;
+
+// Used to tack on the servers at the end of the Servers menu. There's probably a better way to do this, but this will do for now (works well enough)
 #define SERVERS_SEPARATOR_TAG 19991
 #define SERVERS_ITEM_TAG 20001
 
-// User defaults keys
-#define DEFAULTS_SHOW_DRAWER @"show_drawer"
-#define DEFAULTS_DRAWER_SIDE @"preferred_drawer_side"
-#define DEFAULTS_DRAWER_WIDTH @"drawer_width"
-#define DEFAULTS_DISPLAY_MODE @"windowed_mode"
-#define DEFAULTS_RECENT_SERVERS @"RecentServers"
-#define DEFAULTS_SEND_WINKEY @"SendWindowsKey"
-#define DEFAULTS_UNIFIED_AUTOSAVE @"UnfiedWindowFrameAutosave"
-#define DEFAULTS_INSPECTOR_AUTOSAVE @"InspectorWindowFrameAutosave"
-
-// User-settable user default keys (preferences)
-#define PREFS_FULLSCREEN_RECONNECT @"reconnectFullScreen"
-#define PREFS_RESIZE_VIEWS @"resizeViewToFit"
-#define PREFS_MINIMAL_SERVER_LIST @"MinimalServerList"
-
+// Convenience macros for preferences
 #define PREFERENCE_ENABLED(pref) [[NSUserDefaults standardUserDefaults] boolForKey:(pref)]
 #define SET_PREFERENCE_ENABLED(pref, b) [[NSUserDefaults standardUserDefaults] setBool:(b) forKey:(pref)]
 
 
-// Used for readability in rdesktop code
-extern AppController *g_appController;
-
+#pragma mark -
+#pragma mark Types
 
 typedef enum _CRDConnectionStatus
 {
@@ -106,11 +118,10 @@ typedef enum _CRDDisplayMode
 	CRDDisplayFullscreen = 2
 } CRDDisplayMode;
 
-// Notifications
-extern NSString *CRDMinimalViewDidChangeNotification;
-
 // Temporary use
 #define DISK_FORWARDING_DISABLED 1
+
+
 
 #pragma mark -
 #pragma mark Controlling debugging output
@@ -121,14 +132,12 @@ extern NSString *CRDMinimalViewDidChangeNotification;
 
 #ifdef WITH_MID_LEVEL_DEBUG
 	#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
-	#define WITH_ANY_DEBUG 1
 #else
 	#define UNIMPL
 #endif
 
 #ifdef WITH_DEBUG_KEYBOARD
 	#define DEBUG_KEYBOARD(args) NSLog args 
-	#define WITH_ANY_DEBUG 1
 #else
 	#define DEBUG_KEYBOARD(args)
 #endif 
@@ -136,15 +145,14 @@ extern NSString *CRDMinimalViewDidChangeNotification;
 #ifdef WITH_DEBUG_UI
 	#define DEBUG_UI(args) NSLog args
 	#define CHECKOPCODE(x) if ((x)!=12 && (x) < 16) { NSLog(@"Unimplemented opcode %d in function %s", (x), __func__); }
-	#define WITH_ANY_DEBUG 1
 #else
 	#define DEBUG_UI(args)
 	#define CHECKOPCODE(x) 
 #endif
 
 
-#if defined(WITH_ANY_DEBUG) && defined(CORD_RELEASE_BUILD)
-	#error Debugging is enabled and building Release
+#if defined(CORD_RELEASE_BUILD) && (defined(WITH_MID_LEVEL_DEBUG) || defined(WITH_DEBUG_UI) || defined(WITH_DEBUG_KEYBOARD))
+	#error Debugging output is enabled and building Release
 #endif
 
 #ifdef CORD_DEBUG_BUILD

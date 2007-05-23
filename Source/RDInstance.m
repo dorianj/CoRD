@@ -246,7 +246,7 @@
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
-	conn->tcpPort = (!port || port>=65536) ? DEFAULT_PORT : port;
+	conn->tcpPort = (!port || port>=65536) ? CRDDefaultPort : port;
 	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
 	
 	// Set remote keymap to match local OS X input type
@@ -703,7 +703,7 @@
 - (void)updateCellData
 {
 	// Update the text
-	NSString *fullHost = (port && port != DEFAULT_PORT) ? [NSString stringWithFormat:@"%@:%d", hostName, port] : hostName;
+	NSString *fullHost = (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", hostName, port] : hostName;
 	[cellRepresentation setDisplayedText:label username:username address:fullHost];
 	
 	// Update the image
@@ -845,8 +845,8 @@
 	NSSize realSize = [view bounds].size;
 	realSize.height += [sender frame].size.height - [[sender contentView] frame].size.height;
 	
-	if (realSize.width-proposedFrameSize.width <= SNAP_WINDOW_SIZE &&
-		realSize.height-proposedFrameSize.height <= SNAP_WINDOW_SIZE)
+	if (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize &&
+		realSize.height-proposedFrameSize.height <= CRDWindowSnapSize)
 	{
 		return realSize;	
 	}

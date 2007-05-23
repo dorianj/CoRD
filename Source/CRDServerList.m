@@ -401,7 +401,7 @@
 
 - (NSString *)pasteboardDataType:(NSPasteboard *)draggingPasteboard
 {
-	NSArray *supportedTypes = [NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE,
+	NSArray *supportedTypes = [NSArray arrayWithObjects:CRDRowIndexPboardType,
 			NSFilenamesPboardType, NSFilesPromisePboardType, nil];
 			
 	return [draggingPasteboard availableTypeFromArray:supportedTypes];
@@ -418,7 +418,7 @@
 	
 	if (type == nil)
 		return NSDragOperationNone;
-	if ([type isEqualToString:SAVED_SERVER_DRAG_TYPE])
+	if ([type isEqualToString:CRDRowIndexPboardType])
 		return NSDragOperationMove;
 	else
 		return NSDragOperationCopy;

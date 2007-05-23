@@ -9,12 +9,15 @@
                 fieldEdited = id; 
                 helpForConnectionOptions = id; 
                 keepSelectedServer = id; 
+                performConnectOrDisconnect = id; 
+                performDisconnect = id; 
                 performFullScreen = id; 
                 performQuickConnect = id; 
                 performServerMenuItem = id; 
                 performStop = id; 
                 performUnified = id; 
                 removeSelectedSavedServer = id; 
+                saveSelectedServer = id; 
                 selectNext = id; 
                 selectPrevious = id; 
                 showOpen = id; 

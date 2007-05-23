@@ -102,7 +102,7 @@
 	displayMode = CRDDisplayUnified;
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
-	windowCascadePoint = NSMakePoint(WINDOW_START_X, WINDOW_START_Y);
+	windowCascadePoint = CRDWindowCascadeStart;
 	
 	
 	// Create the toolbar 
@@ -192,7 +192,7 @@
 	
 	
 	// Register for drag operations.
-	NSArray *types = [NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
+	NSArray *types = [NSArray arrayWithObjects:CRDRowIndexPboardType, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
 	[gui_serverList registerForDraggedTypes:types];
 
 	// Custom gui settings not accessable from IB
@@ -201,7 +201,7 @@
 	[gui_unifiedWindow setExcludedFromWindowsMenu:YES];
 
 	// Load a few user defaults that need to be loaded before anything is displayed
-	displayMode = [[userDefaults objectForKey:DEFAULTS_DISPLAY_MODE] intValue];
+	displayMode = [[userDefaults objectForKey:CRDDefaultsDisplayMode] intValue];
 
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
@@ -228,7 +228,9 @@
 	else if (action == @selector(takeScreenCapture:))
 		return viewedInst != nil;
 	else if (action == @selector(toggleServerListMinimal:))
-		[item setState:BOOL_AS_BSTATE(PREFERENCE_ENABLED(PREFS_MINIMAL_SERVER_LIST))];
+		[item setState:BOOL_AS_BSTATE(PREFERENCE_ENABLED(CRDPrefsMinimalisticServerList))];
+	else if (action == @selector(performDisconnect:))
+		return [NSApp keyWindow] != nil;
 	else if (action == @selector(toggleInspector:))
 	{
 		NSString *hideOrShow = [gui_inspector isVisible]
@@ -246,7 +248,7 @@
 	}
 	else if (action == @selector(keepSelectedServer:))
 	{
-		[item setState:BOOL_AS_BSTATE([inst temporary])];
+		[item setState:BOOL_AS_BSTATE(![inst temporary])];
 		return [inst status] == CRDConnectionConnected;
 	}
 	else if (action == @selector(performFullScreen:)) 
@@ -264,6 +266,18 @@
 		RDInstance *representedInst = [item representedObject];
 		[item setState:([connectedServers indexOfObject:representedInst] != NSNotFound ? NSOnState : NSOffState)];	
 	}
+	else if (action == @selector(performConnectOrDisconnect:))
+	{
+		NSString *localizedDisconnect = NSLocalizedString(@"Disconnect", @"Servers menu -> Disconnect/connect item");
+		NSString *localizedConnect = NSLocalizedString(@"Connect", @"Servers menu -> Disconnect/connect item");
+	
+		if (viewedInst != nil)
+			[item setTitle:localizedDisconnect];
+		else if (inst == nil)
+			return NO;
+		else
+			[item setTitle:([inst status] == CRDConnectionClosed) ? localizedConnect : localizedDisconnect];
+	}
 	
 	return YES;
 }
@@ -274,6 +288,9 @@
 
 - (IBAction)addNewSavedServer:(id)sender
 {
+	if (![gui_unifiedWindow isVisible])
+		[gui_unifiedWindow makeKeyAndOrderFront:nil];
+
 	if (!drawer_is_visisble(gui_serversDrawer))
 		[self toggleDrawer:nil visible:YES];
 		
@@ -293,7 +310,6 @@
 	
 	if (![gui_inspector isVisible])
 		[self toggleInspector:nil];
-	
 }
 
 
@@ -347,6 +363,25 @@
 	}	
 }
 
+// Disconnects the currently selected active server
+- (IBAction)disconnect:(id)sender
+{
+	RDInstance *inst = [self viewedServer];
+	[self disconnectInstance:inst];
+}
+
+// Either connects or disconnects the selected server, depending on whether it's connected
+- (IBAction)performConnectOrDisconnect:(id)sender
+{
+	RDInstance *inst = [self selectedServerInstance];
+	
+	if ([inst status] == CRDConnectionClosed)
+		[self connectInstance:inst];
+	else
+		[self performStop:nil];
+}
+
+
 // Toggles whether or not the selected server is kept after disconnect
 - (IBAction)keepSelectedServer:(id)sender
 {
@@ -357,13 +392,6 @@
 	[inst setTemporary:![inst temporary]];
 	[self validateControls];
 	[self listUpdated];
-}
-
-// Disconnects the currently selected active server
-- (IBAction)disconnect:(id)sender
-{
-	RDInstance *inst = [self viewedServer];
-	[self disconnectInstance:inst];
 }
 
 // Either disconnects the viewed session, or cancels a pending connection
@@ -462,6 +490,7 @@
 	[panel setAllowsMultipleSelection:YES];
 	[panel runModalForTypes:[NSArray arrayWithObject:@"rdp"]];
 	NSArray *filenames = [panel filenames];
+	
 	if ([filenames count] <= 0)
 		return;
 	
@@ -488,8 +517,7 @@
 	NSRect winRect = [[NSScreen mainScreen] frame];
 
 	// If needed, reconnect the instance so that it can fill the screen
-	if (![[inst valueForKey:@"fullscreen"] boolValue]  && PREFERENCE_ENABLED(PREFS_FULLSCREEN_RECONNECT) &&
-		( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
+	if (![[inst valueForKey:@"fullscreen"] boolValue]  && PREFERENCE_ENABLED(CRDPrefsReconnectIntoFullScreen) && ( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
 	{
 		[self disconnectInstance:inst];
 		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
@@ -559,7 +587,7 @@
 		[gui_unifiedWindow makeKeyAndOrderFront:nil];
 }
 
-// Toggles between fullscreen and previous state
+// Toggles between full screen and previous state
 - (IBAction)performFullScreen:(id)sender
 {
 	if ([self displayMode] == CRDDisplayFullscreen)
@@ -568,6 +596,7 @@
 		[self startFullscreen:sender];
 }
 
+// Toggles between Windowed and Unified modes
 - (IBAction)performUnified:(id)sender
 {
 	if (displayMode == CRDDisplayUnified)
@@ -616,7 +645,7 @@
 	while ( (inst = [enumerator nextObject]) )
 	{
 		[inst destroyWindow];
-		[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
+		[inst createUnified:!PREFERENCE_ENABLED(CRDPrefsScaleSessions) enclosure:[gui_tabView frame]];
 		[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
 	}	
 	
@@ -632,12 +661,9 @@
 	if (inst == nil)
 		return;
 	
-	NSString *desktopFolder = [NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES)
-				objectAtIndex:0];
+	NSString *desktopFolder = [NSSearchPathForDirectoriesInDomains(NSDesktopDirectory, NSUserDomainMask, YES) objectAtIndex:0];
 	
-	NSString *path = increment_file_name(desktopFolder,
-				[[inst label] stringByAppendingString:
-				NSLocalizedString(@" Screen Capture", @"File name for screen captures")], @".png");
+	NSString *path = increment_file_name(desktopFolder, [[inst label] stringByAppendingString:NSLocalizedString(@" Screen Capture", @"File name for screen captures")], @".png");
 	
 	[[inst view] writeScreenCaptureToFile:path];
 }
@@ -662,7 +688,7 @@
 	[self connectInstance:newInst];
 	
 	
-	NSMutableArray *recent = [NSMutableArray arrayWithArray:[userDefaults arrayForKey:DEFAULTS_RECENT_SERVERS]];
+	NSMutableArray *recent = [NSMutableArray arrayWithArray:[userDefaults arrayForKey:CRDDefaultsQuickConnectServers]];
 	
 	if ([recent containsObject:address])
 		[recent removeObject:address];
@@ -671,7 +697,7 @@
 		[recent removeLastObject];
 	
 	[recent insertObject:address atIndex:0];
-	[userDefaults setObject:recent forKey:DEFAULTS_RECENT_SERVERS];
+	[userDefaults setObject:recent forKey:CRDDefaultsQuickConnectServers];
 	[userDefaults synchronize];
 }
 
@@ -681,9 +707,9 @@
 			inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
 }
 
+// Sent when a server in the Server menu is clicked on; either connects to the server or makes it visible
 - (IBAction)performServerMenuItem:(id)sender
 {
-
 	RDInstance *inst = [sender representedObject];
 	
 	if (inst == nil)
@@ -712,12 +738,38 @@
 
 - (IBAction)toggleServerListMinimal:(id)sender
 {
-	SET_PREFERENCE_ENABLED(PREFS_MINIMAL_SERVER_LIST, !PREFERENCE_ENABLED(PREFS_MINIMAL_SERVER_LIST));
+	SET_PREFERENCE_ENABLED(CRDPrefsMinimalisticServerList, !PREFERENCE_ENABLED(CRDPrefsMinimalisticServerList));
 	
 	[[NSNotificationCenter defaultCenter] postNotificationName:CRDMinimalViewDidChangeNotification object:nil];
 	
 	[gui_serverList noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [gui_serverList numberOfRows])]];
-//	[gui_serverList setNeedsDisplay:YES];
+}
+
+// If in unified and with sessions, disconnects active. Otherwise, close the window. Similar to Safari/Camino's 'Close Tab'
+- (IBAction)performDisconnect:(id)sender
+{
+	if ( ([self displayMode] == CRDDisplayUnified) && ([self viewedServer] != nil))
+		[self disconnect:nil];
+	else
+		[[NSApp keyWindow] orderOut:nil];
+}
+
+- (IBAction)saveSelectedServer:(id)sender
+{
+	RDInstance *inst = [self selectedServerInstance];
+	
+	if (inst == nil)
+		return;
+		
+	NSSavePanel *savePanel = [NSSavePanel savePanel];
+	[savePanel setTitle:[NSLocalizedString(@"Save Server As", @"Save server dialog -> Title") stringByAppendingFormat:@" '%@'"]];
+	
+	[savePanel setAllowedFileTypes:[NSArray arrayWithObject:@"rdp"]];
+	[savePanel setCanSelectHiddenExtension:YES];
+	[savePanel setExtensionHidden:NO];
+	
+
+	[savePanel beginSheetForDirectory:nil file:[[inst label] stringByAppendingPathExtension:@"rdp"] modalForWindow:gui_unifiedWindow modalDelegate:self didEndSelector:@selector(savePanelDidEnd:returnCode:contextInfo:) contextInfo:inst];
 }
 
 #pragma mark -
@@ -833,13 +885,13 @@
 	[self tableViewSelectionDidChange:nil];
 	
 	// Save current state to user defaults
-	[userDefaults setInteger:[gui_serversDrawer edge] forKey:DEFAULTS_DRAWER_SIDE];
-	[userDefaults setBool:drawer_is_visisble(gui_serversDrawer) forKey:DEFAULTS_SHOW_DRAWER];
-	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:DEFAULTS_DRAWER_WIDTH];
+	[userDefaults setInteger:[gui_serversDrawer edge] forKey:CRDDefaultsUnifiedDrawerSide];
+	[userDefaults setBool:drawer_is_visisble(gui_serversDrawer) forKey:CRDDefaultsUnifiedDrawerShown];
+	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:CRDDefaultsDisplayMode];
 	
 	if (displayMode == CRDDisplayFullscreen)
 		displayMode = displayModeBeforeFullscreen;
-	[userDefaults setInteger:displayMode forKey:DEFAULTS_DISPLAY_MODE];
+	[userDefaults setInteger:displayMode forKey:CRDDefaultsDisplayMode];
 	
 	
 	// Other cleanup
@@ -867,36 +919,27 @@
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {	
 	// Make sure the drawer is in the user-saved position. Do it here (not awakeFromNib) so that it displays nicely
-	[gui_serversDrawer setPreferredEdge:[userDefaults integerForKey:DEFAULTS_DRAWER_SIDE]];
-	if ([userDefaults objectForKey:DEFAULTS_SHOW_DRAWER] != nil)
-	{		
-		float width = [userDefaults floatForKey:DEFAULTS_DRAWER_WIDTH];
-		float height = [gui_serversDrawer contentSize].height;
-		if (width > 0)
-			[gui_serversDrawer setContentSize:NSMakeSize(width, height)];
-			
-		if ([userDefaults boolForKey:DEFAULTS_SHOW_DRAWER])
-		{
-			[gui_serversDrawer openOnEdge:[userDefaults integerForKey:DEFAULTS_DRAWER_SIDE]];
-			[self validateControls];
-		}
-	}
-	else
-	{
-		[self toggleDrawer:self visible:YES];
-	}
+	[gui_serversDrawer setPreferredEdge:[userDefaults integerForKey:CRDDefaultsUnifiedDrawerSide]];
+
+	float width = [userDefaults floatForKey:CRDDefaultsDisplayMode];
+	float height = [gui_serversDrawer contentSize].height;
+	if (width > 0)
+		[gui_serversDrawer setContentSize:NSMakeSize(width, height)];
+		
+	if ([userDefaults boolForKey:CRDDefaultsUnifiedDrawerShown])
+		[gui_serversDrawer openOnEdge:[userDefaults integerForKey:CRDDefaultsUnifiedDrawerSide]];
+		
+	[self validateControls];
+		
+
 }
 
-- (void)applicationDidBecomeActive:(NSNotification *)aNotification
+- (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)hasVisibleWindows
 {
-	if (displayMode == CRDDisplayUnified)
-	{
-		[gui_unifiedWindow makeKeyAndOrderFront:nil];	
-	}
-	if ( (displayMode == CRDDisplayWindowed) && ([connectedServers count] == 0) )
-	{
-		[gui_unifiedWindow makeKeyAndOrderFront:nil];	
-	}
+	if (!hasVisibleWindows)
+		[gui_unifiedWindow makeKeyAndOrderFront:nil];
+	
+	return YES;
 }
 
 
@@ -925,7 +968,7 @@
 	NSPasteboard *pb = [info draggingPasteboard];
 	NSString *pbDataType = [gui_serverList pasteboardDataType:pb];
 	
-	if ([pbDataType isEqualToString:SAVED_SERVER_DRAG_TYPE])
+	if ([pbDataType isEqualToString:CRDRowIndexPboardType])
 	{
 		return NSDragOperationMove;
 	}
@@ -946,7 +989,7 @@
 	NSString *pbDataType = [gui_serverList pasteboardDataType:pb];
 	int newRow = -1;
 	
-	if ([pbDataType isEqualToString:SAVED_SERVER_DRAG_TYPE])
+	if ([pbDataType isEqualToString:CRDRowIndexPboardType])
 	{
 		newRow = row;
 	}
@@ -1000,9 +1043,9 @@
 	
 	int row = [rowIndexes firstIndex];
 	
-	[pboard declareTypes:[NSArray arrayWithObjects:SAVED_SERVER_DRAG_TYPE, NSFilenamesPboardType, nil] owner:nil];
+	[pboard declareTypes:[NSArray arrayWithObjects:CRDRowIndexPboardType, NSFilenamesPboardType, nil] owner:nil];
 	[pboard setPropertyList:[NSArray arrayWithObject:[inst rdpFilename]] forType:NSFilenamesPboardType];
-	[pboard setString:[NSString stringWithFormat:@"%d", row] forType:SAVED_SERVER_DRAG_TYPE];
+	[pboard setString:[NSString stringWithFormat:@"%d", row] forType:CRDRowIndexPboardType];
 
 	return YES;
 }
@@ -1262,8 +1305,8 @@
 	{
 		NSSize realSize = [[[self viewedServer] view] bounds].size;
 		realSize.height += [gui_unifiedWindow frame].size.height - [[gui_unifiedWindow contentView] frame].size.height;
-		if ( (realSize.width-proposedFrameSize.width <= SNAP_WINDOW_SIZE) &&
-			 (realSize.height-proposedFrameSize.height <= SNAP_WINDOW_SIZE) )
+		if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) &&
+			 (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
 		{
 			return realSize;	
 		}
@@ -1337,7 +1380,7 @@
 		// Create gui
 		if ( (displayMode == CRDDisplayUnified) || (displayMode == CRDDisplayFullscreen) )
 		{
-			[inst createUnified:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS) enclosure:[gui_tabView frame]];
+			[inst createUnified:!PREFERENCE_ENABLED(CRDPrefsScaleSessions) enclosure:[gui_tabView frame]];
 			[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
 			[gui_tabView selectLastTabViewItem:self];
 			[gui_unifiedWindow makeFirstResponder:[inst view]];
@@ -1606,7 +1649,7 @@
 	NSRect windowFrame = [gui_unifiedWindow frame];
 	NSRect screenRect = [[gui_unifiedWindow screen] visibleFrame];
 	
-	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
+	if (PREFERENCE_ENABLED(CRDPrefsScaleSessions))
 		[gui_unifiedWindow setContentAspectRatio:newContentSize];
 	else
 		[gui_unifiedWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
@@ -1635,7 +1678,7 @@
 	
 	
 	// Assure that no unneccesary scrollers are created
-	if (!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
+	if (!PREFERENCE_ENABLED(CRDPrefsScaleSessions))
 	{
 		
 		if (newWindowFrame.size.height > screenRect.size.height &&
@@ -1681,7 +1724,7 @@
 	
 	
 	// Assure that the aspect ratio is correct
-	if (PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS))
+	if (PREFERENCE_ENABLED(CRDPrefsScaleSessions))
 	{
 		float bareWindowHeight = (newWindowFrame.size.height - toolbarHeight);
 		float realAspect = newContentSize.width / newContentSize.height;
@@ -1709,6 +1752,18 @@
 	
 	[gui_unifiedWindow setFrame:newWindowFrame display:YES animate:animate];
 }
+
+- (void)savePanelDidEnd:(NSSavePanel *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo
+{
+	RDInstance *inst = contextInfo;
+	
+	if ( (inst == nil) || (returnCode != NSOKButton) )
+		return;
+	
+	
+	[inst writeRDPFile:[sheet filename]];
+}
+
 
 #pragma mark -
 #pragma mark Internal use
@@ -1847,7 +1902,7 @@
 
 - (void)createWindowForInstance:(RDInstance *)inst
 {
-	[inst createWindow:!PREFERENCE_ENABLED(PREFS_RESIZE_VIEWS)];
+	[inst createWindow:!PREFERENCE_ENABLED(CRDPrefsScaleSessions)];
 	
 	NSWindow *window = [inst window];
 	[window cascadeTopLeftFromPoint:windowCascadePoint];

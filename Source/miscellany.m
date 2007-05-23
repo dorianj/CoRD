@@ -18,12 +18,37 @@
 #include "miscellany.h"
 
 #pragma mark -
-#pragma mark Constants
-NSString *CRDMinimalViewDidChangeNotification = @"CRDMinimalServerListChanged";
+#pragma mark Storage for externs
+
+// Constants
+const int CRDDefaultPort = 3389;
+const int CRDMouseEventLimit = 15;
+const NSPoint CRDWindowCascadeStart = {50.0, 20.0};
+const float CRDWindowSnapSize = 30.0;
+NSString *CRDRowIndexPboardType = @"CRDRowIndexPboardType";
+
+// Globals
 AppController *g_appController;
 
+// Notifications
+NSString *CRDMinimalViewDidChangeNotification = @"CRDMinimalServerListChanged";
+
+// NSUserDefaults keys
+NSString *CRDDefaultsUnifiedDrawerShown = @"show_drawer";
+NSString *CRDDefaultsUnifiedDrawerSide = @"preferred_drawer_side";
+NSString *CRDDefaultsUnifiedDrawerWidth = @"drawer_width";
+NSString *CRDDefaultsDisplayMode = @"windowed_mode";
+NSString *CRDDefaultsQuickConnectServers = @"RecentServers";
+NSString *CRDDefaultsSendWindowsKey = @"SendWindowsKey";
+
+// User-configurable NSUserDefaults keys (preferences)
+NSString *CRDPrefsReconnectIntoFullScreen = @"reconnectFullScreen";
+NSString *CRDPrefsReconnectOutOfFullScreen = @"ReconnectWhenLeavingFullScreen";
+NSString *CRDPrefsScaleSessions = @"resizeViewToFit";
+NSString *CRDPrefsMinimalisticServerList = @"MinimalServerList";
+
 #pragma mark -
-#pragma mark General purpose
+#pragma mark General purpose routines
 
 void draw_vertical_gradient(NSColor *topColor, NSColor *bottomColor, NSRect rect)
 {
@@ -47,7 +72,7 @@ inline void draw_horizontal_line(NSColor *color, NSPoint start, float width)
 
 inline NSString * join_host_name(NSString *host, int port)
 {
-	if (port && port != DEFAULT_PORT)
+	if (port && port != CRDDefaultPort)
 		return [NSString stringWithFormat:@"%@:%d", host, port];
 	else
 		return [[host retain] autorelease];
@@ -63,7 +88,7 @@ void split_hostname(NSString *address, NSString **host, int *port)
 		*host = @"";
 		
 	if (![scan scanInt:port])
-		*port = DEFAULT_PORT;
+		*port = CRDDefaultPort;
 }
 
 NSString * convert_line_endings(NSString *orig, BOOL withCarriageReturn)
