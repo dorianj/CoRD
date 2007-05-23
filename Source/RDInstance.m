@@ -292,6 +292,8 @@
 	{
 		[self setStatus:CRDConnectionConnected];
 		
+		conn->useEncryption = False;
+		
 		inputRunLoop = [NSRunLoop currentRunLoop];
 	
 		NSStream *is = conn->inputStream;

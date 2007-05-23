@@ -332,7 +332,8 @@ void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour)
 {
 	EXTRACT_USEFUL_VARS;
 	NSRect r = NSMakeRect(x , y, cx, cy);
-	[v fillRect:r withColor:[v nscolorForRDCColor:colour]];
+	[v fillRect:r withRDColor:colour];
+	//[v fillRect:r withColor:[v nscolorForRDCColor:colour]];
 	schedule_display_in_rect(conn, r);
 }
 

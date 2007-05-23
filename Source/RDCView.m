@@ -342,7 +342,7 @@
 	NSBezierPath *bp = [NSBezierPath bezierPath];
 	int i;
 	
-	[bp moveToPoint:NSMakePoint(points[0].x + 0.5, points[0].y + 0.5)];
+	[bp moveToPoint:NSMakePoint(points[0].x + 0.5f, points[0].y + 0.5f)];
 	for (i = 1; i < nPoints; i++)
 		[bp relativeLineToPoint:NSMakePoint(points[i].x, points[i].y)];
 
@@ -360,12 +360,26 @@
 	[self fillRect:rect withColor:color patternOrigin:NSZeroPoint];
 }
 
-- (void)fillRect:(NSRect)rect withColor:(NSColor *) color patternOrigin:(NSPoint)origin
+- (void)fillRect:(NSRect)rect withColor:(NSColor *)color patternOrigin:(NSPoint)origin
 {
 	[self focusBackingStore];
 	[color set];
 	[[NSGraphicsContext currentContext] setPatternPhase:origin];
-	[NSBezierPath fillRect:rect];
+	NSRectFill(rect);
+	[self releaseBackingStore];
+}
+
+- (void)fillRect:(NSRect)rect withRDColor:(int)color
+{
+	[self focusBackingStore];
+	
+	CGContextRef context = [[NSGraphicsContext currentContext] graphicsPort];
+	unsigned char r, g, b;
+	
+	[self rgbForRDCColor:color r:&r g:&g b:&b];
+	CGContextSetRGBFillColor(context, r/255.0f, g/255.0f, b/255.0f, 1.0);
+	CGContextFillRect(context, CGRECT_FROM_NSRECT(rect));
+	
 	[self releaseBackingStore];
 }
 
@@ -509,10 +523,10 @@
 	unsigned char r, g, b;
 	[self rgbForRDCColor:col r:&r g:&g b:&b];
 	
-	return [NSColor colorWithDeviceRed:(float)r / 255.0
-								 green:(float)g / 255.0
-							  	  blue:(float)b / 255.0
-							     alpha:1.0];
+	return [NSColor colorWithDeviceRed:(float)r / 255.0f
+								 green:(float)g / 255.0f
+							  	  blue:(float)b / 255.0f
+							     alpha:1.0f];
 }
 
 
@@ -536,10 +550,10 @@
 	
 	// Hack: make the box 1px bigger all around; seems to make updates much more
 	//	reliable when the screen is stretched
-	r.origin.x = (int)r.origin.x - 1.0;
-	r.origin.y = (int)r.origin.y - 1.0;
-	r.size.width = (int)r.size.width + 2.0;
-	r.size.height = (int)r.size.height + 2.0;
+	r.origin.x = (int)r.origin.x - 1.0f;
+	r.origin.y = (int)r.origin.y - 1.0f;
+	r.size.width = (int)r.size.width + 2.0f;
+	r.size.height = (int)r.size.height + 2.0f;
 
 	[self setNeedsDisplayInRect:r];
 }
