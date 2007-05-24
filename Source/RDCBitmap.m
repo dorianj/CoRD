@@ -17,22 +17,8 @@
 
 /*	Notes:
 		- The ivar 'data' is used because NSBitmapImageRep does not copy the bitmap data.
-		- The stored bitmap is ARGB8888 with alpha data regardless if source has
-			alpha as a memory-speed tradeoff: vImage can convert RGB565 directly
-			only to ARGB8888 (or planar, which would add complexity). Also, (to my
-			knowledge from inspecting Shark dumps), Cocoa will translate whatever
-			we paint into a 32 bitmap internally, so there's no disadvantage there.
-		- Using an accelerated buffer would speed up drawing. An option could be used
-			for the situations where an NSImage is required. My tests on a machine
-			with a capable graphics card show that CGImage would speed
-			normal drawing up about 30-40%, and CGLayer would be 2-12 times quicker.
-			The hassle is that some situations, a normal NSImage is needed
-			(eg: when using the image as a pattern for NSColor and patblt), so it would 
-			either have to create both or have a switch for which to create, and 
-			neither CGImage nor CGLayer have a way to draw only a portion of itself,
-			meaning the only way to do it is clip drawing to match the origin.
-			I've written some basic code to use CFLayer, but it needs more work
-			before I commit it.
+		- The stored bitmap is ARGB8888 with alpha data regardless if source has alpha as a memory-speed tradeoff: vImage can convert RGB565 directly only to ARGB8888. Also, (to my knowledge from inspecting Shark dumps), Quartz will translate whatever we paint into a 32 bitmap internally, so there's no disadvantage there.
+		- Using an accelerated buffer would speed up drawing. An option could be used for the situations where an NSImage is required. My tests on a machine with a capable graphics card show that CGImage would speed normal drawing up about 30-40%, and CGLayer would be 2-12 times quicker. The hassle is that some situations, a normal NSImage is needed (eg: when using the image as a pattern for NSColor and patblt), so it would either have to create both or have a switch for which to create, and neither CGImage nor CGLayer have a way to draw only a portion of itself, meaning the only way to do it is clip drawing to match the origin. I've written some basic code to use CFLayer, but it needs more work before I commit it.
 */
 
 #import "RDCBitmap.h"
@@ -43,6 +29,7 @@
 
 @implementation RDCBitmap
 
+// Currently is adequately optimized: not a terribly critical region, but somewhat.
 - (id)initWithBitmapData:(const unsigned char *)sourceBitmap size:(NSSize)s view:(RDCView *)v
 {
 	if (![super init])
@@ -145,6 +132,8 @@
 	return self;
 }
 
+// Somewhat critical region: many glyph RDCBitmaps are created, one for each character
+//	drawn, as well as some when patterns are drawn. Currently efficient enough.
 - (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v
 {	
 	if (![super init])
@@ -175,8 +164,8 @@
 	return self;
 }
 
-- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s
-		hotspot:(NSPoint)hotspot view:(RDCView *)v
+// Not a performance critical region at all
+- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(RDCView *)v
 {	
 	if (![super init])
 		return nil;
@@ -250,7 +239,7 @@
 #pragma mark -
 #pragma mark Drawing the RDCBitmap
 
-// Draws in the specified rect
+// The most critical region of this class and one of the most critical spots in the connection thread
 - (void)drawInRect:(NSRect)dstRect fromRect:(NSRect)srcRect operation:(NSCompositingOperation)op
 {
 	[image drawInRect:dstRect fromRect:srcRect operation:op fraction:1.0];

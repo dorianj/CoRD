@@ -72,6 +72,7 @@
 - (void)stopUpdate;
 - (void)focusBackingStore;
 - (void)releaseBackingStore;
+- (int)getBackingStoreBytes:(unsigned char **)retBytes;
 
 - (BOOL)checkMouseInBounds:(NSEvent *)ev;
 - (void)sendMouseInput:(unsigned short)flags;
@@ -95,5 +96,6 @@
 - (unsigned int *)colorMap;
 - (void)setColorMap:(unsigned int *)map;
 - (void)setCursor:(NSCursor *)cur;
+- (CGContextRef)rdBufferContext;
 
 @end

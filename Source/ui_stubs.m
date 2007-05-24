@@ -16,6 +16,7 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import <Accelerate/Accelerate.h>
 
 #import "rdesktop.h"
 
@@ -154,77 +155,54 @@ void ui_destroy_bitmap(HBITMAP bmp)
 #pragma mark -
 #pragma mark Desktop Cache
 
-// Takes a section of the desktop cache and saves it into a RDCBitmap compatible byte array
-//	This is far less performance critical than -[RDCBitmap initWithBitmapData:]
-void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
+// Takes a section of the desktop cache (backing store) and stores it into the 
+//	rdesktop bitmap cache (using RDP colors). Adequately optimized, not critical.
+void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int w, int h)
 {
 	EXTRACT_USEFUL_VARS;
 	
-	/* xxx: rewrite for opengl view
-	NSImage *back = [v valueForKey:@"back"];
-	NSBitmapImageRep *deskScrape;
-	NSRect r = NSMakeRect(x,y,cx,cy);	
+	unsigned char *screenDumpBytes = malloc(w*h*4);
+	CGContextRef screenDumpContext = CGBitmapContextCreate(screenDumpBytes, w, h, 8, w*4, CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB), kCGImageAlphaPremultipliedFirst); 
 	
-	// Dump that section of the store into an NSBitmapImageRep for pixel RGB access
-	deskScrape = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:NULL
-			  pixelsWide:cx
-			  pixelsHigh:cy
-		   bitsPerSample:8
-		 samplesPerPixel:4
-			    hasAlpha:YES
-			    isPlanar:NO
-		  colorSpaceName:NSDeviceRGBColorSpace
-		     bytesPerRow:cx*4
-			bitsPerPixel:0];
+	CGContextSaveGState(screenDumpContext); {
+		CGImageRef backingStoreImage = CGBitmapContextCreateImage([v rdBufferContext]);
+		CGContextDrawImage(screenDumpContext, CGRectMake(-x, -y, conn->screenWidth, conn->screenHeight), backingStoreImage);
+		CGImageRelease(backingStoreImage);
+	} CGContextRestoreGState(screenDumpContext);
+	
 		
-	[NSGraphicsContext saveGraphicsState];
-	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:deskScrape]];
-	[back drawInRect:NSMakeRect(0,0,cx,cy) fromRect:r operation:NSCompositeCopy fraction:1.0];
-	[NSGraphicsContext restoreGraphicsState];
+	// Translate the 32-bit RGBA screen dump into RDP colors, using vImage if possible
+	uint8 *output, *o, *p;
+	int i=0, len=w*h, bytespp = (conn->serverBpp+7)/8;
 	
-	
-	// Translate the 32-bit RGBA screen dump into RDP colors
-	// NSBitmapImageRep seems to ignore bitmapFormat:NSAlphaFirstBitmapFormat, so
-	// vImage acceleration isn't possible
-	uint8 *output, *o, *src, *p;
-	int i=0, len=cx*cy, bytespp = (conn->serverBpp+7)/8;
-	
-	src = p = [deskScrape bitmapData];
-	output = o = malloc(cx*cy*bytespp);
+	p = screenDumpBytes;
+	output = o = malloc(len*bytespp);
 	unsigned int *colorMap = [v colorMap], j, q;
+	
+	vImage_Buffer outputBuffer, sourceBuffer;
+	sourceBuffer.width = outputBuffer.width = w;
+	sourceBuffer.height = outputBuffer.height = h;
+	
+	outputBuffer.data = output;
+	outputBuffer.rowBytes = w * bytespp;
+	
+	sourceBuffer.data = (void *)screenDumpBytes;
+	sourceBuffer.rowBytes = w * 4;
 	
 	if (conn->serverBpp == 16)
 	{
-		while (i++ < len)
-		{
-			*((unsigned short *)o) =
-							(((p[0] * 31 + 127) / 255) << 11) |
-							(((p[1] * 63 + 127) / 255) << 5)  |
-							((p[2] * 31 + 127) / 255);
-			p += 4;
-			o += bytespp;
-		}	
+		vImageConvert_ARGB8888toRGB565(&sourceBuffer, &outputBuffer, 0);		
 	}
 	else if (conn->serverBpp == 15)
 	{
-		while (i++ < len)
-		{
-			*((unsigned short *)o) =
-							(1 << 15) |
-							(((p[0] * 31 + 127) / 255) << 10) |
-							(((p[1] * 31 + 127) / 255) << 5)  |
-							((p[2] * 31 + 127) / 255);
-			p += 4;
-			o += bytespp;
-		}		
-	
+		vImageConvert_ARGB8888toARGB1555(&sourceBuffer, &outputBuffer, 0);			
 	}
 	else if (conn->serverBpp == 8)
 	{
 		// Find color's index on colormap, use it as color
 		while (i++ < len)
 		{
-			j = (p[2] << 16) | (p[1] << 8) | p[0];
+			j = (p[3] << 16) | (p[2] << 8) | p[1];
 			o[0] = 0;
 			for (q = 0; q <= 0xff; q++) {
 				if (colorMap[q] == j) {
@@ -241,9 +219,9 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	{
 		while (i++ < len)
 		{
-			o[2] = p[0];
-			o[1] = p[1];
-			o[0] = p[2];
+			o[2] = p[1];
+			o[1] = p[2];
+			o[0] = p[3];
 			
 			p += 4;
 			o += bytespp;
@@ -252,37 +230,32 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	
 	// Put the translated screen dump into the rdesktop bitmap cache
 	offset *= bytespp;
-	cache_put_desktop(conn, offset, cx, cy, cx*bytespp, bytespp, output);
+	cache_put_desktop(conn, offset, w, h, w*bytespp, bytespp, output);
 	
+	free(screenDumpBytes);
 	free(output);
-	[deskScrape release];*/
 }
 
-void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
+void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int w, int h)
 {
 	EXTRACT_USEFUL_VARS;
-	
-	/* xxx: rewrite for opengl view
-	NSImage *back = [v valueForKey:@"back"], *img;
-	uint8 *data;
-	
-	offset *= conn->serverBpp/8;
-	data = cache_get_desktop(conn, offset, cx, cy, conn->serverBpp/8);
+		
+	offset *= (conn->serverBpp+7)/8;
+	uint8 *data = cache_get_desktop(conn, offset, w, h, (conn->serverBpp+7)/8);
 	
 	if (data == NULL)
 		return; 
 	
-	NSRect r = NSMakeRect(x, y, cx, cy);
-	RDCBitmap *b = [[RDCBitmap alloc] initWithBitmapData:(const unsigned char *)data size:NSMakeSize(cx, cy) view:v];
-	img = [b image];
+	NSRect r = NSMakeRect(x, y, w, h);
+	RDCBitmap *b = [[RDCBitmap alloc] initWithBitmapData:(const unsigned char *)data size:NSMakeSize(w, h) view:v];
 	
-	[img setFlipped:NO];
-	[back lockFocus];
-	[img drawInRect:r fromRect:NSMakeRect(0,0,cx,cy) operation:NSCompositeCopy fraction:1.0];	
-	[back unlockFocus];
+	[[b image] setFlipped:NO];
+	[v focusBackingStore];
+	[b drawInRect:r fromRect:NSMakeRect(0,0,w,h) operation:NSCompositeCopy];
+	[v releaseBackingStore];
 	
 	schedule_display_in_rect(conn, r);
-	[b release];*/
+	[b release];
 }
 
 
@@ -291,8 +264,6 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx,
 
 void ui_begin_update(rdcConnection conn)
 {
-	[(id)conn->rectsNeedingUpdate release];
-	conn->rectsNeedingUpdate = [[NSMutableArray alloc] init];
 	conn->updateEntireScreen = NO;
 }
 
@@ -305,16 +276,7 @@ void ui_end_update(rdcConnection conn)
 		[v performSelectorOnMainThread:@selector(setNeedsDisplay:)
 			withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
 	}
-	else if ([(id)conn->rectsNeedingUpdate count] > 0)
-	{
-		[(id)conn->rectsNeedingUpdate retain];
-		[v performSelectorOnMainThread:@selector(setNeedsDisplayInRects:)
-				withObject:(id)conn->rectsNeedingUpdate waitUntilDone:NO];
-	}
-
-
-	[(id)conn->rectsNeedingUpdate release];
-	conn->rectsNeedingUpdate = NULL;
+	
 	conn->updateEntireScreen = NO;
 }
 
@@ -325,7 +287,10 @@ static void schedule_display(rdcConnection conn)
 
 static void schedule_display_in_rect(rdcConnection conn, NSRect r)
 {
-	[(id)conn->rectsNeedingUpdate addObject:[NSValue valueWithRect:r]];
+	// Since RDCView simply flushes its entire buffer to view on draw, it's simpler
+	//	and quicker to simply update the entire view. This remains from the non-OpenGL
+	//	implementation but may be useful in the future.
+	conn->updateEntireScreen = YES;
 }
 
 
@@ -337,7 +302,6 @@ void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour)
 	EXTRACT_USEFUL_VARS;
 	NSRect r = NSMakeRect(x , y, cx, cy);
 	[v fillRect:r withRDColor:colour];
-	//[v fillRect:r withColor:[v nscolorForRDCColor:colour]];
 	schedule_display_in_rect(conn, r);
 }
 

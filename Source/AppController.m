@@ -887,7 +887,7 @@
 	// Save current state to user defaults
 	[userDefaults setInteger:[gui_serversDrawer edge] forKey:CRDDefaultsUnifiedDrawerSide];
 	[userDefaults setBool:drawer_is_visisble(gui_serversDrawer) forKey:CRDDefaultsUnifiedDrawerShown];
-	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:CRDDefaultsDisplayMode];
+	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:CRDDefaultsUnifiedDrawerWidth];
 	
 	if (displayMode == CRDDisplayFullscreen)
 		displayMode = displayModeBeforeFullscreen;
@@ -921,7 +921,7 @@
 	// Make sure the drawer is in the user-saved position. Do it here (not awakeFromNib) so that it displays nicely
 	[gui_serversDrawer setPreferredEdge:[userDefaults integerForKey:CRDDefaultsUnifiedDrawerSide]];
 
-	float width = [userDefaults floatForKey:CRDDefaultsDisplayMode];
+	float width = [userDefaults floatForKey:CRDDefaultsUnifiedDrawerWidth];
 	float height = [gui_serversDrawer contentSize].height;
 	if (width > 0)
 		[gui_serversDrawer setContentSize:NSMakeSize(width, height)];

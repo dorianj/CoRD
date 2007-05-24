@@ -325,11 +325,14 @@
 	{
 		while (!inputLoopFinished)
 			usleep(1000);
+			
+		[self setStatus:CRDConnectionClosed];
 		
 		// Low level removal
 		tcp_disconnect(conn);
 		
 		// UI cleanup
+		[window setDelegate:nil];
 		[window close];
 		[window release];
 		window = nil;
@@ -354,7 +357,6 @@
 		memset(conn, 0, sizeof(struct rdcConn));
 		free(conn);
 		conn = NULL;
-		[self setStatus:CRDConnectionClosed];
 	}
 	else
 	{
@@ -439,6 +441,9 @@
 //	clipboard as needed
 - (void)setRemoteClipboard:(int)suggestedFormat
 {
+	if (connectionStatus != CRDConnectionConnected)
+		return;
+		
 	NSPasteboard *pb = [NSPasteboard generalPasteboard];
 	if ([pb availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
 	{
@@ -456,6 +461,9 @@
 
 - (void)requestRemoteClipboardData
 {
+	if (connectionStatus != CRDConnectionConnected)
+		return;
+		
 	conn->clipboardRequestType = CF_UNICODETEXT;
 	cliprdr_send_data_request(conn, CF_UNICODETEXT);
 }
