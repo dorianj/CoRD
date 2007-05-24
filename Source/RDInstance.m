@@ -31,6 +31,7 @@
 	- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force;
 	- (void)setStatus:(CRDConnectionStatus)status;
 	- (void)createScrollEnclosure:(NSRect)frame;
+	- (void)createViewWithFrameValue:(NSValue *)frameRect;
 @end
 
 #pragma mark -
@@ -300,12 +301,7 @@
 		[is setDelegate:self];
 		[is scheduleInRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
 		
-		view = [[RDCView alloc] initWithFrame:NSMakeRect(0.0, 0.0, conn->screenWidth, conn->screenHeight)];
-		[view setController:self];
-		[view performSelectorOnMainThread:@selector(setNeedsDisplay:)
-							   withObject:[NSNumber numberWithBool:YES]
-							waitUntilDone:NO];
-		conn->ui = view;
+		[self performSelectorOnMainThread:@selector(createViewWithFrameValue:) withObject:[NSValue valueWithRect:NSMakeRect(0.0, 0.0, conn->screenWidth, conn->screenHeight)] waitUntilDone:YES];
 	}
 	else
 	{	
@@ -390,6 +386,7 @@
 
 #pragma mark -
 #pragma mark Working with the input run loop
+
 - (void)startInputRunLoop
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -425,7 +422,7 @@
 }
 
 
-#pragma mark - 
+#pragma mark -
 #pragma mark Clipboard synchronization
 
 - (void)announceNewClipboardData
@@ -818,6 +815,16 @@
 	[scrollEnclosure setAutohidesScrollers:YES];
 	[scrollEnclosure setBorderType:NSNoBorder];
 	[scrollEnclosure setDrawsBackground:NO];
+}
+
+- (void)createViewWithFrameValue:(NSValue *)frameRect
+{	
+	if (conn == NULL)
+		return;
+	
+	view = [[RDCView alloc] initWithFrame:[frameRect rectValue]];
+	[view setController:self];
+	conn->ui = view;
 }
 
 

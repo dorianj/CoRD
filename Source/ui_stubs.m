@@ -159,6 +159,8 @@ void ui_destroy_bitmap(HBITMAP bmp)
 void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
 {
 	EXTRACT_USEFUL_VARS;
+	
+	/* xxx: rewrite for opengl view
 	NSImage *back = [v valueForKey:@"back"];
 	NSBitmapImageRep *deskScrape;
 	NSRect r = NSMakeRect(x,y,cx,cy);	
@@ -253,12 +255,14 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int cx, in
 	cache_put_desktop(conn, offset, cx, cy, cx*bytespp, bytespp, output);
 	
 	free(output);
-	[deskScrape release];
+	[deskScrape release];*/
 }
 
 void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx, int cy)
 {
 	EXTRACT_USEFUL_VARS;
+	
+	/* xxx: rewrite for opengl view
 	NSImage *back = [v valueForKey:@"back"], *img;
 	uint8 *data;
 	
@@ -278,7 +282,7 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int cx,
 	[back unlockFocus];
 	
 	schedule_display_in_rect(conn, r);
-	[b release];
+	[b release];*/
 }
 
 

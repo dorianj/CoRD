@@ -15,10 +15,12 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-/*	Note: 'backing store' in this class refers only to the ivar 'back',  not anything appkit-related.
+/*	Note: 'backing store' in this class refers to the buffer that rdesktop draws to, not an AppKit window buffer
 */
 
 #import "RDCView.h"
+
+
 #import "RDCKeyboard.h"
 #import "RDCBitmap.h"
 #import "RDInstance.h"
@@ -27,9 +29,10 @@
 
 @interface RDCView (Private)
 	- (void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
-	- (void)focusBackingStore;
-	- (void)releaseBackingStore;
 	- (void)recheckScheduledMouseInput:(NSTimer*)timer;
+	- (void)generateTexture;
+	- (void)createBackingStore:(NSSize)s;
+	- (void)destroyBackingStore;
 @end
 
 #pragma mark -
@@ -42,7 +45,7 @@
 {
 	[keyTranslator release];
 	[cursor release];
-	[back release];
+	[self destroyBackingStore];
 
 	free(colorMap);
 	colorMap = NULL;
@@ -56,10 +59,17 @@
 
 - (id)initWithFrame:(NSRect)frame
 {
-	if (![super initWithFrame:frame])
+	NSOpenGLPixelFormatAttribute pixelAttribs[4] = {NSOpenGLPFADoubleBuffer, NSOpenGLPFAColorSize, 32, 0};
+	NSOpenGLPixelFormat *pf = [[[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttribs] autorelease];
+	
+	if (![super initWithFrame:frame pixelFormat:pf])
 		return nil;
+
+	[self setBounds:NSMakeRect(0.0, 0.0, frame.size.width, frame.size.height)];
+	screenSize = frame.size;
 		
-	back = [[NSImage alloc] initWithSize:frame.size];
+	// OpenGL initialization
+	[self createBackingStore:screenSize];
 		
 	// Other initializations
 	cursor = [[NSCursor arrowCursor] retain];
@@ -68,16 +78,8 @@
 	memset(colorMap, 0, 0xff * sizeof(unsigned int));
 	keyTranslator = [[RDCKeyboard alloc] init];
 	
-	// Fill background with blackness
-	[self resetClip];
-	[self focusBackingStore];
-	[[NSColor blackColor] set];
-	[NSBezierPath fillRect:frame];
-	[self releaseBackingStore];
-    
 	
-	[self setBounds:NSMakeRect(0.0, 0.0, frame.size.width, frame.size.height)];
-	screenSize = frame.size;
+	[self resetClip];
 	
     return self;
 }
@@ -89,6 +91,7 @@
 
 - (void)drawRect:(NSRect)rect
 {
+/*
 	if (fabs(screenSize.width - [self frame].size.width) > .001)
 	{
 		[[NSGraphicsContext currentContext] setShouldAntialias:YES];
@@ -96,16 +99,52 @@
 			[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationLow];
 		else
 			[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
-	}
+	}*/
 	
+
+	[self generateTexture];
 	
+	glClear(GL_COLOR_BUFFER_BIT);
+	GLfloat textureWidth = rdBufferWidth;
+	GLfloat textureHeight = rdBufferHeight; 
+	glBindTexture(GL_TEXTURE_RECTANGLE_EXT, rdBufferTexture);
+
+	glBegin(GL_QUADS);
+/*
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex2f(-1.0f, 1.0f);
+	glTexCoord2f(0.0f, textureHeight);
+	glVertex2f(-1.0f, -1.0f);
+	glTexCoord2f(textureWidth, textureHeight);
+	glVertex2f(1.0f, -1.0f);
+	glTexCoord2f(textureWidth, 0.0f);
+	glVertex2f(1.0f, 1.0f);
+*/
+
+	glTexCoord2f(0.0f, textureHeight);
+	glVertex2f(-1.0f, 1.0f);
+	
+	glTexCoord2f(0.0f, 0.0f);
+	glVertex2f(-1.0f, -1.0f);
+	
+	glTexCoord2f(textureWidth, 0.0f);
+	glVertex2f(1.0f, -1.0f);
+	
+	glTexCoord2f(textureWidth, textureHeight);
+	glVertex2f(1.0f, 1.0f);
+
+	glEnd();   
+
+	[[self openGLContext] flushBuffer];
+	
+	/*
 	int nRects, i;
 	const NSRect* rects;
 	[self getRectsBeingDrawn:&rects count:&nRects];
 	for (i = 0; i < nRects; i++)
 	{
 		[back drawInRect:rects[i] fromRect:rects[i]  operation:NSCompositeCopy fraction:1.0];
-	}
+	}*/
 }
 
 - (BOOL)isFlipped
@@ -127,22 +166,34 @@
 - (void)setFrame:(NSRect)frame
 {	
 	[super setFrame:frame];
-	
-	NSRect bounds = RECT_FROM_SIZE(screenSize);
 
-	if (frame.size.width > bounds.size.width)
-		bounds.origin.x = (frame.size.width - bounds.size.width)/2.0;
-		
-	if (frame.size.height > bounds.size.height)
-		bounds.origin.y = (frame.size.height - bounds.size.height)/2.0;
-		
-	[self setBounds:bounds];
+	[self setBounds:RECT_FROM_SIZE(screenSize)];
 }
 
 - (void)viewDidEndLiveResize
 {
 	[super viewDidEndLiveResize];
 	[self setNeedsDisplay:YES];
+}
+
+
+#pragma mark -
+#pragma mark NSOpenGLView
+
+-(void)prepareOpenGL
+{
+	glEnable(GL_TEXTURE_RECTANGLE_EXT);
+	glShadeModel(GL_SMOOTH);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
+	glGenTextures(1, &rdBufferTexture);
+}
+
+
+- (void)reshape
+{
+    NSRect rect = [self bounds];
+    rect.size = [self convertSize:rect.size toView:nil];
+    glViewport(0.0, 0.0, NSWidth(rect), NSHeight(rect));
 }
 
 
@@ -460,14 +511,12 @@
 
 - (void)resetClip
 {
-	NSRect r = NSZeroRect;
-	r.size = [back size];
-	clipRect = r;
+	clipRect = RECT_FROM_SIZE(screenSize);
 }
 
 
 #pragma mark -
-#pragma mark Controlling drawing to the backing store
+#pragma mark Working with the backing store
 
 - (void)startUpdate
 {
@@ -481,13 +530,65 @@
 
 - (void)focusBackingStore
 {
-	[back lockFocus];
+	[NSGraphicsContext saveGraphicsState];
+	
+	
+	/*
+	CGContextTranslateCTM(rdBufferContext, 0, -screenSize.height);
+	CGContextScaleCTM(rdBufferContext, 1.0, -1.0);
+	
+	*/
+	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:rdBufferContext flipped:NO]];
+	 
+	/*
+	NSRect frameRect = [self bounds];
+	NSAffineTransform* xform = [NSAffineTransform transform];
+	//[xform translateXBy:0.0 yBy:frameRect.size.height];
+	//[xform scaleXBy:1.0 yBy:-1.0];
+	//[xform concat];*/
+	
 	NSRectClip(clipRect);
 }
 
 - (void)releaseBackingStore
 {
-	[back unlockFocus];
+	[NSGraphicsContext restoreGraphicsState];
+}
+
+- (void)createBackingStore:(NSSize)s
+{
+	rdBufferWidth = s.width;
+	rdBufferHeight = s.height;
+		
+	rdBufferBitmapLength = rdBufferWidth*rdBufferHeight*4;
+	rdBufferBitmapData = malloc(rdBufferBitmapLength);
+
+	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	rdBufferContext = CGBitmapContextCreate(rdBufferBitmapData, rdBufferWidth, rdBufferHeight, 8, rdBufferWidth*4, cs, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little); 		
+}
+
+- (void)destroyBackingStore
+{
+	CGContextRelease(rdBufferContext);
+	free(rdBufferBitmapData);
+	
+	rdBufferBitmapData = NULL;
+	rdBufferContext = NULL;
+	rdBufferTexture = rdBufferBitmapLength = rdBufferWidth = rdBufferHeight = 0;
+}
+
+- (void)generateTexture
+{
+	CGContextFlush(rdBufferContext);
+
+	glBindTexture(GL_TEXTURE_RECTANGLE_EXT, rdBufferTexture);
+	
+	glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_STORAGE_HINT_APPLE, GL_STORAGE_SHARED_APPLE); 
+	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_TRUE);
+	
+	glTexImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, GL_RGBA, rdBufferWidth, rdBufferHeight, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, rdBufferBitmapData);
+	glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
 
@@ -579,8 +680,9 @@
 		[xform translateXBy:0.0 yBy:height];
 		[xform scaleXBy:1.0 yBy:-1.0];
 		[xform concat];
-		[back drawInRect:NSMakeRect(0,0,width,height) fromRect:NSMakeRect(0,0,width,height)
-					operation:NSCompositeCopy fraction:1.0];
+		// XXX: need to rewrite
+		/*[back drawInRect:NSMakeRect(0,0,width,height) fromRect:NSMakeRect(0,0,width,height)
+					operation:NSCompositeCopy fraction:1.0];*/
 	} [NSGraphicsContext restoreGraphicsState];
 	
 	NSData *fileContent = [img representationUsingType:NSPNGFileType properties:nil];
@@ -591,17 +693,13 @@
 
 - (void)setScreenSize:(NSSize)newSize
 {
-	screenSize = NSMakeSize(round(newSize.width), round(newSize.height));
+	screenSize = newSize;
 	[self setBounds:RECT_FROM_SIZE(screenSize)];
 	
-	[back release];
-	back = [[NSImage alloc] initWithSize:screenSize];
-	// Fill background with blackness
+	[self destroyBackingStore];
+	[self createBackingStore:screenSize];
+
 	[self resetClip];
-	[self focusBackingStore];
-	[[NSColor blackColor] set];
-	[NSBezierPath fillRect:[self bounds]];
-	[self releaseBackingStore];
 	
 	[self setNeedsDisplay:YES];
 }

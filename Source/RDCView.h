@@ -16,16 +16,26 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import <Carbon/Carbon.h>
+#import <OpenGL/gl.h>
+
 #import "rdesktop.h"
 
 @class RDInstance;
 @class RDCBitmap;
 @class RDCKeyboard;
 
-@interface RDCView : NSView
+@interface RDCView : NSOpenGLView
 {
 	RDInstance *controller;
-	NSImage *back;
+	
+	// OpenGL back buffer
+	CGContextRef rdBufferContext;
+	unsigned char *rdBufferBitmapData;
+	int rdBufferBitmapLength;
+	GLuint rdBufferTexture;
+	int rdBufferWidth, rdBufferHeight;
+	
 	NSPoint mouseLoc;
 	NSRect clipRect;
 	NSCursor *cursor;
@@ -56,8 +66,12 @@
 // Other rdesktop handlers
 - (void)setClip:(NSRect)r;
 - (void)resetClip;
+
+// Backing store
 - (void)startUpdate;
 - (void)stopUpdate;
+- (void)focusBackingStore;
+- (void)releaseBackingStore;
 
 - (BOOL)checkMouseInBounds:(NSEvent *)ev;
 - (void)sendMouseInput:(unsigned short)flags;
