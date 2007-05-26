@@ -274,13 +274,6 @@ typedef enum _ConnectionErrorCode
 } ConnectionErrorCode;
 
 
-#import <openssl/md5.h>
-#import <openssl/sha.h>
-#import <openssl/bn.h>
-#import <openssl/x509v3.h>
-
-#import <openssl/rc4.h>
-
 #define NBITMAPCACHE 3
 #define NBITMAPCACHEENTRIES 0xa00
 #define NOT_SET -1

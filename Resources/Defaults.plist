@@ -18,5 +18,7 @@
 	<true/>
 	<key>MinimalServerList</key>
 	<false/>
+	<key>IgnoreModifierKeyCustomizations</key>
+	<true/>
 </dict>
 </plist>

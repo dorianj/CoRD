@@ -314,7 +314,7 @@
 
 - (void)sendMouseInput:(unsigned short)flags
 {
-	[controller sendInput:RDP_INPUT_MOUSE flags:flags param1:lrintf(mouseLoc.x) param2:lrintf(mouseLoc.y)];
+	[controller sendInputOnConnectionThread:time(NULL) type:RDP_INPUT_MOUSE flags:flags param1:lrintf(mouseLoc.x) param2:lrintf(mouseLoc.y)];
 }
 
 - (void)recheckScheduledMouseInput:(NSTimer*)timer

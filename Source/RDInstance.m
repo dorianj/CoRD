@@ -19,12 +19,11 @@
 #import "RDCView.h"
 #import "RDCKeyboard.h"
 #import "CRDServerCell.h"
+#import "AppController.h"
 #import "keychain.h"
 
-// for sharedDocumentIcon
-#import "AppController.h"
 
-// Number of polls per second to check IO
+// Part of a hacky attempt to fix disk forwarding
 #define NOTIFY_POLL_SPEED 10.0
 
 @interface RDInstance (Private)
@@ -32,13 +31,12 @@
 	- (void)setStatus:(CRDConnectionStatus)status;
 	- (void)createScrollEnclosure:(NSRect)frame;
 	- (void)createViewWithFrameValue:(NSValue *)frameRect;
+	- (void)setUpConnectionThread;
 @end
 
 #pragma mark -
 
 @implementation RDInstance
-
-#pragma mark NSObject methods
 
 - (id)init
 {
@@ -77,31 +75,15 @@
 	return self;
 }
 
-- (id)initWithArgumentsForAddress:(NSString *)address
-{
-	if (![self init] || (hostName == nil) )
-		return nil;
-	
-	
-	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	
-	split_hostname(address, &hostName, &port);
-	
-	if ([args objectForKey:@"testItem"])
-	{
-		NSLog(@"Test item was there");
-	}
-	
-	if ([args objectForKey:@"fullscreen"])
-		NSLog(@"fullscreen was there");
-	
-	return self;
-}
-
 - (void)dealloc
 {
 	if (connectionStatus == CRDConnectionConnected)
 		[self disconnect];
+	
+	[inputEventPort invalidate];
+	[inputEventPort release];
+	[inputEventStack release];
+	[inputEventLock release];
 	
 	[label release];
 	[hostName release];
@@ -171,8 +153,7 @@
 			case RDP_PDU_DATA:
 				if (process_data_pdu(conn, s, &ext_disc_reason))
 				{
-					[g_appController performSelectorOnMainThread:@selector(disconnectInstance:)
-							withObject:self waitUntilDone:NO];
+					[g_appController performSelectorOnMainThread:@selector(disconnectInstance:) withObject:self waitUntilDone:NO];
 					return;
 				}
 				break;
@@ -189,7 +170,7 @@
 }
 
 // Using the current properties, attempt to connect to a server. Blocks until timeout or failure.
-- (BOOL) connect
+- (BOOL)connect
 {
 	if (connectionStatus == CRDConnectionDisconnecting)
 	{
@@ -236,14 +217,14 @@
 	conn->rdp5PerformanceFlags = performanceFlags;
 	
 
-	// RDP logon flags
+	// Simple heuristic to guess if use wants to auto log-in
 	int logonFlags = RDP_LOGON_NORMAL;
 	if ([username length] > 0 && ([password length] > 0 || savePassword))
 		logonFlags |= RDP_LOGON_AUTO;
 	
 	// Other various settings
 	conn->bitmapCache = cacheBitmaps;
-	conn->serverBpp = (screenDepth==8 || screenDepth == 15 || screenDepth==24) ? screenDepth : 16;
+	conn->serverBpp = (screenDepth==8 || screenDepth==15 || screenDepth==24) ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
@@ -272,12 +253,10 @@
 			}
 		}
 		
-		disk_enum_devices(conn, convert_string_array(validDrives),
-						  convert_string_array(validNames), [validDrives count]);
+		disk_enum_devices(conn, convert_string_array(validDrives), convert_string_array(validNames), [validDrives count]);
 	}
 	
 	rdpdr_init(conn);
-	
 	cliprdr_init(conn);
 	
 	// Make the connection
@@ -286,20 +265,17 @@
 							safe_string_conv(domain), 
 							safe_string_conv(password), 
 							"",  /* xxx: command on logon */
-							"" /* xxx: session directory*/ );
+							"" /* xxx: session directory */ );
 							
 	// Upon success, set up the input socket
 	if (connected)
 	{
 		[self setStatus:CRDConnectionConnected];
+		[self setUpConnectionThread];
 		
-		conn->useEncryption = False;
-		
-		inputRunLoop = [NSRunLoop currentRunLoop];
-	
 		NSStream *is = conn->inputStream;
 		[is setDelegate:self];
-		[is scheduleInRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
+		[is scheduleInRunLoop:connectionRunLoop forMode:NSDefaultRunLoopMode];
 		
 		[self performSelectorOnMainThread:@selector(createViewWithFrameValue:) withObject:[NSValue valueWithRect:NSMakeRect(0.0, 0.0, conn->screenWidth, conn->screenHeight)] waitUntilDone:YES];
 	}
@@ -311,23 +287,21 @@
 	return connected;
 }
 
-- (void) disconnect
+- (void)disconnect
 {
 	[self retain];
 	[self disconnectAsync:[NSNumber numberWithBool:NO]];
 }
 
-- (void) disconnectAsync:(NSNumber *)block
+- (void)disconnectAsync:(NSNumber *)block
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	[self setStatus:CRDConnectionDisconnecting];
-	if (inputLoopFinished || [block boolValue])
+	if (connectionRunLoopFinished || [block boolValue])
 	{
-		while (!inputLoopFinished)
+		while (!connectionRunLoopFinished)
 			usleep(1000);
 			
-		[self setStatus:CRDConnectionClosed];
-		
 		// Low level removal
 		tcp_disconnect(conn);
 		
@@ -357,22 +331,17 @@
 		memset(conn, 0, sizeof(struct rdcConn));
 		free(conn);
 		conn = NULL;
+		
+		[self setStatus:CRDConnectionClosed];
 	}
 	else
 	{
 		[self retain];
-		[NSThread detachNewThreadSelector:@selector(disconnectAsync:) toTarget:self
-					withObject:[NSNumber numberWithBool:YES]];	
+		[NSThread detachNewThreadSelector:@selector(disconnectAsync:) toTarget:self withObject:[NSNumber numberWithBool:YES]];	
 	}
 	
 	[pool release];
 	[self release];
-}
-
-- (void) sendInput:(uint16) type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2
-{
-	if (connectionStatus == CRDConnectionConnected)
-		rdp_send_input(conn, time(NULL), type, flags, param1, param2);
 }
 
 - (void)pollDiskNotifyRequests:(NSTimer *)timer
@@ -393,12 +362,11 @@
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
-	inputLoopFinished = NO;
+	connectionRunLoopFinished = NO;
 	
 	if (forwardDisks && !DISK_FORWARDING_DISABLED)
 	{
-		[NSTimer scheduledTimerWithTimeInterval:(1.0/NOTIFY_POLL_SPEED) target:self
-					selector:@selector(pollDiskNotifyRequests:) userInfo:nil repeats:YES];
+		[NSTimer scheduledTimerWithTimeInterval:(1.0/NOTIFY_POLL_SPEED) target:self selector:@selector(pollDiskNotifyRequests:) userInfo:nil repeats:YES];
 	}
 	
 	BOOL gotInput;
@@ -410,15 +378,14 @@
 			[pool release];
 			pool = [[NSAutoreleasePool alloc] init];
 		}
-		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode 
-					beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
 	
 	if (conn != NULL)
-		[(id)conn->inputStream removeFromRunLoop:inputRunLoop forMode:NSDefaultRunLoopMode];
+		[(id)conn->inputStream removeFromRunLoop:connectionRunLoop forMode:NSDefaultRunLoopMode];
 	
 	
-	inputLoopFinished = YES;
+	connectionRunLoopFinished = YES;
 	
 	[pool release];
 }
@@ -437,8 +404,7 @@
 	clipboardChangeCount = newChangeCount;
 }
 
-// Assures that the remote clipboard is the same as the passed pasteboard, sending new
-//	clipboard as needed
+// Assures that the remote clipboard is the same as the passed pasteboard, sending new clipboard as needed
 - (void)setRemoteClipboard:(int)suggestedFormat
 {
 	if (connectionStatus != CRDConnectionConnected)
@@ -453,8 +419,7 @@
 		
 		if ([unicodePasteContent length] > 0)
 		{
-			cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes] + 2 /* skip endianess marker */, 
-					[unicodePasteContent length]);
+			cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes] + 2 /* skip endianess marker */, [unicodePasteContent length]);
 		}
 	}
 }
@@ -468,8 +433,7 @@
 	cliprdr_send_data_request(conn, CF_UNICODETEXT);
 }
 
-// Sets the local clipboard to match the server provided data. Only called by server 
-//	(via ui_stubs) when new data has actually arrived
+// Sets the local clipboard to match the server provided data. Only called by server (via ui_stubs) when new data has actually arrived
 - (void)setLocalClipboard:(NSData *)data format:(int)format
 {
 	if ( ((format != CF_UNICODETEXT) && (format != CF_AUTODETECT)) || ([data length] == 0) )
@@ -488,7 +452,7 @@
 	[[NSPasteboard generalPasteboard] setString:remoteClipboard forType:NSStringPboardType];
 }
 
-// Informs the receiver that the server has new data and is about to send it
+// Informs the receiver that the server has new clipboard data and is about to send it
 - (void)gotNewRemoteClipboardData
 {
 	isClipboardOwner = YES;
@@ -502,7 +466,8 @@
 		return;
 	}
 	
-	cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);	
+	if (connectionStatus == CRDConnectionConnected)
+		cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);	
 }
 
 - (void)pasteboardChangedOwner:(NSPasteboard *)sender
@@ -517,7 +482,7 @@
 // This probably isn't safe to call from anywhere other than initWith.. in its current form
 - (BOOL) readRDPFile:(NSString *)path
 {
-	if (path == nil || ![[NSFileManager defaultManager] isReadableFileAtPath:path])
+	if ([path length] == 0 || ![[NSFileManager defaultManager] isReadableFileAtPath:path])
 		return NO;
 
 	NSString *fileContents = [NSString stringWithContentsOfFile:path usedEncoding:&fileEncoding error:NULL];
@@ -543,7 +508,7 @@
 	int numVal = 0;
 	BOOL b;
 	
-	// Loop through each line, extracting the name, type, and value
+	// Extract the name, type, and value from each line and load into ivars
 	NSEnumerator *enumerator = [fileLines objectEnumerator];
 	id line;
 	while ( (line = [enumerator nextObject]) )
@@ -558,8 +523,7 @@
 		if (![scan scanUpToCharactersFromSet:emptySet intoString:&value])
 			value = @"";
 		
-		// This doesn't use key-value coding because none of the side effects
-		//	in the setters are desirable at load time
+		// Don't use KVC because none of the side effects in the setters are desirable at load time
 		
 		if (b)
 		{
@@ -687,8 +651,7 @@
 		NSLog(@"Error writing to '%@'", path);
 	else
 	{
-		NSDictionary *newAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:'RDP ']
-					forKey:NSFileHFSTypeCode];
+		NSDictionary *newAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:'RDP '] forKey:NSFileHFSTypeCode];
 		[[NSFileManager defaultManager] changeFileAttributes:newAttrs atPath:path];
 	}
 	
@@ -745,9 +708,7 @@
 {
 	[window release];
 	NSRect sessionScreenSize = [view bounds];
-	window = [[NSWindow alloc] initWithContentRect:sessionScreenSize
-			styleMask:(NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask)
-			backing:NSBackingStoreBuffered defer:NO];
+	window = [[NSWindow alloc] initWithContentRect:sessionScreenSize styleMask:(NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask) backing:NSBackingStoreBuffered defer:NO];
 	
 	[window setContentMaxSize:sessionScreenSize.size];
 	[window setTitle:label];
@@ -816,7 +777,7 @@
 	[scrollEnclosure release];
 	scrollEnclosure = [[NSScrollView alloc] initWithFrame:frame];
 	[view setAutoresizingMask:NSViewNotSizable];
-	[scrollEnclosure setAutoresizingMask:(NSViewMinXMargin|NSViewMaxXMargin|NSViewMinYMargin|NSViewMaxYMargin|NSViewWidthSizable|NSViewHeightSizable)];
+	[scrollEnclosure setAutoresizingMask:(NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable | NSViewHeightSizable)];
 	[scrollEnclosure setDocumentView:view];
 	[scrollEnclosure setHasVerticalScroller:YES];
 	[scrollEnclosure setHasHorizontalScroller:YES];
@@ -862,13 +823,73 @@
 	NSSize realSize = [view bounds].size;
 	realSize.height += [sender frame].size.height - [[sender contentView] frame].size.height;
 	
-	if (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize &&
-		realSize.height-proposedFrameSize.height <= CRDWindowSnapSize)
+	if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) && (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
 	{
 		return realSize;	
 	}
 		
 	return proposedFrameSize;
+}
+
+
+#pragma mark -
+#pragma mark Sending input from other threads
+
+- (void)sendInputOnConnectionThread:(uint32)time type:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2
+{
+	if (connectionStatus != CRDConnectionConnected)
+		return;
+	
+	if ([NSThread currentThread] == connectionThread)
+	{
+		rdp_send_input(conn, time, type, flags, param1, param2);
+	}
+	else
+	{	
+		// Push this event onto the event stack and handle it in the connection thread
+		CRDInputEvent queuedEvent = CRDMakeInputEvent(time, type, flags, param1, param2), *e;
+		
+		e = malloc(sizeof(CRDInputEvent));
+		memcpy(e, &queuedEvent, sizeof(CRDInputEvent));
+		
+		[inputEventLock lock]; {
+			[inputEventStack addObject:[NSValue valueWithPointer:e]];	
+		} [inputEventLock unlock];
+		
+		[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
+	}
+}
+
+- (void)handleMachMessage:(void *)msg
+{
+    [inputEventLock lock];
+    while ([inputEventStack count] != 0)
+	{
+        CRDInputEvent *ie = [[inputEventStack objectAtIndex:0] pointerValue];
+        [inputEventStack removeObjectAtIndex:0];
+		if (ie != NULL)
+		{
+			[self sendInputOnConnectionThread:ie->time type:ie->type flags:ie->deviceFlags param1:ie->param1 param2:ie->param2];
+			free(ie);
+		}
+    };
+    [inputEventLock unlock];
+}
+
+
+- (void)setUpConnectionThread
+{
+	if (inputEventStack != nil)
+		return;
+
+	connectionThread = [[NSThread currentThread] retain];
+	connectionRunLoop  = [[NSRunLoop currentRunLoop] retain];
+	inputEventStack = [[NSMutableArray alloc] init];
+	inputEventLock = [[NSLock alloc] init];
+
+	inputEventPort = [[NSMachPort alloc] init];
+	[inputEventPort setDelegate:self];
+	[connectionRunLoop addPort:inputEventPort forMode:(NSString *)kCFRunLoopCommonModes];
 }
 
 
@@ -903,8 +924,7 @@
 	if (savePassword && (force || ![hostName isEqualToString:newHost] || 
 		![username isEqualToString:newUser] || ![password isEqualToString:newPassword]) )
 	{
-		keychain_update_password([hostName UTF8String], [username UTF8String],
-				[newHost UTF8String], [newUser UTF8String], [newPassword UTF8String]);
+		keychain_update_password([hostName UTF8String], [username UTF8String], [newHost UTF8String], [newUser UTF8String], [newPassword UTF8String]);
 	}
 }
 
@@ -916,6 +936,7 @@
 
 #pragma mark -
 #pragma mark Accessors
+
 - (rdcConnection)conn
 {
 	return conn;
@@ -985,19 +1006,14 @@
 	connectionStatus = status;
 }
 
-// Status needs to be set on the main thread when setting it to Connecting
-//	so the the CRDServerCell will create its progress indicator timer in the main run loop
+// Status needs to be set on the main thread when setting it to Connecting so the the CRDServerCell will create its progress indicator timer in the main run loop
 - (void)setStatusAsNumber:(NSNumber *)status
 {
 	[self setStatus:[status intValue]];
 }
 
 
-/* Do a few simple setters that would otherwise be caught by key-value coding so that
-	updateCellData can be called and keychain data can be updated. Keychain data
-	must be done here and not at save time because the keychain item might already 
-	exist so it has to be edited.
-*/
+// Do a few simple setters that would otherwise be caught by key-value coding so that updateCellData can be called and keychain data can be updated. Keychain data must be done here and not at save time because the keychain item might already exist so it has to be edited, not created.
 - (void)setLabel:(NSString *)s
 {
 	[label autorelease];

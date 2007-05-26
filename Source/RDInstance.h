@@ -36,9 +36,13 @@
 	int startDisplay, forwardAudio, screenDepth, screenWidth, screenHeight, port;
 	NSMutableDictionary *otherAttributes;
 	
-	// Allows disconnect to be called from any thread
-	BOOL inputLoopFinished;
-	NSRunLoop *inputRunLoop;
+	// Working between main thread and connection thread
+	BOOL connectionRunLoopFinished;
+	NSRunLoop *connectionRunLoop;
+	NSThread *connectionThread;
+	NSMachPort *inputEventPort;
+	NSMutableArray *inputEventStack;
+	NSLock *inputEventLock;
 
 	// General information about instance
 	BOOL temporary, modified, temporarilyFullscreen;
@@ -68,7 +72,7 @@
 - (BOOL)connect;
 - (void)disconnect;
 - (void)disconnectAsync:(NSNumber *)block;
-- (void)sendInput:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
+- (void)sendInputOnConnectionThread:(uint32)time type:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
 - (void)startInputRunLoop;
 
 // Clipboard
@@ -115,6 +119,4 @@
 - (void)setHostName:(NSString *)s;
 - (void)setUsername:(NSString *)s;
 - (void)setPassword:(NSString *)pass;
-
-
 @end

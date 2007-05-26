@@ -21,6 +21,8 @@
 		9881A42B0BE943A00073D189 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98FF84CD0BE557C4002E5228 /* ApplicationServices.framework */; };
 		9881A42E0BE943A70073D189 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
 		9885D1940BFBBB0800C5451D /* printer.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972470BD9D9DF0041110D /* printer.c */; };
+		98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */; };
+		98E1B69B0C07D8AF007077D1 /* CRDSwappedModifiersUtility.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */; };
 		98E972600BD9D9DF0041110D /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972250BD9D9DF0041110D /* AppController.m */; };
 		98E972610BD9D9DF0041110D /* bitmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972260BD9D9DF0041110D /* bitmap.c */; };
 		98E972620BD9D9DF0041110D /* cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972270BD9D9DF0041110D /* cache.c */; };
@@ -82,6 +84,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */,
+				98E1B69B0C07D8AF007077D1 /* CRDSwappedModifiersUtility.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,6 +110,8 @@
 		986BA55A0C00F2B1002782F1 /* zh */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = zh; path = Resources/zh.lproj/Localizable.strings; sourceTree = "<group>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		98B7F09C0BE03B0C006BDCDA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = /System/Library/Frameworks/Accelerate.framework; sourceTree = "<absolute>"; };
+		98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSwappedModifiersUtility.m; path = Source/CRDSwappedModifiersUtility.m; sourceTree = "<group>"; };
+		98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSwappedModifiersUtility.h; path = Source/CRDSwappedModifiersUtility.h; sourceTree = "<group>"; };
 		98E972240BD9D9DF0041110D /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = Source/AppController.h; sourceTree = "<group>"; };
 		98E972250BD9D9DF0041110D /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = AppController.m; path = Source/AppController.m; sourceTree = "<group>"; };
 		98E972260BD9D9DF0041110D /* bitmap.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = bitmap.c; path = Source/bitmap.c; sourceTree = "<group>"; };
@@ -208,6 +213,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				98E1B6940C07D89E007077D1 /* General Purpose */,
 				98A96DE80BC9C695005F217F /* rdesktop UI */,
 				983E4BAE0BB8900D009F833D /* Cocoa UI */,
 				98E972240BD9D9DF0041110D /* AppController.h */,
@@ -382,6 +388,15 @@
 			name = "rdesktop UI";
 			sourceTree = "<group>";
 		};
+		98E1B6940C07D89E007077D1 /* General Purpose */ = {
+			isa = PBXGroup;
+			children = (
+				98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */,
+				98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */,
+			);
+			name = "General Purpose";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -497,6 +512,7 @@
 				98E972990BD9D9DF0041110D /* ui_stubs.m in Sources */,
 				98E972FC0BD9DB7D0041110D /* RDCView.m in Sources */,
 				9885D1940BFBBB0800C5451D /* printer.c in Sources */,
+				98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

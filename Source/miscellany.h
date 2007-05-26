@@ -25,6 +25,32 @@
 
 @class AppController;
 
+
+#pragma mark -
+#pragma mark Types
+
+typedef enum _CRDConnectionStatus
+{
+   CRDConnectionClosed = 0,
+   CRDConnectionConnecting = 1,
+   CRDConnectionConnected = 2,
+   CRDConnectionDisconnecting = 3
+} CRDConnectionStatus;
+
+typedef enum _CRDDisplayMode
+{
+	CRDDisplayUnified = 0,
+	CRDDisplayWindowed = 1,
+	CRDDisplayFullscreen = 2
+} CRDDisplayMode;
+
+typedef struct _CRDInputEvent
+{
+	unsigned int time; 
+	unsigned short type, deviceFlags, param1, param2;
+} CRDInputEvent;
+
+
 #pragma mark -
 #pragma mark Shared routines
 // General purpose
@@ -42,6 +68,8 @@ NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
 char ** convert_string_array(NSArray *conv);
 inline void set_attributed_string_color(NSMutableAttributedString *as, NSColor *color);
 inline void set_attributed_string_font(NSMutableAttributedString *as, NSFont *font);
+inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
+	unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
 
 // AppController specific
 NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);
@@ -87,6 +115,7 @@ extern NSString *CRDPrefsReconnectIntoFullScreen;
 extern NSString *CRDPrefsReconnectOutOfFullScreen;
 extern NSString *CRDPrefsScaleSessions;
 extern NSString *CRDPrefsMinimalisticServerList;
+extern NSString *CRDPrefsIgnoreCustomModifiers;
 
 // Notifications
 extern NSString *CRDMinimalViewDidChangeNotification;
@@ -100,23 +129,6 @@ extern NSString *CRDMinimalViewDidChangeNotification;
 #define SET_PREFERENCE_ENABLED(pref, b) [[NSUserDefaults standardUserDefaults] setBool:(b) forKey:(pref)]
 
 
-#pragma mark -
-#pragma mark Types
-
-typedef enum _CRDConnectionStatus
-{
-   CRDConnectionClosed = 0,
-   CRDConnectionConnecting = 1,
-   CRDConnectionConnected = 2,
-   CRDConnectionDisconnecting = 3
-} CRDConnectionStatus;
-
-typedef enum _CRDDisplayMode
-{
-	CRDDisplayUnified = 0,
-	CRDDisplayWindowed = 1,
-	CRDDisplayFullscreen = 2
-} CRDDisplayMode;
 
 // Temporary use
 #define DISK_FORWARDING_DISABLED 1

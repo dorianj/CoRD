@@ -46,6 +46,7 @@ NSString *CRDPrefsReconnectIntoFullScreen = @"reconnectFullScreen";
 NSString *CRDPrefsReconnectOutOfFullScreen = @"ReconnectWhenLeavingFullScreen";
 NSString *CRDPrefsScaleSessions = @"resizeViewToFit";
 NSString *CRDPrefsMinimalisticServerList = @"MinimalServerList";
+NSString *CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizations";
 
 #pragma mark -
 #pragma mark General purpose routines
@@ -186,6 +187,19 @@ inline void set_attributed_string_font(NSMutableAttributedString *as, NSFont *fo
 {
 	[as addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [as length])];
 }
+
+inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
+	unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2)
+{
+	CRDInputEvent ie;
+	ie.time = time;
+	ie.type = type;
+	ie.param1 = param1;
+	ie.param2 = param2;
+	ie.deviceFlags = deviceFlags;
+	return ie;
+}
+
 
 #pragma mark -
 #pragma mark AppController specific

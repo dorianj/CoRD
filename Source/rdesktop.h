@@ -23,15 +23,15 @@
 #import <string.h>
 #import <dirent.h>
 #import <sys/time.h>
-#import <dirent.h>
-#ifdef HAVE_SYS_SELECT_H
 #import <sys/select.h>
-#else
-#import <sys/types.h>
 #import <unistd.h>
-#endif
-
 #include <limits.h>		/* PATH_MAX */
+
+#import <openssl/md5.h>
+#import <openssl/sha.h>
+#import <openssl/bn.h>
+#import <openssl/x509v3.h>
+#import <openssl/rc4.h>
 
 #define VERSION "1.5.0"
 
@@ -90,21 +90,19 @@
 #endif
 
 /* If configure does not define the endianess, try to find it out */
-#if !defined(L_ENDIAN) && !defined(B_ENDIAN)
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-#define L_ENDIAN
-#elif __BYTE_ORDER == __BIG_ENDIAN
-#define B_ENDIAN
+#ifdef __LITTLE_ENDIAN__
+	#define L_ENDIAN
+#elif defined(__BIG_ENDIAN__)
+	#define B_ENDIAN
 #else
-#error Unknown endianness. Edit rdesktop.h.
+	#error Unknown endianness. Edit rdesktop.h.
 #endif
-#endif /* B_ENDIAN, L_ENDIAN from configure */
 
-/* No need for alignment on x86 and amd64 */
+
+
+/* Alignment is unneeded on x86 */
 #if !defined(NEED_ALIGN)
-#if !(defined(__x86__) || defined(__x86_64__) || \
-      defined(__AMD64__) || defined(_M_IX86) || \
-      defined(__i386__))
+#if !(defined(__i386__))
 #define NEED_ALIGN
 #endif
 #endif

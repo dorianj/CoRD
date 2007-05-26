@@ -59,5 +59,10 @@
     <string>CoRD.sdef</string>
 	<key>SUFeedURL</key>
 	<string>http://cord.sourceforge.net/sparkle.xml</string>
+	<key>SmartCrashReports_CompanyName</key>
+	<string>CoRD Project</string>
+	<key>SmartCrashReports_EmailTicket</key> 
+	<string>SCR-12345ABCD</string>
+
 </dict>
 </plist>
