@@ -29,7 +29,7 @@
 
 @implementation RDCBitmap
 
-// Currently is adequately optimized: not a terribly critical region, but somewhat.
+// Currently is adequately optimized: only somewhat critical
 - (id)initWithBitmapData:(const unsigned char *)sourceBitmap size:(NSSize)s view:(RDCView *)v
 {
 	if (![super init])

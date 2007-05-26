@@ -132,7 +132,7 @@ extern NSString *CRDMinimalViewDidChangeNotification;
 
 // Temporary use
 #define DISK_FORWARDING_DISABLED 1
-
+#define USE_PRINTER_FORWARDING 1
 
 
 #pragma mark -

@@ -20,7 +20,7 @@
 		9881A42A0BE9439E0073D189 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 981739840BACE45D00EAB48A /* Carbon.framework */; };
 		9881A42B0BE943A00073D189 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98FF84CD0BE557C4002E5228 /* ApplicationServices.framework */; };
 		9881A42E0BE943A70073D189 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
-		9885D1940BFBBB0800C5451D /* printer.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972470BD9D9DF0041110D /* printer.c */; };
+		9885D1940BFBBB0800C5451D /* printer.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972470BD9D9DF0041110D /* printer.m */; };
 		98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */; };
 		98E1B69B0C07D8AF007077D1 /* CRDSwappedModifiersUtility.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */; };
 		98E972600BD9D9DF0041110D /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972250BD9D9DF0041110D /* AppController.m */; };
@@ -147,7 +147,7 @@
 		98E972440BD9D9DF0041110D /* orders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = orders.h; path = Source/orders.h; sourceTree = "<group>"; };
 		98E972450BD9D9DF0041110D /* parallel.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = parallel.c; path = Source/parallel.c; sourceTree = "<group>"; };
 		98E972460BD9D9DF0041110D /* parse.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = parse.h; path = Source/parse.h; sourceTree = "<group>"; };
-		98E972470BD9D9DF0041110D /* printer.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = printer.c; path = Source/printer.c; sourceTree = "<group>"; };
+		98E972470BD9D9DF0041110D /* printer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = printer.m; path = Source/printer.m; sourceTree = "<group>"; };
 		98E972480BD9D9DF0041110D /* printercache.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = printercache.c; path = Source/printercache.c; sourceTree = "<group>"; };
 		98E972490BD9D9DF0041110D /* proto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = proto.h; path = Source/proto.h; sourceTree = "<group>"; };
 		98E9724A0BD9D9DF0041110D /* pstcache.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pstcache.c; path = Source/pstcache.c; sourceTree = "<group>"; };
@@ -338,7 +338,7 @@
 				98E972440BD9D9DF0041110D /* orders.h */,
 				98E972450BD9D9DF0041110D /* parallel.c */,
 				98E972460BD9D9DF0041110D /* parse.h */,
-				98E972470BD9D9DF0041110D /* printer.c */,
+				98E972470BD9D9DF0041110D /* printer.m */,
 				98E972480BD9D9DF0041110D /* printercache.c */,
 				98E972490BD9D9DF0041110D /* proto.h */,
 				98E9724A0BD9D9DF0041110D /* pstcache.c */,
@@ -511,7 +511,7 @@
 				98E972970BD9D9DF0041110D /* tcp.m in Sources */,
 				98E972990BD9D9DF0041110D /* ui_stubs.m in Sources */,
 				98E972FC0BD9DB7D0041110D /* RDCView.m in Sources */,
-				9885D1940BFBBB0800C5451D /* printer.c in Sources */,
+				9885D1940BFBBB0800C5451D /* printer.m in Sources */,
 				98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

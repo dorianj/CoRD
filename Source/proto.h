@@ -102,7 +102,7 @@ int parallel_enum_devices(rdcConnection conn, uint32 * id, char *optarg);
 
 #pragma mark -
 #pragma mark printer.c
-int printer_enum_devices(rdcConnection conn, uint32 * id, char *optarg);
+void printer_enum_devices(rdcConnection conn, char **printerNames, int printerCount);
 
 #pragma mark -
 #pragma mark printercache.c

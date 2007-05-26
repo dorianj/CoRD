@@ -233,7 +233,7 @@
 	
 	// Set remote keymap to match local OS X input type
 	conn->keyboardLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
-
+	
 	// Set up disk redirection
 	if (forwardDisks && !DISK_FORWARDING_DISABLED)
 	{
@@ -256,8 +256,19 @@
 		disk_enum_devices(conn, convert_string_array(validDrives), convert_string_array(validNames), [validDrives count]);
 	}
 	
+	// Set up printer redirection
+	if ( USE_PRINTER_FORWARDING)
+	{
+		NSArray *printers = [NSPrinter printerNames];
+	
+	
+		printer_enum_devices(conn, convert_string_array(printers), [printers count]);
+	}	
+	
 	rdpdr_init(conn);
 	cliprdr_init(conn);
+	
+
 	
 	// Make the connection
 	BOOL connected = rdp_connect(conn, safe_string_conv(hostName), 

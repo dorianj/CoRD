@@ -222,37 +222,41 @@ NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSSt
 
 void fill_default_connection(rdcConnection conn)
 {
-	NSString *host = [[NSHost currentHost] name];
-	conn->tcpPort		= TCP_PORT_RDP;
-	conn->screenWidth	= 1024;
-	conn->screenHeight	= 768;
-	conn->isConnected	= 0;
-	conn->useEncryption	= 1;
-	conn->useBitmapCompression	= 1;
+	const char *hostString = [[[NSHost currentHost] name] cStringUsingEncoding:NSASCIIStringEncoding];
+	
+	conn->tcpPort = CRDDefaultPort;
+	conn->screenWidth = 1024;
+	conn->screenHeight = 768;
+	conn->isConnected = 0;
+	conn->useEncryption = 1;
+	conn->useBitmapCompression = 1;
 	conn->currentStatus = 1;
-	conn->useRdp5		= 1;
-	conn->serverBpp		= 16;
-	conn->consoleSession	= 0;
-	conn->bitmapCache	= 1;
-	conn->bitmapCachePersist	= 0;
-	conn->bitmapCachePrecache	= 1;
-	conn->polygonEllipseOrders	= 1;
-	conn->desktopSave	= 1;
-	conn->serverRdpVersion	= 1;
-	conn->keyboardLayout		= 0x409;
+	conn->useRdp5 = 1;
+	conn->serverBpp	= 16;
+	conn->consoleSession = 0;
+	conn->bitmapCache = 1;
+	conn->bitmapCachePersist = 0;
+	conn->bitmapCachePrecache = 1;
+	conn->polygonEllipseOrders = 1;
+	conn->desktopSave = 1;
+	conn->serverRdpVersion = 1;
+	conn->keyboardLayout = 0x409;
 	conn->keyboardType = 4;
-	conn->keyboardSubtype  = 0;
+	conn->keyboardSubtype = 0;
 	conn->keyboardFunctionkeys = 12;
-	conn->packetNumber	= 0;
+	conn->packetNumber = 0;
 	conn->licenseIssued	= 0;
-	conn->pstcacheEnumerated	= 0;
-	conn->rdpdrClientname	= NULL; // xxx: need to set to hostname?
+	conn->pstcacheEnumerated = 0;
 	conn->ioRequest	= NULL;
 	conn->bmpcacheLru[0] = conn->bmpcacheLru[1] = conn->bmpcacheLru[2] = NOT_SET;
 	conn->bmpcacheMru[0] = conn->bmpcacheMru[1] = conn->bmpcacheMru[2] = NOT_SET;
 	conn->errorCode = 0;
-	memcpy(conn->hostname, [host UTF8String], [host length] + 1);
-	conn->rdp5PerformanceFlags	= RDP5_NO_WALLPAPER | RDP5_NO_FULLWINDOWDRAG | RDP5_NO_MENUANIMATIONS;
+	conn->rdp5PerformanceFlags = RDP5_NO_WALLPAPER | RDP5_NO_FULLWINDOWDRAG | RDP5_NO_MENUANIMATIONS;
+	
+	conn->rdpdrClientname = malloc(strlen(hostString) + 1);
+	strcpy(conn->rdpdrClientname, hostString);
+	strncpy(conn->hostname, hostString, 64);
+	
 	conn->rectsNeedingUpdate = NULL;
 	conn->updateEntireScreen = 0;
 }

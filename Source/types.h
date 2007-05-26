@@ -316,6 +316,7 @@ struct rdcConn
 	VCHANNEL *rdpdrChannel;
 	VCHANNEL *cliprdrChannel;
 	struct async_iorequest *ioRequest;
+	char *printerNames[255];
 	
 	// MCS/licence
 	unsigned char licenseKey[16], licenseSignKey[16];

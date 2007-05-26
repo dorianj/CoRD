@@ -306,7 +306,6 @@ open_weak_exclusive(const char *pathname, int flags, mode_t mode)
 
 /* Enumeration of devices from rdesktop.c        */
 /* returns numer of units found and initialized. */
-// takes an rdcConnection, a character array of paths, and the number of items
 
 int
 disk_enum_devices(rdcConnection conn, char ** paths, char **names, int count)
