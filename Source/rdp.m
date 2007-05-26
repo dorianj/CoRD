@@ -864,7 +864,7 @@ process_colour_pointer_pdu(rdcConnection conn, STREAM s)
 {
 	uint16 x, y, width, height, cache_idx, masklen, datalen;
 	uint8 *mask, *data;
-	HCURSOR cursor;
+	RDCursorRef cursor;
 
 	in_uint16_le(s, cache_idx);
 	in_uint16_le(s, x);
@@ -1021,7 +1021,7 @@ process_palette(rdcConnection conn, STREAM s)
 {
 	COLOURENTRY *entry;
 	COLOURMAP map;
-	HCOLOURMAP hmap;
+	RDColorMapRef hmap;
 	int i;
 
 	in_uint8s(s, 2);	/* pad */
@@ -1093,7 +1093,7 @@ process_disconnect_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 }
 
 /* Process data PDU */
-RDCBOOL
+RDBOOL
 process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 {
 	uint8 data_pdu_type;
@@ -1179,7 +1179,7 @@ process_data_pdu(rdcConnection conn, STREAM s, uint32 * ext_disc_reason)
 }
 
 /* Process redirect PDU from Session Directory */
-RDCBOOL
+RDBOOL
 process_redirect_pdu(rdcConnection conn, STREAM s /*, uint32 * ext_disc_reason */ )
 {
 	uint32 len;
@@ -1227,7 +1227,7 @@ process_redirect_pdu(rdcConnection conn, STREAM s /*, uint32 * ext_disc_reason *
 }
 
 /* Establish a connection up to the RDP layer */
-RDCBOOL
+RDBOOL
 rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password,
 	    const char *command, const char *directory)
 {
@@ -1239,7 +1239,7 @@ rdp_connect(rdcConnection conn, const char *server, uint32 flags, const char *do
 }
 
 /* Establish a reconnection up to the RDP layer */
-RDCBOOL
+RDBOOL
 rdp_reconnect(rdcConnection conn, const char *server, uint32 flags, const char *domain, const char *password, const char *command, const char *directory, char *cookie)
 {
 	if (!sec_reconnect(conn, (char *)server))

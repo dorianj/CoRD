@@ -60,9 +60,7 @@ extern DEVICE_FNS printer_fns;
 extern DEVICE_FNS parallel_fns;
 extern DEVICE_FNS disk_fns;
 
-static void _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed_out);
-
-/* Return device_id for a given handle */
+// Return device_id for a given handle
 int
 get_device_index(rdcConnection conn, NTHANDLE handle)
 {
@@ -75,9 +73,8 @@ get_device_index(rdcConnection conn, NTHANDLE handle)
 	return -1;
 }
 
-/* Converts a windows path to a unix path */
-void
-convert_to_unix_filename(char *filename)
+// Converts a windows path to a unix path
+void convert_to_unix_filename(char *filename)
 {
 	char *p;
 
@@ -87,8 +84,7 @@ convert_to_unix_filename(char *filename)
 	}
 }
 
-static RDCBOOL
-rdpdr_handle_ok(rdcConnection conn, int device, int handle)
+static RDBOOL rdpdr_handle_ok(rdcConnection conn, int device, int handle)
 {
 	switch (conn->rdpdrDevice[device].device_type)
 	{
@@ -108,10 +104,7 @@ rdpdr_handle_ok(rdcConnection conn, int device, int handle)
 }
 
 /* Add a new io request to the table containing pending io requests so it won't block rdesktop */
-static RDCBOOL
-add_async_iorequest(rdcConnection conn, uint32 device, uint32 file, uint32 id, uint32 major, uint32 length,
-		    DEVICE_FNS * fns, uint32 total_timeout, uint32 interval_timeout, uint8 * buffer,
-		    uint32 offset) 
+static RDBOOL add_async_iorequest(rdcConnection conn, uint32 device, uint32 file, uint32 fid, uint32 major, uint32 length, DEVICE_FNS * fns, uint32 total_timeout, uint32 interval_timeout, uint8 * buffer, uint32 offset) 
 {
 	struct async_iorequest *iorq;
 	
@@ -142,7 +135,7 @@ add_async_iorequest(rdcConnection conn, uint32 device, uint32 file, uint32 id, u
 	}
 	iorq->device = device;
 	iorq->fd = file;
-	iorq->id = id;
+	iorq->fid = fid;
 	iorq->major = major;
 	iorq->length = length;
 	iorq->partial_len = 0;
@@ -270,13 +263,6 @@ rdpdr_send_available(rdcConnection conn)
 				out_uint32(s, 0);
 		}
 	}
-#if 0
-	out_uint32_le(s, 0x20);	/* Device type 0x20 - smart card */
-	out_uint32_le(s, 0);
-	out_uint8p(s, "SCARD", 5);
-	out_uint8s(s, 3);
-	out_uint32(s, 0);
-#endif
 
 	s_mark_end(s);
 	channel_send(conn, s, conn->rdpdrChannel);
@@ -329,7 +315,7 @@ rdpdr_process_irp(rdcConnection conn, STREAM s)
 	uint8 *buffer, *pst_buf;
 	struct stream out;
 	DEVICE_FNS *fns;
-	RDCBOOL rw_blocking = True;
+	RDBOOL rw_blocking = True;
 	NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
 
 	in_uint32_le(s, device);
@@ -691,8 +677,8 @@ rdpdr_process_irp(rdcConnection conn, STREAM s)
 	buffer = NULL;
 }
 
-static void
-rdpdr_send_clientcapabilty(rdcConnection conn)
+// Status: Finished. Shouldn't need changes.
+static void rdpdr_send_clientcapabilty(rdcConnection conn)
 {
 	uint8 magic[4] = "rDPC";
 	STREAM s;
@@ -758,7 +744,7 @@ rdpdr_process(rdcConnection conn, STREAM s)
 		}
 		if ((magic[2] == 'C') && (magic[3] == 'C'))
 		{
-			/* connect from server */
+			// connect from server
 			rdpdr_send_clientcapabilty(conn);
 			rdpdr_send_available(conn);
 			return;
@@ -767,6 +753,7 @@ rdpdr_process(rdcConnection conn, STREAM s)
 		{
 			/* connect to a specific resource */
 			in_uint32(s, handle);
+			
 #if WITH_DEBUG_RDP5
 			DEBUG(("RDPDR: Server connected to resource %d\n", handle));
 #endif
@@ -805,7 +792,7 @@ rdpdr_init(rdcConnection conn)
 
 /* Add file descriptors of pending io request to select() */
 void
-rdpdr_add_fds(rdcConnection conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDCBOOL * timeout)
+rdpdr_add_fds(rdcConnection conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDBOOL * timeout)
 {
 	uint32 select_timeout = 0;	/* Timeout value to be used for select() (in millisecons). */
 	struct async_iorequest *iorq;
@@ -902,7 +889,7 @@ rdpdr_remove_iorequest(rdcConnection conn, struct async_iorequest *prev, struct 
 
 /* Check if select() returned with one of the rdpdr file descriptors, and complete io if it did */
 static void
-_rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed_out)
+_rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out)
 {
 	NTSTATUS status;
 	uint32 result = 0;
@@ -934,7 +921,7 @@ _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed
 					/*printf("RDPDR: IVT total %u bytes read of %u\n", iorq->partial_len, iorq->length); */
 					rdpdr_send_completion(conn,
 										  iorq->device,
-							      iorq->id, STATUS_SUCCESS,
+							      iorq->fid, STATUS_SUCCESS,
 							      iorq->partial_len,
 							      iorq->buffer, iorq->partial_len);
 					iorq = rdpdr_remove_iorequest(conn, prev, iorq);
@@ -1003,7 +990,7 @@ _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed
 #endif
 							rdpdr_send_completion(conn,
 												  iorq->device,
-									      iorq->id, status,
+									      iorq->fid, status,
 									      iorq->partial_len,
 									      iorq->buffer,
 									      iorq->partial_len);
@@ -1048,7 +1035,7 @@ _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed
 #endif
 							rdpdr_send_completion(conn,
 												  iorq->device,
-									      iorq->id, status,
+									      iorq->fid, status,
 									      iorq->partial_len,
 									      (uint8 *) "", 1);
 
@@ -1066,7 +1053,7 @@ _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed
 						result = buffer_len = out.p - out.data;
 						status = STATUS_SUCCESS;
 						rdpdr_send_completion(conn,
-											  iorq->device, iorq->id,
+											  iorq->device, iorq->fid,
 								      status, result, buffer,
 								      buffer_len);
 						xfree(buffer);
@@ -1105,7 +1092,7 @@ _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed
 							{
 								rdpdr_send_completion(conn, 
 													  iorq->device,
-										      iorq->id,
+										      iorq->fid,
 										      status, 0,
 										      NULL, 0);
 								iorq = rdpdr_remove_iorequest(conn, prev,
@@ -1128,7 +1115,7 @@ _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed
 }
 
 void
-rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed_out)
+rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out)
 {
 	fd_set dummy;
 
@@ -1146,7 +1133,7 @@ rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDCBOOL timed_
 
 
 /* Abort a pending io request for a given handle and major */
-RDCBOOL
+RDBOOL
 rdpdr_abort_io(rdcConnection conn, uint32 fd, uint32 major, NTSTATUS status)
 {
 	uint32 result;
@@ -1162,7 +1149,7 @@ rdpdr_abort_io(rdcConnection conn, uint32 fd, uint32 major, NTSTATUS status)
 		if ((iorq->fd == fd) && (major == 0 || iorq->major == major))
 		{
 			result = 0;
-			rdpdr_send_completion(conn, iorq->device, iorq->id, status, result, (uint8 *) "",
+			rdpdr_send_completion(conn, iorq->device, iorq->fid, status, result, (uint8 *) "",
 					      1);
 
 			iorq = rdpdr_remove_iorequest(conn, prev, iorq);

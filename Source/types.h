@@ -18,15 +18,15 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#ifndef __ORDERS_H__
-#define __ORDERS_H__
 
-typedef int RDCBOOL;
+typedef int RDBOOL;
+
 #ifndef True
 #define True  (1)
 #define False (0)
 #endif
 
+@class RDCBitmap;
 
 typedef unsigned char uint8;
 typedef signed char sint8;
@@ -35,10 +35,10 @@ typedef signed short sint16;
 typedef unsigned int uint32;
 typedef signed int sint32;
 
-typedef void *HBITMAP;
-typedef void *HGLYPH;
-typedef void *HCOLOURMAP;
-typedef void *HCURSOR;
+typedef RDCBitmap * RDBitmapRef;
+typedef RDCBitmap * RDGlyphRef;
+typedef unsigned int * RDColorMapRef;
+typedef RDCBitmap * RDCursorRef;
 
 typedef struct _POINT
 {
@@ -97,7 +97,7 @@ typedef struct _FONTGLYPH
 	sint16 baseline;
 	uint16 width;
 	uint16 height;
-	HBITMAP pixmap;
+	RDBitmapRef pixmap;
 
 }
 FONTGLYPH;
@@ -213,7 +213,7 @@ typedef struct rdpdr_printer_info
 	char *driver, *printer;
 	uint32 bloblen;
 	uint8 *blob;
-	RDCBOOL default_printer;
+	RDBOOL default_printer;
 }
 PRINTER;
 
@@ -233,7 +233,7 @@ typedef struct fileinfo
 	DIR *pdir;
 	struct dirent *pdirent;
 	char pattern[PATH_MAX];
-	RDCBOOL delete_on_close;
+	RDBOOL delete_on_close;
 	NOTIFY notify;
 	uint32 info_class;
 }
@@ -246,7 +246,7 @@ typedef struct _DEVICE_FNS DEVICE_FNS;
 /* if multiple ios are being done on the same fd */
 struct async_iorequest
 {
-	uint32 fd, major, minor, offset, device, id, length, partial_len;
+	uint32 fd, major, minor, offset, device, fid, length, partial_len;
 	long timeout,		/* Total timeout */
 		itv_timeout;		/* Interval timeout (between serial characters) */
 	uint8 *buffer;
@@ -259,7 +259,7 @@ struct async_iorequest
 
 struct bmpcache_entry
 {
-	HBITMAP bitmap;
+	RDBitmapRef bitmap;
 	sint16 previous;
 	sint16 next;
 };
@@ -300,8 +300,8 @@ struct rdcConn
 	int pstcacheFd[8];
 	int bmpcacheCount[3];
 	unsigned char deskCache[0x38400 * 4];
-	HBITMAP volatileBc[3];
-	HCURSOR cursorCache[0x20];
+	RDBitmapRef volatileBc[3];
+	RDCursorRef cursorCache[0x20];
 	DATABLOB textCache[256];
 	FONTGLYPH fontCache[12][256];
 	
@@ -323,7 +323,7 @@ struct rdcConn
 	unsigned short mcsUserid;
 	
 	// Session directory
-	RDCBOOL sessionDirRedirect;
+	RDBOOL sessionDirRedirect;
 	char sessionDirServer[64];
 	char sessionDirDomain[16];
 	char sessionDirPassword[64];
@@ -388,6 +388,5 @@ struct _DEVICE_FNS
 	NTSTATUS(*device_control) (rdcConnection conn, NTHANDLE handle, uint32 request, STREAM in, STREAM out);
 };
 
-typedef RDCBOOL(*str_handle_lines_t) (const char *line, void *data);
+typedef RDBOOL(*str_handle_lines_t) (const char *line, void *data);
 
-#endif

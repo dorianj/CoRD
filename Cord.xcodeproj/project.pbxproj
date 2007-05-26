@@ -51,7 +51,7 @@
 		98E9728E0BD9D9DF0041110D /* RDInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972530BD9D9DF0041110D /* RDInstance.m */; };
 		98E9728F0BD9D9DF0041110D /* rdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972540BD9D9DF0041110D /* rdp.m */; };
 		98E972900BD9D9DF0041110D /* rdp5.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972550BD9D9DF0041110D /* rdp5.c */; };
-		98E972910BD9D9DF0041110D /* rdpdr.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972560BD9D9DF0041110D /* rdpdr.c */; };
+		98E972910BD9D9DF0041110D /* rdpdr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972560BD9D9DF0041110D /* rdpdr.m */; };
 		98E972950BD9D9DF0041110D /* secure.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725A0BD9D9DF0041110D /* secure.c */; };
 		98E972960BD9D9DF0041110D /* serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725B0BD9D9DF0041110D /* serial.c */; };
 		98E972970BD9D9DF0041110D /* tcp.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725C0BD9D9DF0041110D /* tcp.m */; };
@@ -162,7 +162,7 @@
 		98E972530BD9D9DF0041110D /* RDInstance.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = RDInstance.m; path = Source/RDInstance.m; sourceTree = "<group>"; };
 		98E972540BD9D9DF0041110D /* rdp.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = rdp.m; path = Source/rdp.m; sourceTree = "<group>"; };
 		98E972550BD9D9DF0041110D /* rdp5.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = rdp5.c; path = Source/rdp5.c; sourceTree = "<group>"; };
-		98E972560BD9D9DF0041110D /* rdpdr.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = rdpdr.c; path = Source/rdpdr.c; sourceTree = "<group>"; };
+		98E972560BD9D9DF0041110D /* rdpdr.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = rdpdr.m; path = Source/rdpdr.m; sourceTree = "<group>"; };
 		98E972570BD9D9DF0041110D /* rdpsnd.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = rdpsnd.c; path = Source/rdpsnd.c; sourceTree = "<group>"; };
 		98E972580BD9D9DF0041110D /* rdpsnd_oss.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = rdpsnd_oss.c; path = Source/rdpsnd_oss.c; sourceTree = "<group>"; };
 		98E972590BD9D9DF0041110D /* scancodes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = scancodes.h; path = Source/scancodes.h; sourceTree = "<group>"; };
@@ -213,6 +213,7 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				98EC96980C08F9970072B42C /* rdesktop Replacements */,
 				98E1B6940C07D89E007077D1 /* General Purpose */,
 				98A96DE80BC9C695005F217F /* rdesktop UI */,
 				983E4BAE0BB8900D009F833D /* Cocoa UI */,
@@ -345,7 +346,7 @@
 				98E972510BD9D9DF0041110D /* rdesktop.h */,
 				98E972540BD9D9DF0041110D /* rdp.m */,
 				98E972550BD9D9DF0041110D /* rdp5.c */,
-				98E972560BD9D9DF0041110D /* rdpdr.c */,
+				98E972560BD9D9DF0041110D /* rdpdr.m */,
 				98E972570BD9D9DF0041110D /* rdpsnd.c */,
 				98E972580BD9D9DF0041110D /* rdpsnd_oss.c */,
 				98E972590BD9D9DF0041110D /* scancodes.h */,
@@ -395,6 +396,13 @@
 				98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */,
 			);
 			name = "General Purpose";
+			sourceTree = "<group>";
+		};
+		98EC96980C08F9970072B42C /* rdesktop Replacements */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = "rdesktop Replacements";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -505,7 +513,7 @@
 				98E9728E0BD9D9DF0041110D /* RDInstance.m in Sources */,
 				98E9728F0BD9D9DF0041110D /* rdp.m in Sources */,
 				98E972900BD9D9DF0041110D /* rdp5.c in Sources */,
-				98E972910BD9D9DF0041110D /* rdpdr.c in Sources */,
+				98E972910BD9D9DF0041110D /* rdpdr.m in Sources */,
 				98E972950BD9D9DF0041110D /* secure.c in Sources */,
 				98E972960BD9D9DF0041110D /* serial.c in Sources */,
 				98E972970BD9D9DF0041110D /* tcp.m in Sources */,
@@ -574,6 +582,7 @@
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_FAST_OBJC_DISPATCH = YES;
+				GCC_INPUT_FILETYPE = sourcecode.c.objc;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -630,6 +639,7 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_INPUT_FILETYPE = sourcecode.c.objc;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -683,6 +693,7 @@
 				GCC_ENABLE_SYMBOL_SEPARATION = NO;
 				GCC_FAST_OBJC_DISPATCH = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
+				GCC_INPUT_FILETYPE = sourcecode.c.objc;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = s;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

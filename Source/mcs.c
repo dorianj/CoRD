@@ -21,7 +21,7 @@
 #import "rdesktop.h"
 
 /* Parse an ASN.1 BER header */
-static RDCBOOL
+static RDBOOL
 ber_parse_header(STREAM s, int tagval, int *length)
 {
 	int tag, len;
@@ -101,7 +101,7 @@ mcs_out_domain_params(STREAM s, int max_channels, int max_users, int max_tokens,
 }
 
 /* Parse a DOMAIN_PARAMS structure (ASN.1 BER) */
-static RDCBOOL
+static RDBOOL
 mcs_parse_domain_params(STREAM s)
 {
 	int length;
@@ -143,7 +143,7 @@ mcs_send_connect_initial(rdcConnection conn, STREAM mcs_data)
 }
 
 /* Expect a MCS_CONNECT_RESPONSE message (ASN.1 BER) */
-static RDCBOOL
+static RDBOOL
 mcs_recv_connect_response(rdcConnection conn, STREAM mcs_data)
 {
 	uint8 result;
@@ -217,7 +217,7 @@ mcs_send_aurq(rdcConnection conn)
 }
 
 /* Expect a AUcf message (ASN.1 PER) */
-static RDCBOOL
+static RDBOOL
 mcs_recv_aucf(rdcConnection conn)
 {
 	uint8 opcode, result;
@@ -266,7 +266,7 @@ mcs_send_cjrq(rdcConnection conn, uint16 chanid)
 }
 
 /* Expect a CJcf message (ASN.1 PER) */
-static RDCBOOL
+static RDBOOL
 mcs_recv_cjcf(rdcConnection conn)
 {
 	uint8 opcode, result;
@@ -368,7 +368,7 @@ mcs_recv(rdcConnection conn, uint16 * channel, uint8 * rdpver)
 }
 
 /* Establish a connection up to the MCS layer */
-RDCBOOL
+RDBOOL
 mcs_connect(rdcConnection conn, const char *server, STREAM mcs_data, char *username)
 {
 	unsigned int i;
@@ -409,7 +409,7 @@ mcs_connect(rdcConnection conn, const char *server, STREAM mcs_data, char *usern
 }
 
 /* Establish a connection up to the MCS layer */
-RDCBOOL
+RDBOOL
 mcs_reconnect(rdcConnection conn, char *server, STREAM mcs_data)
 {
 	unsigned int i;

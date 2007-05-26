@@ -110,9 +110,6 @@ printer_close(rdcConnection conn, NTHANDLE handle)
 	
 	OSStatus err =  PMPrinterPrintWithFile(currentPrinter, defaultPrintSettings, defaultPageFormat, CFStringCreateWithCString(NULL, "application/postscript", kCFStringEncodingASCII), filePath);
 	
-//	NSLog(@"Result of print operation while printing url %p with printer %@: %d", filePath, PMPrinterGetName(currentPrinter), err);
-	
-	
 	remove(conn->rdpdrDevice[device_id].local_path);
 	
 	return STATUS_SUCCESS;

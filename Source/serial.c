@@ -17,6 +17,9 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
+
+// This isn't used by CoRD (and won't be) but is included to assure that it builds
+
 #import <unistd.h>
 #import <fcntl.h>
 #import <termios.h>
@@ -160,7 +163,7 @@ get_serial_info(rdcConnection conn, NTHANDLE handle)
 	return NULL;
 }
 
-static RDCBOOL
+static RDBOOL
 get_termios(SERIAL_DEVICE * pser_inf, NTHANDLE serial_fd)
 {
 	speed_t speed;
@@ -943,13 +946,13 @@ serial_device_control(rdcConnection conn, NTHANDLE handle, uint32 request, STREA
 	return STATUS_SUCCESS;
 }
 
-RDCBOOL
+RDBOOL
 serial_get_event(rdcConnection conn, NTHANDLE handle, uint32 * result)
 {
 	int index;
 	SERIAL_DEVICE *pser_inf;
 	int bytes;
-	RDCBOOL ret = False;
+	RDBOOL ret = False;
 
 	*result = 0;
 	index = get_device_index(conn, handle);
@@ -1041,7 +1044,7 @@ serial_get_event(rdcConnection conn, NTHANDLE handle, uint32 * result)
 }
 
 /* Read timeout for a given file descripter (device) when adding fd's to select() */
-RDCBOOL
+RDBOOL
 serial_get_timeout(rdcConnection conn, NTHANDLE handle, uint32 length, uint32 * timeout, uint32 * itv_timeout)
 {
 	int index;

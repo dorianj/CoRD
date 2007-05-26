@@ -81,7 +81,7 @@ void ui_resize_window(rdcConnection conn)
 #pragma mark -
 #pragma mark Colormap 
 
-HCOLOURMAP ui_create_colourmap(COLOURMAP * colors)
+RDColorMapRef ui_create_colourmap(COLOURMAP * colors)
 {
 	unsigned int *colorMap = malloc(colors->ncolours * sizeof(unsigned));
 	
@@ -94,7 +94,7 @@ HCOLOURMAP ui_create_colourmap(COLOURMAP * colors)
 	return colorMap;
 }
 
-void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map)
+void ui_set_colourmap(rdcConnection conn, RDColorMapRef map)
 {
 	EXTRACT_USEFUL_VARS;
 	[v setColorMap:(unsigned int *)map];
@@ -104,7 +104,7 @@ void ui_set_colourmap(rdcConnection conn, HCOLOURMAP map)
 #pragma mark -
 #pragma mark Bitmap
 
-HBITMAP ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data)
+RDBitmapRef ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data)
 {
 	return [[RDCBitmap alloc] initWithBitmapData:data size:NSMakeSize(width, height) view:conn->ui];
 }
@@ -116,7 +116,7 @@ void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width
 	[bitmap release];
 }
 
-void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, HBITMAP src, int srcx, int srcy)
+void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, RDBitmapRef src, int srcx, int srcy)
 {
 	EXTRACT_USEFUL_VARS;
 	
@@ -145,7 +145,7 @@ void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, H
 	schedule_display_in_rect(conn, r);
 }
 
-void ui_destroy_bitmap(HBITMAP bmp)
+void ui_destroy_bitmap(RDBitmapRef bmp)
 {
 	id image = bmp;
 	[image release];
@@ -494,7 +494,7 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 
 void ui_triblt(uint8 opcode, 
 			   int x, int y, int cx, int cy,
-			   HBITMAP src, int srcx, int srcy,
+			   RDBitmapRef src, int srcx, int srcy,
 			   BRUSH *brush, int bgcolour, int fgcolour)
 {
 	CHECKOPCODE(opcode);
@@ -526,12 +526,12 @@ void ui_ellipse(rdcConnection conn, uint8 opcode, uint8 fillmode, int x, int y, 
 #pragma mark -
 #pragma mark Text drawing
 
-HGLYPH ui_create_glyph(rdcConnection conn, int width, int height, const uint8 *data)
+RDGlyphRef ui_create_glyph(rdcConnection conn, int width, int height, const uint8 *data)
 {
 	return [[RDCBitmap alloc] initWithGlyphData:data size:NSMakeSize(width, height) view:conn->ui];
 }
 
-void ui_destroy_glyph(HGLYPH glyph)
+void ui_destroy_glyph(RDGlyphRef glyph)
 {
 	id image = glyph;
 	[image release];
@@ -685,7 +685,7 @@ void ui_bell(void)
 #pragma mark -
 #pragma mark Cursors and Pointers
 
-HCURSOR ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int width, int height,
+RDCursorRef ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int width, int height,
 						 uint8 * andmask, uint8 * xormask)
 {
 	return  [[RDCBitmap alloc] initWithCursorData:andmask alpha:xormask 
@@ -700,14 +700,14 @@ void ui_set_null_cursor(rdcConnection conn)
 	ui_set_cursor(conn, nullCursor);
 }
 
-void ui_set_cursor(rdcConnection conn, HCURSOR cursor)
+void ui_set_cursor(rdcConnection conn, RDCursorRef cursor)
 {
 	EXTRACT_USEFUL_VARS;
 	id c = (RDCBitmap *)cursor;
 	[v performSelectorOnMainThread:@selector(setCursor:) withObject:[c cursor] waitUntilDone:YES];
 }
 
-void ui_destroy_cursor(HCURSOR cursor)
+void ui_destroy_cursor(RDCursorRef cursor)
 {
 	id c = (RDCBitmap *)cursor;
 	[c release];
@@ -1035,7 +1035,7 @@ int ui_select(rdcConnection conn)
 	int n = 0;
 	fd_set rfds, wfds;
 	struct timeval tv;
-	RDCBOOL s_timeout = False;
+	RDBOOL s_timeout = False;
 	
 	// If there are no pending IO requests, no need to check any files
 	if (!conn->ioRequest)

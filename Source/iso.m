@@ -169,7 +169,7 @@ iso_recv(rdcConnection conn, uint8 * rdpver)
 }
 
 /* Establish a connection up to the ISO layer */
-RDCBOOL
+RDBOOL
 iso_connect(rdcConnection conn, const char *server, char *username)
 {
 	uint8 code = 0;
@@ -195,7 +195,7 @@ iso_connect(rdcConnection conn, const char *server, char *username)
 }
 
 /* Establish a reconnection up to the ISO layer */
-RDCBOOL
+RDBOOL
 iso_reconnect(rdcConnection conn, char *server)
 {
 	uint8 code = 0;

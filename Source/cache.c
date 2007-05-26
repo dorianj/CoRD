@@ -174,7 +174,7 @@ cache_evict_bitmap(rdcConnection conn, uint8 id)
 }
 
 /* Retrieve a bitmap from the cache */
-HBITMAP
+RDBitmapRef
 cache_get_bitmap(rdcConnection conn, uint8 id, uint16 idx)
 {
 	if ((id < NUM_ELEMENTS(conn->bmpcache)) && (idx < NUM_ELEMENTS(conn->bmpcache[0])))
@@ -198,9 +198,9 @@ cache_get_bitmap(rdcConnection conn, uint8 id, uint16 idx)
 
 /* Store a bitmap in the cache */
 void
-cache_put_bitmap(rdcConnection conn, uint8 id, uint16 idx, HBITMAP bitmap)
+cache_put_bitmap(rdcConnection conn, uint8 id, uint16 idx, RDBitmapRef bitmap)
 {
-	HBITMAP old;
+	RDBitmapRef old;
 
 	if ((id < NUM_ELEMENTS(conn->bmpcache)) && (idx < NUM_ELEMENTS(conn->bmpcache[0])))
 	{
@@ -273,7 +273,7 @@ cache_get_font(rdcConnection conn, uint8 font, uint16 character)
 /* Store a glyph in the font cache */
 void
 cache_put_font(rdcConnection conn, uint8 font, uint16 character, uint16 offset,
-	       uint16 baseline, uint16 width, uint16 height, HGLYPH pixmap)
+	       uint16 baseline, uint16 width, uint16 height, RDGlyphRef pixmap)
 {
 	//debug: printf("Putting shit in font cache at %d:%d and pmap %p\n", font, character, pixmap);
 	FONTGLYPH *glyph;
@@ -364,10 +364,10 @@ cache_put_desktop(rdcConnection conn, uint32 offset, int cx, int cy, int scanlin
 }
 
 /* Retrieve cursor from cache */
-HCURSOR
+RDCursorRef
 cache_get_cursor(rdcConnection conn, uint16 cache_idx)
 {
-	HCURSOR cursor;
+	RDCursorRef cursor;
 
 	if (cache_idx < NUM_ELEMENTS(conn->cursorCache))
 	{
@@ -382,9 +382,9 @@ cache_get_cursor(rdcConnection conn, uint16 cache_idx)
 
 /* Store cursor in cache */
 void
-cache_put_cursor(rdcConnection conn, uint16 cache_idx, HCURSOR cursor)
+cache_put_cursor(rdcConnection conn, uint16 cache_idx, RDCursorRef cursor)
 {
-	HCURSOR old;
+	RDCursorRef old;
 
 	if (cache_idx < NUM_ELEMENTS(conn->cursorCache))
 	{

@@ -62,7 +62,7 @@ mppc_expand(rdcConnection conn, uint8 * data, uint32 clen, uint8 ctype, uint32 *
 	int next_offset, match_off;
 	int match_len;
 	int old_offset, match_bits;
-	RDCBOOL big = ctype & RDP_MPPC_BIG ? True : False;
+	RDBOOL big = ctype & RDP_MPPC_BIG ? True : False;
 
 	uint8 *dict = conn->mppcDict.hist;
 
