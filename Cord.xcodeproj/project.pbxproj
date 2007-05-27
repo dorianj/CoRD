@@ -16,6 +16,19 @@
 		98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98520EEB0BFEB77700DD732F /* Defaults.plist */; };
 		98520FE80BFEC70800DD732F /* CoRD.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 98520FE70BFEC70800DD732F /* CoRD.sdef */; };
 		9860D7120BFFA565007FA463 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9860D7100BFFA565007FA463 /* Localizable.strings */; };
+		9872FCD80C08FD8E00078CB2 /* CRDBitmap.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FCD00C08FD8E00078CB2 /* CRDBitmap.h */; };
+		9872FCD90C08FD8E00078CB2 /* CRDBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */; };
+		9872FCDA0C08FD8E00078CB2 /* CRDKeyboard.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FCD20C08FD8E00078CB2 /* CRDKeyboard.h */; };
+		9872FCDB0C08FD8E00078CB2 /* CRDKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD30C08FD8E00078CB2 /* CRDKeyboard.m */; };
+		9872FCDC0C08FD8E00078CB2 /* CRDSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FCD40C08FD8E00078CB2 /* CRDSession.h */; };
+		9872FCDD0C08FD8E00078CB2 /* CRDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD50C08FD8E00078CB2 /* CRDSession.m */; };
+		9872FCF30C08FE6800078CB2 /* CRDSessionView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FCF10C08FE6800078CB2 /* CRDSessionView.h */; };
+		9872FCF40C08FE6800078CB2 /* CRDSessionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCF20C08FE6800078CB2 /* CRDSessionView.m */; };
+		9872FD140C08FF4800078CB2 /* CRDDrawingGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD130C08FF4800078CB2 /* CRDDrawingGlue.m */; };
+		9872FD160C08FF6E00078CB2 /* CRDVestigialGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD150C08FF6E00078CB2 /* CRDVestigialGlue.m */; };
+		9872FD240C09007400078CB2 /* CRDMixedGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD230C09007400078CB2 /* CRDMixedGlue.m */; };
+		9872FD5E0C0902DA00078CB2 /* CRDShared.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FD5C0C0902DA00078CB2 /* CRDShared.h */; };
+		9872FD5F0C0902DA00078CB2 /* CRDShared.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD5D0C0902DA00078CB2 /* CRDShared.m */; };
 		9881A4290BE9439D0073D189 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		9881A42A0BE9439E0073D189 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 981739840BACE45D00EAB48A /* Carbon.framework */; };
 		9881A42B0BE943A00073D189 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98FF84CD0BE557C4002E5228 /* ApplicationServices.framework */; };
@@ -40,22 +53,17 @@
 		98E972780BD9D9DF0041110D /* licence.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723D0BD9D9DF0041110D /* licence.c */; };
 		98E972790BD9D9DF0041110D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723E0BD9D9DF0041110D /* main.m */; };
 		98E9727A0BD9D9DF0041110D /* mcs.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723F0BD9D9DF0041110D /* mcs.c */; };
-		98E9727C0BD9D9DF0041110D /* miscellany.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972410BD9D9DF0041110D /* miscellany.m */; };
 		98E9727D0BD9D9DF0041110D /* mppc.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972420BD9D9DF0041110D /* mppc.c */; };
 		98E9727E0BD9D9DF0041110D /* orders.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972430BD9D9DF0041110D /* orders.c */; };
 		98E972800BD9D9DF0041110D /* parallel.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972450BD9D9DF0041110D /* parallel.c */; };
 		98E972830BD9D9DF0041110D /* printercache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972480BD9D9DF0041110D /* printercache.c */; };
 		98E972850BD9D9DF0041110D /* pstcache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9724A0BD9D9DF0041110D /* pstcache.c */; };
-		98E972870BD9D9DF0041110D /* RDCBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9724C0BD9D9DF0041110D /* RDCBitmap.m */; };
-		98E972890BD9D9DF0041110D /* RDCKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9724E0BD9D9DF0041110D /* RDCKeyboard.m */; };
-		98E9728E0BD9D9DF0041110D /* RDInstance.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972530BD9D9DF0041110D /* RDInstance.m */; };
 		98E9728F0BD9D9DF0041110D /* rdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972540BD9D9DF0041110D /* rdp.m */; };
 		98E972900BD9D9DF0041110D /* rdp5.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972550BD9D9DF0041110D /* rdp5.c */; };
 		98E972910BD9D9DF0041110D /* rdpdr.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972560BD9D9DF0041110D /* rdpdr.m */; };
 		98E972950BD9D9DF0041110D /* secure.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725A0BD9D9DF0041110D /* secure.c */; };
 		98E972960BD9D9DF0041110D /* serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725B0BD9D9DF0041110D /* serial.c */; };
 		98E972970BD9D9DF0041110D /* tcp.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725C0BD9D9DF0041110D /* tcp.m */; };
-		98E972990BD9D9DF0041110D /* ui_stubs.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725E0BD9D9DF0041110D /* ui_stubs.m */; };
 		98E972CF0BD9DA820041110D /* Arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972BD0BD9DA820041110D /* Arrow.png */; };
 		98E972D00BD9DA820041110D /* Clock icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972BE0BD9DA820041110D /* Clock icon.png */; };
 		98E972D10BD9DA820041110D /* Disconnect.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972BF0BD9DA820041110D /* Disconnect.png */; };
@@ -72,7 +80,6 @@
 		98E972DD0BD9DA820041110D /* windows_keymap_table.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CE0BD9DA820041110D /* windows_keymap_table.txt */; };
 		98E972E70BD9DA9F0041110D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98E972E30BD9DA9F0041110D /* InfoPlist.strings */; };
 		98E972E80BD9DA9F0041110D /* MainMenu.nib in Resources */ = {isa = PBXBuildFile; fileRef = 98E972E50BD9DA9F0041110D /* MainMenu.nib */; };
-		98E972FC0BD9DB7D0041110D /* RDCView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972500BD9D9DF0041110D /* RDCView.m */; };
 		98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 /* End PBXBuildFile section */
 
@@ -85,6 +92,11 @@
 			files = (
 				9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */,
 				98E1B69B0C07D8AF007077D1 /* CRDSwappedModifiersUtility.h in CopyFiles */,
+				9872FCD80C08FD8E00078CB2 /* CRDBitmap.h in CopyFiles */,
+				9872FCDA0C08FD8E00078CB2 /* CRDKeyboard.h in CopyFiles */,
+				9872FCDC0C08FD8E00078CB2 /* CRDSession.h in CopyFiles */,
+				9872FCF30C08FE6800078CB2 /* CRDSessionView.h in CopyFiles */,
+				9872FD5E0C0902DA00078CB2 /* CRDShared.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,6 +120,19 @@
 		9860D7180BFFA575007FA463 /* German */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = German; path = Resources/German.lproj/Localizable.strings; sourceTree = "<group>"; };
 		986BA5570C00F2A8002782F1 /* zh */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh; path = Resources/zh.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		986BA55A0C00F2B1002782F1 /* zh */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = zh; path = Resources/zh.lproj/Localizable.strings; sourceTree = "<group>"; };
+		9872FCD00C08FD8E00078CB2 /* CRDBitmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDBitmap.h; path = Source/CRDBitmap.h; sourceTree = "<group>"; };
+		9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDBitmap.m; path = Source/CRDBitmap.m; sourceTree = "<group>"; };
+		9872FCD20C08FD8E00078CB2 /* CRDKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDKeyboard.h; path = Source/CRDKeyboard.h; sourceTree = "<group>"; };
+		9872FCD30C08FD8E00078CB2 /* CRDKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDKeyboard.m; path = Source/CRDKeyboard.m; sourceTree = "<group>"; };
+		9872FCD40C08FD8E00078CB2 /* CRDSession.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSession.h; path = Source/CRDSession.h; sourceTree = "<group>"; };
+		9872FCD50C08FD8E00078CB2 /* CRDSession.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSession.m; path = Source/CRDSession.m; sourceTree = "<group>"; };
+		9872FCF10C08FE6800078CB2 /* CRDSessionView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSessionView.h; path = Source/CRDSessionView.h; sourceTree = "<group>"; };
+		9872FCF20C08FE6800078CB2 /* CRDSessionView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSessionView.m; path = Source/CRDSessionView.m; sourceTree = "<group>"; };
+		9872FD130C08FF4800078CB2 /* CRDDrawingGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDDrawingGlue.m; sourceTree = "<group>"; };
+		9872FD150C08FF6E00078CB2 /* CRDVestigialGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDVestigialGlue.m; sourceTree = "<group>"; };
+		9872FD230C09007400078CB2 /* CRDMixedGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDMixedGlue.m; sourceTree = "<group>"; };
+		9872FD5C0C0902DA00078CB2 /* CRDShared.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDShared.h; path = Source/CRDShared.h; sourceTree = "<group>"; };
+		9872FD5D0C0902DA00078CB2 /* CRDShared.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDShared.m; path = Source/CRDShared.m; sourceTree = "<group>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		98B7F09C0BE03B0C006BDCDA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = /System/Library/Frameworks/Accelerate.framework; sourceTree = "<absolute>"; };
 		98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSwappedModifiersUtility.m; path = Source/CRDSwappedModifiersUtility.m; sourceTree = "<group>"; };
@@ -140,8 +165,6 @@
 		98E9723D0BD9D9DF0041110D /* licence.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = licence.c; path = Source/licence.c; sourceTree = "<group>"; };
 		98E9723E0BD9D9DF0041110D /* main.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Source/main.m; sourceTree = "<group>"; };
 		98E9723F0BD9D9DF0041110D /* mcs.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = mcs.c; path = Source/mcs.c; sourceTree = "<group>"; };
-		98E972400BD9D9DF0041110D /* miscellany.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = miscellany.h; path = Source/miscellany.h; sourceTree = "<group>"; };
-		98E972410BD9D9DF0041110D /* miscellany.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = miscellany.m; path = Source/miscellany.m; sourceTree = "<group>"; };
 		98E972420BD9D9DF0041110D /* mppc.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = mppc.c; path = Source/mppc.c; sourceTree = "<group>"; };
 		98E972430BD9D9DF0041110D /* orders.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = orders.c; path = Source/orders.c; sourceTree = "<group>"; };
 		98E972440BD9D9DF0041110D /* orders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = orders.h; path = Source/orders.h; sourceTree = "<group>"; };
@@ -151,15 +174,7 @@
 		98E972480BD9D9DF0041110D /* printercache.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = printercache.c; path = Source/printercache.c; sourceTree = "<group>"; };
 		98E972490BD9D9DF0041110D /* proto.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = proto.h; path = Source/proto.h; sourceTree = "<group>"; };
 		98E9724A0BD9D9DF0041110D /* pstcache.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = pstcache.c; path = Source/pstcache.c; sourceTree = "<group>"; };
-		98E9724B0BD9D9DF0041110D /* RDCBitmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RDCBitmap.h; path = Source/RDCBitmap.h; sourceTree = "<group>"; };
-		98E9724C0BD9D9DF0041110D /* RDCBitmap.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = RDCBitmap.m; path = Source/RDCBitmap.m; sourceTree = "<group>"; };
-		98E9724D0BD9D9DF0041110D /* RDCKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RDCKeyboard.h; path = Source/RDCKeyboard.h; sourceTree = "<group>"; };
-		98E9724E0BD9D9DF0041110D /* RDCKeyboard.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = RDCKeyboard.m; path = Source/RDCKeyboard.m; sourceTree = "<group>"; };
-		98E9724F0BD9D9DF0041110D /* RDCView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RDCView.h; path = Source/RDCView.h; sourceTree = "<group>"; };
-		98E972500BD9D9DF0041110D /* RDCView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = RDCView.m; path = Source/RDCView.m; sourceTree = "<group>"; };
 		98E972510BD9D9DF0041110D /* rdesktop.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = rdesktop.h; path = Source/rdesktop.h; sourceTree = "<group>"; };
-		98E972520BD9D9DF0041110D /* RDInstance.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = RDInstance.h; path = Source/RDInstance.h; sourceTree = "<group>"; };
-		98E972530BD9D9DF0041110D /* RDInstance.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = RDInstance.m; path = Source/RDInstance.m; sourceTree = "<group>"; };
 		98E972540BD9D9DF0041110D /* rdp.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = rdp.m; path = Source/rdp.m; sourceTree = "<group>"; };
 		98E972550BD9D9DF0041110D /* rdp5.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = rdp5.c; path = Source/rdp5.c; sourceTree = "<group>"; };
 		98E972560BD9D9DF0041110D /* rdpdr.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = rdpdr.m; path = Source/rdpdr.m; sourceTree = "<group>"; };
@@ -170,7 +185,6 @@
 		98E9725B0BD9D9DF0041110D /* serial.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = serial.c; path = Source/serial.c; sourceTree = "<group>"; };
 		98E9725C0BD9D9DF0041110D /* tcp.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = tcp.m; path = Source/tcp.m; sourceTree = "<group>"; };
 		98E9725D0BD9D9DF0041110D /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = types.h; path = Source/types.h; sourceTree = "<group>"; };
-		98E9725E0BD9D9DF0041110D /* ui_stubs.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = ui_stubs.m; path = Source/ui_stubs.m; sourceTree = "<group>"; };
 		98E972B90BD9DA720041110D /* Sparkle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Sparkle.framework; path = Source/Sparkle.framework; sourceTree = "<group>"; };
 		98E972BD0BD9DA820041110D /* Arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Arrow.png; path = Resources/Arrow.png; sourceTree = "<group>"; };
 		98E972BE0BD9DA820041110D /* Clock icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Clock icon.png"; path = "Resources/Clock icon.png"; sourceTree = "<group>"; };
@@ -210,21 +224,28 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		080E96DDFE201D6D7F000001 /* Classes */ = {
+		080E96DDFE201D6D7F000001 /* CoRD */ = {
 			isa = PBXGroup;
 			children = (
-				98EC96980C08F9970072B42C /* rdesktop Replacements */,
 				98E1B6940C07D89E007077D1 /* General Purpose */,
-				98A96DE80BC9C695005F217F /* rdesktop UI */,
-				983E4BAE0BB8900D009F833D /* Cocoa UI */,
+				98EC96980C08F9970072B42C /* rdesktop Replacements */,
+				983E4BAE0BB8900D009F833D /* Cocoa UI Classes */,
 				98E972240BD9D9DF0041110D /* AppController.h */,
 				98E972250BD9D9DF0041110D /* AppController.m */,
 				98E9722C0BD9D9DF0041110D /* CRDApplication.h */,
 				98E9722D0BD9D9DF0041110D /* CRDApplication.m */,
-				98E972520BD9D9DF0041110D /* RDInstance.h */,
-				98E972530BD9D9DF0041110D /* RDInstance.m */,
+				9872FCD00C08FD8E00078CB2 /* CRDBitmap.h */,
+				9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */,
+				9872FCD20C08FD8E00078CB2 /* CRDKeyboard.h */,
+				9872FCD30C08FD8E00078CB2 /* CRDKeyboard.m */,
+				9872FCD40C08FD8E00078CB2 /* CRDSession.h */,
+				9872FCD50C08FD8E00078CB2 /* CRDSession.m */,
+				9872FCF10C08FE6800078CB2 /* CRDSessionView.h */,
+				9872FCF20C08FE6800078CB2 /* CRDSessionView.m */,
+				9872FD5C0C0902DA00078CB2 /* CRDShared.h */,
+				9872FD5D0C0902DA00078CB2 /* CRDShared.m */,
 			);
-			name = Classes;
+			name = CoRD;
 			sourceTree = "<group>";
 		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
@@ -261,7 +282,7 @@
 			isa = PBXGroup;
 			children = (
 				44D2AE410AA761C000EA19A1 /* rdesktop */,
-				080E96DDFE201D6D7F000001 /* Classes */,
+				080E96DDFE201D6D7F000001 /* CoRD */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
@@ -274,11 +295,7 @@
 			isa = PBXGroup;
 			children = (
 				98E9722B0BD9D9DF0041110D /* Cord_Prefix.pch */,
-				98E9723C0BD9D9DF0041110D /* keychain.h */,
-				98E9723B0BD9D9DF0041110D /* keychain.c */,
 				98E9723E0BD9D9DF0041110D /* main.m */,
-				98E972400BD9D9DF0041110D /* miscellany.h */,
-				98E972410BD9D9DF0041110D /* miscellany.m */,
 			);
 			name = "Other Sources";
 			sourceTree = "<group>";
@@ -358,7 +375,7 @@
 			name = rdesktop;
 			sourceTree = "<group>";
 		};
-		983E4BAE0BB8900D009F833D /* Cocoa UI */ = {
+		983E4BAE0BB8900D009F833D /* Cocoa UI Classes */ = {
 			isa = PBXGroup;
 			children = (
 				98E9722E0BD9D9DF0041110D /* CRDFullScreenWindow.h */,
@@ -372,26 +389,14 @@
 				98E972360BD9D9DF0041110D /* CRDServersColumn.h */,
 				98E972370BD9D9DF0041110D /* CRDServersColumn.m */,
 			);
-			name = "Cocoa UI";
-			sourceTree = "<group>";
-		};
-		98A96DE80BC9C695005F217F /* rdesktop UI */ = {
-			isa = PBXGroup;
-			children = (
-				98E9725E0BD9D9DF0041110D /* ui_stubs.m */,
-				98E9724B0BD9D9DF0041110D /* RDCBitmap.h */,
-				98E9724C0BD9D9DF0041110D /* RDCBitmap.m */,
-				98E9724D0BD9D9DF0041110D /* RDCKeyboard.h */,
-				98E9724E0BD9D9DF0041110D /* RDCKeyboard.m */,
-				98E9724F0BD9D9DF0041110D /* RDCView.h */,
-				98E972500BD9D9DF0041110D /* RDCView.m */,
-			);
-			name = "rdesktop UI";
+			name = "Cocoa UI Classes";
 			sourceTree = "<group>";
 		};
 		98E1B6940C07D89E007077D1 /* General Purpose */ = {
 			isa = PBXGroup;
 			children = (
+				98E9723C0BD9D9DF0041110D /* keychain.h */,
+				98E9723B0BD9D9DF0041110D /* keychain.c */,
 				98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */,
 				98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */,
 			);
@@ -401,6 +406,9 @@
 		98EC96980C08F9970072B42C /* rdesktop Replacements */ = {
 			isa = PBXGroup;
 			children = (
+				9872FD130C08FF4800078CB2 /* CRDDrawingGlue.m */,
+				9872FD150C08FF6E00078CB2 /* CRDVestigialGlue.m */,
+				9872FD230C09007400078CB2 /* CRDMixedGlue.m */,
 			);
 			name = "rdesktop Replacements";
 			sourceTree = "<group>";
@@ -502,25 +510,27 @@
 				98E972780BD9D9DF0041110D /* licence.c in Sources */,
 				98E972790BD9D9DF0041110D /* main.m in Sources */,
 				98E9727A0BD9D9DF0041110D /* mcs.c in Sources */,
-				98E9727C0BD9D9DF0041110D /* miscellany.m in Sources */,
 				98E9727D0BD9D9DF0041110D /* mppc.c in Sources */,
 				98E9727E0BD9D9DF0041110D /* orders.c in Sources */,
 				98E972800BD9D9DF0041110D /* parallel.c in Sources */,
 				98E972830BD9D9DF0041110D /* printercache.c in Sources */,
 				98E972850BD9D9DF0041110D /* pstcache.c in Sources */,
-				98E972870BD9D9DF0041110D /* RDCBitmap.m in Sources */,
-				98E972890BD9D9DF0041110D /* RDCKeyboard.m in Sources */,
-				98E9728E0BD9D9DF0041110D /* RDInstance.m in Sources */,
 				98E9728F0BD9D9DF0041110D /* rdp.m in Sources */,
 				98E972900BD9D9DF0041110D /* rdp5.c in Sources */,
 				98E972910BD9D9DF0041110D /* rdpdr.m in Sources */,
 				98E972950BD9D9DF0041110D /* secure.c in Sources */,
 				98E972960BD9D9DF0041110D /* serial.c in Sources */,
 				98E972970BD9D9DF0041110D /* tcp.m in Sources */,
-				98E972990BD9D9DF0041110D /* ui_stubs.m in Sources */,
-				98E972FC0BD9DB7D0041110D /* RDCView.m in Sources */,
 				9885D1940BFBBB0800C5451D /* printer.m in Sources */,
 				98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */,
+				9872FCD90C08FD8E00078CB2 /* CRDBitmap.m in Sources */,
+				9872FCDB0C08FD8E00078CB2 /* CRDKeyboard.m in Sources */,
+				9872FCDD0C08FD8E00078CB2 /* CRDSession.m in Sources */,
+				9872FCF40C08FE6800078CB2 /* CRDSessionView.m in Sources */,
+				9872FD140C08FF4800078CB2 /* CRDDrawingGlue.m in Sources */,
+				9872FD160C08FF6E00078CB2 /* CRDVestigialGlue.m in Sources */,
+				9872FD240C09007400078CB2 /* CRDMixedGlue.m in Sources */,
+				9872FD5F0C0902DA00078CB2 /* CRDShared.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

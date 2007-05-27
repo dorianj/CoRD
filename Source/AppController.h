@@ -22,7 +22,7 @@
 @class CRDFullScreenWindow;
 @class CRDLabelCell;
 @class CRDServerList;
-@class RDInstance;
+@class CRDSession;
 
 @interface AppController : NSObject
 {
@@ -35,7 +35,7 @@
 
     IBOutlet NSPopUpButton *gui_screenResolution, *gui_colorCount;
 	IBOutlet NSBox *gui_performanceOptions;
-    RDInstance *inspectedServer;
+    CRDSession *inspectedServer;
 	
 	// Drawer
 	IBOutlet NSDrawer *gui_serversDrawer;
@@ -57,7 +57,7 @@
 	NSPoint windowCascadePoint;
 	IBOutlet NSUserDefaultsController *userDefaultsController;
 	NSUserDefaults *userDefaults;
-	RDInstance *instanceReconnectingForFullscreen;
+	CRDSession *instanceReconnectingForFullscreen;
 	
 	// Menu
 	IBOutlet NSMenu *gui_serversMenu;
@@ -66,7 +66,7 @@
 	NSMutableArray *connectedServers, *savedServers;
 	
 	// Support for server dragging
-	RDInstance *dumpedInstance;
+	CRDSession *dumpedInstance;
 	BOOL dumpedInstanceWasSelected;
 	
 	BOOL isTerminating, useMinimalServersList;
@@ -106,13 +106,13 @@
 - (void)validateControls;
 - (void)cellNeedsDisplay:(NSCell *)cell;
 
-- (void)connectInstance:(RDInstance *)inst;
-- (void)disconnectInstance:(RDInstance *)inst;
-- (void)cancelConnectingInstance:(RDInstance *)inst;
+- (void)connectInstance:(CRDSession *)inst;
+- (void)disconnectInstance:(CRDSession *)inst;
+- (void)cancelConnectingInstance:(CRDSession *)inst;
 
-- (RDInstance *)serverInstanceForRow:(int)row;
-- (RDInstance *)selectedServerInstance;
-- (RDInstance *)viewedServer;
+- (CRDSession *)serverInstanceForRow:(int)row;
+- (CRDSession *)selectedServerInstance;
+- (CRDSession *)viewedServer;
 
 - (BOOL)mainWindowIsFocused;
 - (CRDDisplayMode)displayMode;

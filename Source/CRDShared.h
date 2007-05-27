@@ -74,7 +74,7 @@ inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
 // AppController specific
 NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);
 
-// RDInstance specific
+// CRDSession specific
 void fill_default_connection(rdcConnection conn);
 
 // Convenience macros
@@ -88,6 +88,11 @@ void fill_default_connection(rdcConnection conn);
 #define PRINT_POINT(s, p) NSLog(@"%@: (%.1f, %.1f)", s, (p).x, (p).y)
 #define POINT_DISTANCE(p1, p2) ( sqrt( pow( (p1).x - (p2).x, 2) + pow( (p1).y - (p2).y, 2) ) )
 #define CGRECT_FROM_NSRECT(r) CGRectMake((r).origin.x, (r).origin.y, (r).size.width, (r).size.height)
+
+#define LOCALS_FROM_CONN									\
+	CRDSessionView *v = (CRDSessionView *)conn->ui;			\
+	CRDSession *inst = (CRDSession *)conn->controller;
+
 
 #pragma mark -
 #pragma mark Constants

@@ -23,7 +23,7 @@
 #import <unistd.h>
 #import "rdesktop.h"
 
-#import "RDCView.h"
+#import "CRDSessionView.h"
 
 #ifdef HAVE_ICONV
 #ifdef HAVE_ICONV_H
@@ -766,7 +766,7 @@ rdp_process_bitmap_caps(rdcConnection conn, STREAM s)
 	 */
 	if (conn->serverBpp != bpp)
 	{
-		RDCView *view = conn->ui;
+		CRDSessionView *view = conn->ui;
 		warning("colour depth changed from %d to %d\n", conn->serverBpp, bpp);
 		[view setBitdepth:bpp];
 		conn->serverBpp = bpp;

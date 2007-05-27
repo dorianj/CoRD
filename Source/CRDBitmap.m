@@ -21,16 +21,16 @@
 		- Using an accelerated buffer would speed up drawing. An option could be used for the situations where an NSImage is required. My tests on a machine with a capable graphics card show that CGImage would speed normal drawing up about 30-40%, and CGLayer would be 2-12 times quicker. The hassle is that some situations, a normal NSImage is needed (eg: when using the image as a pattern for NSColor and patblt), so it would either have to create both or have a switch for which to create, and neither CGImage nor CGLayer have a way to draw only a portion of itself, meaning the only way to do it is clip drawing to match the origin. I've written some basic code to use CFLayer, but it needs more work before I commit it.
 */
 
-#import "RDCBitmap.h"
+#import "CRDBitmap.h"
 #import "AppController.h"
 #import <Accelerate/Accelerate.h> // must be included after rdesktop.h for some reason
 #import "miscellany.h"
-#import "RDCView.h"
+#import "CRDSessionView.h"
 
-@implementation RDCBitmap
+@implementation CRDBitmap
 
 // Currently is adequately optimized: only somewhat critical
-- (id)initWithBitmapData:(const unsigned char *)sourceBitmap size:(NSSize)s view:(RDCView *)v
+- (id)initWithBitmapData:(const unsigned char *)sourceBitmap size:(NSSize)s view:(CRDSessionView *)v
 {
 	if (![super init])
 		return nil;
@@ -132,9 +132,9 @@
 	return self;
 }
 
-// Somewhat critical region: many glyph RDCBitmaps are created, one for each character
+// Somewhat critical region: many glyph CRDBitmaps are created, one for each character
 //	drawn, as well as some when patterns are drawn. Currently efficient enough.
-- (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(RDCView *)v
+- (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(CRDSessionView *)v
 {	
 	if (![super init])
 		return nil;
@@ -165,7 +165,7 @@
 }
 
 // Not a performance critical region at all
-- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(RDCView *)v
+- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(CRDSessionView *)v
 {	
 	if (![super init])
 		return nil;
@@ -237,7 +237,7 @@
 
 
 #pragma mark -
-#pragma mark Drawing the RDCBitmap
+#pragma mark Drawing the CRDBitmap
 
 // The most critical region of this class and one of the most critical spots in the connection thread
 - (void)drawInRect:(NSRect)dstRect fromRect:(NSRect)srcRect operation:(NSCompositingOperation)op

@@ -18,8 +18,8 @@
 #import <Carbon/Carbon.h>
 
 #import "AppController.h"
-#import "RDInstance.h"
-#import "RDCView.h"
+#import "CRDSession.h"
+#import "CRDSessionView.h"
 
 #import "CRDServerList.h"
 #import "CRDFullScreenWindow.h"
@@ -36,22 +36,22 @@
 @interface AppController (Private)
 	- (void)listUpdated;
 	- (void)saveInspectedServer;
-	- (void)updateInstToMatchInspector:(RDInstance *)inst;
-	- (void)setInspectorSettings:(RDInstance *)newSettings;
-	- (void)completeConnection:(RDInstance *)inst;
-	- (void)connectAsync:(RDInstance *)inst;
+	- (void)updateInstToMatchInspector:(CRDSession *)inst;
+	- (void)setInspectorSettings:(CRDSession *)newSettings;
+	- (void)completeConnection:(CRDSession *)inst;
+	- (void)connectAsync:(CRDSession *)inst;
 	- (void)autosizeUnifiedWindow;
 	- (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate;
 	- (void)setInspectorEnabled:(BOOL)enabled;
 	- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled;
-	- (void)createWindowForInstance:(RDInstance *)inst;
+	- (void)createWindowForInstance:(CRDSession *)inst;
 	- (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
-	- (void)addSavedServer:(RDInstance *)inst;
-	- (void)addSavedServer:(RDInstance *)inst atIndex:(int)index;
-	- (void)addSavedServer:(RDInstance *)inst atIndex:(int)index select:(BOOL)select;
+	- (void)addSavedServer:(CRDSession *)inst;
+	- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index;
+	- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index select:(BOOL)select;
 	- (void)sortSavedServers;
 	- (void)storeSavedServerPositions;
-	- (void)removeSavedServer:(RDInstance *)inst deleteFile:(BOOL)deleteFile;
+	- (void)removeSavedServer:(CRDSession *)inst deleteFile:(BOOL)deleteFile;
 @end
 
 
@@ -166,7 +166,7 @@
 	ensure_directory_exists([AppController savedServersPath]);
 
 	// Read each .rdp file
-	RDInstance *rdpinfo;
+	CRDSession *rdpinfo;
 	NSString *path;
 	NSArray *files = [fileManager directoryContentsAtPath:[AppController savedServersPath]];
 	NSEnumerator *enumerator = [files objectEnumerator];
@@ -176,7 +176,7 @@
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
 			path = [[AppController savedServersPath] stringByAppendingPathComponent:filename];
-			rdpinfo = [[RDInstance alloc] initWithRDPFile:path];
+			rdpinfo = [[CRDSession alloc] initWithRDPFile:path];
 			if (rdpinfo != nil)
 				[self addSavedServer:rdpinfo];
 			else
@@ -211,8 +211,8 @@
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
 	BOOL drawerVisible = drawer_is_visisble(gui_serversDrawer);
-	RDInstance *inst = [self selectedServerInstance];
-	RDInstance *viewedInst = [self viewedServer];
+	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *viewedInst = [self viewedServer];
 	SEL action = [item action];
 	
     if (action == @selector(removeSelectedSavedServer:))
@@ -263,7 +263,7 @@
 	}
 	else if (action == @selector(performServerMenuItem:))
 	{
-		RDInstance *representedInst = [item representedObject];
+		CRDSession *representedInst = [item representedObject];
 		[item setState:([connectedServers indexOfObject:representedInst] != NSNotFound ? NSOnState : NSOffState)];	
 	}
 	else if (action == @selector(performConnectOrDisconnect:))
@@ -294,7 +294,7 @@
 	if (!drawer_is_visisble(gui_serversDrawer))
 		[self toggleDrawer:nil visible:YES];
 		
-	RDInstance *inst = [[[RDInstance alloc] init] autorelease];
+	CRDSession *inst = [[[CRDSession alloc] init] autorelease];
 	
 	NSString *path = increment_file_name([AppController savedServersPath],
 			NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
@@ -316,7 +316,7 @@
 // Removes the currently selected server, and deletes the file.
 - (IBAction)removeSelectedSavedServer:(id)sender
 {
-	RDInstance *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServerInstance];
 	
 	if (inst == nil || [inst temporary] || ([inst status] != CRDConnectionClosed) )
 		return;
@@ -347,7 +347,7 @@
 // Connects to the currently selected saved server
 - (IBAction)connect:(id)sender
 {
-	RDInstance *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServerInstance];
 	
 	if (inst == nil)
 		return;
@@ -366,14 +366,14 @@
 // Disconnects the currently selected active server
 - (IBAction)disconnect:(id)sender
 {
-	RDInstance *inst = [self viewedServer];
+	CRDSession *inst = [self viewedServer];
 	[self disconnectInstance:inst];
 }
 
 // Either connects or disconnects the selected server, depending on whether it's connected
 - (IBAction)performConnectOrDisconnect:(id)sender
 {
-	RDInstance *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServerInstance];
 	
 	if ([inst status] == CRDConnectionClosed)
 		[self connectInstance:inst];
@@ -385,7 +385,7 @@
 // Toggles whether or not the selected server is kept after disconnect
 - (IBAction)keepSelectedServer:(id)sender
 {
-	RDInstance *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServerInstance];
 	if (inst == nil)
 		return;
 	
@@ -397,7 +397,7 @@
 // Either disconnects the viewed session, or cancels a pending connection
 - (IBAction)performStop:(id)sender
 {
-	RDInstance *inst = [self viewedServer];
+	CRDSession *inst = [self viewedServer];
 	
 	if ([[self viewedServer] status]  == CRDConnectionConnected)
 		[self disconnect:nil];
@@ -461,7 +461,7 @@
 {
 	[gui_tabView selectNextTabViewItem:sender];
 	
-	RDInstance *inst = [self viewedServer];
+	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
 		return;
 		
@@ -476,7 +476,7 @@
 	
 	[gui_tabView selectPreviousTabViewItem:sender];
 	
-	RDInstance *inst = [self viewedServer];
+	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
 		return;
 		
@@ -511,8 +511,8 @@
 	displayModeBeforeFullscreen = displayMode;
 	
 	// Create the fullscreen window then move the tabview into it	
-	RDInstance *inst = [self viewedServer];
-	RDCView *serverView = [inst view];
+	CRDSession *inst = [self viewedServer];
+	CRDSessionView *serverView = [inst view];
 	NSSize serverSize = [serverView bounds].size;	
 	NSRect winRect = [[NSScreen mainScreen] frame];
 
@@ -618,7 +618,7 @@
 		return;
 	
 	NSEnumerator *enumerator = [connectedServers objectEnumerator];
-	RDInstance *inst;
+	CRDSession *inst;
 	
 	while ( (inst = [enumerator nextObject]) )
 	{
@@ -640,7 +640,7 @@
 		return;
 	
 	NSEnumerator *enumerator = [connectedServers objectEnumerator];
-	RDInstance *inst;
+	CRDSession *inst;
 	
 	while ( (inst = [enumerator nextObject]) )
 	{
@@ -656,7 +656,7 @@
 
 - (IBAction)takeScreenCapture:(id)sender
 {
-	RDInstance *inst = [self viewedServer];
+	CRDSession *inst = [self viewedServer];
 	
 	if (inst == nil)
 		return;
@@ -675,7 +675,7 @@
 	
 	split_hostname(address, &hostname, &port);
 	
-	RDInstance *newInst = [[[RDInstance alloc] init] autorelease];
+	CRDSession *newInst = [[[CRDSession alloc] init] autorelease];
 	
 	[newInst setValue:[NSNumber numberWithInt:16] forKey:@"screenDepth"];
 	[newInst setValue:hostname forKey:@"label"];
@@ -710,7 +710,7 @@
 // Sent when a server in the Server menu is clicked on; either connects to the server or makes it visible
 - (IBAction)performServerMenuItem:(id)sender
 {
-	RDInstance *inst = [sender representedObject];
+	CRDSession *inst = [sender representedObject];
 	
 	if (inst == nil)
 		return;
@@ -756,7 +756,7 @@
 
 - (IBAction)saveSelectedServer:(id)sender
 {
-	RDInstance *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServerInstance];
 	
 	if (inst == nil)
 		return;
@@ -812,8 +812,8 @@
 {
 	NSString *itemId = [toolbarItem itemIdentifier];
 	
-	RDInstance *inst = [self selectedServerInstance];
-	RDInstance *viewedInst = [self viewedServer];
+	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *viewedInst = [self viewedServer];
 	
 	if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
 		return ([connectedServers count] > 0);
@@ -859,7 +859,7 @@
 	id file;
 	while ( (file = [enumerator nextObject]) )
 	{
-		RDInstance *inst = [[RDInstance alloc] initWithRDPFile:file];
+		CRDSession *inst = [[CRDSession alloc] initWithRDPFile:file];
 		
 		if (inst != nil)
 		{
@@ -896,7 +896,7 @@
 	
 	// Other cleanup
 	NSEnumerator *enumerator;
-	RDInstance *inst;
+	CRDSession *inst;
 	
 	// Disconnect all connected servers
 	enumerator = [connectedServers objectEnumerator];
@@ -999,7 +999,7 @@
 		NSArray *files = [[info draggingPasteboard] propertyListForType:NSFilenamesPboardType];
 		NSArray *rdpFiles = filter_filenames(files, [NSArray arrayWithObjects:@"rdp",nil]);
 		
-		RDInstance *inst;
+		CRDSession *inst;
 		int insertIndex = [savedServers indexOfObject:[self serverInstanceForRow:row]];
 		
 		if (insertIndex == NSNotFound)
@@ -1010,7 +1010,7 @@
 		
 		while ( (file = [enumerator nextObject]) )
 		{
-			inst = [[RDInstance alloc] initWithRDPFile:file];
+			inst = [[CRDSession alloc] initWithRDPFile:file];
 			
 			if (inst != nil)
 			{
@@ -1036,7 +1036,7 @@
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes
 		toPasteboard:(NSPasteboard*)pboard
 {
-	RDInstance *inst = [self serverInstanceForRow:[rowIndexes firstIndex]];
+	CRDSession *inst = [self serverInstanceForRow:[rowIndexes firstIndex]];
 	
 	if (inst == nil)
 		return NO;
@@ -1066,7 +1066,7 @@
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
 	int selectedRow = [gui_serverList selectedRow];
-	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	CRDSession *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
 	
 	[self validateControls];
 	[self fieldEdited:nil];
@@ -1147,8 +1147,8 @@
 #pragma mark -
 #pragma mark Managing inspector settings
 
-// Sets all of the values in the passed RDInstance to match the inspector
-- (void)updateInstToMatchInspector:(RDInstance *)inst
+// Sets all of the values in the passed CRDSession to match the inspector
+- (void)updateInstToMatchInspector:(CRDSession *)inst
 {
 	// Checkboxes
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_cacheBitmaps)		forKey:@"cacheBitmaps"];
@@ -1196,13 +1196,13 @@
 	
 }
 
-// Sets the inspector options to match an RDInstance
-- (void)setInspectorSettings:(RDInstance *)newSettings
+// Sets the inspector options to match an CRDSession
+- (void)setInspectorSettings:(CRDSession *)newSettings
 {
 	if (newSettings == nil)
 	{
 		[gui_inspector setTitle:NSLocalizedString(@"Inspector: No Server Selected", @"Inspector -> Disabled title")];
-		newSettings = [[[RDInstance alloc] init] autorelease];
+		newSettings = [[[CRDSession alloc] init] autorelease];
 	}
 	else
 	{
@@ -1320,7 +1320,7 @@
 #pragma mark Managing connected servers
 
 // Starting point to connect to a instance
-- (void)connectInstance:(RDInstance *)inst
+- (void)connectInstance:(CRDSession *)inst
 {
 	if (inst == nil)
 		return;
@@ -1333,7 +1333,7 @@
 }
 
 // Should only be called by connectInstance
-- (void)connectAsync:(RDInstance *)inst
+- (void)connectAsync:(CRDSession *)inst
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
@@ -1362,7 +1362,7 @@
 }
 
 // Called in main thread by connectAsync
-- (void)completeConnection:(RDInstance *)inst
+- (void)completeConnection:(CRDSession *)inst
 {
 	if ([inst status] == CRDConnectionConnected)
 	{
@@ -1440,7 +1440,7 @@
 }
 
 // Assures that the passed instance is disconnected and removed from view.
-- (void)disconnectInstance:(RDInstance *)inst
+- (void)disconnectInstance:(CRDSession *)inst
 {
 	if (inst == nil || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
 		return;
@@ -1508,7 +1508,7 @@
 	}
 }
 
-- (void)cancelConnectingInstance:(RDInstance *)inst
+- (void)cancelConnectingInstance:(CRDSession *)inst
 {
 	if ([inst status] != CRDConnectionConnecting)
 		return;
@@ -1525,17 +1525,17 @@
 #pragma mark -
 #pragma mark Managing saved servers
 
-- (void)addSavedServer:(RDInstance *)inst
+- (void)addSavedServer:(CRDSession *)inst
 {
 	[self addSavedServer:inst atIndex:[savedServers count] select:YES];
 }
 
-- (void)addSavedServer:(RDInstance *)inst atIndex:(int)index
+- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index
 {
 	[self addSavedServer:inst atIndex:index select:NO];
 }
 
-- (void)addSavedServer:(RDInstance *)inst atIndex:(int)index select:(BOOL)select
+- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index select:(BOOL)select
 {
 	if ( (inst == nil) || (index < 0) || (index > [savedServers count]) )
 		return;
@@ -1551,7 +1551,7 @@
 		[gui_serverList selectRow:(2 + [connectedServers count] + [savedServers indexOfObjectIdenticalTo:inst])];
 }
 
-- (void)removeSavedServer:(RDInstance *)inst deleteFile:(BOOL)deleteFile
+- (void)removeSavedServer:(CRDSession *)inst deleteFile:(BOOL)deleteFile
 {
 	if (deleteFile)
 	{
@@ -1575,7 +1575,7 @@
 - (void)storeSavedServerPositions
 {
 	NSEnumerator *enumerator = [savedServers objectEnumerator];
-	RDInstance *inst;
+	CRDSession *inst;
 	
 	while ( (inst = [enumerator nextObject]) )
 		[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObject:inst]] forKey:@"preferredRowIndex"];	
@@ -1587,7 +1587,7 @@
 
 - (void)holdSavedServer:(int)row
 {
-	RDInstance *inst = [self serverInstanceForRow:row];
+	CRDSession *inst = [self serverInstanceForRow:row];
 	int index = [savedServers indexOfObjectIdenticalTo:inst];
 	
 	if ( (inst == nil) || (index == NSNotFound) )
@@ -1633,7 +1633,7 @@
 
 - (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate
 {
-	RDInstance *inst = [self viewedServer];
+	CRDSession *inst = [self viewedServer];
 	NSSize newContentSize;
 	if ([self displayMode] == CRDDisplayUnified && inst != nil)
 	{
@@ -1755,7 +1755,7 @@
 
 - (void)savePanelDidEnd:(NSSavePanel *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo
 {
-	RDInstance *inst = contextInfo;
+	CRDSession *inst = contextInfo;
 	
 	if ( (inst == nil) || (returnCode != NSOKButton) )
 		return;
@@ -1781,7 +1781,7 @@
 	
 	NSMenuItem *menuItem;
 	NSEnumerator *enumerator;
-	RDInstance *inst;
+	CRDSession *inst;
 	
 	enumerator = [connectedServers objectEnumerator];
 	while ( (inst = [enumerator nextObject]) )
@@ -1804,7 +1804,7 @@
 	}
 }
 
-- (RDInstance *)serverInstanceForRow:(int)row
+- (CRDSession *)serverInstanceForRow:(int)row
 {
 	int connectedCount = [connectedServers count];
 	int savedCount = [savedServers count];
@@ -1816,7 +1816,7 @@
 		return [savedServers objectAtIndex:row - connectedCount - 2];
 }
 
-- (RDInstance *)selectedServerInstance
+- (CRDSession *)selectedServerInstance
 {
 	if (!drawer_is_visisble(gui_serversDrawer))
 		return nil;
@@ -1825,7 +1825,7 @@
 }
 
 // Returns the connected server that the tab view is displaying
-- (RDInstance *)viewedServer
+- (CRDSession *)viewedServer
 {
 	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
 	{
@@ -1846,7 +1846,7 @@
 	else
 	{
 		NSEnumerator *enumerator = [connectedServers objectEnumerator];
-		RDInstance *inst;
+		CRDSession *inst;
 		
 		while ( (inst = [enumerator nextObject]) )
 		{
@@ -1861,7 +1861,7 @@
 // Enables/disables non-inspector gui controls as needed
 - (void)validateControls
 {
-	RDInstance *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	CRDSession *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
 	
 	[gui_connectButton setEnabled:(inst != nil && [inst status] == CRDConnectionClosed)];
 	[gui_inspectorButton setEnabled:(inst != nil)];
@@ -1900,7 +1900,7 @@
 	
 }
 
-- (void)createWindowForInstance:(RDInstance *)inst
+- (void)createWindowForInstance:(CRDSession *)inst
 {
 	[inst createWindow:!PREFERENCE_ENABLED(CRDPrefsScaleSessions)];
 	

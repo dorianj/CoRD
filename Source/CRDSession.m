@@ -15,9 +15,9 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#import "RDInstance.h"
-#import "RDCView.h"
-#import "RDCKeyboard.h"
+#import "CRDSession.h"
+#import "CRDSessionView.h"
+#import "CRDKeyboard.h"
 #import "CRDServerCell.h"
 #import "AppController.h"
 #import "keychain.h"
@@ -26,7 +26,7 @@
 // Part of a hacky attempt to fix disk forwarding
 #define NOTIFY_POLL_SPEED 10.0
 
-@interface RDInstance (Private)
+@interface CRDSession (Private)
 	- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force;
 	- (void)setStatus:(CRDConnectionStatus)status;
 	- (void)createScrollEnclosure:(NSRect)frame;
@@ -36,7 +36,7 @@
 
 #pragma mark -
 
-@implementation RDInstance
+@implementation CRDSession
 
 - (id)init
 {
@@ -232,7 +232,7 @@
 	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
 	
 	// Set remote keymap to match local OS X input type
-	conn->keyboardLayout = [RDCKeyboard windowsKeymapForMacKeymap:[RDCKeyboard currentKeymapName]];
+	conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
 	
 	// Set up disk redirection
 	if (forwardDisks && !DISK_FORWARDING_DISABLED)
@@ -802,7 +802,7 @@
 	if (conn == NULL)
 		return;
 	
-	view = [[RDCView alloc] initWithFrame:[frameRect rectValue]];
+	view = [[CRDSessionView alloc] initWithFrame:[frameRect rectValue]];
 	[view setController:self];
 	conn->ui = view;
 }
@@ -958,7 +958,7 @@
 	return label;
 }
 
-- (RDCView *)view
+- (CRDSessionView *)view
 {
 	return view;
 }

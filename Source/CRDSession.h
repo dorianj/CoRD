@@ -22,9 +22,9 @@
 #import "miscellany.h"
 
 @class CRDServerCell;
-@class RDCView;
+@class CRDSessionView;
 
-@interface RDInstance : NSObject
+@interface CRDSession : NSObject
 {
 	// Represented rdesktop object
 	rdcConnection conn;
@@ -59,7 +59,7 @@
 	int clipboardChangeCount;
 
 	// UI elements
-	RDCView *view;
+	CRDSessionView *view;
 	NSScrollView *scrollEnclosure;
 	CRDServerCell *cellRepresentation;
 	NSTabViewItem *tabViewRepresentation;
@@ -103,7 +103,7 @@
 // Accessors
 - (rdcConnection)conn;
 - (NSString *)label;
-- (RDCView *)view;
+- (CRDSessionView *)view;
 - (NSString *)rdpFilename;
 - (void)setRdpFilename:(NSString *)path;
 - (BOOL)temporary;

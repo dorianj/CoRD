@@ -18,7 +18,7 @@
 #import "CRDServerCell.h"
 
 #import "miscellany.h"
-#import "RDInstance.h"
+#import "CRDSession.h"
 #import "AppController.h"
 
 // Space between each line of text
@@ -124,7 +124,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 		return;
 	
  	NSRect imgRect = NSMakeRect(frame.origin.x + PADDING_LEFT, frame.origin.y + (frame.size.height / 2.0) - (IMAGE_SIZE / 2.0), IMAGE_SIZE, IMAGE_SIZE);
-	RDInstance *inst = [g_appController serverInstanceForRow:[[g_appController valueForKey:@"gui_serverList"] rowAtPoint:imgRect.origin]];
+	CRDSession *inst = [g_appController serverInstanceForRow:[[g_appController valueForKey:@"gui_serverList"] rowAtPoint:imgRect.origin]];
 	
 	// Draw the image or progress indicator
 	if ( ([inst status] == CRDConnectionConnecting) && (controlView != nil) )
@@ -223,7 +223,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 
 - (void)setObjectValue:(id)obj
 {
-	// RDInstance doesn't conform to NSCopying, thus, make sure super doesn't try to copy it here.
+	// CRDSession doesn't conform to NSCopying, thus, make sure super doesn't try to copy it here.
 }
 
 

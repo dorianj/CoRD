@@ -28,7 +28,7 @@
 #import "miscellany.h"
 #import "AppController.h"
 #import "CRDServerCell.h"
-#import "RDInstance.h"
+#import "CRDSession.h"
 
 
 // Start is top, end is bottom

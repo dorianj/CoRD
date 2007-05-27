@@ -22,8 +22,8 @@
 #import "CRDApplication.h"
 
 #import "AppController.h"
-#import "RDInstance.h"
-#import "RDCView.h"
+#import "CRDSession.h"
+#import "CRDSessionView.h"
 #import "CRDFullScreenWindow.h"
 
 @implementation CRDApplication
@@ -33,8 +33,8 @@
 	// This could be optimized by lazy checking of viewIsFocused, and v and/or changing
 	//	some to use IB connections
 	CRDFullScreenWindow *fullScreenWindow = [g_appController fullScreenWindow];
-	RDInstance *inst = [g_appController viewedServer];
-	RDCView *v = [inst view];
+	CRDSession *inst = [g_appController viewedServer];
+	CRDSessionView *v = [inst view];
 	BOOL viewIsFocused = (v != nil) && [[v window] isKeyWindow] && [[v window] isMainWindow] && 
 			([[v window] firstResponder] == v);
 	NSEventType eventType = [ev type];

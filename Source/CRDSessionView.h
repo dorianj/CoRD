@@ -21,13 +21,13 @@
 
 #import "rdesktop.h"
 
-@class RDInstance;
-@class RDCBitmap;
-@class RDCKeyboard;
+@class CRDSession;
+@class CRDBitmap;
+@class CRDKeyboard;
 
-@interface RDCView : NSOpenGLView
+@interface CRDSessionView : NSOpenGLView
 {
-	RDInstance *controller;
+	CRDSession *controller;
 	
 	// OpenGL back buffer
 	CGContextRef rdBufferContext;
@@ -40,7 +40,7 @@
 	NSRect clipRect;
 	NSCursor *cursor;
 	int bitdepth;
-	RDCKeyboard *keyTranslator;
+	CRDKeyboard *keyTranslator;
 	unsigned int *colorMap;	// always a size of 256
 	NSSize screenSize;
 	
@@ -57,10 +57,10 @@
 - (void)fillRect:(NSRect)rect withColor:(NSColor *)color;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *)color patternOrigin:(NSPoint)origin;
 - (void)fillRect:(NSRect)rect withRDColor:(int)color;
-- (void)drawBitmap:(RDCBitmap *)image inRect:(NSRect)r from:(NSPoint)origin operation:(NSCompositingOperation)op;
+- (void)drawBitmap:(CRDBitmap *)image inRect:(NSRect)r from:(NSPoint)origin operation:(NSCompositingOperation)op;
 - (void)screenBlit:(NSRect)from to:(NSPoint)to;
 - (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)width;
-- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor;
+- (void)drawGlyph:(CRDBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor;
 - (void)swapRect:(NSRect)r;
 
 // Other rdesktop handlers
@@ -88,7 +88,7 @@
 - (void)setScreenSize:(NSSize)newSize;
 
 // Accessors
-- (void)setController:(RDInstance *)instance;
+- (void)setController:(CRDSession *)instance;
 - (int)bitsPerPixel;
 - (void)setBitdepth:(int)depth;
 - (int)width;

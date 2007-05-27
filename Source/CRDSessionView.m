@@ -18,16 +18,16 @@
 /*	Note: 'backing store' in this class refers to the buffer that rdesktop draws to, not an AppKit window buffer
 */
 
-#import "RDCView.h"
+#import "CRDSessionView.h"
 
 
-#import "RDCKeyboard.h"
-#import "RDCBitmap.h"
-#import "RDInstance.h"
+#import "CRDKeyboard.h"
+#import "CRDBitmap.h"
+#import "CRDSession.h"
 
 #import "scancodes.h"
 
-@interface RDCView (Private)
+@interface CRDSessionView (Private)
 	- (void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
 	- (void)recheckScheduledMouseInput:(NSTimer*)timer;
 	- (void)generateTexture;
@@ -37,7 +37,7 @@
 
 #pragma mark -
 
-@implementation RDCView
+@implementation CRDSessionView
 
 #pragma mark -
 #pragma mark NSView
@@ -59,7 +59,7 @@
 	// Other initializations
 	[self setCursor:[NSCursor arrowCursor]];
 	colorMap = calloc(256, sizeof(unsigned int));
-	keyTranslator = [[RDCKeyboard alloc] init];
+	keyTranslator = [[CRDKeyboard alloc] init];
 	
 	
 	[self resetCursorRects];
@@ -399,7 +399,7 @@
 	[self releaseBackingStore];
 }
 
-- (void)drawBitmap:(RDCBitmap *)image inRect:(NSRect)to from:(NSPoint)origin operation:(NSCompositingOperation)op
+- (void)drawBitmap:(CRDBitmap *)image inRect:(NSRect)to from:(NSPoint)origin operation:(NSCompositingOperation)op
 {
 	[self focusBackingStore];
 	
@@ -436,7 +436,7 @@
 	[self releaseBackingStore];
 }
 
-- (void)drawGlyph:(RDCBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor
+- (void)drawGlyph:(CRDBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor
 {
 	// Assumes that focusBackingStore has already been called (for efficiency)
 	
@@ -675,7 +675,7 @@
 #pragma mark -
 #pragma mark Accessors
 
-- (void)setController:(RDInstance *)instance
+- (void)setController:(CRDSession *)instance
 {
 	controller = instance;
 	[keyTranslator setController:instance];

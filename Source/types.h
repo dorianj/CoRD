@@ -26,7 +26,7 @@ typedef int RDBOOL;
 #define False (0)
 #endif
 
-@class RDCBitmap;
+@class CRDBitmap;
 
 typedef unsigned char uint8;
 typedef signed char sint8;
@@ -35,10 +35,10 @@ typedef signed short sint16;
 typedef unsigned int uint32;
 typedef signed int sint32;
 
-typedef RDCBitmap * RDBitmapRef;
-typedef RDCBitmap * RDGlyphRef;
+typedef CRDBitmap * RDBitmapRef;
+typedef CRDBitmap * RDGlyphRef;
 typedef unsigned int * RDColorMapRef;
-typedef RDCBitmap * RDCursorRef;
+typedef CRDBitmap * RDCursorRef;
 
 typedef struct _POINT
 {
@@ -363,8 +363,8 @@ struct rdcConn
 	RDPCOMP mppcDict;
 	
 	// UI
-	void *ui;	// the associated RDCView
-	void *controller; // the associated RDInstance
+	void *ui;	// the associated CRDSessionView
+	void *controller; // the associated CRDSession
 	
 	volatile ConnectionErrorCode errorCode;
 	

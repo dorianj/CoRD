@@ -1,6 +1,6 @@
 
 # Standard keys (with en-us equivilent in the comment )
-virt 0x32 0x29  # ` on ANSI keyboards (ISO key is overridden in RDCKeyboard)
+virt 0x32 0x29  # ` on ANSI keyboards (ISO key is overridden in CRDKeyboard)
 virt 0x0A 0x29	# ^ on ISO keyboards
 virt 0x12 0x02  # 1
 virt 0x13 0x03  # 2
@@ -68,7 +68,7 @@ virt 0xd7 0x57	# f11
 virt 0xdf 0x58	# f12
 virt 0x71 0x46	# Scroll lock (f15)
 
-# Print Screen and Pause/Break is hardcoded in RDCKeyboard
+# Print Screen and Pause/Break is hardcoded in CRDKeyboard
 
 # Misc keys
 virt 0x35 0x01	# esc
@@ -108,4 +108,4 @@ virt 0x5b 0x48	# Numeric 8
 virt 0x5c 0x49	# Numeric 9
 virt 0x4c 0x9c	# Numeric enter
 
-# Modifiers are hardcoded and handled in RDCKeyboard
+# Modifiers are hardcoded and handled in CRDKeyboard

@@ -218,7 +218,7 @@ NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSSt
 
 
 #pragma mark -
-#pragma mark RDInstance specific
+#pragma mark CRDSession specific
 
 void fill_default_connection(rdcConnection conn)
 {
