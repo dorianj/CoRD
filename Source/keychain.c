@@ -1,4 +1,5 @@
 /*	Copyright (c) 2006 Dorian Johnson <arcadiclife@gmail.com>
+	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
 	terms of the GNU General Public License as published by the Free Software

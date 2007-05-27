@@ -55,7 +55,7 @@
 
 
 int
-mppc_expand(rdcConnection conn, uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen)
+mppc_expand(RDConnectionRef conn, uint8 * data, uint32 clen, uint8 ctype, uint32 * roff, uint32 * rlen)
 {
 	int k, walker_len = 0, walker;
 	uint32 i = 0;

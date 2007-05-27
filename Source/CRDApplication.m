@@ -15,31 +15,23 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-// Purpose: Subclass of NSApplication so that command+key can be interpreted
-//			as windows+key and sent to server. Additionally, the mouse is tracked
-//			to allow the menu bar to be unhidden during fullscreeen
+// Purpose: Subclass of NSApplication so that command+key can be interpreted as windows+key and sent to server.
 
 #import "CRDApplication.h"
 
 #import "AppController.h"
 #import "CRDSession.h"
 #import "CRDSessionView.h"
-#import "CRDFullScreenWindow.h"
 
 @implementation CRDApplication
 
 - (void)sendEvent:(NSEvent *)ev
 {
-	// This could be optimized by lazy checking of viewIsFocused, and v and/or changing
-	//	some to use IB connections
-	CRDFullScreenWindow *fullScreenWindow = [g_appController fullScreenWindow];
-	CRDSession *inst = [g_appController viewedServer];
-	CRDSessionView *v = [inst view];
-	BOOL viewIsFocused = (v != nil) && [[v window] isKeyWindow] && [[v window] isMainWindow] && 
-			([[v window] firstResponder] == v);
-	NSEventType eventType = [ev type];
+	#define viewIsFocused ([[v window] isKeyWindow] && [[v window] isMainWindow] && ([[v window] firstResponder] == v) )
 	
-	switch (eventType)
+	CRDSessionView *v = [[g_appController viewedServer] view];
+
+	switch ([ev type])
 	{
 		case NSKeyDown:	
 			if (viewIsFocused)
@@ -75,6 +67,8 @@
 	
 	
     [super sendEvent:ev];
+	
+	#undef viewIsFocused
 }
 
 

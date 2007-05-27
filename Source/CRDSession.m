@@ -126,7 +126,7 @@
 	}
 
 	uint8 type;
-	STREAM s;
+	RDStreamRef s;
 	uint32 ext_disc_reason;
 	
 	if (connectionStatus != CRDConnectionConnected)
@@ -181,7 +181,7 @@
 		return NO;
 		
 	free(conn);
-	conn = malloc(sizeof(struct rdcConn));
+	conn = malloc(sizeof(struct RDConnection));
 	fill_default_connection(conn);
 	conn->controller = self;
 	
@@ -339,7 +339,7 @@
 			}
 		}
 		
-		memset(conn, 0, sizeof(struct rdcConn));
+		memset(conn, 0, sizeof(struct RDConnection));
 		free(conn);
 		conn = NULL;
 		
@@ -948,7 +948,7 @@
 #pragma mark -
 #pragma mark Accessors
 
-- (rdcConnection)conn
+- (RDConnectionRef)conn
 {
 	return conn;
 }

@@ -20,7 +20,7 @@
 
 #import "disk.h"
 
-#import "miscellany.h"
+#import "CRDShared.h"
 
 #import <sys/types.h>
 #import <sys/stat.h>
@@ -151,7 +151,7 @@ typedef struct
 	char type[PATH_MAX];
 } FsInfoType;
 
-static NTSTATUS NotifyInfo(rdcConnection conn, NTHANDLE handle, uint32 info_class, NOTIFY * p);
+static NTStatus NotifyInfo(RDConnectionRef conn, NTHandle handle, uint32 info_class, NOTIFY * p);
 
 static time_t
 get_create_time(struct stat *st)
@@ -308,7 +308,7 @@ open_weak_exclusive(const char *pathname, int flags, mode_t mode)
 /* returns numer of units found and initialized. */
 
 int
-disk_enum_devices(rdcConnection conn, char ** paths, char **names, int count)
+disk_enum_devices(RDConnectionRef conn, char ** paths, char **names, int count)
 {
 	int i;
 	
@@ -329,11 +329,11 @@ disk_enum_devices(rdcConnection conn, char ** paths, char **names, int count)
 
 
 /* Opens or creates a file or directory */
-static NTSTATUS
-disk_create(rdcConnection conn, uint32 device_id, uint32 accessmask, uint32 sharemode, uint32 create_disposition,
-	    uint32 flags_and_attributes, char *filename, NTHANDLE * phandle)
+static NTStatus
+disk_create(RDConnectionRef conn, uint32 device_id, uint32 accessmask, uint32 sharemode, uint32 create_disposition,
+	    uint32 flags_and_attributes, char *filename, NTHandle * phandle)
 {
-	NTHANDLE handle;
+	NTHandle handle;
 	DIR *dirp;
 	int flags, mode;
 	char path[PATH_MAX];
@@ -491,8 +491,8 @@ disk_create(rdcConnection conn, uint32 device_id, uint32 accessmask, uint32 shar
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-disk_close(rdcConnection conn, NTHANDLE handle)
+static NTStatus
+disk_close(RDConnectionRef conn, NTHandle handle)
 {
 	struct fileinfo *pfinfo;
 
@@ -538,8 +538,8 @@ disk_close(rdcConnection conn, NTHANDLE handle)
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-disk_read(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+static NTStatus
+disk_read(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
 {
 	int n;
 
@@ -578,8 +578,8 @@ disk_read(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-disk_write(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+static NTStatus
+disk_write(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
 {
 	int n;
 
@@ -605,8 +605,8 @@ disk_write(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uin
 	return STATUS_SUCCESS;
 }
 
-NTSTATUS
-disk_query_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STREAM out)
+NTStatus
+disk_query_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, RDStreamRef out)
 {
 	uint32 file_attributes, ft_high, ft_low;
 	struct stat filestat;
@@ -686,8 +686,8 @@ disk_query_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, S
 	return STATUS_SUCCESS;
 }
 
-NTSTATUS
-disk_set_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STREAM in, STREAM out)
+NTStatus
+disk_set_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, RDStreamRef in, RDStreamRef out)
 {
 	uint32 length, file_attributes, ft_high, ft_low, delete_on_close;
 	char newname[PATH_MAX], fullpath[PATH_MAX];
@@ -860,11 +860,11 @@ disk_set_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STR
 	return STATUS_SUCCESS;
 }
 
-NTSTATUS
-disk_check_notify(rdcConnection conn, NTHANDLE handle)
+NTStatus
+disk_check_notify(RDConnectionRef conn, NTHandle handle)
 {
 	struct fileinfo *pfinfo;
-	NTSTATUS status = STATUS_PENDING;
+	NTStatus status = STATUS_PENDING;
 
 	NOTIFY notify;
 
@@ -891,11 +891,11 @@ disk_check_notify(rdcConnection conn, NTHANDLE handle)
 
 }
 
-NTSTATUS
-disk_create_notify(rdcConnection conn, NTHANDLE handle, uint32 info_class)
+NTStatus
+disk_create_notify(RDConnectionRef conn, NTHandle handle, uint32 info_class)
 {
 	struct fileinfo *pfinfo;
-	NTSTATUS ret = STATUS_PENDING;
+	NTStatus ret = STATUS_PENDING;
 
 	/* printf("start disk_create_notify info_class %X\n", info_class); */
 
@@ -917,8 +917,8 @@ disk_create_notify(rdcConnection conn, NTHANDLE handle, uint32 info_class)
 
 }
 
-static NTSTATUS
-NotifyInfo(rdcConnection conn, NTHANDLE handle, uint32 info_class, NOTIFY * p)
+static NTStatus
+NotifyInfo(RDConnectionRef conn, NTHandle handle, uint32 info_class, NOTIFY * p)
 {
 	struct fileinfo *pfinfo;
 	struct stat buf;
@@ -1035,8 +1035,8 @@ FsVolumeInfo(char *fpath)
 }
 
 
-NTSTATUS
-disk_query_volume_information(rdcConnection conn, NTHANDLE handle, uint32 info_class, STREAM out)
+NTStatus
+disk_query_volume_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, RDStreamRef out)
 {
 	struct STATFS_T stat_fs;
 	struct fileinfo *pfinfo;
@@ -1100,8 +1100,8 @@ disk_query_volume_information(rdcConnection conn, NTHANDLE handle, uint32 info_c
 	return STATUS_SUCCESS;
 }
 
-NTSTATUS
-disk_query_directory(rdcConnection conn, NTHANDLE handle, uint32 info_class, char *pattern, STREAM out)
+NTStatus
+disk_query_directory(RDConnectionRef conn, NTHandle handle, uint32 info_class, char *pattern, RDStreamRef out)
 {
 	uint32 file_attributes, ft_low, ft_high;
 	const char *dirname;
@@ -1209,8 +1209,8 @@ disk_query_directory(rdcConnection conn, NTHANDLE handle, uint32 info_class, cha
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-disk_device_control(rdcConnection conn, NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+static NTStatus
+disk_device_control(RDConnectionRef conn, NTHandle handle, uint32 request, RDStreamRef in, RDStreamRef out)
 {
 	if (((request >> 16) != 20) || ((request >> 16) != 9))
 		return STATUS_INVALID_PARAMETER;

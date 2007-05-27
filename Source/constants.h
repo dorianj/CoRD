@@ -21,6 +21,10 @@
 /* TCP port for Remote Desktop Protocol */
 #define TCP_PORT_RDP 3389
 
+#define NBITMAPCACHE 3
+#define NBITMAPCACHEENTRIES 0xa00
+#define NOT_SET -1
+
 #define DEFAULT_CODEPAGE	"UTF-8"
 #define WINDOWS_CODEPAGE	"UTF-16LE"
 
@@ -311,8 +315,7 @@ enum RDP_INPUT_DEVICE
 #define MASK_HAS_BITS(var, mask) ((var & mask)>0)
 #define MASK_CHANGE_BIT(var, mask, active) (var = ((var & ~mask) | (active ? mask : 0)))
 
-/* Clipboard constants, "borrowed" from GCC system headers in 
-   the w32 cross compiler */
+/* Clipboard constants, "borrowed" from GCC system headers in the w32 cross compiler */
 
 #define CF_TEXT         1
 #define CF_BITMAP       2
@@ -355,7 +358,7 @@ enum RDP_INPUT_DEVICE
 #define CHANNEL_OPTION_SHOW_PROTOCOL	0x00200000
 
 /* NT status codes for RDPDR */
-#define STATUS_SUCCESS			0x00000000
+#define STATUS_SUCCESS					0x00000000
 #define STATUS_NOT_IMPLEMENTED          0x00000001
 #define STATUS_PENDING                  0x00000103
 
@@ -366,10 +369,10 @@ enum RDP_INPUT_DEVICE
 #define STATUS_DEVICE_BUSY              0x80000011
 
 #define STATUS_INVALID_HANDLE           0xc0000008
-#define STATUS_INVALID_PARAMETER	0xc000000d
+#define STATUS_INVALID_PARAMETER		0xc000000d
 #define STATUS_NO_SUCH_FILE             0xc000000f
 #define STATUS_INVALID_DEVICE_REQUEST	0xc0000010
-#define STATUS_ACCESS_DENIED		0xc0000022
+#define STATUS_ACCESS_DENIED			0xc0000022
 #define STATUS_OBJECT_NAME_COLLISION    0xc0000035
 #define STATUS_DISK_FULL                0xc000007f
 #define STATUS_FILE_IS_A_DIRECTORY      0xc00000ba
@@ -394,28 +397,28 @@ enum RDP_INPUT_DEVICE
 #define FILE_OPEN_FOR_FREE_SPACE_QUERY  0x00800000
 
 /* RDP5 disconnect PDU */
-#define exDiscReasonNoInfo				0x0000
+#define exDiscReasonNoInfo						0x0000
 #define exDiscReasonAPIInitiatedDisconnect		0x0001
 #define exDiscReasonAPIInitiatedLogoff			0x0002
 #define exDiscReasonServerIdleTimeout			0x0003
 #define exDiscReasonServerLogonTimeout			0x0004
-#define exDiscReasonReplacedByOtherConnection		0x0005
-#define exDiscReasonOutOfMemory				0x0006
+#define exDiscReasonReplacedByOtherConnection	0x0005
+#define exDiscReasonOutOfMemory					0x0006
 #define exDiscReasonServerDeniedConnection		0x0007
-#define exDiscReasonServerDeniedConnectionFips		0x0008
-#define exDiscReasonLicenseInternal			0x0100
+#define exDiscReasonServerDeniedConnectionFips	0x0008
+#define exDiscReasonLicenseInternal				0x0100
 #define exDiscReasonLicenseNoLicenseServer		0x0101
 #define exDiscReasonLicenseNoLicense			0x0102
 #define exDiscReasonLicenseErrClientMsg			0x0103
 #define exDiscReasonLicenseHwidDoesntMatchLicense	0x0104
 #define exDiscReasonLicenseErrClientLicense		0x0105
-#define exDiscReasonLicenseCantFinishProtocol		0x0106
-#define exDiscReasonLicenseClientEndedProtocol		0x0107
-#define exDiscReasonLicenseErrClientEncryption		0x0108
-#define exDiscReasonLicenseCantUpgradeLicense		0x0109
-#define exDiscReasonLicenseNoRemoteConnections		0x010a
+#define exDiscReasonLicenseCantFinishProtocol	0x0106
+#define exDiscReasonLicenseClientEndedProtocol	0x0107
+#define exDiscReasonLicenseErrClientEncryption	0x0108
+#define exDiscReasonLicenseCantUpgradeLicense	0x0109
+#define exDiscReasonLicenseNoRemoteConnections	0x010a
 
-// Time to wait for remote host in seconds - unused, real constant in miscellany.h
+// Time to wait for remote host in seconds
 #define TIMOUT_LENGTH 20
 
 #ifndef PATH_MAX

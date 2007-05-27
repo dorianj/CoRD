@@ -29,7 +29,7 @@ const uint8 zero_key[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 /* Update mru stamp/index for a bitmap */
 void
-pstcache_touch_bitmap(rdcConnection conn, uint8 cache_id, uint16 cache_idx, uint32 stamp)
+pstcache_touch_bitmap(RDConnectionRef conn, uint8 cache_id, uint16 cache_idx, uint32 stamp)
 {
 	int fd;
 
@@ -37,17 +37,17 @@ pstcache_touch_bitmap(rdcConnection conn, uint8 cache_id, uint16 cache_idx, uint
 		return;
 
 	fd = conn->pstcacheFd[cache_id];
-	rd_lseek_file(fd, 12 + cache_idx * (conn->pstcacheBpp * MAX_CELL_SIZE + sizeof(CELLHEADER)));
+	rd_lseek_file(fd, 12 + cache_idx * (conn->pstcacheBpp * MAX_CELL_SIZE + sizeof(RDPersistentCacheCellHeader)));
 	rd_write_file(fd, &stamp, sizeof(stamp));
 }
 
 /* Load a bitmap from the persistent cache */
 RDBOOL
-pstcache_load_bitmap(rdcConnection conn, uint8 cache_id, uint16 cache_idx)
+pstcache_load_bitmap(RDConnectionRef conn, uint8 cache_id, uint16 cache_idx)
 {
 	uint8 *celldata;
 	int fd;
-	CELLHEADER cellhdr;
+	RDPersistentCacheCellHeader cellhdr;
 	RDBitmapRef bitmap;
 
 	if (!conn->bitmapCachePersist)
@@ -57,8 +57,8 @@ pstcache_load_bitmap(rdcConnection conn, uint8 cache_id, uint16 cache_idx)
 		return False;
 
 	fd = conn->pstcacheFd[cache_id];
-	rd_lseek_file(fd, cache_idx * (conn->pstcacheBpp * MAX_CELL_SIZE + sizeof(CELLHEADER)));
-	rd_read_file(fd, &cellhdr, sizeof(CELLHEADER));
+	rd_lseek_file(fd, cache_idx * (conn->pstcacheBpp * MAX_CELL_SIZE + sizeof(RDPersistentCacheCellHeader)));
+	rd_read_file(fd, &cellhdr, sizeof(RDPersistentCacheCellHeader));
 	celldata = (uint8 *) xmalloc(cellhdr.length);
 	rd_read_file(fd, celldata, cellhdr.length);
 
@@ -72,24 +72,24 @@ pstcache_load_bitmap(rdcConnection conn, uint8 cache_id, uint16 cache_idx)
 
 /* Store a bitmap in the persistent cache */
 RDBOOL
-pstcache_save_bitmap(rdcConnection conn, uint8 cache_id, uint16 cache_idx, uint8 * key,
+pstcache_save_bitmap(RDConnectionRef conn, uint8 cache_id, uint16 cache_idx, uint8 * key,
 		     uint16 width, uint16 height, uint16 length, uint8 * data)
 {
 	int fd;
-	CELLHEADER cellhdr;
+	RDPersistentCacheCellHeader cellhdr;
 
 	if (!IS_PERSISTENT(cache_id) || cache_idx >= BMPCACHE2_NUM_PSTCELLS)
 		return False;
 
-	memcpy(cellhdr.key, key, sizeof(HASH_KEY));
+	memcpy(cellhdr.key, key, sizeof(RDHashKey));
 	cellhdr.width = width;
 	cellhdr.height = height;
 	cellhdr.length = length;
 	cellhdr.stamp = 0;
 
 	fd = conn->pstcacheFd[cache_id];
-	rd_lseek_file(fd, cache_idx * (conn->pstcacheBpp * MAX_CELL_SIZE + sizeof(CELLHEADER)));
-	rd_write_file(fd, &cellhdr, sizeof(CELLHEADER));
+	rd_lseek_file(fd, cache_idx * (conn->pstcacheBpp * MAX_CELL_SIZE + sizeof(RDPersistentCacheCellHeader)));
+	rd_write_file(fd, &cellhdr, sizeof(RDPersistentCacheCellHeader));
 	rd_write_file(fd, data, length);
 
 	return True;
@@ -97,12 +97,12 @@ pstcache_save_bitmap(rdcConnection conn, uint8 cache_id, uint16 cache_idx, uint8
 
 /* List the bitmap keys from the persistent cache file */
 int
-pstcache_enumerate(rdcConnection conn, uint8 id, HASH_KEY * keylist)
+pstcache_enumerate(RDConnectionRef conn, uint8 id, RDHashKey * keylist)
 {
 	int fd, idx, n;
 	sint16 mru_idx[0xa00];
 	uint32 mru_stamp[0xa00];
-	CELLHEADER cellhdr;
+	RDPersistentCacheCellHeader cellhdr;
 
 	if (!(conn->bitmapCache && conn->bitmapCachePersist && IS_PERSISTENT(id)))
 		return 0;
@@ -115,13 +115,13 @@ pstcache_enumerate(rdcConnection conn, uint8 id, HASH_KEY * keylist)
 	for (idx = 0; idx < BMPCACHE2_NUM_PSTCELLS; idx++)
 	{
 		fd = conn->pstcacheFd[id];
-		rd_lseek_file(fd, idx * (conn->pstcacheBpp * MAX_CELL_SIZE + sizeof(CELLHEADER)));
-		if (rd_read_file(fd, &cellhdr, sizeof(CELLHEADER)) <= 0)
+		rd_lseek_file(fd, idx * (conn->pstcacheBpp * MAX_CELL_SIZE + sizeof(RDPersistentCacheCellHeader)));
+		if (rd_read_file(fd, &cellhdr, sizeof(RDPersistentCacheCellHeader)) <= 0)
 			break;
 
-		if (memcmp(cellhdr.key, zero_key, sizeof(HASH_KEY)) != 0)
+		if (memcmp(cellhdr.key, zero_key, sizeof(RDHashKey)) != 0)
 		{
-			memcpy(keylist[idx], cellhdr.key, sizeof(HASH_KEY));
+			memcpy(keylist[idx], cellhdr.key, sizeof(RDHashKey));
 
 			/* Pre-cache (not possible for 8bpp because 8bpp needs a colourmap) */
 			if (conn->bitmapCachePrecache && cellhdr.stamp && conn->serverBpp > 8)
@@ -152,7 +152,7 @@ pstcache_enumerate(rdcConnection conn, uint8 id, HASH_KEY * keylist)
 
 /* initialise the persistent bitmap cache */
 RDBOOL
-pstcache_init(rdcConnection conn, uint8 cache_id)
+pstcache_init(RDConnectionRef conn, uint8 cache_id)
 {
 	int fd;
 	char filename[256];

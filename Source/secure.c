@@ -87,7 +87,7 @@ sec_make_40bit(uint8 * key)
 
 /* Generate encryption keys given client and server randoms */
 static void
-sec_generate_keys(rdcConnection conn, uint8 * client_random, uint8 * server_random, int rc4_key_size)
+sec_generate_keys(RDConnectionRef conn, uint8 * client_random, uint8 * server_random, int rc4_key_size)
 {
 	uint8 pre_master_secret[48];
 	uint8 master_secret[48];
@@ -185,7 +185,7 @@ sec_sign(uint8 * signature, int siglen, uint8 * session_key, int keylen, uint8 *
 
 /* Update an encryption key */
 static void
-sec_update(rdcConnection conn, uint8 * key, uint8 * update_key)
+sec_update(RDConnectionRef conn, uint8 * key, uint8 * update_key)
 {
 	uint8 shasig[20];
 	SHA_CTX sha;
@@ -213,7 +213,7 @@ sec_update(rdcConnection conn, uint8 * key, uint8 * update_key)
 
 /* Encrypt data using RC4 */
 static void
-sec_encrypt(rdcConnection conn, uint8 * data, int length)
+sec_encrypt(RDConnectionRef conn, uint8 * data, int length)
 {
 	if (conn->secEncryptUseCount == 4096)
 	{
@@ -228,7 +228,7 @@ sec_encrypt(rdcConnection conn, uint8 * data, int length)
 
 /* Decrypt data using RC4 */
 void
-sec_decrypt(rdcConnection conn, uint8 * data, int length)
+sec_decrypt(RDConnectionRef conn, uint8 * data, int length)
 {
 	
 	if (conn->secDecryptUseCount == 4096)
@@ -294,11 +294,11 @@ sec_rsa_encrypt(uint8 * out, uint8 * in, int len, uint32 modulus_size, uint8 * m
 }
 
 /* Initialise secure transport packet */
-STREAM
-sec_init(rdcConnection conn, uint32 flags, int maxlen)
+RDStreamRef
+sec_init(RDConnectionRef conn, uint32 flags, int maxlen)
 {
 	int hdrlen;
-	STREAM s;
+	RDStreamRef s;
 
 	if (!conn->licenseIssued)
 		hdrlen = (flags & SEC_ENCRYPT) ? 12 : 4;
@@ -312,7 +312,7 @@ sec_init(rdcConnection conn, uint32 flags, int maxlen)
 
 /* Transmit secure transport packet over specified channel */
 void
-sec_send_to_channel(rdcConnection conn, STREAM s, uint32 flags, uint16 channel)
+sec_send_to_channel(RDConnectionRef conn, RDStreamRef s, uint32 flags, uint16 channel)
 {
 	int datalen;
 
@@ -340,7 +340,7 @@ sec_send_to_channel(rdcConnection conn, STREAM s, uint32 flags, uint16 channel)
 /* Transmit secure transport packet */
 
 void
-sec_send(rdcConnection conn, STREAM s, uint32 flags)
+sec_send(RDConnectionRef conn, RDStreamRef s, uint32 flags)
 {
 	sec_send_to_channel(conn, s, flags, MCS_GLOBAL_CHANNEL);
 }
@@ -348,11 +348,11 @@ sec_send(rdcConnection conn, STREAM s, uint32 flags)
 
 /* Transfer the client random to the server */
 static void
-sec_establish_key(rdcConnection conn)
+sec_establish_key(RDConnectionRef conn)
 {
 	uint32 length = conn->serverPublicKeyLen + SEC_PADDING_SIZE;
 	uint32 flags = SEC_CLIENT_RANDOM;
-	STREAM s;
+	RDStreamRef s;
 
 	s = sec_init(conn, flags, length + 4);
 
@@ -366,7 +366,7 @@ sec_establish_key(rdcConnection conn)
 
 /* Output connect initial data blob */
 static void
-sec_out_mcs_data(rdcConnection conn, STREAM s)
+sec_out_mcs_data(RDConnectionRef conn, RDStreamRef s)
 {
 	int hostlen = 2 * strlen(conn->hostname);
 	int length = 158 + 76 + 12 + 4;
@@ -457,7 +457,7 @@ sec_out_mcs_data(rdcConnection conn, STREAM s)
 
 /* Parse a public key structure */
 static RDBOOL
-sec_parse_public_key(rdcConnection conn, STREAM s, uint8 ** modulus, uint8 ** exponent)
+sec_parse_public_key(RDConnectionRef conn, RDStreamRef s, uint8 ** modulus, uint8 ** exponent)
 {
 	uint32 magic, modulus_len;
 
@@ -486,7 +486,7 @@ sec_parse_public_key(rdcConnection conn, STREAM s, uint8 ** modulus, uint8 ** ex
 }
 
 static RDBOOL
-sec_parse_x509_key(rdcConnection conn, X509 * cert)
+sec_parse_x509_key(RDConnectionRef conn, X509 * cert)
 {
 	EVP_PKEY *epk = NULL;
 	/* By some reason, Microsoft sets the OID of the Public RSA key to
@@ -522,7 +522,7 @@ sec_parse_x509_key(rdcConnection conn, X509 * cert)
 
 /* Parse a crypto information structure */
 static RDBOOL
-sec_parse_crypt_info(rdcConnection conn, STREAM s, uint32 * rc4_key_size,
+sec_parse_crypt_info(RDConnectionRef conn, RDStreamRef s, uint32 * rc4_key_size,
 		     uint8 ** server_random, uint8 ** modulus, uint8 ** exponent)
 {
 	uint32 crypt_level, random_len, rsa_info_len;
@@ -682,7 +682,7 @@ sec_parse_crypt_info(rdcConnection conn, STREAM s, uint32 * rc4_key_size,
 
 /* Process crypto information blob */
 static void
-sec_process_crypt_info(rdcConnection conn, STREAM s)
+sec_process_crypt_info(RDConnectionRef conn, RDStreamRef s)
 {
 	uint8 *server_random, *modulus = NULL, *exponent = NULL;
 	uint8 client_random[SEC_RANDOM_SIZE];
@@ -733,7 +733,7 @@ sec_process_crypt_info(rdcConnection conn, STREAM s)
 
 /* Process SRV_INFO, find RDP version supported by server */
 static void
-sec_process_srv_info(rdcConnection conn, STREAM s)
+sec_process_srv_info(RDConnectionRef conn, RDStreamRef s)
 {
 	in_uint16_le(s, conn->serverRdpVersion);
 	DEBUG_RDP5(("Server RDP version is %d\n", conn->serverRdpVersion));
@@ -747,7 +747,7 @@ sec_process_srv_info(rdcConnection conn, STREAM s)
 
 /* Process connect response data blob */
 void
-sec_process_mcs_data(rdcConnection conn, STREAM s)
+sec_process_mcs_data(RDConnectionRef conn, RDStreamRef s)
 {
 	uint16 tag, length;
 	uint8 *next_tag;
@@ -793,12 +793,12 @@ sec_process_mcs_data(rdcConnection conn, STREAM s)
 }
 
 /* Receive secure transport packet */
-STREAM
-sec_recv(rdcConnection conn, uint8 * rdpver)
+RDStreamRef
+sec_recv(RDConnectionRef conn, uint8 * rdpver)
 {
 	uint32 sec_flags;
 	uint16 channel;
-	STREAM s;
+	RDStreamRef s;
 
 	while ((s = mcs_recv(conn, &channel, rdpver)) != NULL)
 	{
@@ -880,9 +880,9 @@ sec_recv(rdcConnection conn, uint8 * rdpver)
 
 /* Establish a secure connection */
 RDBOOL
-sec_connect(rdcConnection conn, const char *server, char *username)
+sec_connect(RDConnectionRef conn, const char *server, char *username)
 {
-	struct stream mcs_data;
+	RDStream mcs_data;
 
 	/* We exchange some RDP data during the MCS-Connect */
 	mcs_data.size = 512;
@@ -901,9 +901,9 @@ sec_connect(rdcConnection conn, const char *server, char *username)
 
 /* Establish a secure connection */
 RDBOOL
-sec_reconnect(rdcConnection conn, char *server)
+sec_reconnect(RDConnectionRef conn, char *server)
 {
-	struct stream mcs_data;
+	RDStream mcs_data;
 
 	/* We exchange some RDP data during the MCS-Connect */
 	mcs_data.size = 512;
@@ -922,14 +922,14 @@ sec_reconnect(rdcConnection conn, char *server)
 
 /* Disconnect a connection */
 void
-sec_disconnect(rdcConnection conn)
+sec_disconnect(RDConnectionRef conn)
 {
 	mcs_disconnect(conn);
 }
 
 /* reset the state of the sec layer */
 void
-sec_reset_state(rdcConnection conn)
+sec_reset_state(RDConnectionRef conn)
 {
 	conn->serverRdpVersion = 0;
 	conn->secEncryptUseCount = 0;

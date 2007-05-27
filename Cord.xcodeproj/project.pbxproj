@@ -16,26 +16,20 @@
 		98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98520EEB0BFEB77700DD732F /* Defaults.plist */; };
 		98520FE80BFEC70800DD732F /* CoRD.sdef in Resources */ = {isa = PBXBuildFile; fileRef = 98520FE70BFEC70800DD732F /* CoRD.sdef */; };
 		9860D7120BFFA565007FA463 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9860D7100BFFA565007FA463 /* Localizable.strings */; };
-		9872FCD80C08FD8E00078CB2 /* CRDBitmap.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FCD00C08FD8E00078CB2 /* CRDBitmap.h */; };
 		9872FCD90C08FD8E00078CB2 /* CRDBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */; };
-		9872FCDA0C08FD8E00078CB2 /* CRDKeyboard.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FCD20C08FD8E00078CB2 /* CRDKeyboard.h */; };
 		9872FCDB0C08FD8E00078CB2 /* CRDKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD30C08FD8E00078CB2 /* CRDKeyboard.m */; };
-		9872FCDC0C08FD8E00078CB2 /* CRDSession.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FCD40C08FD8E00078CB2 /* CRDSession.h */; };
 		9872FCDD0C08FD8E00078CB2 /* CRDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD50C08FD8E00078CB2 /* CRDSession.m */; };
-		9872FCF30C08FE6800078CB2 /* CRDSessionView.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FCF10C08FE6800078CB2 /* CRDSessionView.h */; };
 		9872FCF40C08FE6800078CB2 /* CRDSessionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCF20C08FE6800078CB2 /* CRDSessionView.m */; };
-		9872FD140C08FF4800078CB2 /* CRDDrawingGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD130C08FF4800078CB2 /* CRDDrawingGlue.m */; };
-		9872FD160C08FF6E00078CB2 /* CRDVestigialGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD150C08FF6E00078CB2 /* CRDVestigialGlue.m */; };
-		9872FD240C09007400078CB2 /* CRDMixedGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD230C09007400078CB2 /* CRDMixedGlue.m */; };
-		9872FD5E0C0902DA00078CB2 /* CRDShared.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 9872FD5C0C0902DA00078CB2 /* CRDShared.h */; };
 		9872FD5F0C0902DA00078CB2 /* CRDShared.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD5D0C0902DA00078CB2 /* CRDShared.m */; };
+		9872FD630C0903C000078CB2 /* CRDDrawingGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD600C0903C000078CB2 /* CRDDrawingGlue.m */; };
+		9872FD640C0903C000078CB2 /* CRDMixedGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD610C0903C000078CB2 /* CRDMixedGlue.m */; };
+		9872FD650C0903C000078CB2 /* CRDVestigialGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD620C0903C000078CB2 /* CRDVestigialGlue.m */; };
 		9881A4290BE9439D0073D189 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		9881A42A0BE9439E0073D189 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 981739840BACE45D00EAB48A /* Carbon.framework */; };
 		9881A42B0BE943A00073D189 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98FF84CD0BE557C4002E5228 /* ApplicationServices.framework */; };
 		9881A42E0BE943A70073D189 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
 		9885D1940BFBBB0800C5451D /* printer.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972470BD9D9DF0041110D /* printer.m */; };
 		98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */; };
-		98E1B69B0C07D8AF007077D1 /* CRDSwappedModifiersUtility.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */; };
 		98E972600BD9D9DF0041110D /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972250BD9D9DF0041110D /* AppController.m */; };
 		98E972610BD9D9DF0041110D /* bitmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972260BD9D9DF0041110D /* bitmap.c */; };
 		98E972620BD9D9DF0041110D /* cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972270BD9D9DF0041110D /* cache.c */; };
@@ -91,12 +85,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */,
-				98E1B69B0C07D8AF007077D1 /* CRDSwappedModifiersUtility.h in CopyFiles */,
-				9872FCD80C08FD8E00078CB2 /* CRDBitmap.h in CopyFiles */,
-				9872FCDA0C08FD8E00078CB2 /* CRDKeyboard.h in CopyFiles */,
-				9872FCDC0C08FD8E00078CB2 /* CRDSession.h in CopyFiles */,
-				9872FCF30C08FE6800078CB2 /* CRDSessionView.h in CopyFiles */,
-				9872FD5E0C0902DA00078CB2 /* CRDShared.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,11 +116,11 @@
 		9872FCD50C08FD8E00078CB2 /* CRDSession.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSession.m; path = Source/CRDSession.m; sourceTree = "<group>"; };
 		9872FCF10C08FE6800078CB2 /* CRDSessionView.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSessionView.h; path = Source/CRDSessionView.h; sourceTree = "<group>"; };
 		9872FCF20C08FE6800078CB2 /* CRDSessionView.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSessionView.m; path = Source/CRDSessionView.m; sourceTree = "<group>"; };
-		9872FD130C08FF4800078CB2 /* CRDDrawingGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDDrawingGlue.m; sourceTree = "<group>"; };
-		9872FD150C08FF6E00078CB2 /* CRDVestigialGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDVestigialGlue.m; sourceTree = "<group>"; };
-		9872FD230C09007400078CB2 /* CRDMixedGlue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CRDMixedGlue.m; sourceTree = "<group>"; };
 		9872FD5C0C0902DA00078CB2 /* CRDShared.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDShared.h; path = Source/CRDShared.h; sourceTree = "<group>"; };
 		9872FD5D0C0902DA00078CB2 /* CRDShared.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDShared.m; path = Source/CRDShared.m; sourceTree = "<group>"; };
+		9872FD600C0903C000078CB2 /* CRDDrawingGlue.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDDrawingGlue.m; path = Source/CRDDrawingGlue.m; sourceTree = "<group>"; };
+		9872FD610C0903C000078CB2 /* CRDMixedGlue.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDMixedGlue.m; path = Source/CRDMixedGlue.m; sourceTree = "<group>"; };
+		9872FD620C0903C000078CB2 /* CRDVestigialGlue.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDVestigialGlue.m; path = Source/CRDVestigialGlue.m; sourceTree = "<group>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		98B7F09C0BE03B0C006BDCDA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = /System/Library/Frameworks/Accelerate.framework; sourceTree = "<absolute>"; };
 		98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSwappedModifiersUtility.m; path = Source/CRDSwappedModifiersUtility.m; sourceTree = "<group>"; };
@@ -256,6 +244,7 @@
 				98FF84CD0BE557C4002E5228 /* ApplicationServices.framework */,
 				981739840BACE45D00EAB48A /* Carbon.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				98369D370C050B3D009BF52F /* OpenGL.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
 				987D6E2B0B51DEF3005B8E92 /* Security.framework */,
 			);
@@ -331,7 +320,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				98369D370C050B3D009BF52F /* OpenGL.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Included Frameworks */,
 			);
@@ -406,9 +394,9 @@
 		98EC96980C08F9970072B42C /* rdesktop Replacements */ = {
 			isa = PBXGroup;
 			children = (
-				9872FD130C08FF4800078CB2 /* CRDDrawingGlue.m */,
-				9872FD150C08FF6E00078CB2 /* CRDVestigialGlue.m */,
-				9872FD230C09007400078CB2 /* CRDMixedGlue.m */,
+				9872FD600C0903C000078CB2 /* CRDDrawingGlue.m */,
+				9872FD610C0903C000078CB2 /* CRDMixedGlue.m */,
+				9872FD620C0903C000078CB2 /* CRDVestigialGlue.m */,
 			);
 			name = "rdesktop Replacements";
 			sourceTree = "<group>";
@@ -527,10 +515,10 @@
 				9872FCDB0C08FD8E00078CB2 /* CRDKeyboard.m in Sources */,
 				9872FCDD0C08FD8E00078CB2 /* CRDSession.m in Sources */,
 				9872FCF40C08FE6800078CB2 /* CRDSessionView.m in Sources */,
-				9872FD140C08FF4800078CB2 /* CRDDrawingGlue.m in Sources */,
-				9872FD160C08FF6E00078CB2 /* CRDVestigialGlue.m in Sources */,
-				9872FD240C09007400078CB2 /* CRDMixedGlue.m in Sources */,
 				9872FD5F0C0902DA00078CB2 /* CRDShared.m in Sources */,
+				9872FD630C0903C000078CB2 /* CRDDrawingGlue.m in Sources */,
+				9872FD640C0903C000078CB2 /* CRDMixedGlue.m in Sources */,
+				9872FD650C0903C000078CB2 /* CRDVestigialGlue.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -585,12 +573,16 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/Source\"";
+				GCC_ALTIVEC_EXTENSIONS = NO;
 				GCC_AUTO_VECTORIZATION = YES;
+				GCC_CW_ASM_SYNTAX = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_ASM_KEYWORD = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
 				GCC_FAST_OBJC_DISPATCH = YES;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
 				GCC_MODEL_TUNING = G5;
@@ -611,6 +603,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_CFLAGS = "-fnested-functions";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = Cord;
 				VERSIONING_SYSTEM = "";
@@ -644,11 +637,15 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/Source\"";
+				GCC_ALTIVEC_EXTENSIONS = NO;
+				GCC_CW_ASM_SYNTAX = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_ASM_KEYWORD = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = YES;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
 				GCC_INPUT_FILETYPE = sourcecode.c.objc;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -668,6 +665,7 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_CFLAGS = "-fnested-functions";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = Cord;
 				VERSIONING_SYSTEM = "";
@@ -694,11 +692,15 @@
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/Source\"";
+				GCC_ALTIVEC_EXTENSIONS = NO;
 				GCC_AUTO_VECTORIZATION = NO;
+				GCC_CW_ASM_SYNTAX = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DYNAMIC_NO_PIC = YES;
+				GCC_ENABLE_ASM_KEYWORD = NO;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_ENABLE_SYMBOL_SEPARATION = NO;
 				GCC_FAST_OBJC_DISPATCH = YES;
@@ -722,8 +724,11 @@
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.4;
+				OTHER_CFLAGS = "-fnested-functions";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = CoRD;
+				SKIP_INSTALL = YES;
+				STRIP_INSTALLED_PRODUCT = YES;
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};

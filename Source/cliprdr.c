@@ -34,9 +34,9 @@
 #define CLIPRDR_ERROR			2
 
 static void
-cliprdr_send_packet(rdcConnection conn, uint16 type, uint16 status, uint8 * data, uint32 length)
+cliprdr_send_packet(RDConnectionRef conn, uint16 type, uint16 status, uint8 * data, uint32 length)
 {
-	STREAM s;
+	RDStreamRef s;
 
 	DEBUG_CLIPBOARD(("CLIPRDR send: type=%d, status=%d, length=%d\n", type, status, length));
 
@@ -56,7 +56,7 @@ cliprdr_send_packet(rdcConnection conn, uint16 type, uint16 status, uint8 * data
    cliprdr_send_native_format_announce.
  */
 void
-cliprdr_send_simple_native_format_announce(rdcConnection conn, uint32 format)
+cliprdr_send_simple_native_format_announce(RDConnectionRef conn, uint32 format)
 {
 	uint8 buffer[36];
 
@@ -68,7 +68,7 @@ cliprdr_send_simple_native_format_announce(rdcConnection conn, uint32 format)
 }
 
 void
-cliprdr_send_blah_format_announce(rdcConnection conn)
+cliprdr_send_blah_format_announce(RDConnectionRef conn)
 {
 	uint8 buffer[36];
 
@@ -82,7 +82,7 @@ cliprdr_send_blah_format_announce(rdcConnection conn)
    [ uint32 format + 32-byte description ].
  */
 void
-cliprdr_send_native_format_announce(rdcConnection conn, uint8 * formats_data, uint32 formats_data_length)
+cliprdr_send_native_format_announce(RDConnectionRef conn, uint8 * formats_data, uint32 formats_data_length)
 {
 	DEBUG_CLIPBOARD(("cliprdr_send_native_format_announce\n"));
 
@@ -91,7 +91,7 @@ cliprdr_send_native_format_announce(rdcConnection conn, uint8 * formats_data, ui
 }
 
 void
-cliprdr_send_data_request(rdcConnection conn, uint32 format)
+cliprdr_send_data_request(RDConnectionRef conn, uint32 format)
 {
 	uint8 buffer[4];
 
@@ -100,13 +100,13 @@ cliprdr_send_data_request(rdcConnection conn, uint32 format)
 }
 
 void
-cliprdr_send_data(rdcConnection conn, uint8 * data, uint32 length)
+cliprdr_send_data(RDConnectionRef conn, uint8 * data, uint32 length)
 {
 	cliprdr_send_packet(conn, CLIPRDR_DATA_RESPONSE, CLIPRDR_RESPONSE, data, length);
 }
 
 static void
-cliprdr_process(rdcConnection conn, STREAM s)
+cliprdr_process(RDConnectionRef conn, RDStreamRef s)
 {
 	uint16 type, status;
 	uint32 length, format;
@@ -165,13 +165,13 @@ cliprdr_process(rdcConnection conn, STREAM s)
 }
 
 void
-cliprdr_set_mode(rdcConnection conn, const char *optarg)
+cliprdr_set_mode(RDConnectionRef conn, const char *optarg)
 {
 	ui_clip_set_mode(conn, optarg);
 }
 
 RDBOOL
-cliprdr_init(rdcConnection conn)
+cliprdr_init(RDConnectionRef conn)
 {
 	conn->cliprdrChannel =
 		channel_register(conn, "cliprdr",

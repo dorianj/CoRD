@@ -22,15 +22,15 @@
 #import "Carbon/Carbon.h"
 #import "sys/fcntl.h"
 
-static NTSTATUS printer_create(rdcConnection conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition, uint32 flags, char *filename, NTHANDLE * handle);
-static int get_printer_id(rdcConnection conn, NTHANDLE handle);
-static NTSTATUS printer_close(rdcConnection conn, NTHANDLE handle);
-static NTSTATUS printer_write(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result);
+static NTStatus printer_create(RDConnectionRef conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition, uint32 flags, char *filename, NTHandle * handle);
+static int get_printer_id(RDConnectionRef conn, NTHandle handle);
+static NTStatus printer_close(RDConnectionRef conn, NTHandle handle);
+static NTStatus printer_write(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result);
 
 
 
 static int
-get_printer_id(rdcConnection conn, NTHANDLE handle)
+get_printer_id(RDConnectionRef conn, NTHandle handle)
 {
 	int index;
 
@@ -43,9 +43,9 @@ get_printer_id(rdcConnection conn, NTHANDLE handle)
 }
 
 void
-printer_enum_devices(rdcConnection conn, char **printerNames, int printerCount)
+printer_enum_devices(RDConnectionRef conn, char **printerNames, int printerCount)
 {
-	PRINTER *pprinter_data;
+	RDPrinterInfo *pprinter_data;
 	int i;
 	
 	for (i = 0; i < printerCount; i++, conn->numDevices++)
@@ -54,7 +54,7 @@ printer_enum_devices(rdcConnection conn, char **printerNames, int printerCount)
 		
 		
 		
-		pprinter_data = (PRINTER *) xmalloc(sizeof(PRINTER));
+		pprinter_data = (RDPrinterInfo *) xmalloc(sizeof(RDPrinterInfo));
 	
 		strcpy(conn->rdpdrDevice[conn->numDevices].name, "PRN");
 		strcat(conn->rdpdrDevice[conn->numDevices].name, l_to_a(i + 1, 10));
@@ -75,8 +75,8 @@ printer_enum_devices(rdcConnection conn, char **printerNames, int printerCount)
 	}
 }
 
-static NTSTATUS
-printer_create(rdcConnection conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition, uint32 flags, char *filename, NTHANDLE * handle)
+static NTStatus
+printer_create(RDConnectionRef conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition, uint32 flags, char *filename, NTHandle * handle)
 {	
 
 	asprintf(&conn->rdpdrDevice[device_id].local_path, "/tmp/CoRD_PrintFile%d-%d.eps", device_id, time(NULL));
@@ -87,8 +87,8 @@ printer_create(rdcConnection conn, uint32 device_id, uint32 access, uint32 share
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-printer_close(rdcConnection conn, NTHANDLE handle)
+static NTStatus
+printer_close(RDConnectionRef conn, NTHandle handle)
 {
 	int device_id = get_printer_id(conn, handle);
 	close(handle);
@@ -115,8 +115,8 @@ printer_close(rdcConnection conn, NTHANDLE handle)
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-printer_write(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+static NTStatus
+printer_write(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
 {
 	*result = length * write(handle, data, length);
 	

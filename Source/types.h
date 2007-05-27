@@ -18,6 +18,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+@class CRDBitmap;
 
 typedef int RDBOOL;
 
@@ -25,8 +26,6 @@ typedef int RDBOOL;
 #define True  (1)
 #define False (0)
 #endif
-
-@class CRDBitmap;
 
 typedef unsigned char uint8;
 typedef signed char sint8;
@@ -40,112 +39,97 @@ typedef CRDBitmap * RDGlyphRef;
 typedef unsigned int * RDColorMapRef;
 typedef CRDBitmap * RDCursorRef;
 
-typedef struct _POINT
+typedef struct RDConnection * RDConnectionRef;
+
+typedef struct _RDPoint
 {
 	sint16 x, y;
-}
-POINT;
+} RDPoint;
 
-typedef struct _COLOURENTRY
+typedef struct _RDColorEntry
 {
 	uint8 red;
 	uint8 green;
 	uint8 blue;
-}
-COLOURENTRY;
+} RDColorEntry;
 
-typedef struct _COLOURMAP
+typedef struct _RDColorMap
 {
 	uint16 ncolours;
-	COLOURENTRY *colours;
+	RDColorEntry *colours;
+} RDColorMap;
 
-}
-COLOURMAP;
-
-typedef struct _BOUNDS
+typedef struct _RDBounds
 {
 	sint16 left;
 	sint16 top;
 	sint16 right;
 	sint16 bottom;
+} RDBounds;
 
-}
-BOUNDS;
-
-typedef struct _PEN
+typedef struct _RDPen
 {
 	uint8 style;
 	uint8 width;
 	uint32 colour;
+} RDPen;
 
-}
-PEN;
-
-typedef struct _BRUSH
+typedef struct _RDBrush
 {
 	uint8 xorigin;
 	uint8 yorigin;
 	uint8 style;
 	uint8 pattern[8];
+} RDBrush;
 
-}
-BRUSH;
-
-typedef struct _FONTGLYPH
+typedef struct _RDFontGlyph
 {
 	sint16 offset;
 	sint16 baseline;
 	uint16 width;
 	uint16 height;
 	RDBitmapRef pixmap;
+} RDFontGlyph;
 
-}
-FONTGLYPH;
-
-typedef struct _DATABLOB
+typedef struct _RDDataBlob
 {
 	void *data;
 	int size;
+} RDDataBlob;
 
-}
-DATABLOB;
 
-typedef struct rdcConn * rdcConnection;
 
-typedef struct _VCHANNEL
+typedef struct _RDVirtualChannel
 {
 	uint16 mcs_id;
 	char name[8];
 	uint32 flags;
-	struct stream input;
-	void (*process) (rdcConnection, STREAM);
-}
-VCHANNEL;
+	RDStream input;
+	void (*process) (RDConnectionRef, RDStreamRef);
+} RDVirtualChannel;
 
-typedef struct _RDPCOMP
+typedef struct _RDComp
 {
 	uint32 roff;
 	uint8 hist[RDP_MPPC_DICT_SIZE];
-	struct stream ns;
-}
-RDPCOMP;
+	RDStream ns;
+} RDComp;
 
 /* RDPDR */
-typedef uint32 NTSTATUS;
-typedef uint32 NTHANDLE;
+typedef uint32 NTStatus;
+typedef uint32 NTHandle;
 
 /* PSTCACHE */
-typedef uint8 HASH_KEY[8];
+typedef uint8 RDHashKey[8];
 
 /* Header for an entry in the persistent bitmap cache file */
-typedef struct _PSTCACHE_CELLHEADER
+typedef struct RDPersistentCacheCellHeader
 {
-	HASH_KEY key;
+	RDHashKey key;
 	uint8 width, height;
 	uint16 length;
 	uint32 stamp;
-}
-CELLHEADER;
+} RDPersistentCacheCellHeader;
 
 #define MAX_CBSIZE 256
 
@@ -160,19 +144,18 @@ typedef struct
 	uint16 wBitsPerSample;
 	uint16 cbSize;
 	uint8 cb[MAX_CBSIZE];
-} WAVEFORMATEX;
+} RDWaveFormat;
 
-typedef struct rdpdr_device_info
+typedef struct _RDRedirectedDevice
 {
 	uint32 device_type;
-	NTHANDLE handle;
+	NTHandle handle;
 	char name[8];
 	char *local_path;
 	void *pdevice_data;
-}
-RDPDR_DEVICE;
+} RDRedirectedDevice;
 
-typedef struct rdpdr_serial_device_info
+typedef struct _RDSerialDevice
 {
 	int dtr;
 	int rts;
@@ -189,10 +172,9 @@ typedef struct rdpdr_serial_device_info
 	uint8 chars[6];
 	struct termios *ptermios, *pold_termios;
 	int event_txempty, event_cts, event_dsr, event_rlsd, event_pending;
-}
-SERIAL_DEVICE;
+} RDSerialDevice;
 
-typedef struct rdpdr_parallel_device_info
+typedef struct _RDParallelDevice
 {
 	char *driver, *printer;
 	uint32 queue_in_size,
@@ -204,19 +186,18 @@ typedef struct rdpdr_parallel_device_info
 		write_total_timeout_multiplier,
 		write_total_timeout_constant, posix_wait_mask, bloblen;
 	uint8 *blob;
-}
-PARALLEL_DEVICE;
+} RDParallelDevice;
 
-typedef struct rdpdr_printer_info
+typedef struct _RDPrinterInfo
 {
 	FILE *printer_fp;
 	char *driver, *printer;
 	uint32 bloblen;
 	uint8 *blob;
 	RDBOOL default_printer;
-}
-PRINTER;
+} RDPrinterInfo;
 
+// xxx: won't be needed
 typedef struct notify_data
 {
 	time_t modify_time;
@@ -226,6 +207,7 @@ typedef struct notify_data
 }
 NOTIFY;
 
+// xxx: will be replaced
 typedef struct fileinfo
 {
 	uint32 device_id, flags_and_attributes, accessmask;
@@ -264,21 +246,16 @@ struct bmpcache_entry
 	sint16 next;
 };
 
-typedef enum _ConnectionErrorCode
+typedef enum _RDConnectionError
 {
 	ConnectionErrorNone = 0,
 	ConnectionErrorTimeOut = 1,
 	ConnectionErrorHostResolution = 2,
 	ConnectionErrorGeneral = 3,
 	ConnectionErrorCanceled = 4
-} ConnectionErrorCode;
+} RDConnectionError;
 
-
-#define NBITMAPCACHE 3
-#define NBITMAPCACHEENTRIES 0xa00
-#define NOT_SET -1
-
-struct rdcConn
+struct RDConnection
 {
 	// Connection settings
 	char username[64];
@@ -302,19 +279,19 @@ struct rdcConn
 	unsigned char deskCache[0x38400 * 4];
 	RDBitmapRef volatileBc[3];
 	RDCursorRef cursorCache[0x20];
-	DATABLOB textCache[256];
-	FONTGLYPH fontCache[12][256];
+	RDDataBlob textCache[256];
+	RDFontGlyph fontCache[12][256];
 	
 	// Device redirection
 	char *rdpdrClientname;
 	unsigned int numChannels, numDevices;
 	int clipboardRequestType;
-	NTHANDLE minTimeoutFd;
+	NTHandle minTimeoutFd;
 	FILEINFO fileInfo[0x100];		// MAX_OPEN_FILES taken from disk.h
-	RDPDR_DEVICE rdpdrDevice[0x10];	//RDPDR_MAX_DEVICES taken from constants.h
-	VCHANNEL channels[6];
-	VCHANNEL *rdpdrChannel;
-	VCHANNEL *cliprdrChannel;
+	RDRedirectedDevice rdpdrDevice[0x10];	//RDPDR_MAX_DEVICES taken from constants.h
+	RDVirtualChannel channels[6];
+	RDVirtualChannel *rdpdrChannel;
+	RDVirtualChannel *cliprdrChannel;
 	struct async_iorequest *ioRequest;
 	char *printerNames[255];
 	
@@ -342,8 +319,8 @@ struct rdcConn
 	void *inputStream; // NSInputStream
  	void *outputStream; // NSOutputStream
 	void *host;
-	struct stream inStream, outStream;
-	STREAM rdpStream;
+	RDStream inStream, outStream;
+	RDStreamRef rdpStream;
 	
 	// Secure
 	int rc4KeyLen;
@@ -360,13 +337,13 @@ struct rdcConn
 	uint32 secEncryptUseCount, secDecryptUseCount;
 	
 	// Unknown
-	RDPCOMP mppcDict;
+	RDComp mppcDict;
 	
 	// UI
 	void *ui;	// the associated CRDSessionView
 	void *controller; // the associated CRDSession
 	
-	volatile ConnectionErrorCode errorCode;
+	volatile RDConnectionError errorCode;
 	
 	// Managing current draw session (used by ui_stubs)
 	void *rectsNeedingUpdate;
@@ -377,15 +354,15 @@ struct rdcConn
 
 struct _DEVICE_FNS
 {
-	NTSTATUS(*create) (rdcConnection conn, uint32 device, uint32 desired_access, uint32 share_mode,
+	NTStatus(*create) (RDConnectionRef conn, uint32 device, uint32 desired_access, uint32 share_mode,
 					   uint32 create_disposition, uint32 flags_and_attributes, char *filename,
-					   NTHANDLE * handle);
-	NTSTATUS(*close) (rdcConnection conn, NTHANDLE handle);
-	NTSTATUS(*read) (rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset,
+					   NTHandle * handle);
+	NTStatus(*close) (RDConnectionRef conn, NTHandle handle);
+	NTStatus(*read) (RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset,
 					 uint32 * result);
-	NTSTATUS(*write) (rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset,
+	NTStatus(*write) (RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset,
 					  uint32 * result);
-	NTSTATUS(*device_control) (rdcConnection conn, NTHANDLE handle, uint32 request, STREAM in, STREAM out);
+	NTStatus(*device_control) (RDConnectionRef conn, NTHandle handle, uint32 request, RDStreamRef in, RDStreamRef out);
 };
 
 typedef RDBOOL(*str_handle_lines_t) (const char *line, void *data);

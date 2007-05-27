@@ -38,7 +38,7 @@ static RDBOOL g_driver_broken = False;
 
 static struct audio_packet
 {
-	struct stream s;
+	RDStream s;
 	uint16 tick;
 	uint8 index;
 } packet_queue[MAX_QUEUE];
@@ -72,7 +72,7 @@ wave_out_close(void)
 }
 
 RDBOOL
-wave_out_format_supported(WAVEFORMATEX * pwfx)
+wave_out_format_supported(RDWaveFormat * pwfx)
 {
 	if (pwfx->wFormatTag != WAVE_FORMAT_PCM)
 		return False;
@@ -85,7 +85,7 @@ wave_out_format_supported(WAVEFORMATEX * pwfx)
 }
 
 RDBOOL
-wave_out_set_format(WAVEFORMATEX * pwfx)
+wave_out_set_format(RDWaveFormat * pwfx)
 {
 	int stereo, format, fragments;
 
@@ -195,7 +195,7 @@ wave_out_volume(uint16 left, uint16 right)
 }
 
 void
-wave_out_write(STREAM s, uint16 tick, uint8 index)
+wave_out_write(RDStreamRef s, uint16 tick, uint8 index)
 {
 	struct audio_packet *packet = &packet_queue[queue_hi];
 	unsigned int next_hi = (queue_hi + 1) % MAX_QUEUE;
@@ -225,7 +225,7 @@ wave_out_play(void)
 {
 	struct audio_packet *packet;
 	ssize_t len;
-	STREAM out;
+	RDStreamRef out;
 	static long startedat_us;
 	static long startedat_s;
 	static RDBOOL started = False;

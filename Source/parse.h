@@ -19,7 +19,7 @@
 */
 
 /* Parser state */
-typedef struct stream
+typedef struct _RDStream
 {
 	unsigned char *p;
 	unsigned char *end;
@@ -33,8 +33,9 @@ typedef struct stream
 	unsigned char *rdp_hdr;
 	unsigned char *channel_hdr;
 
-}
- *STREAM;
+} RDStream;
+
+typedef RDStream * RDStreamRef;
 
 #define s_push_layer(s,h,n)	{ (s)->h = (s)->p; (s)->p += n; }
 #define s_pop_layer(s,h)	(s)->p = (s)->h;
@@ -44,43 +45,41 @@ typedef struct stream
 #define s_check_end(s)		((s)->p == (s)->end)
 
 #if defined(L_ENDIAN) && !defined(NEED_ALIGN)
-#define in_uint16_le(s,v)	{ v = *(uint16 *)((s)->p); (s)->p += 2; }
-#define in_uint32_le(s,v)	{ v = *(uint32 *)((s)->p); (s)->p += 4; }
-#define out_uint16_le(s,v)	{ *(uint16 *)((s)->p) = v; (s)->p += 2; }
-#define out_uint32_le(s,v)	{ *(uint32 *)((s)->p) = v; (s)->p += 4; }
-
+	#define in_uint16_le(s,v)	{ v = *(uint16 *)((s)->p); (s)->p += 2; }
+	#define in_uint32_le(s,v)	{ v = *(uint32 *)((s)->p); (s)->p += 4; }
+	#define out_uint16_le(s,v)	{ *(uint16 *)((s)->p) = v; (s)->p += 2; }
+	#define out_uint32_le(s,v)	{ *(uint32 *)((s)->p) = v; (s)->p += 4; }
 #else
-#define in_uint16_le(s,v)	{ v = *((s)->p++); v += *((s)->p++) << 8; }
-#define in_uint32_le(s,v)	{ in_uint16_le(s,v) \
-				v += *((s)->p++) << 16; v += *((s)->p++) << 24; }
-#define out_uint16_le(s,v)	{ *((s)->p++) = (v) & 0xff; *((s)->p++) = ((v) >> 8) & 0xff; }
-#define out_uint32_le(s,v)	{ out_uint16_le(s, (v) & 0xffff); out_uint16_le(s, ((v) >> 16) & 0xffff); }
+	#define in_uint16_le(s,v)	{ v = *((s)->p++); v += *((s)->p++) << 8; }
+	#define in_uint32_le(s,v)	{ in_uint16_le(s,v) \
+					v += *((s)->p++) << 16; v += *((s)->p++) << 24; }
+	#define out_uint16_le(s,v)	{ *((s)->p++) = (v) & 0xff; *((s)->p++) = ((v) >> 8) & 0xff; }
+	#define out_uint32_le(s,v)	{ out_uint16_le(s, (v) & 0xffff); out_uint16_le(s, ((v) >> 16) & 0xffff); }
 #endif
 
 #if defined(B_ENDIAN) && !defined(NEED_ALIGN)
-#define in_uint16_be(s,v)	{ v = *(uint16 *)((s)->p); (s)->p += 2; }
-#define in_uint32_be(s,v)	{ v = *(uint32 *)((s)->p); (s)->p += 4; }
-#define out_uint16_be(s,v)	{ *(uint16 *)((s)->p) = v; (s)->p += 2; }
-#define out_uint32_be(s,v)	{ *(uint32 *)((s)->p) = v; (s)->p += 4; }
-
-#define B_ENDIAN_PREFERRED
-#define in_uint16(s,v)		in_uint16_be(s,v)
-#define in_uint32(s,v)		in_uint32_be(s,v)
-#define out_uint16(s,v)		out_uint16_be(s,v)
-#define out_uint32(s,v)		out_uint32_be(s,v)
-
+	#define in_uint16_be(s,v)	{ v = *(uint16 *)((s)->p); (s)->p += 2; }
+	#define in_uint32_be(s,v)	{ v = *(uint32 *)((s)->p); (s)->p += 4; }
+	#define out_uint16_be(s,v)	{ *(uint16 *)((s)->p) = v; (s)->p += 2; }
+	#define out_uint32_be(s,v)	{ *(uint32 *)((s)->p) = v; (s)->p += 4; }
+	
+	#define B_ENDIAN_PREFERRED
+	#define in_uint16(s,v)		in_uint16_be(s,v)
+	#define in_uint32(s,v)		in_uint32_be(s,v)
+	#define out_uint16(s,v)		out_uint16_be(s,v)
+	#define out_uint32(s,v)		out_uint32_be(s,v)
 #else
-#define in_uint16_be(s,v)	{ v = *((s)->p++); next_be(s,v); }
-#define in_uint32_be(s,v)	{ in_uint16_be(s,v); next_be(s,v); next_be(s,v); }
-#define out_uint16_be(s,v)	{ *((s)->p++) = ((v) >> 8) & 0xff; *((s)->p++) = (v) & 0xff; }
-#define out_uint32_be(s,v)	{ out_uint16_be(s, ((v) >> 16) & 0xffff); out_uint16_be(s, (v) & 0xffff); }
+	#define in_uint16_be(s,v)	{ v = *((s)->p++); next_be(s,v); }
+	#define in_uint32_be(s,v)	{ in_uint16_be(s,v); next_be(s,v); next_be(s,v); }
+	#define out_uint16_be(s,v)	{ *((s)->p++) = ((v) >> 8) & 0xff; *((s)->p++) = (v) & 0xff; }
+	#define out_uint32_be(s,v)	{ out_uint16_be(s, ((v) >> 16) & 0xffff); out_uint16_be(s, (v) & 0xffff); }
 #endif
 
 #ifndef B_ENDIAN_PREFERRED
-#define in_uint16(s,v)		in_uint16_le(s,v)
-#define in_uint32(s,v)		in_uint32_le(s,v)
-#define out_uint16(s,v)		out_uint16_le(s,v)
-#define out_uint32(s,v)		out_uint32_le(s,v)
+	#define in_uint16(s,v)		in_uint16_le(s,v)
+	#define in_uint32(s,v)		in_uint32_le(s,v)
+	#define out_uint16(s,v)		out_uint16_le(s,v)
+	#define out_uint32(s,v)		out_uint32_le(s,v)
 #endif
 
 #define in_uint8(s,v)		v = *((s)->p++);

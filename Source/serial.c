@@ -150,21 +150,21 @@
 #define TIOCOUTQ FIONWRITE
 #endif
 
-static SERIAL_DEVICE *
-get_serial_info(rdcConnection conn, NTHANDLE handle)
+static RDSerialDevice *
+get_serial_info(RDConnectionRef conn, NTHandle handle)
 {
 	int index;
 
 	for (index = 0; index < RDPDR_MAX_DEVICES; index++)
 	{
 		if (handle == conn->rdpdrDevice[index].handle)
-			return (SERIAL_DEVICE *) conn->rdpdrDevice[index].pdevice_data;
+			return (RDSerialDevice *) conn->rdpdrDevice[index].pdevice_data;
 	}
 	return NULL;
 }
 
 static RDBOOL
-get_termios(SERIAL_DEVICE * pser_inf, NTHANDLE serial_fd)
+get_termios(RDSerialDevice * pser_inf, NTHandle serial_fd)
 {
 	speed_t speed;
 	struct termios *ptermios;
@@ -317,7 +317,7 @@ get_termios(SERIAL_DEVICE * pser_inf, NTHANDLE serial_fd)
 }
 
 static void
-set_termios(SERIAL_DEVICE * pser_inf, NTHANDLE serial_fd)
+set_termios(RDSerialDevice * pser_inf, NTHandle serial_fd)
 {
 	speed_t speed;
 
@@ -515,9 +515,9 @@ set_termios(SERIAL_DEVICE * pser_inf, NTHANDLE serial_fd)
 /* when it arrives to this function.              */
 /* :com1=/dev/ttyS0,com2=/dev/ttyS1 */
 int
-serial_enum_devices(rdcConnection conn, uint32 * id, char *optarg)
+serial_enum_devices(RDConnectionRef conn, uint32 * id, char *optarg)
 {
-	SERIAL_DEVICE *pser_inf;
+	RDSerialDevice *pser_inf;
 
 	char *pos = optarg;
 	char *pos2;
@@ -528,7 +528,7 @@ serial_enum_devices(rdcConnection conn, uint32 * id, char *optarg)
 	while ((pos = next_arg(optarg, ',')) && *id < RDPDR_MAX_DEVICES)
 	{
 		/* Init data structures for device */
-		pser_inf = (SERIAL_DEVICE *) xmalloc(sizeof(SERIAL_DEVICE));
+		pser_inf = (RDSerialDevice *) xmalloc(sizeof(RDSerialDevice));
 		pser_inf->ptermios = (struct termios *) xmalloc(sizeof(struct termios));
 		memset(pser_inf->ptermios, 0, sizeof(struct termios));
 		pser_inf->pold_termios = (struct termios *) xmalloc(sizeof(struct termios));
@@ -554,15 +554,15 @@ serial_enum_devices(rdcConnection conn, uint32 * id, char *optarg)
 	return count;
 }
 
-static NTSTATUS
-serial_create(rdcConnection conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition,
-	      uint32 flags_and_attributes, char *filename, NTHANDLE * handle)
+static NTStatus
+serial_create(RDConnectionRef conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition,
+	      uint32 flags_and_attributes, char *filename, NTHandle * handle)
 {
-	NTHANDLE serial_fd;
-	SERIAL_DEVICE *pser_inf;
+	NTHandle serial_fd;
+	RDSerialDevice *pser_inf;
 	struct termios *ptermios;
 
-	pser_inf = (SERIAL_DEVICE *) conn->rdpdrDevice[device_id].pdevice_data;
+	pser_inf = (RDSerialDevice *) conn->rdpdrDevice[device_id].pdevice_data;
 	ptermios = pser_inf->ptermios;
 	serial_fd = open(conn->rdpdrDevice[device_id].local_path, O_RDWR | O_NOCTTY | O_NONBLOCK);
 
@@ -611,8 +611,8 @@ serial_create(rdcConnection conn, uint32 device_id, uint32 access, uint32 share_
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-serial_close(rdcConnection conn, NTHANDLE handle)
+static NTStatus
+serial_close(RDConnectionRef conn, NTHandle handle)
 {
 	int i = get_device_index(conn, handle);
 	if (i >= 0)
@@ -623,11 +623,11 @@ serial_close(rdcConnection conn, NTHANDLE handle)
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-serial_read(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+static NTStatus
+serial_read(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
 {
 	long timeout;
-	SERIAL_DEVICE *pser_inf;
+	RDSerialDevice *pser_inf;
 	struct termios *ptermios;
 #ifdef WITH_DEBUG_SERIAL
 	int bytes_inqueue;
@@ -682,10 +682,10 @@ serial_read(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, ui
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-serial_write(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+static NTStatus
+serial_write(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
 {
-	SERIAL_DEVICE *pser_inf;
+	RDSerialDevice *pser_inf;
 
 	pser_inf = get_serial_info(conn, handle);
 
@@ -699,13 +699,13 @@ serial_write(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, u
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-serial_device_control(rdcConnection conn, NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+static NTStatus
+serial_device_control(RDConnectionRef conn, NTHandle handle, uint32 request, RDStreamRef in, RDStreamRef out)
 {
 	int flush_mask, purge_mask;
 	uint32 result, modemstate;
 	uint8 immediate;
-	SERIAL_DEVICE *pser_inf;
+	RDSerialDevice *pser_inf;
 	struct termios *ptermios;
 
 	if ((request >> 16) != FILE_DEVICE_SERIAL_PORT)
@@ -947,10 +947,10 @@ serial_device_control(rdcConnection conn, NTHANDLE handle, uint32 request, STREA
 }
 
 RDBOOL
-serial_get_event(rdcConnection conn, NTHANDLE handle, uint32 * result)
+serial_get_event(RDConnectionRef conn, NTHandle handle, uint32 * result)
 {
 	int index;
-	SERIAL_DEVICE *pser_inf;
+	RDSerialDevice *pser_inf;
 	int bytes;
 	RDBOOL ret = False;
 
@@ -960,7 +960,7 @@ serial_get_event(rdcConnection conn, NTHANDLE handle, uint32 * result)
 		return False;
 
 #ifdef TIOCINQ
-	pser_inf = (SERIAL_DEVICE *) conn->rdpdrDevice[index].pdevice_data;
+	pser_inf = (RDSerialDevice *) conn->rdpdrDevice[index].pdevice_data;
 
 	ioctl(handle, TIOCINQ, &bytes);
 
@@ -1045,10 +1045,10 @@ serial_get_event(rdcConnection conn, NTHANDLE handle, uint32 * result)
 
 /* Read timeout for a given file descripter (device) when adding fd's to select() */
 RDBOOL
-serial_get_timeout(rdcConnection conn, NTHANDLE handle, uint32 length, uint32 * timeout, uint32 * itv_timeout)
+serial_get_timeout(RDConnectionRef conn, NTHandle handle, uint32 length, uint32 * timeout, uint32 * itv_timeout)
 {
 	int index;
-	SERIAL_DEVICE *pser_inf;
+	RDSerialDevice *pser_inf;
 
 	index = get_device_index(conn, handle);
 	if (index < 0)
@@ -1059,7 +1059,7 @@ serial_get_timeout(rdcConnection conn, NTHANDLE handle, uint32 length, uint32 * 
 		return False;
 	}
 
-	pser_inf = (SERIAL_DEVICE *) conn->rdpdrDevice[index].pdevice_data;
+	pser_inf = (RDSerialDevice *) conn->rdpdrDevice[index].pdevice_data;
 
 	*timeout =
 		pser_inf->read_total_timeout_multiplier * length +

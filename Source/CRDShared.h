@@ -75,7 +75,7 @@ inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
 NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);
 
 // CRDSession specific
-void fill_default_connection(rdcConnection conn);
+void fill_default_connection(RDConnectionRef conn);
 
 // Convenience macros
 #define BOOL_AS_BSTATE(b) ( (b) ? NSOnState : NSOffState)

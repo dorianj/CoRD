@@ -17,7 +17,7 @@
 
 #import "rdesktop.h"
 
-#import "miscellany.h"
+#import "CRDShared.h"
 #import "CRDSession.h"
 
 // only for ui_select
@@ -28,7 +28,7 @@
 #pragma mark -
 #pragma mark Disk forwarding
 // XXX: this won't be used at all with new disk redir solution
-int ui_select(rdcConnection conn)
+int ui_select(RDConnectionRef conn)
 {
 	int n = 0;
 	fd_set rfds, wfds;
@@ -68,19 +68,19 @@ int ui_select(rdcConnection conn)
 #pragma mark -
 #pragma mark Clipboard
 
-void ui_clip_format_announce(rdcConnection conn, uint8 *data, uint32 length) 
+void ui_clip_format_announce(RDConnectionRef conn, uint8 *data, uint32 length) 
 {
 	CRDSession *inst = (CRDSession *)conn->controller;
 	[inst gotNewRemoteClipboardData];
 }
 
-void ui_clip_handle_data(rdcConnection conn, uint8 *data, uint32 length) 
+void ui_clip_handle_data(RDConnectionRef conn, uint8 *data, uint32 length) 
 {	
 	CRDSession *inst = (CRDSession *)conn->controller;
 	[inst setLocalClipboard:[NSData dataWithBytes:data length:length] format:conn->clipboardRequestType];
 }
 
-void ui_clip_request_data(rdcConnection conn, uint32 format) 
+void ui_clip_request_data(RDConnectionRef conn, uint32 format) 
 {	
 	CRDSession *inst = (CRDSession *)conn->controller;
 	 
@@ -88,19 +88,19 @@ void ui_clip_request_data(rdcConnection conn, uint32 format)
 		[inst setRemoteClipboard:format];
 }
 
-void ui_clip_sync(rdcConnection conn) 
+void ui_clip_sync(RDConnectionRef conn) 
 {
 	CRDSession *inst = (CRDSession *)conn->controller;
 	[inst informServerOfPasteboardType];
 }
 
-void ui_clip_request_failed(rdcConnection conn)
+void ui_clip_request_failed(RDConnectionRef conn)
 {
 
 	
 }
 
-void ui_clip_set_mode(rdcConnection conn, const char *optarg)
+void ui_clip_set_mode(RDConnectionRef conn, const char *optarg)
 {
 
 }

@@ -23,7 +23,7 @@
 
 #import "CRDServerList.h"
 #import "CRDFullScreenWindow.h"
-#import "miscellany.h"
+#import "CRDShared.h"
 
 #define TOOLBAR_DISCONNECT	@"Disconnect"
 #define TOOLBAR_DRAWER @"Servers"
@@ -1405,7 +1405,7 @@
 	{
 
 		[self cellNeedsDisplay:(NSCell *)[inst cellRepresentation]];
-		ConnectionErrorCode errorCode = [inst conn]->errorCode;
+		RDConnectionError errorCode = [inst conn]->errorCode;
 		
 		if (errorCode != ConnectionErrorNone && errorCode != ConnectionErrorCanceled)
 		{			

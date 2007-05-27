@@ -41,8 +41,8 @@
 #endif
 
 /* Initialise TCP transport data packet */
-STREAM
-tcp_init(rdcConnection conn, uint32 maxlen)
+RDStreamRef
+tcp_init(RDConnectionRef conn, uint32 maxlen)
 {
 	if (maxlen > conn->outStream.size)
 	{
@@ -57,7 +57,7 @@ tcp_init(rdcConnection conn, uint32 maxlen)
 
 /* Send TCP transport data packet */
 void
-tcp_send(rdcConnection conn, STREAM s)
+tcp_send(RDConnectionRef conn, RDStreamRef s)
 {	
 	NSOutputStream *os = conn->outputStream;
 	
@@ -74,8 +74,8 @@ tcp_send(rdcConnection conn, STREAM s)
 }
 
 /* Receive a message on the TCP layer */
-STREAM
-tcp_recv(rdcConnection conn, STREAM s, uint32 length)
+RDStreamRef
+tcp_recv(RDConnectionRef conn, RDStreamRef s, uint32 length)
 {
 	NSInputStream *is = conn->inputStream;
 	unsigned int new_length, end_offset, p_offset;
@@ -130,7 +130,7 @@ tcp_recv(rdcConnection conn, STREAM s, uint32 length)
 
 /* Establish a connection on the TCP layer */
 RDBOOL
-tcp_connect(rdcConnection conn, const char *server)
+tcp_connect(RDConnectionRef conn, const char *server)
 {
 	NSInputStream *is = nil;
 	NSOutputStream *os = nil;
@@ -197,7 +197,7 @@ tcp_connect(rdcConnection conn, const char *server)
 
 /* Disconnect on the TCP layer */
 void
-tcp_disconnect(rdcConnection conn)
+tcp_disconnect(RDConnectionRef conn)
 {
 	NSInputStream *is;
 	NSOutputStream *os;
@@ -211,7 +211,7 @@ tcp_disconnect(rdcConnection conn)
 }
 
 char *
-tcp_get_address(rdcConnection conn)
+tcp_get_address(RDConnectionRef conn)
 {
 	NSOutputStream *os = conn->outputStream;
 	CFWriteStreamRef stream;
@@ -238,7 +238,7 @@ tcp_get_address(rdcConnection conn)
 /* reset the state of the tcp layer */
 /* Support for Session Directory */
 void
-tcp_reset_state(rdcConnection conn)
+tcp_reset_state(RDConnectionRef conn)
 {
 	/* Clear the incoming stream */
 	[(id)conn->inputStream release];

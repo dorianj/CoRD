@@ -229,7 +229,7 @@ printercache_save_blob(char *printer_name, uint8 * data, uint32 length)
 }
 
 void
-printercache_process(STREAM s)
+printercache_process(RDStreamRef s)
 {
 	uint32 type, printer_length, driver_length, printer_unicode_length, blob_length;
 	char device_name[9], printer[256], driver[256];

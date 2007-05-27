@@ -19,7 +19,7 @@
 #import <Cocoa/Cocoa.h>
 
 #import "rdesktop.h"
-#import "miscellany.h"
+#import "CRDShared.h"
 
 @class CRDServerCell;
 @class CRDSessionView;
@@ -27,7 +27,7 @@
 @interface CRDSession : NSObject
 {
 	// Represented rdesktop object
-	rdcConnection conn;
+	RDConnectionRef conn;
 
 	// User configurable RDP settings
 	NSString *label, *hostName, *username, *password, *domain;	
@@ -101,7 +101,7 @@
 
 
 // Accessors
-- (rdcConnection)conn;
+- (RDConnectionRef)conn;
 - (NSString *)label;
 - (CRDSessionView *)view;
 - (NSString *)rdpFilename;

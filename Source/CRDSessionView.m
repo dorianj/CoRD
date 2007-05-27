@@ -335,7 +335,7 @@
 	[self releaseBackingStore];
 }
 
-- (void)polygon:(POINT *)points npoints:(int)nPoints color:(NSColor *)c
+- (void)polygon:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c
 		winding:(NSWindingRule)winding
 {
 	NSBezierPath *bp = [NSBezierPath bezierPath];
@@ -353,7 +353,7 @@
 	[self releaseBackingStore];
 }
 
-- (void)polyline:(POINT *)points npoints:(int)nPoints color:(NSColor *)c width:(int)w
+- (void)polyline:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c width:(int)w
 {
 	NSBezierPath *bp = [NSBezierPath bezierPath];
 	int i;

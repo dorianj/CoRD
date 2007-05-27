@@ -24,7 +24,7 @@
 #import "CRDBitmap.h"
 #import "AppController.h"
 #import <Accelerate/Accelerate.h> // must be included after rdesktop.h for some reason
-#import "miscellany.h"
+#import "CRDShared.h"
 #import "CRDSessionView.h"
 
 @implementation CRDBitmap

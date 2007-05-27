@@ -20,7 +20,7 @@
 
 #import "rdesktop.h"
 
-#import "miscellany.h"
+#import "CRDShared.h"
 #import "CRDSession.h"
 #import "CRDSessionView.h"
 #import "CRDBitmap.h"
@@ -47,15 +47,15 @@
 	
 
 // For managing the current draw session (the time bracketed between ui_begin_update and ui_end_update)
-static void schedule_display(rdcConnection conn);
-static void schedule_display_in_rect(rdcConnection conn, NSRect r);
+static void schedule_display(RDConnectionRef conn);
+static void schedule_display_in_rect(RDConnectionRef conn, NSRect r);
 
 static CRDBitmap *nullCursor = nil;
 
 #pragma mark -
 #pragma mark Resizing the Connection Window
 
-void ui_resize_window(rdcConnection conn)
+void ui_resize_window(RDConnectionRef conn)
 {
 	LOCALS_FROM_CONN;
 	
@@ -68,20 +68,20 @@ void ui_resize_window(rdcConnection conn)
 #pragma mark -
 #pragma mark Colormap 
 
-RDColorMapRef ui_create_colourmap(COLOURMAP * colors)
+RDColorMapRef ui_create_colourmap(RDColorMap * colors)
 {
 	unsigned int *colorMap = malloc(colors->ncolours * sizeof(unsigned));
 	
 	for (int i = 0; i < colors->ncolours; i++)
 	{
-		COLOURENTRY colorEntry = colors->colours[i];
+		RDColorEntry colorEntry = colors->colours[i];
 		colorMap[i] = (colorEntry.blue << 16) | (colorEntry.green << 8) | colorEntry.red;
 	}
 	
 	return colorMap;
 }
 
-void ui_set_colourmap(rdcConnection conn, RDColorMapRef map)
+void ui_set_colourmap(RDConnectionRef conn, RDColorMapRef map)
 {
 	LOCALS_FROM_CONN;
 	[v setColorMap:(unsigned int *)map];
@@ -91,19 +91,19 @@ void ui_set_colourmap(rdcConnection conn, RDColorMapRef map)
 #pragma mark -
 #pragma mark Bitmap
 
-RDBitmapRef ui_create_bitmap(rdcConnection conn, int width, int height, uint8 *data)
+RDBitmapRef ui_create_bitmap(RDConnectionRef conn, int width, int height, uint8 *data)
 {
 	return [[CRDBitmap alloc] initWithBitmapData:data size:NSMakeSize(width, height) view:conn->ui];
 }
 
-void ui_paint_bitmap(rdcConnection conn, int x, int y, int cx, int cy, int width, int height, uint8 * data)
+void ui_paint_bitmap(RDConnectionRef conn, int x, int y, int cx, int cy, int width, int height, uint8 * data)
 {
 	CRDBitmap *bitmap = [[CRDBitmap alloc] initWithBitmapData:data size:NSMakeSize(width, height) view:conn->ui];
 	ui_memblt(conn, 0, x, y, cx, cy, bitmap, 0, 0);
 	[bitmap release];
 }
 
-void ui_memblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, RDBitmapRef src, int srcx, int srcy)
+void ui_memblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy, RDBitmapRef src, int srcx, int srcy)
 {
 	LOCALS_FROM_CONN;
 	
@@ -144,7 +144,7 @@ void ui_destroy_bitmap(RDBitmapRef bmp)
 
 // Takes a section of the desktop cache (backing store) and stores it into the 
 //	rdesktop bitmap cache (using RDP colors). Adequately optimized, not critical.
-void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int w, int h)
+void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, int h)
 {
 	LOCALS_FROM_CONN;
 	
@@ -223,7 +223,7 @@ void ui_desktop_save(rdcConnection conn, uint32 offset, int x, int y, int w, int
 	free(output);
 }
 
-void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int w, int h)
+void ui_desktop_restore(RDConnectionRef conn, uint32 offset, int x, int y, int w, int h)
 {
 	LOCALS_FROM_CONN;
 		
@@ -249,12 +249,12 @@ void ui_desktop_restore(rdcConnection conn, uint32 offset, int x, int y, int w, 
 #pragma mark -
 #pragma mark Managing Draw Session
 
-void ui_begin_update(rdcConnection conn)
+void ui_begin_update(RDConnectionRef conn)
 {
 	conn->updateEntireScreen = NO;
 }
 
-void ui_end_update(rdcConnection conn)
+void ui_end_update(RDConnectionRef conn)
 {
 	LOCALS_FROM_CONN;
 	
@@ -267,12 +267,12 @@ void ui_end_update(rdcConnection conn)
 	conn->updateEntireScreen = NO;
 }
 
-static void schedule_display(rdcConnection conn)
+static void schedule_display(RDConnectionRef conn)
 {
 	conn->updateEntireScreen = YES;
 }
 
-static void schedule_display_in_rect(rdcConnection conn, NSRect r)
+static void schedule_display_in_rect(RDConnectionRef conn, NSRect r)
 {
 	// Since CRDSessionView simply flushes its entire buffer to view on draw, it's simpler
 	//	and quicker to simply update the entire view. This remains from the non-OpenGL
@@ -284,7 +284,7 @@ static void schedule_display_in_rect(rdcConnection conn, NSRect r)
 #pragma mark -
 #pragma mark General Drawing
 
-void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour)
+void ui_rect(RDConnectionRef conn, int x, int y, int cx, int cy, int colour)
 {
 	LOCALS_FROM_CONN;
 	NSRect r = NSMakeRect(x , y, cx, cy);
@@ -292,7 +292,7 @@ void ui_rect(rdcConnection conn, int x, int y, int cx, int cy, int colour)
 	schedule_display_in_rect(conn, r);
 }
 
-void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, int endx, int endy, PEN * pen)
+void ui_line(RDConnectionRef conn, uint8 opcode, int startx, int starty, int endx, int endy, RDPen * pen)
 {
 	LOCALS_FROM_CONN;
 	NSPoint start = NSMakePoint(startx + 0.5, starty + 0.5);
@@ -311,7 +311,7 @@ void ui_line(rdcConnection conn, uint8 opcode, int startx, int starty, int endx,
 	//schedule_display_in_rect(conn, NSMakeRect(startx, starty, endx, endy));
 }
 
-void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, int srcx, int srcy)
+void ui_screenblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy, int srcx, int srcy)
 {
 	LOCALS_FROM_CONN;
 	NSRect src = NSMakeRect(srcx, srcy, cx, cy);
@@ -322,7 +322,7 @@ void ui_screenblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy
 	schedule_display_in_rect(conn, NSMakeRect(x, y, cx, cy));
 }
 
-void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy)
+void ui_destblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy)
 {
 	LOCALS_FROM_CONN;
 	NSRect r = NSMakeRect(x, y, cx, cy);
@@ -346,7 +346,7 @@ void ui_destblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy)
 	schedule_display_in_rect(conn, r);
 }
 
-void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, PEN *pen)
+void ui_polyline(RDConnectionRef conn, uint8 opcode, RDPoint* points, int npoints, RDPen *pen)
 {
 	LOCALS_FROM_CONN;
 	CHECKOPCODE(opcode);
@@ -354,7 +354,7 @@ void ui_polyline(rdcConnection conn, uint8 opcode, POINT * points, int npoints, 
 	schedule_display(conn);
 }
 
-void ui_polygon(rdcConnection conn, uint8 opcode, uint8 fillmode, POINT * point, int npoints, BRUSH *brush, int bgcolour, int fgcolour)
+void ui_polygon(RDConnectionRef conn, uint8 opcode, uint8 fillmode, RDPoint* point, int npoints, RDBrush *brush, int bgcolour, int fgcolour)
 {
 	LOCALS_FROM_CONN;
 	
@@ -403,7 +403,7 @@ static const uint8 hatch_patterns[] =
 };
 
 /* XXX Still needs origins */
-void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, BRUSH * brush, int bgcolor, int fgcolor)
+void ui_patblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy, RDBrush * brush, int bgcolor, int fgcolor)
 {
 	LOCALS_FROM_CONN;
 	NSRect dest = NSMakeRect(x, y, cx, cy);
@@ -482,14 +482,14 @@ void ui_patblt(rdcConnection conn, uint8 opcode, int x, int y, int cx, int cy, B
 void ui_triblt(uint8 opcode, 
 			   int x, int y, int cx, int cy,
 			   RDBitmapRef src, int srcx, int srcy,
-			   BRUSH *brush, int bgcolour, int fgcolour)
+			   RDBrush *brush, int bgcolour, int fgcolour)
 {
 	CHECKOPCODE(opcode);
 	UNIMPL;
 }
 
-void ui_ellipse(rdcConnection conn, uint8 opcode, uint8 fillmode, int x, int y, int cx, int cy,
-				BRUSH *brush, int bgcolour, int fgcolour)
+void ui_ellipse(RDConnectionRef conn, uint8 opcode, uint8 fillmode, int x, int y, int cx, int cy,
+				RDBrush *brush, int bgcolour, int fgcolour)
 {
 	LOCALS_FROM_CONN;
 	NSRect r = NSMakeRect(x + 0.5, y + 0.5, cx, cy);
@@ -513,7 +513,7 @@ void ui_ellipse(rdcConnection conn, uint8 opcode, uint8 fillmode, int x, int y, 
 #pragma mark -
 #pragma mark Text drawing
 
-RDGlyphRef ui_create_glyph(rdcConnection conn, int width, int height, const uint8 *data)
+RDGlyphRef ui_create_glyph(RDConnectionRef conn, int width, int height, const uint8 *data)
 {
 	return [[CRDBitmap alloc] initWithGlyphData:data size:NSMakeSize(width, height) view:conn->ui];
 }
@@ -524,9 +524,9 @@ void ui_destroy_glyph(RDGlyphRef glyph)
 	[image release];
 }
 
-void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, CRDBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor);
+void ui_drawglyph(RDConnectionRef conn, int x, int y, int w, int h, CRDBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor);
 
-void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, CRDBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor)
+void ui_drawglyph(RDConnectionRef conn, int x, int y, int w, int h, CRDBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor)
 {
 	LOCALS_FROM_CONN;
 	NSRect r = NSMakeRect(x, y, w, h);
@@ -565,16 +565,16 @@ void ui_drawglyph(rdcConnection conn, int x, int y, int w, int h, CRDBitmap *gly
   }\
 }
 
-void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int mixmode, int x, int y, int clipx, int clipy,
-				  int clipcx, int clipcy, int boxx, int boxy, int boxcx, int boxcy, BRUSH * brush, int bgcolour,
+void ui_draw_text(RDConnectionRef conn, uint8 font, uint8 flags, uint8 opcode, int mixmode, int x, int y, int clipx, int clipy,
+				  int clipcx, int clipcy, int boxx, int boxy, int boxcx, int boxcy, RDBrush * brush, int bgcolour,
 				  int fgcolour, uint8 * text, uint8 length)
 {
 	LOCALS_FROM_CONN;
 	int i = 0, j;
 	int xyoffset;
 	int x1, y1;
-	FONTGLYPH *glyph;
-	DATABLOB *entry;
+	RDFontGlyph *glyph;
+	RDDataBlob *entry;
 	NSRect box;
 	NSColor *foregroundColor = [v nscolorForRDCColor:fgcolour];
 	NSColor *backgroundColor = [v nscolorForRDCColor:bgcolour];
@@ -651,13 +651,13 @@ void ui_draw_text(rdcConnection conn, uint8 font, uint8 flags, uint8 opcode, int
 #pragma mark -
 #pragma mark Clipping drawing
 
-void ui_set_clip(rdcConnection conn, int x, int y, int cx, int cy)
+void ui_set_clip(RDConnectionRef conn, int x, int y, int cx, int cy)
 {
 	LOCALS_FROM_CONN;
 	[v setClip:NSMakeRect(x, y, cx, cy)];
 }
 
-void ui_reset_clip(rdcConnection conn)
+void ui_reset_clip(RDConnectionRef conn)
 {
 	LOCALS_FROM_CONN;
 	[v resetClip];
@@ -672,14 +672,14 @@ void ui_bell(void)
 #pragma mark -
 #pragma mark Cursors and Pointers
 
-RDCursorRef ui_create_cursor(rdcConnection conn, unsigned int x, unsigned int y, int width, int height,
+RDCursorRef ui_create_cursor(RDConnectionRef conn, unsigned int x, unsigned int y, int width, int height,
 						 uint8 * andmask, uint8 * xormask)
 {
 	return  [[CRDBitmap alloc] initWithCursorData:andmask alpha:xormask 
 			size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui];
 }
 
-void ui_set_null_cursor(rdcConnection conn)
+void ui_set_null_cursor(RDConnectionRef conn)
 {
 	if (nullCursor == nil)
 		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL);
@@ -687,7 +687,7 @@ void ui_set_null_cursor(rdcConnection conn)
 	ui_set_cursor(conn, nullCursor);
 }
 
-void ui_set_cursor(rdcConnection conn, RDCursorRef cursor)
+void ui_set_cursor(RDConnectionRef conn, RDCursorRef cursor)
 {
 	LOCALS_FROM_CONN;
 	id c = (CRDBitmap *)cursor;
@@ -700,7 +700,7 @@ void ui_destroy_cursor(RDCursorRef cursor)
 	[c release];
 }
 
-void ui_move_pointer(rdcConnection conn, int x, int y)
+void ui_move_pointer(RDConnectionRef conn, int x, int y)
 {
 	LOCALS_FROM_CONN;
 	//xxx: check if this conn is active

@@ -15,7 +15,7 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-#include "miscellany.h"
+#include "CRDShared.h"
 
 #pragma mark -
 #pragma mark Storage for externs
@@ -220,7 +220,7 @@ NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSSt
 #pragma mark -
 #pragma mark CRDSession specific
 
-void fill_default_connection(rdcConnection conn)
+void fill_default_connection(RDConnectionRef conn)
 {
 	const char *hostString = [[[NSHost currentHost] name] cStringUsingEncoding:NSASCIIStringEncoding];
 	

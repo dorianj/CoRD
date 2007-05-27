@@ -38,7 +38,6 @@ typedef enum _CRDSwappedModifiersKeyCode
 	CRDSwappedModifiersCommandKey = 12
 } CRDSwappedModifiersKeyCode;
 
-
 // Convenience macros
 #define MakeNum(n) [NSNumber numberWithInt:(n)]
 #define MakeInt(num) [num intValue]

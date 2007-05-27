@@ -17,7 +17,7 @@
 
 #import "CRDServerCell.h"
 
-#import "miscellany.h"
+#import "CRDShared.h"
 #import "CRDSession.h"
 #import "AppController.h"
 

@@ -23,15 +23,15 @@
 
 
 void
-rdp5_process(rdcConnection conn, STREAM s)
+rdp5_process(RDConnectionRef conn, RDStreamRef s)
 {
 	uint16 length, count, x, y;
 	uint8 type, ctype;
 	uint8 *next;
 
 	uint32 roff, rlen;
-	struct stream *ns = &(conn->mppcDict.ns);
-	struct stream *ts;
+	RDStream *ns = &(conn->mppcDict.ns);
+	RDStream *ts;
 
 #if 0
 	printf("RDP5 data:\n");

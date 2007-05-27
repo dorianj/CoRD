@@ -62,7 +62,7 @@ extern DEVICE_FNS disk_fns;
 
 // Return device_id for a given handle
 int
-get_device_index(rdcConnection conn, NTHANDLE handle)
+get_device_index(RDConnectionRef conn, NTHandle handle)
 {
 	int i;
 	for (i = 0; i < RDPDR_MAX_DEVICES; i++)
@@ -84,7 +84,7 @@ void convert_to_unix_filename(char *filename)
 	}
 }
 
-static RDBOOL rdpdr_handle_ok(rdcConnection conn, int device, int handle)
+static RDBOOL rdpdr_handle_ok(RDConnectionRef conn, int device, int handle)
 {
 	switch (conn->rdpdrDevice[device].device_type)
 	{
@@ -104,7 +104,7 @@ static RDBOOL rdpdr_handle_ok(rdcConnection conn, int device, int handle)
 }
 
 /* Add a new io request to the table containing pending io requests so it won't block rdesktop */
-static RDBOOL add_async_iorequest(rdcConnection conn, uint32 device, uint32 file, uint32 fid, uint32 major, uint32 length, DEVICE_FNS * fns, uint32 total_timeout, uint32 interval_timeout, uint8 * buffer, uint32 offset) 
+static RDBOOL add_async_iorequest(RDConnectionRef conn, uint32 device, uint32 file, uint32 fid, uint32 major, uint32 length, DEVICE_FNS * fns, uint32 total_timeout, uint32 interval_timeout, uint8 * buffer, uint32 offset) 
 {
 	struct async_iorequest *iorq;
 	
@@ -148,10 +148,10 @@ static RDBOOL add_async_iorequest(rdcConnection conn, uint32 device, uint32 file
 }
 
 static void
-rdpdr_send_connect(rdcConnection conn)
+rdpdr_send_connect(RDConnectionRef conn)
 {
 	uint8 magic[4] = "rDCC";
-	STREAM s;
+	RDStreamRef s;
 
 	s = channel_init(conn, conn->rdpdrChannel, 12);
 	out_uint8a(s, magic, 4);
@@ -164,10 +164,10 @@ rdpdr_send_connect(rdcConnection conn)
 
 
 static void
-rdpdr_send_name(rdcConnection conn)
+rdpdr_send_name(RDConnectionRef conn)
 {
 	uint8 magic[4] = "rDNC";
-	STREAM s;
+	RDStreamRef s;
 	uint32 hostlen;
 
 	if (NULL == conn->rdpdrClientname)
@@ -189,10 +189,10 @@ rdpdr_send_name(rdcConnection conn)
 
 /* Returns the size of the payload of the announce packet */
 static int
-announcedata_size(rdcConnection conn)
+announcedata_size(RDConnectionRef conn)
 {
 	int size, i;
-	PRINTER *printerinfo;
+	RDPrinterInfo *printerinfo;
 
 	size = 8;
 	size += conn->numDevices * 0x14;
@@ -201,7 +201,7 @@ announcedata_size(rdcConnection conn)
 	{
 		if (conn->rdpdrDevice[i].device_type == DEVICE_TYPE_PRINTER)
 		{
-			printerinfo = (PRINTER *) conn->rdpdrDevice[i].pdevice_data;
+			printerinfo = (RDPrinterInfo *) conn->rdpdrDevice[i].pdevice_data;
 			printerinfo->bloblen =
 				printercache_load_blob(printerinfo->printer, &(printerinfo->blob));
 
@@ -216,14 +216,14 @@ announcedata_size(rdcConnection conn)
 }
 
 static void
-rdpdr_send_available(rdcConnection conn)
+rdpdr_send_available(RDConnectionRef conn)
 {
 
 	uint8 magic[4] = "rDAD";
 	uint32 driverlen, printerlen, bloblen;
 	int i;
-	STREAM s;
-	PRINTER *printerinfo;
+	RDStreamRef s;
+	RDPrinterInfo *printerinfo;
 
 	s = channel_init(conn, conn->rdpdrChannel, announcedata_size(conn));
 	out_uint8a(s, magic, 4);
@@ -240,7 +240,7 @@ rdpdr_send_available(rdcConnection conn)
 		switch (conn->rdpdrDevice[i].device_type)
 		{
 			case DEVICE_TYPE_PRINTER:
-				printerinfo = (PRINTER *) conn->rdpdrDevice[i].pdevice_data;
+				printerinfo = (RDPrinterInfo *) conn->rdpdrDevice[i].pdevice_data;
 
 				driverlen = 2 * strlen(printerinfo->driver) + 2;
 				printerlen = 2 * strlen(printerinfo->printer) + 2;
@@ -269,11 +269,11 @@ rdpdr_send_available(rdcConnection conn)
 }
 
 static void
-rdpdr_send_completion(rdcConnection conn, uint32 device, uint32 id, uint32 status, uint32 result, uint8 * buffer,
+rdpdr_send_completion(RDConnectionRef conn, uint32 device, uint32 id, uint32 status, uint32 result, uint8 * buffer,
 		      uint32 length)
 {
 	uint8 magic[4] = "rDCI";
-	STREAM s;
+	RDStreamRef s;
 
 	s = channel_init(conn, conn->rdpdrChannel, 20 + length);
 	out_uint8a(s, magic, 4);
@@ -292,7 +292,7 @@ rdpdr_send_completion(rdcConnection conn, uint32 device, uint32 id, uint32 statu
 }
 
 static void
-rdpdr_process_irp(rdcConnection conn, STREAM s)
+rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 {
 	uint32 result = 0,
 		length = 0,
@@ -313,10 +313,10 @@ rdpdr_process_irp(rdcConnection conn, STREAM s)
 
 	char filename[PATH_MAX];
 	uint8 *buffer, *pst_buf;
-	struct stream out;
+	RDStream out;
 	DEVICE_FNS *fns;
 	RDBOOL rw_blocking = True;
-	NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
+	NTStatus status = STATUS_INVALID_DEVICE_REQUEST;
 
 	in_uint32_le(s, device);
 	in_uint32_le(s, file);
@@ -678,10 +678,10 @@ rdpdr_process_irp(rdcConnection conn, STREAM s)
 }
 
 // Status: Finished. Shouldn't need changes.
-static void rdpdr_send_clientcapabilty(rdcConnection conn)
+static void rdpdr_send_clientcapabilty(RDConnectionRef conn)
 {
 	uint8 magic[4] = "rDPC";
-	STREAM s;
+	RDStreamRef s;
 
 	s = channel_init(conn, conn->rdpdrChannel, 0x50);
 	out_uint8a(s, magic, 4);
@@ -718,7 +718,7 @@ static void rdpdr_send_clientcapabilty(rdcConnection conn)
 }
 
 static void
-rdpdr_process(rdcConnection conn, STREAM s)
+rdpdr_process(RDConnectionRef conn, RDStreamRef s)
 {
 	uint32 handle;
 	uint8 *magic;
@@ -777,7 +777,7 @@ rdpdr_process(rdcConnection conn, STREAM s)
 }
 
 int
-rdpdr_init(rdcConnection conn)
+rdpdr_init(RDConnectionRef conn)
 {
 	if (conn->numDevices > 0)
 	{
@@ -792,7 +792,7 @@ rdpdr_init(rdcConnection conn)
 
 /* Add file descriptors of pending io request to select() */
 void
-rdpdr_add_fds(rdcConnection conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDBOOL * timeout)
+rdpdr_add_fds(RDConnectionRef conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDBOOL * timeout)
 {
 	uint32 select_timeout = 0;	/* Timeout value to be used for select() (in millisecons). */
 	struct async_iorequest *iorq;
@@ -864,7 +864,7 @@ rdpdr_add_fds(rdcConnection conn, int *n, fd_set * rfds, fd_set * wfds, struct t
 }
 
 struct async_iorequest *
-rdpdr_remove_iorequest(rdcConnection conn, struct async_iorequest *prev, struct async_iorequest *iorq)
+rdpdr_remove_iorequest(RDConnectionRef conn, struct async_iorequest *prev, struct async_iorequest *iorq)
 {
 	if (!iorq)
 		return NULL;
@@ -889,16 +889,16 @@ rdpdr_remove_iorequest(rdcConnection conn, struct async_iorequest *prev, struct 
 
 /* Check if select() returned with one of the rdpdr file descriptors, and complete io if it did */
 static void
-_rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out)
+_rdpdr_check_fds(RDConnectionRef conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out)
 {
-	NTSTATUS status;
+	NTStatus status;
 	uint32 result = 0;
 	DEVICE_FNS *fns;
 	struct async_iorequest *iorq;
 	struct async_iorequest *prev;
 	uint32 req_size = 0;
 	uint32 buffer_len;
-	struct stream out;
+	RDStream out;
 	uint8 *buffer = NULL;
 
 
@@ -1115,7 +1115,7 @@ _rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_
 }
 
 void
-rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out)
+rdpdr_check_fds(RDConnectionRef conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out)
 {
 	fd_set dummy;
 
@@ -1134,7 +1134,7 @@ rdpdr_check_fds(rdcConnection conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_o
 
 /* Abort a pending io request for a given handle and major */
 RDBOOL
-rdpdr_abort_io(rdcConnection conn, uint32 fd, uint32 major, NTSTATUS status)
+rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status)
 {
 	uint32 result;
 	struct async_iorequest *iorq;

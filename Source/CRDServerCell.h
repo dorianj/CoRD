@@ -16,7 +16,7 @@
 */
 
 #import <Cocoa/Cocoa.h>
-#import "miscellany.h"
+#import "CRDShared.h"
 
 @interface CRDServerCell : NSCell
 {

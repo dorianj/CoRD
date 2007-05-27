@@ -23,7 +23,7 @@
 
 /* Generate a session key and RC4 keys, given client and server randoms */
 static void
-licence_generate_keys(rdcConnection conn, uint8 * client_random, uint8 * server_random, uint8 * pre_master_secret)
+licence_generate_keys(RDConnectionRef conn, uint8 * client_random, uint8 * server_random, uint8 * pre_master_secret)
 {
 	uint8 master_secret[48];
 	uint8 key_block[48];
@@ -40,7 +40,7 @@ licence_generate_keys(rdcConnection conn, uint8 * client_random, uint8 * server_
 }
 
 static void
-licence_generate_hwid(rdcConnection conn, uint8 * hwid)
+licence_generate_hwid(RDConnectionRef conn, uint8 * hwid)
 {
 	buf_out_uint32(hwid, 2);
 	strncpy((char *) (hwid + 4), conn->hostname, LICENCE_HWID_SIZE - 4);
@@ -48,14 +48,14 @@ licence_generate_hwid(rdcConnection conn, uint8 * hwid)
 
 /* Present an existing licence to the server */
 static void
-licence_present(rdcConnection conn, uint8 * client_random, uint8 * rsa_data,
+licence_present(RDConnectionRef conn, uint8 * client_random, uint8 * rsa_data,
 		uint8 * licence_data, int licence_size, uint8 * hwid, uint8 * signature)
 {
 	uint32 sec_flags = SEC_LICENCE_NEG;
 	uint16 length =
 		16 + SEC_RANDOM_SIZE + SEC_MODULUS_SIZE + SEC_PADDING_SIZE +
 		licence_size + LICENCE_HWID_SIZE + LICENCE_SIGNATURE_SIZE;
-	STREAM s;
+	RDStreamRef s;
 
 	s = sec_init(conn, sec_flags, length + 4);
 
@@ -89,13 +89,13 @@ licence_present(rdcConnection conn, uint8 * client_random, uint8 * rsa_data,
 
 /* Send a licence request packet */
 static void
-licence_send_request(rdcConnection conn, uint8 * client_random, uint8 * rsa_data, char *user, char *host)
+licence_send_request(RDConnectionRef conn, uint8 * client_random, uint8 * rsa_data, char *user, char *host)
 {
 	uint32 sec_flags = SEC_LICENCE_NEG;
 	uint16 userlen = strlen(user) + 1;
 	uint16 hostlen = strlen(host) + 1;
 	uint16 length = 128 + userlen + hostlen;
-	STREAM s;
+	RDStreamRef s;
 
 	s = sec_init(conn, sec_flags, length + 2);
 
@@ -127,7 +127,7 @@ licence_send_request(rdcConnection conn, uint8 * client_random, uint8 * rsa_data
 
 /* Process a licence demand packet */
 static void
-licence_process_demand(rdcConnection conn, STREAM s)
+licence_process_demand(RDConnectionRef conn, RDStreamRef s)
 {
 	uint8 null_data[SEC_MODULUS_SIZE];
 	uint8 *server_random;
@@ -166,11 +166,11 @@ licence_process_demand(rdcConnection conn, STREAM s)
 
 /* Send an authentication response packet */
 static void
-licence_send_authresp(rdcConnection conn, uint8 * token, uint8 * crypt_hwid, uint8 * signature)
+licence_send_authresp(RDConnectionRef conn, uint8 * token, uint8 * crypt_hwid, uint8 * signature)
 {
 	uint32 sec_flags = SEC_LICENCE_NEG;
 	uint16 length = 58;
-	STREAM s;
+	RDStreamRef s;
 
 	s = sec_init(conn, sec_flags, length + 2);
 
@@ -194,7 +194,7 @@ licence_send_authresp(rdcConnection conn, uint8 * token, uint8 * crypt_hwid, uin
 
 /* Parse an authentication request packet */
 static RDBOOL
-licence_parse_authreq(STREAM s, uint8 ** token, uint8 ** signature)
+licence_parse_authreq(RDStreamRef s, uint8 ** token, uint8 ** signature)
 {
 	uint16 tokenlen;
 
@@ -215,7 +215,7 @@ licence_parse_authreq(STREAM s, uint8 ** token, uint8 ** signature)
 
 /* Process an authentication request packet */
 static void
-licence_process_authreq(rdcConnection conn, STREAM s)
+licence_process_authreq(RDConnectionRef conn, RDStreamRef s)
 {
 	uint8 *in_token = NULL, *in_sig;
 	uint8 out_token[LICENCE_TOKEN_SIZE], decrypt_token[LICENCE_TOKEN_SIZE];
@@ -247,7 +247,7 @@ licence_process_authreq(rdcConnection conn, STREAM s)
 
 /* Process an licence issue packet */
 static void
-licence_process_issue(rdcConnection conn, STREAM s)
+licence_process_issue(RDConnectionRef conn, RDStreamRef s)
 {
 	RC4_KEY crypt_key;
 	uint32 length;
@@ -286,7 +286,7 @@ licence_process_issue(rdcConnection conn, STREAM s)
 
 /* Process a licence packet */
 void
-licence_process(rdcConnection conn, STREAM s)
+licence_process(RDConnectionRef conn, RDStreamRef s)
 {
 	uint8 tag;
 

@@ -16,7 +16,7 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-#define	MAX_PARALLEL_DEVICES		1
+#define	MAX_RDParallelDeviceS		1
 
 #define FILE_DEVICE_PARALLEL		0x22
 
@@ -39,9 +39,9 @@ extern int errno;
 /* optarg looks like ':LPT1=/dev/lp0'            */
 /* when it arrives to this function.             */
 int
-parallel_enum_devices(rdcConnection conn, uint32 * id, char *optarg)
+parallel_enum_devices(RDConnectionRef conn, uint32 * id, char *optarg)
 {
-	PARALLEL_DEVICE *ppar_info;
+	RDParallelDevice *ppar_info;
 
 	char *pos = optarg;
 	char *pos2;
@@ -51,7 +51,7 @@ parallel_enum_devices(rdcConnection conn, uint32 * id, char *optarg)
 	optarg++;
 	while ((pos = next_arg(optarg, ',')) && *id < RDPDR_MAX_DEVICES)
 	{
-		ppar_info = (PARALLEL_DEVICE *) xmalloc(sizeof(PARALLEL_DEVICE));
+		ppar_info = (RDParallelDevice *) xmalloc(sizeof(RDParallelDevice));
 
 		pos2 = next_arg(optarg, '=');
 		strcpy(conn->rdpdrDevice[*id].name, optarg);
@@ -74,9 +74,9 @@ parallel_enum_devices(rdcConnection conn, uint32 * id, char *optarg)
 	return count;
 }
 
-static NTSTATUS
-parallel_create(rdcConnection conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition,
-		uint32 flags, char *filename, NTHANDLE * handle)
+static NTStatus
+parallel_create(RDConnectionRef conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition,
+		uint32 flags, char *filename, NTHandle * handle)
 {
 	int parallel_fd;
 
@@ -103,8 +103,8 @@ parallel_create(rdcConnection conn, uint32 device_id, uint32 access, uint32 shar
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-parallel_close(rdcConnection conn, NTHANDLE handle)
+static NTStatus
+parallel_close(RDConnectionRef conn, NTHandle handle)
 {
 	int i = get_device_index(conn, handle);
 	if (i >= 0)
@@ -113,15 +113,15 @@ parallel_close(rdcConnection conn, NTHANDLE handle)
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-parallel_read(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+static NTStatus
+parallel_read(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
 {
 	*result = read(handle, data, length);
 	return STATUS_SUCCESS;
 }
 
-static NTSTATUS
-parallel_write(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
+static NTStatus
+parallel_write(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result)
 {
 	int rc = STATUS_SUCCESS;
 
@@ -156,8 +156,8 @@ parallel_write(rdcConnection conn, NTHANDLE handle, uint8 * data, uint32 length,
 	return rc;
 }
 
-static NTSTATUS
-parallel_device_control(rdcConnection conn, NTHANDLE handle, uint32 request, STREAM in, STREAM out)
+static NTStatus
+parallel_device_control(RDConnectionRef conn, NTHandle handle, uint32 request, RDStreamRef in, RDStreamRef out)
 {
 	if ((request >> 16) != FILE_DEVICE_PARALLEL)
 		return STATUS_INVALID_PARAMETER;

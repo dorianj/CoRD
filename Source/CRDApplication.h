@@ -17,7 +17,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "miscellany.h"
+#import "CRDShared.h"
 
 @interface CRDApplication : NSApplication
 {

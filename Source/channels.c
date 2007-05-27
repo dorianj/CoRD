@@ -37,10 +37,10 @@
    ..followed by uint16les for the other channels.
 */
 
-VCHANNEL *
-channel_register(rdcConnection conn, char *name, uint32 flags, void (*callback) (rdcConnection, STREAM))
+RDVirtualChannel *
+channel_register(RDConnectionRef conn, char *name, uint32 flags, void (*callback) (RDConnectionRef, RDStreamRef))
 {
-	VCHANNEL *channel;
+	RDVirtualChannel *channel;
 
 	if (!conn->useRdp5)
 		return NULL;
@@ -60,10 +60,10 @@ channel_register(rdcConnection conn, char *name, uint32 flags, void (*callback) 
 	return channel;
 }
 
-STREAM
-channel_init(rdcConnection conn, VCHANNEL * channel, uint32 length)
+RDStreamRef
+channel_init(RDConnectionRef conn, RDVirtualChannel * channel, uint32 length)
 {
-	STREAM s;
+	RDStreamRef s;
 
 	s = sec_init(conn, conn->useEncryption ? SEC_ENCRYPT : 0, length + 8);
 	s_push_layer(s, channel_hdr, 8);
@@ -71,7 +71,7 @@ channel_init(rdcConnection conn, VCHANNEL * channel, uint32 length)
 }
 
 void
-channel_send(rdcConnection conn, STREAM s, VCHANNEL * channel)
+channel_send(RDConnectionRef conn, RDStreamRef s, RDVirtualChannel * channel)
 {
 	uint32 length, flags;
 	uint32 thislength, remaining;
@@ -122,13 +122,13 @@ channel_send(rdcConnection conn, STREAM s, VCHANNEL * channel)
 }
 
 void
-channel_process(rdcConnection conn, STREAM s, uint16 mcs_channel)
+channel_process(RDConnectionRef conn, RDStreamRef s, uint16 mcs_channel)
 {
 	uint32 length, flags;
 	uint32 thislength;
-	VCHANNEL *channel = NULL;
+	RDVirtualChannel *channel = NULL;
 	unsigned int i;
-	STREAM in;
+	RDStreamRef in;
 
 	for (i = 0; i < conn->numChannels; i++)
 	{

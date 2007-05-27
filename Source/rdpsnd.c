@@ -31,17 +31,17 @@
 
 #define MAX_FORMATS		10
 
-static VCHANNEL *rdpsnd_channel;
+static RDVirtualChannel *rdpsnd_channel;
 
 static RDBOOL device_open;
-static WAVEFORMATEX formats[MAX_FORMATS];
+static RDWaveFormat formats[MAX_FORMATS];
 static unsigned int format_count;
 static unsigned int current_format;
 
-static STREAM
+static RDStreamRef
 rdpsnd_init_packet(uint16 type, uint16 size)
 {
-	STREAM s;
+	RDStreamRef s;
 
 	s = channel_init(rdpsnd_channel, size + 4);
 	out_uint16_le(s, type);
@@ -50,7 +50,7 @@ rdpsnd_init_packet(uint16 type, uint16 size)
 }
 
 static void
-rdpsnd_send(STREAM s)
+rdpsnd_send(RDStreamRef s)
 {
 #ifdef RDPSND_DEBUG
 	printf("RDPSND send:\n");
@@ -63,7 +63,7 @@ rdpsnd_send(STREAM s)
 void
 rdpsnd_send_completion(uint16 tick, uint8 packet_index)
 {
-	STREAM s;
+	RDStreamRef s;
 
 	s = rdpsnd_init_packet(RDPSND_COMPLETION, 4);
 	out_uint16_le(s, tick + 50);
@@ -74,11 +74,11 @@ rdpsnd_send_completion(uint16 tick, uint8 packet_index)
 }
 
 static void
-rdpsnd_process_negotiate(STREAM in)
+rdpsnd_process_negotiate(RDStreamRef in)
 {
 	unsigned int in_format_count, i;
-	WAVEFORMATEX *format;
-	STREAM out;
+	RDWaveFormat *format;
+	RDStreamRef out;
 	RDBOOL device_available = False;
 	int readcnt;
 	int discardcnt;
@@ -158,10 +158,10 @@ rdpsnd_process_negotiate(STREAM in)
 
 
 static void
-rdpsnd_process_servertick(STREAM in)
+rdpsnd_process_servertick(RDStreamRef in)
 {
 	uint16 tick1, tick2;
-	STREAM out;
+	RDStreamRef out;
 
 	/* in_uint8s(in, 4); unknown */
 	in_uint16_le(in, tick1);
@@ -175,7 +175,7 @@ rdpsnd_process_servertick(STREAM in)
 }
 
 static void
-rdpsnd_process(STREAM s)
+rdpsnd_process(RDStreamRef s)
 {
 	uint8 type;
 	uint16 datalen;

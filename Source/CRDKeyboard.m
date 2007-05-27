@@ -28,7 +28,7 @@
 #import "CRDSwappedModifiersUtility.h"
 #import "rdesktop.h"
 #import "scancodes.h"
-#import "miscellany.h"
+#import "CRDShared.h"
 
 #define KEYMAP_ENTRY(n) [[virtualKeymap objectForKey:[NSNumber numberWithInt:(n)]] intValue]
 #define SET_KEYMAP_ENTRY(n, v) [virtualKeymap setObject:[NSNumber numberWithInt:(v)] forKey:[NSNumber numberWithInt:(n)]]
