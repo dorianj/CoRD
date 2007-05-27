@@ -23,7 +23,6 @@
 
 #import "CRDBitmap.h"
 #import "AppController.h"
-#import <Accelerate/Accelerate.h> // must be included after rdesktop.h for some reason
 #import "CRDShared.h"
 #import "CRDSessionView.h"
 
@@ -67,24 +66,26 @@
 	}
 	else if (bitsPerPixel == 16)
 	{
-		vImage_Buffer newBuffer, sourceBuffer;
-		sourceBuffer.width = newBuffer.width = width;
-		sourceBuffer.height = newBuffer.height = height;
-		
-		newBuffer.data = outputBitmap;
-		newBuffer.rowBytes = width * 4;
-		
-		sourceBuffer.data = (void *)sourceBitmap;
-		sourceBuffer.rowBytes = width * bytesPerPixel;
-		
-		vImageConvert_RGB565toARGB8888(255, &sourceBuffer, &newBuffer, 0);		
+		while (p < end)
+		{
+			unsigned short c = p[0] | (p[1] << 8);
+
+			nc[0] = 255;
+			nc[1] = (( (c >> 11) & 0x1f) * 255 + 15) / 31;
+			nc[2] = (( (c >> 5) & 0x3f) * 255 + 31) / 63;
+			nc[3] = ((c & 0x1f) * 255 + 15) / 31;
+			
+			p += bytesPerPixel;
+			nc += 4;
+		}
 	}
 	else if (bitsPerPixel == 15)
 	{
 		// vImage won't let us set the alpha channel to one  (it reads it as ARGB1555, not paddded RGB555)
 		while (p < end)
 		{
-			unsigned short c = *((unsigned short *)p);
+			unsigned short c = p[0] | (p[1] << 8);
+
 			nc[0] = 255;
 			nc[1] = (( (c >> 10) & 0x1f) * 255 + 15) / 31;
 			nc[2] = (( (c >> 5) & 0x1f) * 255 + 15) / 31;
@@ -96,6 +97,7 @@
 	}
 	else if (bitsPerPixel == 24 || bitsPerPixel == 32)
 	{
+		// No use for vimage here.
 		while (p < end)
 		{
 			nc[0] = 255;
@@ -132,21 +134,20 @@
 	return self;
 }
 
-// Somewhat critical region: many glyph CRDBitmaps are created, one for each character
-//	drawn, as well as some when patterns are drawn. Currently efficient enough.
+// Somewhat critical region: many glyph CRDBitmaps are created, one for each character drawn, as well as some when patterns are drawn. Currently efficient enough.
 - (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(CRDSessionView *)v
 {	
 	if (![super init])
 		return nil;
-		
-	int scanline = ((int)s.width + 7) / 8;
 	
-	data = [[NSData alloc] initWithBytes:d length:scanline * s.height];
+	int width = s.width, height = s.height, scanline = ((int)width + 7) / 8;
+	
+	data = [[NSData alloc] initWithBytes:d length:scanline * height];
 	planes[0] = planes[1] = (unsigned char *)[data bytes];
 	
 	bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
-													 pixelsWide:s.width
-													 pixelsHigh:s.height
+													 pixelsWide:width
+													 pixelsHigh:height
 												  bitsPerSample:1
 												samplesPerPixel:2
 													   hasAlpha:YES
@@ -205,7 +206,7 @@
 		{
 			np[3] = alpha ? 0 : 0xff;
 		}
-
+		
 		i++;
 		p += 3;
 		np += 4;
@@ -245,6 +246,17 @@
 	[image drawInRect:dstRect fromRect:srcRect operation:op fraction:1.0];
 }
 
+
+#pragma mark -
+#pragma mark Manipulating the bitmap
+
+- (void)overlayColor:(NSColor *)c
+{
+	[image lockFocus]; {
+		[c setFill];
+		NSRectFillUsingOperation(RECT_FROM_SIZE([image size]), NSCompositeSourceAtop);
+	} [image unlockFocus];
+}
 
 #pragma mark -
 #pragma mark Accessors

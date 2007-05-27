@@ -60,7 +60,7 @@
 - (void)drawBitmap:(CRDBitmap *)image inRect:(NSRect)r from:(NSPoint)origin operation:(NSCompositingOperation)op;
 - (void)screenBlit:(NSRect)from to:(NSPoint)to;
 - (void)drawLineFrom:(NSPoint)start to:(NSPoint)end color:(NSColor *)color width:(int)width;
-- (void)drawGlyph:(CRDBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor;
+- (void)drawGlyph:(CRDBitmap *)glyph at:(NSRect)r foregroundColor:(NSColor *)c;
 - (void)swapRect:(NSRect)r;
 
 // Other rdesktop handlers

@@ -268,8 +268,6 @@
 	rdpdr_init(conn);
 	cliprdr_init(conn);
 	
-
-	
 	// Make the connection
 	BOOL connected = rdp_connect(conn, safe_string_conv(hostName), 
 							logonFlags, 

@@ -16,7 +16,6 @@
 */
 
 #import <Cocoa/Cocoa.h>
-#import <Accelerate/Accelerate.h>
 
 #import "rdesktop.h"
 
@@ -166,23 +165,36 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 	output = o = malloc(len*bytespp);
 	unsigned int *colorMap = [v colorMap], j, q;
 	
-	vImage_Buffer outputBuffer, sourceBuffer;
-	sourceBuffer.width = outputBuffer.width = w;
-	sourceBuffer.height = outputBuffer.height = h;
-	
-	outputBuffer.data = output;
-	outputBuffer.rowBytes = w * bytespp;
-	
-	sourceBuffer.data = (void *)screenDumpBytes;
-	sourceBuffer.rowBytes = w * 4;
-	
 	if (conn->serverBpp == 16)
 	{
-		vImageConvert_ARGB8888toRGB565(&sourceBuffer, &outputBuffer, 0);		
+		while (i++ < len)
+		{
+			unsigned char c =	( ((p[1] * 31 + 127) / 255) << 11) |
+								( ((p[3] * 31 + 255) / 255) << 5) |
+								( (p[2] * 31 + 127) / 255);
+								
+			o[0] = (c >> 8) & 0xff;
+			o[1] = c & 0xff;
+			
+			p += 4;
+			o += bytespp;
+		}
 	}
 	else if (conn->serverBpp == 15)
 	{
-		vImageConvert_ARGB8888toARGB1555(&sourceBuffer, &outputBuffer, 0);			
+		while (i++ < len)
+		{
+			unsigned char c =	(1 << 15) |
+								(((p[1] * 31 + 127) / 255) << 10) |
+								(((p[3] * 31 + 127) / 255) << 5) |
+								((p[2] * 31 + 127) / 255);
+								
+			o[0] = (c >> 8) & 0xff;
+			o[1] = c & 0xff;
+			
+			p += 4;
+			o += bytespp;
+		}		
 	}
 	else if (conn->serverBpp == 8)
 	{
@@ -307,8 +319,6 @@ void ui_line(RDConnectionRef conn, uint8 opcode, int startx, int starty, int end
 	CHECKOPCODE(opcode);
 	[v drawLineFrom:start to:end color:[v nscolorForRDCColor:pen->colour] width:pen->width];
 	schedule_display(conn);
-	// xxx: this should work quicker, but I haven't been able to test it (never called by rdesktop in use)
-	//schedule_display_in_rect(conn, NSMakeRect(startx, starty, endx, endy));
 }
 
 void ui_screenblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy, int srcx, int srcy)
@@ -520,8 +530,7 @@ RDGlyphRef ui_create_glyph(RDConnectionRef conn, int width, int height, const ui
 
 void ui_destroy_glyph(RDGlyphRef glyph)
 {
-	id image = glyph;
-	[image release];
+	[glyph release];
 }
 
 void ui_drawglyph(RDConnectionRef conn, int x, int y, int w, int h, CRDBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor);
@@ -529,40 +538,39 @@ void ui_drawglyph(RDConnectionRef conn, int x, int y, int w, int h, CRDBitmap *g
 void ui_drawglyph(RDConnectionRef conn, int x, int y, int w, int h, CRDBitmap *glyph, NSColor *fgcolor, NSColor *bgcolor)
 {
 	LOCALS_FROM_CONN;
-	NSRect r = NSMakeRect(x, y, w, h);
-	[v drawGlyph:glyph at:r fg:fgcolor bg:bgcolor];
+	[v drawGlyph:glyph at:NSMakeRect(x, y, w, h) foregroundColor:fgcolor];
 }
 
 #define DO_GLYPH(ttext,idx) \
 {\
-  glyph = cache_get_font (conn, font, ttext[idx]);\
-  if (!(flags & TEXT2_IMPLICIT_X))\
-  {\
-    xyoffset = ttext[++idx];\
-    if ((xyoffset & 0x80))\
-    {\
-      if (flags & TEXT2_VERTICAL)\
-        y += ttext[idx+1] | (ttext[idx+2] << 8);\
-      else\
-        x += ttext[idx+1] | (ttext[idx+2] << 8);\
-      idx += 2;\
-    }\
-    else\
-    {\
-      if (flags & TEXT2_VERTICAL)\
-        y += xyoffset;\
-      else\
-        x += xyoffset;\
-    }\
-  }\
-  if (glyph != NULL)\
-  {\
-    x1 = x + glyph->offset;\
-    y1 = y + glyph->baseline;\
-	ui_drawglyph(conn, x1, y1, glyph->width, glyph->height, glyph->pixmap, foregroundColor, backgroundColor); \
-    if (flags & TEXT2_IMPLICIT_X)\
-      x += glyph->width;\
-  }\
+	glyph = cache_get_font (conn, font, ttext[idx]);\
+	if (!(flags & TEXT2_IMPLICIT_X))\
+	{\
+		xyoffset = ttext[++idx];\
+		if ((xyoffset & 0x80))\
+		{\
+			if (flags & TEXT2_VERTICAL)\
+				y += ttext[idx+1] | (ttext[idx+2] << 8);\
+			else\
+				x += ttext[idx+1] | (ttext[idx+2] << 8);\
+			idx += 2;\
+		}\
+		else\
+		{\
+			if (flags & TEXT2_VERTICAL)\
+				y += xyoffset;\
+			else\
+				x += xyoffset;\
+		}\
+	}\
+	if (glyph != NULL)\
+	{\
+		x1 = x + glyph->offset;\
+		y1 = y + glyph->baseline;\
+		ui_drawglyph(conn, x1, y1, glyph->width, glyph->height, glyph->pixmap, foregroundColor, backgroundColor); \
+		if (flags & TEXT2_IMPLICIT_X)\
+			x += glyph->width;\
+	}\
 }
 
 void ui_draw_text(RDConnectionRef conn, uint8 font, uint8 flags, uint8 opcode, int mixmode, int x, int y, int clipx, int clipy,
@@ -570,14 +578,11 @@ void ui_draw_text(RDConnectionRef conn, uint8 font, uint8 flags, uint8 opcode, i
 				  int fgcolour, uint8 * text, uint8 length)
 {
 	LOCALS_FROM_CONN;
-	int i = 0, j;
-	int xyoffset;
-	int x1, y1;
+	int i = 0, j, xyoffset, x1, y1;
 	RDFontGlyph *glyph;
 	RDDataBlob *entry;
 	NSRect box;
-	NSColor *foregroundColor = [v nscolorForRDCColor:fgcolour];
-	NSColor *backgroundColor = [v nscolorForRDCColor:bgcolour];
+	NSColor *foregroundColor = [v nscolorForRDCColor:fgcolour], *backgroundColor = [v nscolorForRDCColor:bgcolour];
 	
 	CHECKOPCODE(opcode);
 	
@@ -592,7 +597,7 @@ void ui_draw_text(RDConnectionRef conn, uint8 font, uint8 flags, uint8 opcode, i
 	
 	[v startUpdate];
 	
-	/* Paint text, character by character */
+	// Paint text character by character
 	for (i = 0; i < length;)
 	{                       
 		switch (text[i])
@@ -606,7 +611,9 @@ void ui_draw_text(RDConnectionRef conn, uint8 font, uint8 flags, uint8 opcode, i
 				{
 					error("this shouldn't be happening\n");
 					exit(1);
-				} /* this will move pointer from start to first character after FF command */ 
+				} 
+				
+				// After FF command, move pointer to first character 
 
 				length -= i + 3;
 				text = &(text[i + 3]);
@@ -631,7 +638,7 @@ void ui_draw_text(RDConnectionRef conn, uint8 font, uint8 flags, uint8 opcode, i
 
 				i += (i + 2 < length) ? 3 : 2;
 				length -= i;
-				/* this will move pointer from start to first character after FE command */
+				// After FE command, move pointer to first character
 				text = &(text[i]);
 				i = 0;
 				break;

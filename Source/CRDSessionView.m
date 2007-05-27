@@ -146,8 +146,6 @@
 
 -(void)prepareOpenGL
 {
-    glEnable (GL_MULTISAMPLE_ARB);
-    glHint (GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
 	glEnable(GL_TEXTURE_RECTANGLE_EXT);
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
@@ -403,12 +401,8 @@
 {
 	[self focusBackingStore];
 	
-	NSAffineTransform *xform = [NSAffineTransform transform];	
-	[xform translateXBy:to.origin.x yBy:to.origin.y];
-	[xform concat];
-	
-	[image drawInRect:RECT_FROM_SIZE(to.size)
-			 fromRect:NSMakeRect(origin.x, origin.y, to.size.width, to.size.height)
+	[image drawInRect:to
+			 fromRect:NSMakeRect(origin.x, origin.y, NSWidth(to), NSHeight(to))
 			operation:op];
 	[self releaseBackingStore];
 }
@@ -436,26 +430,19 @@
 	[self releaseBackingStore];
 }
 
-- (void)drawGlyph:(CRDBitmap *)glyph at:(NSRect)r fg:(NSColor *)fgcolor bg:(NSColor *)bgcolor
+- (void)drawGlyph:(CRDBitmap *)glyph at:(NSRect)r foregroundColor:(NSColor *)foregroundColor;
 {
 	// Assumes that focusBackingStore has already been called (for efficiency)
 	
-	NSImage *image = [glyph image];
-	
-	if (![[glyph color] isEqual:fgcolor])
+	if (![[glyph color] isEqual:foregroundColor])
 	{
-		[image lockFocus];
-		[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
-		[fgcolor setFill];
-		[NSBezierPath fillRect:NSMakeRect(0, 0, [image size].width, [image size].height)];
-		[image unlockFocus];
-		[glyph setColor:fgcolor];
+		[glyph overlayColor:foregroundColor];
+		[glyph setColor:foregroundColor];
 	}
 	
-	[image drawInRect:r
-			 fromRect:NSMakeRect(0, 0, r.size.width, r.size.height)
-			operation:NSCompositeSourceOver
-		     fraction:1.0];
+	[glyph drawInRect:r fromRect:NSMakeRect(0, 0, NSWidth(r), NSHeight(r)) operation:NSCompositeSourceOver];
+	
+	//NSRectFill(r);
 }
 
 - (void)swapRect:(NSRect)r
@@ -502,9 +489,7 @@
 - (void)focusBackingStore
 {
 	[NSGraphicsContext saveGraphicsState];
-	
 	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:rdBufferContext flipped:NO]];
-	
 	NSRectClip(clipRect);
 }
 
@@ -522,6 +507,9 @@
 	rdBufferBitmapData = malloc(rdBufferBitmapLength);
 
 	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	
+	unsigned int byteOrder;
+
 	rdBufferContext = CGBitmapContextCreate(rdBufferBitmapData, rdBufferWidth, rdBufferHeight, 8, rdBufferWidth*4, cs, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little); 		
 }
 
@@ -543,8 +531,18 @@
 	
 	glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_STORAGE_HINT_APPLE, GL_STORAGE_SHARED_APPLE); 
 	glPixelStorei(GL_UNPACK_CLIENT_STORAGE_APPLE, GL_TRUE);
+		
+	GLenum format;
 	
-	glTexImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, GL_RGBA, rdBufferWidth, rdBufferHeight, 0, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, rdBufferBitmapData);
+#ifdef __LITTLE_ENDIAN__
+	format = GL_UNSIGNED_INT_8_8_8_8_REV;
+#else
+	format = GL_UNSIGNED_INT_8_8_8_8;
+#endif
+
+
+	glTexImage2D(GL_TEXTURE_RECTANGLE_EXT, 0, GL_RGBA, rdBufferWidth, rdBufferHeight, 0, GL_BGRA, format, rdBufferBitmapData);
+
 	glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }

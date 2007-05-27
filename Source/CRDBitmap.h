@@ -35,6 +35,8 @@
 
 - (void)drawInRect:(NSRect)dstRect fromRect:(NSRect)srcRect operation:(NSCompositingOperation)op;
 
+- (void)overlayColor:(NSColor *)c;
+
 - (NSImage *)image;
 - (void)setColor:(NSColor *)color;
 - (NSColor *)color;
