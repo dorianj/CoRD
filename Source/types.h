@@ -19,6 +19,10 @@
 */
 
 @class CRDBitmap;
+@class CRDSession;
+@class CRDSessionView;
+@class CRDSessionDeviceManager;
+
 
 typedef int RDBOOL;
 
@@ -146,56 +150,26 @@ typedef struct
 	uint8 cb[MAX_CBSIZE];
 } RDWaveFormat;
 
-typedef struct _RDRedirectedDevice
-{
-	uint32 device_type;
-	NTHandle handle;
-	char name[8];
-	char *local_path;
-	void *pdevice_data;
-} RDRedirectedDevice;
-
-typedef struct _RDSerialDevice
-{
-	int dtr;
-	int rts;
-	uint32 control, xonoff, onlimit, offlimit;
-	uint32 baud_rate,
-		queue_in_size,
-		queue_out_size,
-		wait_mask,
-		read_interval_timeout,
-		read_total_timeout_multiplier,
-		read_total_timeout_constant,
-		write_total_timeout_multiplier, write_total_timeout_constant, posix_wait_mask;
-	uint8 stop_bits, parity, word_length;
-	uint8 chars[6];
-	struct termios *ptermios, *pold_termios;
-	int event_txempty, event_cts, event_dsr, event_rlsd, event_pending;
-} RDSerialDevice;
-
-typedef struct _RDParallelDevice
-{
-	char *driver, *printer;
-	uint32 queue_in_size,
-		queue_out_size,
-		wait_mask,
-		read_interval_timeout,
-		read_total_timeout_multiplier,
-		read_total_timeout_constant,
-		write_total_timeout_multiplier,
-		write_total_timeout_constant, posix_wait_mask, bloblen;
-	uint8 *blob;
-} RDParallelDevice;
-
 typedef struct _RDPrinterInfo
 {
-	FILE *printer_fp;
 	char *driver, *printer;
 	uint32 bloblen;
 	uint8 *blob;
 	RDBOOL default_printer;
 } RDPrinterInfo;
+
+typedef struct _RDRedirectedDevice
+{
+	unsigned deviceID, deviceType;
+	NSString *localPath;
+	
+	NTHandle rdpHandle;
+	char rdpName[8];
+	
+	void *deviceSpecificInfo;
+} RDRedirectedDevice;
+
+typedef RDRedirectedDevice * RDRedirectedDeviceRef;
 
 // xxx: won't be needed
 typedef struct notify_data
@@ -340,14 +314,17 @@ struct RDConnection
 	RDComp mppcDict;
 	
 	// UI
-	void *ui;	// the associated CRDSessionView
-	void *controller; // the associated CRDSession
+	CRDSessionView *ui;
+	CRDSession *controller; 
+	CRDSessionDeviceManager *deviceManager;
 	
 	volatile RDConnectionError errorCode;
 	
 	// Managing current draw session (used by ui_stubs)
 	void *rectsNeedingUpdate;
 	int updateEntireScreen;
+	
+	
 };
 
 

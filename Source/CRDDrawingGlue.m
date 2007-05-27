@@ -15,6 +15,9 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
+//	Replaces: xwin.c
+
+
 #import <Cocoa/Cocoa.h>
 
 #import "rdesktop.h"

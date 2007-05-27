@@ -234,6 +234,7 @@
 	// Set remote keymap to match local OS X input type
 	conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
 	
+	/*
 	// Set up disk redirection
 	if (forwardDisks && !DISK_FORWARDING_DISABLED)
 	{
@@ -264,6 +265,7 @@
 	
 		printer_enum_devices(conn, convert_string_array(printers), [printers count]);
 	}	
+	*/
 	
 	rdpdr_init(conn);
 	cliprdr_init(conn);
@@ -353,16 +355,6 @@
 	[self release];
 }
 
-- (void)pollDiskNotifyRequests:(NSTimer *)timer
-{
-	if (connectionStatus != CRDConnectionConnected)
-	{
-		[timer invalidate];
-		return;
-	}
-	
-	ui_select(conn);
-}
 
 #pragma mark -
 #pragma mark Working with the input run loop
@@ -372,11 +364,6 @@
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	connectionRunLoopFinished = NO;
-	
-	if (forwardDisks && !DISK_FORWARDING_DISABLED)
-	{
-		[NSTimer scheduledTimerWithTimeInterval:(1.0/NOTIFY_POLL_SPEED) target:self selector:@selector(pollDiskNotifyRequests:) userInfo:nil repeats:YES];
-	}
 	
 	BOOL gotInput;
 	unsigned x = 0;

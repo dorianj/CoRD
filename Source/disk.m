@@ -314,14 +314,15 @@ disk_enum_devices(RDConnectionRef conn, char ** paths, char **names, int count)
 	
 	for (i=0;i<count;i++, conn->numDevices++)
 	{	
-		strncpy(conn->rdpdrDevice[conn->numDevices].name,names[i], sizeof(conn->rdpdrDevice[conn->numDevices].name) -1);
-		if (strlen(names[i]) > (sizeof(conn->rdpdrDevice[conn->numDevices].name) -1 ))
+		strncpy(conn->rdpdrDevice[conn->numDevices].rdpName, names[i], sizeof(conn->rdpdrDevice[conn->numDevices].rdpName) -1);
+		if (strlen(names[i]) > (sizeof(conn->rdpdrDevice[conn->numDevices].rdpName) -1 ))
 			fprintf(stderr,"share name %s truncated to %s\n",names[i],
-				conn->rdpdrDevice[conn->numDevices].name);
+				conn->rdpdrDevice[conn->numDevices].rdpName);
 		
-		conn->rdpdrDevice[conn->numDevices].local_path = xmalloc(strlen(paths[i]) +1);
+		/* this is trash
+		conn->rdpdrDevice[conn->numDevices].localPath = xmalloc(strlen(paths[i]) +1);
 		strcpy(conn->rdpdrDevice[conn->numDevices].local_path,paths[i]);
-		conn->rdpdrDevice[conn->numDevices].device_type = DEVICE_TYPE_DISK;
+		conn->rdpdrDevice[conn->numDevices].device_type = DEVICE_TYPE_DISK;*/
 	}
 	
 	return i;
@@ -346,7 +347,8 @@ disk_create(RDConnectionRef conn, uint32 device_id, uint32 accessmask, uint32 sh
 
 	if (*filename && filename[strlen(filename) - 1] == '/')
 		filename[strlen(filename) - 1] = 0;
-	sprintf(path, "%s%s", conn->rdpdrDevice[device_id].local_path, filename);
+	// trash
+	//sprintf(path, "%s%s", conn->rdpdrDevice[device_id].local_path, filename);
 
 	switch (create_disposition)
 	{
@@ -798,9 +800,9 @@ disk_set_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, R
 			{
 				return STATUS_INVALID_PARAMETER;
 			}
-
-			sprintf(fullpath, "%s%s", conn->rdpdrDevice[pfinfo->device_id].local_path,
-				newname);
+			
+			//xxx
+			//sprintf(fullpath, "%s%s", conn->rdpdrDevice[pfinfo->device_id].local_path, newname);
 
 			if (rename(pfinfo->path, fullpath) != 0)
 			{

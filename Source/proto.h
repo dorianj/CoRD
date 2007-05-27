@@ -96,13 +96,15 @@ void mcs_reset_state(RDConnectionRef conn);
 void process_orders(RDConnectionRef conn, RDStreamRef s, uint16 num_orders);
 void reset_order_state(RDConnectionRef conn);
 
+
 #pragma mark -
 #pragma mark parallel.c
-int parallel_enum_devices(RDConnectionRef conn, uint32 * id, char *optarg);
+/*
+int parallel_enum_devices(RDConnectionRef conn, uint32 * id, char *optarg);*/
 
 #pragma mark -
 #pragma mark printer.c
-void printer_enum_devices(RDConnectionRef conn, char **printerNames, int printerCount);
+//void printer_enum_devices(RDConnectionRef conn, char **printerNames, int printerCount);
 
 #pragma mark -
 #pragma mark printercache.c
@@ -177,9 +179,7 @@ RDBOOL process_redirect_pdu(RDConnectionRef conn, RDStreamRef s);
 int get_device_index(RDConnectionRef conn, NTHandle handle);
 void convert_to_unix_filename(char *filename);
 RDBOOL rdpdr_init(RDConnectionRef conn);
-void rdpdr_add_fds(RDConnectionRef conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDBOOL * timeout);
 struct async_iorequest *rdpdr_remove_iorequest(RDConnectionRef conn, struct async_iorequest *prev, struct async_iorequest *iorq);
-void rdpdr_check_fds(RDConnectionRef conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out);
 RDBOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status);
 
 #pragma mark -
@@ -214,11 +214,13 @@ RDBOOL sec_reconnect(RDConnectionRef conn, char *server);
 void sec_disconnect(RDConnectionRef conn);
 void sec_reset_state(RDConnectionRef conn);
 
+
 #pragma mark -
 #pragma mark serial.c
+/*
 int serial_enum_devices(RDConnectionRef conn, uint32 * id, char *optarg);
 RDBOOL serial_get_timeout(RDConnectionRef conn, NTHandle handle, uint32 length, uint32 * timeout, uint32 * itv_timeout);
-RDBOOL serial_get_event(RDConnectionRef conn, NTHandle handle, uint32 * result);
+RDBOOL serial_get_event(RDConnectionRef conn, NTHandle handle, uint32 * result);*/
 
 #pragma mark -
 #pragma mark tcp.c
@@ -248,7 +250,6 @@ uint16 ui_get_numlock_state(unsigned int state);
 #pragma mark ui_stubs.m (formerly xwin.c)
 void ui_resize_window(RDConnectionRef conn);
 void ui_destroy_window(void);
-int ui_select(RDConnectionRef conn);
 void ui_move_pointer(RDConnectionRef conn, int x, int y);
 RDBitmapRef ui_create_bitmap(RDConnectionRef conn, int width, int height, uint8 * data);
 void ui_paint_bitmap(RDConnectionRef conn, int x, int y, int cx, int cy, int width, int height, uint8 * data);

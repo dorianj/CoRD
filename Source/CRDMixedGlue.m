@@ -17,16 +17,15 @@
 
 #import "rdesktop.h"
 
+// Replaces: xclip.c
+
 #import "CRDShared.h"
 #import "CRDSession.h"
 
-// only for ui_select
-#import <sys/stat.h>
-#import <sys/times.h>
-
-
+/* now even more unneeded
 #pragma mark -
 #pragma mark Disk forwarding
+
 // XXX: this won't be used at all with new disk redir solution
 int ui_select(RDConnectionRef conn)
 {
@@ -62,7 +61,7 @@ int ui_select(RDConnectionRef conn)
 	}
 	
 	return 1;
-}
+}*/
 
 
 #pragma mark -

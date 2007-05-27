@@ -23,7 +23,7 @@
 #import <sys/time.h>		/* timeval */
 #import <netdb.h>		/* gethostbyname */
 #import <netinet/in.h>		/* sockaddr_in */
-#import <netinet/tcp.h>	/* TCP_NODELAY */
+//#import <netinet/tcp.h>	/* TCP_NODELAY */
 #import <arpa/inet.h>		/* inet_addr */
 #import <errno.h>		/* errno */
 #import "rdesktop.h"

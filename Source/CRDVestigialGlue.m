@@ -1,4 +1,3 @@
-
 /*	Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
 	
 	This file is part of CoRD.
@@ -15,6 +14,8 @@
 	CoRD; if not, write to the Free Software Foundation, Inc., 51 Franklin St,
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
+
+// Replaces: rdesktop.c
 
 #import "rdesktop.h"
 

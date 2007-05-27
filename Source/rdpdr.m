@@ -17,6 +17,8 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+// THIS IS UNUSED IN CORD AND IS ONLY LEFT FOR REFERENCE - SEE CRDDeviceRedirectionGlue
+
 /*
   Here are some resources, for your IRP hacking pleasure:
 
@@ -677,7 +679,6 @@ rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 	buffer = NULL;
 }
 
-// Status: Finished. Shouldn't need changes.
 static void rdpdr_send_clientcapabilty(RDConnectionRef conn)
 {
 	uint8 magic[4] = "rDPC";

@@ -21,7 +21,7 @@
 #import "rdesktop.h"
 #import "Carbon/Carbon.h"
 #import "sys/fcntl.h"
-
+/*
 static NTStatus printer_create(RDConnectionRef conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition, uint32 flags, char *filename, NTHandle * handle);
 static int get_printer_id(RDConnectionRef conn, NTHandle handle);
 static NTStatus printer_close(RDConnectionRef conn, NTHandle handle);
@@ -129,7 +129,7 @@ printer_write(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length
 DEVICE_FNS printer_fns = {
 	printer_create,
 	printer_close,
-	NULL,			/* read */
+	NULL,			// read
 	printer_write,
-	NULL			/* device_control */
-};
+	NULL			// device_control
+};*/
