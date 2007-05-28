@@ -17,18 +17,32 @@
 
 /*	Purpose: Changes modifiers from a flagsChanged event into the physical keyboard modifiers, according to they keys the user has changed in System Preferences
 	Notes: This class is fully thread-safe because only class methods are used.
+		I'm currently trying to get it to stay in sync with user defaults without calling -[NSUserDefaults synchronize] each time. I can't find a way to use KVO - NSUserDefaultsController refuses to addObserver for com.apple.keyboard.modifiermapping and NSUserDefaults doesn't ever inform us of changes
+	Modifier key codes:
+		*  None: -1
+		* Caps Lock: 0
+		* Left Shift: 1
+		* Left Control: 2
+		* Left Option: 3
+		* Left Command: 4
+		* Keypad 0: 5
+		* Help: 6
+		* Right Shift: 9
+		* Right Control: 10
+		* Right Option: 11
+		* Right Command: 12
 */
 
 #import "CRDSwappedModifiersUtility.h"
 #import "IOKit/hidsystem/IOLLEvent.h"
 
 // Constants
-static NSString *SwappedModifiersRootKey = @"com.apple.keyboard.modifiermapping";
-static NSString *SwappedModifiersSourceKey = @"HIDKeyboardModifierMappingSrc";
-static NSString *SwappedModifiersDestinationKey = @"HIDKeyboardModifierMappingDst";
-static NSString *KeyFlagRight = @"KeyFlagRight";
-static NSString *KeyFlagLeft = @"KeyFlagLeft";
-static NSString *KeyFlagDeviceIndependent = @"KeyFlagDeviceIndependent";
+static NSString * const SwappedModifiersRootKey = @"com.apple.keyboard.modifiermapping";
+static NSString * const SwappedModifiersSourceKey = @"HIDKeyboardModifierMappingSrc";
+static NSString * const SwappedModifiersDestinationKey = @"HIDKeyboardModifierMappingDst";
+static NSString * const KeyFlagRight = @"KeyFlagRight";
+static NSString * const KeyFlagLeft = @"KeyFlagLeft";
+static NSString * const KeyFlagDeviceIndependent = @"KeyFlagDeviceIndependent";
 
 typedef enum _CRDSwappedModifiersKeyCode
 {
@@ -43,9 +57,10 @@ typedef enum _CRDSwappedModifiersKeyCode
 #define MakeInt(num) [num intValue]
 #define GetFlagForKey(keyNum, flag) MakeInt([[keyFlagTable objectForKey:MakeNum(keyNum)] objectForKey:flag])
 
-
+static CRDSwappedModifiersUtility *sharedInstance;
 static NSLock *keyTranslatorLock;
 static NSDictionary *keyFlagTable, *modifierTranslator, *keyDisplayNames;
+static NSArray *rawDefaultTable;
 
 
 #define KEY_NAMED(n) [keyDisplayNames objectForKey:MakeNum(n)]
@@ -70,7 +85,9 @@ static NSDictionary *keyFlagTable, *modifierTranslator, *keyDisplayNames;
 			@"Option", MakeNum(CRDSwappedModifiersOptionKey),
 			@"Command", MakeNum(CRDSwappedModifiersCommandKey),
 			nil] retain];
-			
+		
+	// xxx: doesn't actually inform us of changes
+	[[NSUserDefaults standardUserDefaults] addObserver:[CRDSwappedModifiersUtility sharedSwappedModifiersUtility] forKeyPath:SwappedModifiersRootKey options:0 context:NULL];	
 	[CRDSwappedModifiersUtility loadStandardTranslation];
 }
 
@@ -78,27 +95,32 @@ static NSDictionary *keyFlagTable, *modifierTranslator, *keyDisplayNames;
 + (void)loadStandardTranslation
 {
 	NSMutableDictionary *modifiersBuilder = [[NSMutableDictionary alloc] initWithCapacity:4];
-	NSDictionary *rawTable = nil;
+	NSArray *userDefaultTable = nil;
 	
-	if (![CRDSwappedModifiersUtility modifiersAreSwapped])
+	[[NSUserDefaults standardUserDefaults] synchronize];
+	userDefaultTable = [[NSUserDefaults standardUserDefaults] objectForKey:SwappedModifiersRootKey];
+
+	if ( (userDefaultTable != nil) && ![userDefaultTable isEqualToArray:rawDefaultTable])
 	{
-		// Load default table
-		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersCapsLockKey) forKey:MakeNum(CRDSwappedModifiersCapsLockKey)];
-		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersControlKey) forKey:MakeNum(CRDSwappedModifiersControlKey)];
-		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersOptionKey) forKey:MakeNum(CRDSwappedModifiersOptionKey)];
-		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersCommandKey) forKey:MakeNum(CRDSwappedModifiersCommandKey)];
-	}
-	else
-	{
-		// Load Apple table from user defaults
-		rawTable = [[NSUserDefaults standardUserDefaults] objectForKey:SwappedModifiersRootKey];
+		NSLog(@"Reloading...", userDefaultTable, rawDefaultTable);
 		
-		NSEnumerator *enumerator = [rawTable objectEnumerator];
+		[rawDefaultTable release];
+		rawDefaultTable = [userDefaultTable retain];
+		
+		NSEnumerator *enumerator = [rawDefaultTable objectEnumerator];
 		id item;
 		while ( (item = [enumerator nextObject]) )
 		{
 			[modifiersBuilder setObject:[item objectForKey:SwappedModifiersDestinationKey] forKey:[item objectForKey:SwappedModifiersSourceKey]];	
 		}
+	}
+	
+	if ([modifiersBuilder count] == 0)
+	{
+		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersCapsLockKey) forKey:MakeNum(CRDSwappedModifiersCapsLockKey)];
+		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersControlKey) forKey:MakeNum(CRDSwappedModifiersControlKey)];
+		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersOptionKey) forKey:MakeNum(CRDSwappedModifiersOptionKey)];
+		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersCommandKey) forKey:MakeNum(CRDSwappedModifiersCommandKey)];
 	}
 	
 	[modifierTranslator release];
@@ -107,6 +129,8 @@ static NSDictionary *keyFlagTable, *modifierTranslator, *keyDisplayNames;
 
 + (unsigned)physicalModifiersForVirtualFlags:(unsigned)flags
 {	
+	[CRDSwappedModifiersUtility loadStandardTranslation];
+
 	#define TEST_THEN_SWAP(realKeyFlag, virtKeyFlag) if (flags & virtKeyFlag) newFlags |= realKeyFlag;
 	//	NSLog(@"Swapping? %s", (flags & virtKeyFlag) ? "Yes." : "No.");
 
@@ -128,6 +152,26 @@ static NSDictionary *keyFlagTable, *modifierTranslator, *keyDisplayNames;
 {
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	return [[NSUserDefaults standardUserDefaults] objectForKey:SwappedModifiersRootKey] != nil;
+}
+
++ (id)sharedSwappedModifiersUtility
+{
+	if (sharedInstance == nil)
+		sharedInstance = [[CRDSwappedModifiersUtility alloc] init];	
+	
+	return sharedInstance;
+}
+
+
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:SwappedModifiersRootKey])
+	{
+		[CRDSwappedModifiersUtility loadStandardTranslation];
+    }
+	
+	NSLog(@"changed!");
 }
 
 @end

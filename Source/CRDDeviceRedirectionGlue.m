@@ -18,7 +18,24 @@
 // Replaces: rdpdr.c
 
 #import "rdesktop.h"
+#import "disk.h"
 #import "CRDShared.h"
+#import "CRDSessionDeviceManager.h"
+
+#define IRP_MJ_CREATE			0x00
+#define IRP_MJ_CLOSE			0x02
+#define IRP_MJ_READ			0x03
+#define IRP_MJ_WRITE			0x04
+#define	IRP_MJ_QUERY_INFORMATION	0x05
+#define IRP_MJ_SET_INFORMATION		0x06
+#define IRP_MJ_QUERY_VOLUME_INFORMATION	0x0a
+#define IRP_MJ_DIRECTORY_CONTROL	0x0c
+#define IRP_MJ_DEVICE_CONTROL		0x0e
+#define IRP_MJ_LOCK_CONTROL             0x11
+
+#define IRP_MN_QUERY_DIRECTORY          0x01
+#define IRP_MN_NOTIFY_CHANGE_DIRECTORY  0x02
+
 
 static void rdpdr_process(RDConnectionRef conn, RDStreamRef s);
 
@@ -346,7 +363,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 				filename[0] = '\0';
 			}
 		
-			status = [conn->deviceManager handleCreate:device access:desired_access shareMode:share_mode disposition:disposition flags:flags_and_attributes filename:filename result:&result];
+			status = [conn->deviceManager handleCreate:&(conn->rdpdrDevice[deviceID]) access:desired_access shareMode:share_mode disposition:disposition flags:flags_and_attributes filename:filename handle:&result];
 
 			buffer_len = 1;
 			break;
@@ -354,7 +371,6 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 		case IRP_MJ_CLOSE:
 
 			status = [conn->deviceManager handleClose:file];
-			
 			break;
 
 		case IRP_MJ_READ:
@@ -366,7 +382,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 				DEBUG(("RDPDR IRP Read (length: %d, offset: %d)\n", length, offset));
 			#endif
 			
-			if (![conn->deviceManager isValidHandle:file forDevice:device])
+			if (![conn->deviceManager isValidHandle:file forDevice:&(conn->rdpdrDevice[deviceID])])
 			{
 				status = STATUS_INVALID_HANDLE;
 				break;
@@ -387,7 +403,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 			}
 
 			// Defer the request
-			if ([conn->deviceManager addAsynchronousRead:device handle:handle requestID:requestID fileOperation:major length:length offset:offset])
+			if ([conn->deviceManager addAsynchronousRead:&(conn->rdpdrDevice[deviceID]) handle:file requestID:requestID fileOperation:major length:length offset:offset])
 			{
 				status = STATUS_PENDING;
 				break;
@@ -408,7 +424,8 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 				DEBUG(("RDPDR IRP Write (length: %d)\n", result));
 			#endif
 			
-			if (![conn->deviceManager isValidHandle:file forDevice:device])
+			if (![conn->deviceManager isValidHandle:file forDevice:&(conn->rdpdrDevice[deviceID])])
+			{
 				status = STATUS_INVALID_HANDLE;
 				break;
 			}
@@ -429,7 +446,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 
 			in_uint8a(s, pst_buf, length);
 			
-			if ([conn->deviceManager addAsynchronousWrite:device handle:file requestID:requestID fileOperation:major length:length offset:offset data:pst_buf])
+			if ([conn->deviceManager addAsynchronousWrite:conn->rdpdrDevice[deviceID] handle:file requestID:requestID fileOperation:major length:length offset:offset data:pst_buf])
 			{
 				status = STATUS_PENDING;
 				break;
@@ -440,7 +457,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 
 		case IRP_MJ_QUERY_INFORMATION:
 
-			if (conn->rdpdrDevice[device].deviceType != DEVICE_TYPE_DISK)
+			if (conn->rdpdrDevice[deviceID].deviceType != DEVICE_TYPE_DISK)
 			{
 				status = STATUS_INVALID_HANDLE;
 				break;
@@ -456,7 +473,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 
 		case IRP_MJ_SET_INFORMATION:
 
-			if (conn->rdpdrDevice[device].deviceType != DEVICE_TYPE_DISK)
+			if (conn->rdpdrDevice[deviceID].deviceType != DEVICE_TYPE_DISK)
 			{
 				status = STATUS_INVALID_HANDLE;
 				break;
@@ -473,7 +490,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 
 		case IRP_MJ_QUERY_VOLUME_INFORMATION:
 
-			if (conn->rdpdrDevice[device].deviceType != DEVICE_TYPE_DISK)
+			if (conn->rdpdrDevice[deviceID].deviceType != DEVICE_TYPE_DISK)
 			{
 				status = STATUS_INVALID_HANDLE;
 				break;
@@ -483,14 +500,14 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 
 			outputStream.data = outputStream.p = buffer;
 			outputStream.size = sizeof(buffer);
-			status = [conn->deviceManager queryVolumeInformation:file infoType:info_level intoStream:&ouputStream];
+			status = [conn->deviceManager queryVolumeInformation:file infoType:info_level intoStream:&outputStream];
 
 			result = buffer_len = outputStream.p - outputStream.data;
 			break;
 
 		case IRP_MJ_DIRECTORY_CONTROL:
 
-			if (conn->rdpdrDevice[device].deviceType != DEVICE_TYPE_DISK)
+			if (conn->rdpdrDevice[deviceID].deviceType != DEVICE_TYPE_DISK)
 			{
 				status = STATUS_INVALID_HANDLE;
 				break;
@@ -552,7 +569,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 
 		case IRP_MJ_LOCK_CONTROL:
 
-			if (conn->rdpdrDevice[device].deviceType != DEVICE_TYPE_DISK)
+			if (conn->rdpdrDevice[deviceID].deviceType != DEVICE_TYPE_DISK)
 			{
 				status = STATUS_INVALID_HANDLE;
 				break;
@@ -560,13 +577,13 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 
 			in_uint32_le(s, info_level);
 
-			out.data = out.p = buffer;
-			out.size = sizeof(buffer);
+			outputStream.data = outputStream.p = buffer;
+			outputStream.size = sizeof(buffer);
 			
 			/* FIXME: Perhaps consider actually *doing* something here :-) */
 			
 			status = STATUS_SUCCESS;
-			result = buffer_len = out.p - out.data;
+			result = buffer_len = outputStream.p - outputStream.data;
 			break;
 
 		default:
@@ -576,7 +593,7 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 
 	if (status != STATUS_PENDING)
 	{
-		rdpdr_send_completion(device, id, status, result, buffer, buffer_len);
+		rdpdr_send_completion(conn, deviceID, requestID, status, result, buffer, buffer_len);
 	}
 
 	xfree(buffer);

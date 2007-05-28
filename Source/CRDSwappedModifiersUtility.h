@@ -25,5 +25,6 @@
 + (void)loadStandardTranslation;
 + (unsigned)physicalModifiersForVirtualFlags:(unsigned)flags;
 + (BOOL)modifiersAreSwapped;
++ (id)sharedSwappedModifiersUtility;
 
 @end
