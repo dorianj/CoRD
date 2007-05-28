@@ -283,3 +283,9 @@ void ui_desktop_restore(RDConnectionRef conn, uint32 offset, int x, int y, int c
 void ui_end_update(RDConnectionRef conn);
 void ui_begin_update(RDConnectionRef conn);
 void rdp_send_client_window_status(RDConnectionRef conn, int status);
+
+
+#pragma mark - 
+#pragma mark Shared
+BOOL RDPathIsHidden(NSString *path);
+inline void RDMakeFileTimeFromDate(NSDate *date, unsigned int *high, unsigned int *low);

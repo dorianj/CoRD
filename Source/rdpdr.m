@@ -17,7 +17,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-// THIS IS UNUSED IN CORD AND IS ONLY LEFT FOR REFERENCE - SEE CRDDeviceRedirectionGlue
+// THIS IS UNUSED IN CORD AND IS ONLY LEFT FOR REFERENCE - SEE CRDDeviceRedirectionGlue and CRDSessionDeviceManager
 
 /*
   Here are some resources, for your IRP hacking pleasure:

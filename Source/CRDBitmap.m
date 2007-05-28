@@ -159,7 +159,7 @@
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
-	[self setColor:[[NSColor blackColor] retain]];
+	[self setColor:[NSColor blackColor]];
 	
 	
 	return self;

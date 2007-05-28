@@ -29,7 +29,7 @@
 
 }
 
-
+// 'handle' in the method name doesn't refer to an NTHandle. These simply either do the action or pass it off to printer
 - (NTStatus)handleCreate:(RDRedirectedDeviceRef)device access:(unsigned)access shareMode:(unsigned)shareMode disposition:(unsigned)disposition flags:(unsigned)flags filename:(char *)filename handle:(NTHandle *)retHandle;
 
 - (NTStatus)handleClose:(NTHandle)handle;

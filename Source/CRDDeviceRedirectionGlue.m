@@ -627,6 +627,60 @@ RDBOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus st
 
 
 
+#pragma mark -
+#pragma mark Shared
+
+
+// These should be somewhere else, like a category of the related Cocoa class
+
+inline void RDMakeFileTimeFromDate(NSDate *date, unsigned int *high, unsigned int *low)
+{
+	unsigned long long ticks = ([date timeIntervalSince1970] + 11644473600) * 10000000;
+	
+	*low = (uint32) ticks;
+	*high = (uint32) (ticks >> 32);
+} 
+
+
+
+BOOL RDPathIsHidden(NSString *path) 
+{
+	CFURLRef fileURL = CFURLCreateWithString(NULL, (CFStringRef)[@"file://" stringByAppendingString:path], NULL);	
+	if (fileURL)
+	{
+		LSItemInfoRecord itemInfo;
+		LSCopyItemInfoForURL(fileURL, kLSRequestAllFlags, &itemInfo);
+		CFRelease(fileURL);	
+		return itemInfo.flags & kLSItemInfoIsInvisible;
+	}
+
+	return NO;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -29,8 +29,6 @@
 		9881A42E0BE943A70073D189 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
 		9885D1940BFBBB0800C5451D /* printer.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972470BD9D9DF0041110D /* printer.m */; };
 		98A1537C0C0A4B48002B218B /* CRDDeviceRedirectionGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 98A153750C0A4B48002B218B /* CRDDeviceRedirectionGlue.m */; };
-		98A1537D0C0A4B48002B218B /* CRDDiskRedirectionManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A153760C0A4B48002B218B /* CRDDiskRedirectionManager.h */; };
-		98A1537E0C0A4B48002B218B /* CRDDiskRedirectionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 98A153770C0A4B48002B218B /* CRDDiskRedirectionManager.m */; };
 		98A1537F0C0A4B48002B218B /* CRDRedirectedPrinter.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A153780C0A4B48002B218B /* CRDRedirectedPrinter.h */; };
 		98A153800C0A4B48002B218B /* CRDRedirectedPrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = 98A153790C0A4B48002B218B /* CRDRedirectedPrinter.m */; };
 		98A153810C0A4B48002B218B /* CRDSessionDeviceManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98A1537A0C0A4B48002B218B /* CRDSessionDeviceManager.h */; };
@@ -88,7 +86,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */,
-				98A1537D0C0A4B48002B218B /* CRDDiskRedirectionManager.h in CopyFiles */,
 				98A1537F0C0A4B48002B218B /* CRDRedirectedPrinter.h in CopyFiles */,
 				98A153810C0A4B48002B218B /* CRDSessionDeviceManager.h in CopyFiles */,
 			);
@@ -100,7 +97,7 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		9816F5220BEE938600E439BE /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
 		981739840BACE45D00EAB48A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -129,8 +126,6 @@
 		9872FD620C0903C000078CB2 /* CRDVestigialGlue.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDVestigialGlue.m; path = Source/CRDVestigialGlue.m; sourceTree = "<group>"; };
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		98A153750C0A4B48002B218B /* CRDDeviceRedirectionGlue.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDDeviceRedirectionGlue.m; path = Source/CRDDeviceRedirectionGlue.m; sourceTree = "<group>"; };
-		98A153760C0A4B48002B218B /* CRDDiskRedirectionManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDDiskRedirectionManager.h; path = Source/CRDDiskRedirectionManager.h; sourceTree = "<group>"; };
-		98A153770C0A4B48002B218B /* CRDDiskRedirectionManager.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDDiskRedirectionManager.m; path = Source/CRDDiskRedirectionManager.m; sourceTree = "<group>"; };
 		98A153780C0A4B48002B218B /* CRDRedirectedPrinter.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDRedirectedPrinter.h; path = Source/CRDRedirectedPrinter.h; sourceTree = "<group>"; };
 		98A153790C0A4B48002B218B /* CRDRedirectedPrinter.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDRedirectedPrinter.m; path = Source/CRDRedirectedPrinter.m; sourceTree = "<group>"; };
 		98A1537A0C0A4B48002B218B /* CRDSessionDeviceManager.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSessionDeviceManager.h; path = Source/CRDSessionDeviceManager.h; sourceTree = "<group>"; };
@@ -199,7 +194,7 @@
 		98E972CD0BD9DA820041110D /* Windowed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Windowed.png; path = Resources/Windowed.png; sourceTree = "<group>"; };
 		98E972CE0BD9DA820041110D /* windows_keymap_table.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = windows_keymap_table.txt; path = Resources/windows_keymap_table.txt; sourceTree = "<group>"; };
 		98E972E40BD9DA9F0041110D /* English */ = {isa = PBXFileReference; explicitFileType = text.plist.strings; fileEncoding = 10; name = English; path = Resources/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		98E972E60BD9DA9F0041110D /* English */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = English; path = Resources/English.lproj/MainMenu.nib; sourceTree = "<group>"; };
+		98E972E60BD9DA9F0041110D /* English */ = {isa = PBXFileReference; explicitFileType = wrapper.nib; name = English; path = Resources/English.lproj/MainMenu.nib; sourceTree = "<group>"; };
 		98FF84CD0BE557C4002E5228 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -270,7 +265,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* Cord.app */,
+				8D1107320486CEB800E47090 /* CoRD.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -400,16 +395,14 @@
 		98EC96980C08F9970072B42C /* rdesktop Replacements */ = {
 			isa = PBXGroup;
 			children = (
-				98A153750C0A4B48002B218B /* CRDDeviceRedirectionGlue.m */,
-				98A153760C0A4B48002B218B /* CRDDiskRedirectionManager.h */,
-				98A153770C0A4B48002B218B /* CRDDiskRedirectionManager.m */,
-				98A153780C0A4B48002B218B /* CRDRedirectedPrinter.h */,
-				98A153790C0A4B48002B218B /* CRDRedirectedPrinter.m */,
-				98A1537A0C0A4B48002B218B /* CRDSessionDeviceManager.h */,
-				98A1537B0C0A4B48002B218B /* CRDSessionDeviceManager.m */,
 				9872FD600C0903C000078CB2 /* CRDDrawingGlue.m */,
 				9872FD610C0903C000078CB2 /* CRDMixedGlue.m */,
 				9872FD620C0903C000078CB2 /* CRDVestigialGlue.m */,
+				98A153750C0A4B48002B218B /* CRDDeviceRedirectionGlue.m */,
+				98A1537A0C0A4B48002B218B /* CRDSessionDeviceManager.h */,
+				98A1537B0C0A4B48002B218B /* CRDSessionDeviceManager.m */,
+				98A153780C0A4B48002B218B /* CRDRedirectedPrinter.h */,
+				98A153790C0A4B48002B218B /* CRDRedirectedPrinter.m */,
 			);
 			name = "rdesktop Replacements";
 			sourceTree = "<group>";
@@ -433,7 +426,7 @@
 			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
-			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
+			productReference = 8D1107320486CEB800E47090 /* CoRD.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -530,7 +523,6 @@
 				9872FD640C0903C000078CB2 /* CRDMixedGlue.m in Sources */,
 				9872FD650C0903C000078CB2 /* CRDVestigialGlue.m in Sources */,
 				98A1537C0C0A4B48002B218B /* CRDDeviceRedirectionGlue.m in Sources */,
-				98A1537E0C0A4B48002B218B /* CRDDiskRedirectionManager.m in Sources */,
 				98A153800C0A4B48002B218B /* CRDRedirectedPrinter.m in Sources */,
 				98A153820C0A4B48002B218B /* CRDSessionDeviceManager.m in Sources */,
 			);
