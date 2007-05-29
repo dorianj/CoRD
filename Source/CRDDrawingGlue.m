@@ -172,12 +172,12 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 	{
 		while (i++ < len)
 		{
-			unsigned char c =	( ((p[1] * 31 + 127) / 255) << 11) |
-								( ((p[3] * 31 + 255) / 255) << 5) |
-								( (p[2] * 31 + 127) / 255);
-								
-			o[0] = (c >> 8) & 0xff;
-			o[1] = c & 0xff;
+			unsigned short c =	( ((p[1] * 31 + 127) / 255) << 11) |
+								( ((p[2] * 63 + 127) / 255) << 5) |
+								( (p[3] * 31 + 127) / 255);
+
+			o[0] = c & 0xff;
+			o[1] = (c >> 8) & 0xff;
 			
 			p += 4;
 			o += bytespp;
@@ -187,13 +187,13 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 	{
 		while (i++ < len)
 		{
-			unsigned char c =	(1 << 15) |
+			unsigned short c =	(1 << 15) |
 								(((p[1] * 31 + 127) / 255) << 10) |
-								(((p[3] * 31 + 127) / 255) << 5) |
-								((p[2] * 31 + 127) / 255);
+								(((p[2] * 31 + 127) / 255) << 5) |
+								((p[3] * 31 + 127) / 255);
 								
-			o[0] = (c >> 8) & 0xff;
-			o[1] = c & 0xff;
+			o[0] = c & 0xff;
+			o[1] = (c >> 8) & 0xff;
 			
 			p += 4;
 			o += bytespp;

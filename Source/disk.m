@@ -502,7 +502,7 @@ disk_close(RDConnectionRef conn, NTHandle handle)
 
 	conn->notifyStamp = True;
 
-	rdpdr_abort_io(conn, handle, 0, STATUS_CANCELLED);
+	//xxx: rdpdr_abort_io(conn, handle, 0, STATUS_CANCELLED);
 
 	if (pfinfo->pdir)
 	{

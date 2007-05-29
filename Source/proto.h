@@ -179,8 +179,8 @@ RDBOOL process_redirect_pdu(RDConnectionRef conn, RDStreamRef s);
 int get_device_index(RDConnectionRef conn, NTHandle handle);
 void convert_to_unix_filename(char *filename);
 RDBOOL rdpdr_init(RDConnectionRef conn);
-struct async_iorequest *rdpdr_remove_iorequest(RDConnectionRef conn, struct async_iorequest *prev, struct async_iorequest *iorq);
-RDBOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status);
+//struct async_iorequest *rdpdr_remove_iorequest(RDConnectionRef conn, struct async_iorequest *prev, struct async_iorequest *iorq);
+//RDBOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status);
 
 #pragma mark -
 #pragma mark rdpsnd.c

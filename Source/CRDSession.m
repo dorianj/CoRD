@@ -47,7 +47,7 @@
 	label = hostName = username = password = domain = @"";
 	preferredRowIndex = -1;
 	screenDepth = 16;
-	temporary = themes = cacheBitmaps = YES;
+	temporary = themes = YES;
 	fileEncoding = NSUTF8StringEncoding;
 	
 	// Other initialization
@@ -223,7 +223,6 @@
 		logonFlags |= RDP_LOGON_AUTO;
 	
 	// Other various settings
-	conn->bitmapCache = cacheBitmaps;
 	conn->serverBpp = (screenDepth==8 || screenDepth==15 || screenDepth==24) ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
@@ -266,7 +265,8 @@
 		printer_enum_devices(conn, convert_string_array(printers), [printers count]);
 	}	
 	*/
-	
+
+		
 	rdpdr_init(conn);
 	cliprdr_init(conn);
 	
@@ -528,8 +528,6 @@
 			
 			if ([name isEqualToString:@"connect to console"])
 				consoleSession = numVal;
-			else if ([name isEqualToString:@"bitmapcachepersistenable"]) 
-				cacheBitmaps = numVal;
 			else if ([name isEqualToString:@"redirectdrives"])
 				forwardDisks = numVal;
 			else if ([name isEqualToString:@"disable wallpaper"])
@@ -591,7 +589,7 @@
 	}
 	
 	[self updateCellData];
-	
+
 	return YES;
 }
 
@@ -607,7 +605,6 @@
 	NSMutableString *o = [[NSMutableString alloc] init];
 	
 	write_int(@"connect to console", consoleSession);
-	write_int(@"bitmapcachepersistenable", cacheBitmaps);
 	write_int(@"redirectdrives", forwardDisks);
 	write_int(@"disable wallpaper", !drawDesktop);
 	write_int(@"disable full window drag", !windowDrags);

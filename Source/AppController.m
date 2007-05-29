@@ -533,6 +533,7 @@
 	instanceReconnectingForFullscreen = nil;
 	
 	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
+	[gui_fullScreenWindow setDelegate:self];
 	
 	[gui_tabView retain];
 	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
@@ -1151,7 +1152,6 @@
 - (void)updateInstToMatchInspector:(CRDSession *)inst
 {
 	// Checkboxes
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_cacheBitmaps)		forKey:@"cacheBitmaps"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)	forKey:@"windowDrags"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)		forKey:@"drawDesktop"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)	forKey:@"windowAnimation"];
@@ -1211,7 +1211,6 @@
 	}
 		
 	// All checkboxes 
-	[gui_cacheBitmaps		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"cacheBitmaps"])];
 	[gui_displayDragging	setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"windowDrags"])];
 	[gui_drawDesktop		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"drawDesktop"])];
 	[gui_enableAnimations	setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"windowAnimation"])];
@@ -1285,7 +1284,7 @@
 
 - (void)windowDidBecomeKey:(NSNotification *)sender
 {
-	if ( ([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) )
+	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
 	{
 		[[self viewedServer] announceNewClipboardData];
 	}
@@ -1293,7 +1292,7 @@
 
 - (void)windowDidResignKey:(NSNotification *)sender
 {
-	if ( ([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) )
+	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
 	{
 		[[self viewedServer] requestRemoteClipboardData];
 	}

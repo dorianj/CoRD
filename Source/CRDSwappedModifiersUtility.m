@@ -47,6 +47,7 @@ static NSString * const KeyFlagDeviceIndependent = @"KeyFlagDeviceIndependent";
 typedef enum _CRDSwappedModifiersKeyCode
 {
 	CRDSwappedModifiersCapsLockKey = 0,
+	CRDSwappedModifiersShiftKey = 9,
 	CRDSwappedModifiersControlKey = 10,
 	CRDSwappedModifiersOptionKey = 11,
 	CRDSwappedModifiersCommandKey = 12
@@ -77,13 +78,16 @@ static NSArray *rawDefaultTable;
 			CREATE_KEY_FLAG(NX_DEVICERCTLKEYMASK, NX_DEVICELCTLKEYMASK, NSControlKeyMask), MakeNum(CRDSwappedModifiersControlKey),
 			CREATE_KEY_FLAG(NX_DEVICERALTKEYMASK, NX_DEVICELALTKEYMASK, NSAlternateKeyMask), MakeNum(CRDSwappedModifiersOptionKey),
 			CREATE_KEY_FLAG(NX_DEVICERCMDKEYMASK, NX_DEVICELCMDKEYMASK, NSCommandKeyMask), MakeNum(CRDSwappedModifiersCommandKey),
+			CREATE_KEY_FLAG(NX_DEVICERSHIFTKEYMASK, NX_DEVICELSHIFTKEYMASK, NSShiftKeyMask), MakeNum(CRDSwappedModifiersShiftKey),
 			nil] retain];
 	
+	// Just for debug purposes
 	keyDisplayNames =  [[NSDictionary dictionaryWithObjectsAndKeys:
 			@"Caps Lock", MakeNum(CRDSwappedModifiersCapsLockKey),
 			@"Control", MakeNum(CRDSwappedModifiersControlKey),
 			@"Option", MakeNum(CRDSwappedModifiersOptionKey),
 			@"Command", MakeNum(CRDSwappedModifiersCommandKey),
+			@"Shift", MakeNum(CRDSwappedModifiersShiftKey),
 			nil] retain];
 		
 	// xxx: doesn't actually inform us of changes
@@ -121,6 +125,7 @@ static NSArray *rawDefaultTable;
 		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersControlKey) forKey:MakeNum(CRDSwappedModifiersControlKey)];
 		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersOptionKey) forKey:MakeNum(CRDSwappedModifiersOptionKey)];
 		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersCommandKey) forKey:MakeNum(CRDSwappedModifiersCommandKey)];
+		[modifiersBuilder setObject:MakeNum(CRDSwappedModifiersShiftKey) forKey:MakeNum(CRDSwappedModifiersShiftKey)];
 	}
 	
 	[modifierTranslator release];
@@ -134,10 +139,10 @@ static NSArray *rawDefaultTable;
 	#define TEST_THEN_SWAP(realKeyFlag, virtKeyFlag) if (flags & virtKeyFlag) newFlags |= realKeyFlag;
 	//	NSLog(@"Swapping? %s", (flags & virtKeyFlag) ? "Yes." : "No.");
 
-	int keys[4] = {CRDSwappedModifiersCapsLockKey, CRDSwappedModifiersControlKey, CRDSwappedModifiersOptionKey, CRDSwappedModifiersCommandKey};
+	int keys[5] = {CRDSwappedModifiersCapsLockKey, CRDSwappedModifiersControlKey, CRDSwappedModifiersOptionKey, CRDSwappedModifiersCommandKey, CRDSwappedModifiersShiftKey};
 	unsigned newFlags = 0, i, realKeyNum;
 	
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < 5; i++)
 	{	
 		realKeyNum = MakeInt([modifierTranslator objectForKey:MakeNum(keys[i])]);
 		TEST_THEN_SWAP(GetFlagForKey(keys[i], KeyFlagLeft), GetFlagForKey(realKeyNum, KeyFlagRight));

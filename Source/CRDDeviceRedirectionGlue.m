@@ -601,23 +601,23 @@ static void rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 }
 
 // need an equivilant, but not this
-void rdpdr_add_fds(RDConnectionRef conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDBOOL * timeout)
+/*void rdpdr_add_fds(RDConnectionRef conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDBOOL * timeout)
 {
 
-}
+}*/
 
 // need an equivilant, but not this
-struct async_iorequest * rdpdr_remove_iorequest(RDConnectionRef conn, struct async_iorequest *prev, struct async_iorequest *iorq)
+/*struct async_iorequest * rdpdr_remove_iorequest(RDConnectionRef conn, struct async_iorequest *prev, struct async_iorequest *iorq)
 {
 
 	return NULL;
-}
+}*/
 
-RDBOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status)
+/*RDBOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status)
 {
 	
 	return True;
-}
+}*/
 
 // don't need
 //static void _rdpdr_check_fds(RDConnectionRef conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out)
