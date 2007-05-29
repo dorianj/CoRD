@@ -232,7 +232,6 @@
 	
 	// Set remote keymap to match local OS X input type
 	conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
-	
 	/*
 	// Set up disk redirection
 	if (forwardDisks && !DISK_FORWARDING_DISABLED)
@@ -265,8 +264,7 @@
 		printer_enum_devices(conn, convert_string_array(printers), [printers count]);
 	}	
 	*/
-
-		
+	
 	rdpdr_init(conn);
 	cliprdr_init(conn);
 	
@@ -589,7 +587,7 @@
 	}
 	
 	[self updateCellData];
-
+	
 	return YES;
 }
 

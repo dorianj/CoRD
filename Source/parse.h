@@ -91,6 +91,4 @@ typedef RDStream * RDStreamRef;
 #define out_uint8a(s,v,n)	out_uint8p(s,v,n);
 #define out_uint8s(s,n)		{ memset((s)->p,0,n); (s)->p += n; }
 
-#define out_nsnumber_uint32_le(s, n) out_uint32_le(s, [n unsignedIntValue])
-
 #define next_be(s,v)		v = ((v) << 8) + *((s)->p++);

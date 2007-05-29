@@ -25,8 +25,7 @@
 #import <sys/time.h>
 #import <sys/select.h>
 #import <unistd.h>
-#import <limits.h>		/* PATH_MAX */
-
+#include <limits.h>		/* PATH_MAX */
 
 #import <openssl/md5.h>
 #import <openssl/sha.h>
@@ -105,7 +104,6 @@
 
 #import "parse.h"
 #import "constants.h"
-
 #import "types.h"
 #import "proto.h"
 
