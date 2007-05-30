@@ -242,11 +242,6 @@ typedef struct _RDFileInfo
 } RDFileInfo;
 
 
-
-
-
-#import "orders.h"
-
 struct bmpcache_entry
 {
 	RDBitmapRef bitmap;
@@ -262,6 +257,9 @@ typedef enum _RDConnectionError
 	ConnectionErrorGeneral = 3,
 	ConnectionErrorCanceled = 4
 } RDConnectionError;
+
+
+#import "orders.h"
 
 struct _RDConnection
 {
@@ -283,25 +281,26 @@ struct _RDConnection
 	// Bitmap caches
 	int pstcacheBpp;
 	int pstcacheFd[8];
-	int bmpcacheCount[3];
-	unsigned char deskCache[0x38400 * 4];
-	RDBitmapRef volatileBc[3];
-	RDCursorRef cursorCache[0x20];
-	RDDataBlob textCache[256];
-	RDFontGlyph fontCache[12][256];
+	int bmpcacheCount[BITMAP_CACHE_SIZE];
+	unsigned char deskCache[DESKTOP_CACHE_SIZE * 4];
+	RDBitmapRef volatileBc[BITMAP_CACHE_SIZE];
+	RDCursorRef cursorCache[CURSOR_CACHE_SIZE];
+	RDDataBlob textCache[TEXT_CACHE_SIZE];
+	RDFontGlyph fontCache[FONT_CACHE_SIZE][FONT_CACHE_ENTRIES];
+	struct bmpcache_entry bmpcache[BITMAP_CACHE_SIZE][BITMAP_CACHE_ENTRIES];
+	int bmpcacheLru[BITMAP_CACHE_SIZE], bmpcacheMru[BITMAP_CACHE_SIZE];
 	
 	// Device redirection
 	char *rdpdrClientname;
 	unsigned int numChannels, numDevices;
 	int clipboardRequestType;
 	NTHandle minTimeoutFd;
-	RDFileInfo fileInfo[0x100];		// MAX_OPEN_FILES taken from disk.h
-	RDRedirectedDevice rdpdrDevice[0x10];	//RDPDR_MAX_DEVICES taken from constants.h
+	RDFileInfo fileInfo[MAX_OPEN_FILES];
+	RDRedirectedDevice rdpdrDevice[RDPDR_MAX_DEVICES];
 	RDVirtualChannel channels[6];
-	RDVirtualChannel *rdpdrChannel;
-	RDVirtualChannel *cliprdrChannel;
+	RDVirtualChannel *rdpdrChannel, *cliprdrChannel, *sndChannel;
 	RDAsynchronousIORequest *ioRequest;
-	char *printerNames[255];
+	RDWaveFormat soundFormats[MAX_SOUND_FORMATS];
 	
 	// MCS/licence
 	unsigned char licenseKey[16], licenseSignKey[16];
@@ -309,51 +308,34 @@ struct _RDConnection
 	
 	// Session directory
 	RDBOOL sessionDirRedirect;
-	char sessionDirServer[64];
-	char sessionDirDomain[16];
-	char sessionDirPassword[64];
-	char sessionDirUsername[64];
-	char sessionDirCookie[128];
+	char sessionDirServer[64], sessionDirDomain[16], sessionDirPassword[64], sessionDirUsername[64], sessionDirCookie[128];
 	unsigned int sessionDirFlags;
 	
-	// Bitmap cache
-	struct bmpcache_entry bmpcache[NBITMAPCACHE][NBITMAPCACHEENTRIES];
-	int bmpcacheLru[3];
-	int bmpcacheMru[3];
 	
 	// Network
-	int packetNumber;
 	unsigned char *nextPacket;
-	void *inputStream; // NSInputStream
- 	void *outputStream; // NSOutputStream
+	NSInputStream *inputStream; 
+ 	NSOutputStream *outputStream;
 	void *host;
 	RDStream inStream, outStream;
 	RDStreamRef rdpStream;
 	
 	// Secure
-	int rc4KeyLen;
-	RC4_KEY rc4DecryptKey;
-	RC4_KEY rc4EncryptKey;
+	uint32 rc4KeyLen, secEncryptUseCount, secDecryptUseCount;
+	RC4_KEY rc4DecryptKey, rc4EncryptKey;
 	RSA *serverPublicKey;
 	uint32 serverPublicKeyLen;
-	uint8 secSignKey[16];
-	uint8 secDecryptKey[16];
-	uint8 secEncryptKey[16];
-	uint8 secDecryptUpdateKey[16];
-	uint8 secEncryptUpdateKey[16];
-	uint8 secCryptedRandom[SEC_MAX_MODULUS_SIZE];
-	uint32 secEncryptUseCount, secDecryptUseCount;
+	uint8 secSignKey[16], secDecryptKey[16], secEncryptKey[16], secDecryptUpdateKey[16], secEncryptUpdateKey[16], secCryptedRandom[SEC_MAX_MODULUS_SIZE];
 	
 	// Unknown
 	RDComp mppcDict;
 	
 	// UI
-	CRDSessionView *ui;	// the associated CRDSessionView
-	CRDSession *controller; // the associated CRDSession
-	
+	CRDSessionView *ui;
+	CRDSession *controller;
 	volatile RDConnectionError errorCode;
 	
-	// Managing current draw session (used by ui_stubs)
+	// Managing current draw session (used by CRDDrawingGlue)
 	void *rectsNeedingUpdate;
 	int updateEntireScreen;
 };

@@ -100,8 +100,8 @@ int
 pstcache_enumerate(RDConnectionRef conn, uint8 id, RDHashKey * keylist)
 {
 	int fd, idx, n;
-	sint16 mru_idx[0xa00];
-	uint32 mru_stamp[0xa00];
+	sint16 mru_idx[BITMAP_CACHE_ENTRIES];
+	uint32 mru_stamp[BITMAP_CACHE_ENTRIES];
 	RDPersistentCacheCellHeader cellhdr;
 
 	if (!(conn->bitmapCache && conn->bitmapCachePersist && IS_PERSISTENT(id)))

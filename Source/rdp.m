@@ -540,7 +540,7 @@ rdp_out_order_caps(RDConnectionRef conn, RDStreamRef s)
 	out_uint8p(s, order_caps, 32);	/* Orders supported */
 	out_uint16_le(s, 0x6a1);	/* Text capability flags */
 	out_uint8s(s, 6);	/* Pad */
-	out_uint32_le(s, conn->desktopSave == False ? 0 : 0x38400);	/* Desktop cache size */
+	out_uint32_le(s, conn->desktopSave == False ? 0 : DESKTOP_CACHE_SIZE);	/* Desktop cache size */
 	out_uint32(s, 0);	/* Unknown */
 	out_uint32_le(s, 0x4e4);	/* Unknown */
 }

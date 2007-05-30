@@ -148,19 +148,19 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	
 	// Set up text styling
 	if (highlighted) {
-		set_attributed_string_color(label, static_highlightedBoldColor);
-		set_attributed_string_color(user, static_highlightedRegularColor);
-		set_attributed_string_color(host, static_highlightedRegularColor);
+		CRDSetAttributedStringColor(label, static_highlightedBoldColor);
+		CRDSetAttributedStringColor(user, static_highlightedRegularColor);
+		CRDSetAttributedStringColor(host, static_highlightedRegularColor);
 	} else {
-		set_attributed_string_color(label, static_normalBoldColor);
-		set_attributed_string_color(user, static_normalRegularColor);
-		set_attributed_string_color(host, static_normalRegularColor);
+		CRDSetAttributedStringColor(label, static_normalBoldColor);
+		CRDSetAttributedStringColor(user, static_normalRegularColor);
+		CRDSetAttributedStringColor(host, static_normalRegularColor);
 	}
 	
 	if (abbreviatedSize) {
-		set_attributed_string_font(label, [NSFont fontWithName:@"LucidaGrande" size:11]);
+		CRDSetAttributedStringFont(label, [NSFont fontWithName:@"LucidaGrande" size:11]);
 	} else {
-		set_attributed_string_font(label, [NSFont fontWithName:@"LucidaGrande-Bold" size:11.5]);
+		CRDSetAttributedStringFont(label, [NSFont fontWithName:@"LucidaGrande-Bold" size:11.5]);
 	}
 	
 	// Position text then draw
@@ -241,7 +241,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 
 - (void)listStyleDidChange:(NSNotification *)notification
 {	
-	abbreviatedSize = PREFERENCE_ENABLED(CRDPrefsMinimalisticServerList);
+	abbreviatedSize = CRDPreferenceIsEnabled(CRDPrefsMinimalisticServerList);
 }
 
 #pragma mark -

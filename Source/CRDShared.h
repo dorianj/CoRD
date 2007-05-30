@@ -53,41 +53,35 @@ typedef struct _CRDInputEvent
 
 #pragma mark -
 #pragma mark Shared routines
-// General purpose
-void draw_vertical_gradient(NSColor *topColor, NSColor *bottomColor, NSRect rect);
-inline void draw_horizontal_line(NSColor *color, NSPoint start, float width);
-inline NSString *join_host_name(NSString *host, int port);
-void split_hostname(NSString *address, NSString **host, int *port);
-inline NSString *join_host_name(NSString *host, int port);
-NSString *convert_line_endings(NSString *orig, BOOL withCarriageReturn);
-inline BOOL drawer_is_visisble(NSDrawer *drawer);
-inline const char *safe_string_conv(void *src);
-inline void ensure_directory_exists(NSString *directory);
-NSString *increment_file_name(NSString *path, NSString *base, NSString *extension);
-NSArray *filter_filenames(NSArray *unfilteredFiles, NSArray *types);
-char ** convert_string_array(NSArray *conv);
-inline void set_attributed_string_color(NSMutableAttributedString *as, NSColor *color);
-inline void set_attributed_string_font(NSMutableAttributedString *as, NSFont *font);
+
+void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rect);
+inline void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width);
+inline NSString *CRDJoinHostNameAndPort(NSString *host, int port);
+void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port);
+inline NSString *CRDJoinHostNameAndPort(NSString *host, int port);
+NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);
+inline BOOL CRDDrawerIsVisible(NSDrawer *drawer);
+inline const char *CRDSafeUTF8String(NSString *src);
+inline void CRDCreateDirectory(NSString *directory);
+NSString *CRDFindAvailableFileName(NSString *path, NSString *base, NSString *extension);
+NSArray *CRDFilterFilesByType(NSArray *unfilteredFiles, NSArray *types);
+char ** CRDMakeCStringArray(NSArray *conv);
+inline void CRDSetAttributedStringColor(NSMutableAttributedString *as, NSColor *color);
+inline void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *font);
 inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
 	unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
 inline NSString *CRDTemporaryFile(void);
-
-// AppController specific
-NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);
-
-// CRDSession specific
-void fill_default_connection(RDConnectionRef conn);
+BOOL CRDPathIsHidden(NSString *path);
+inline NSCellStateValue CRDButtonState(BOOL enabled);
+inline BOOL CRDPreferenceIsEnabled(NSString *prefName);
+inline void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
+NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action);
+void CRDFillDefaultConnection(RDConnectionRef conn);
 
 // Convenience macros
-#define BOOL_AS_BSTATE(b) ( (b) ? NSOnState : NSOffState)
-#define NUMBER_AS_BSTATE(b) BOOL_AS_BSTATE([(b) boolValue])
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
-#define BUTTON_STATE_AS_NUMBER_INVERSE(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 0 : 1)]
-#define HEXSTRING_TO_INT(s, ret) [[NSScanner scannerWithString:(s)] scanHexInt:(ret)]
-#define RECT_FROM_SIZE(r) NSMakeRect(0.0, 0.0, (r).width, (r).height)
-#define PRINT_RECT(s, r) NSLog(@"%@: (%.1f, %.1f) size %.1f x %.1f", s, (r).origin.x, (r).origin.y, (r).size.width, (r).size.height)
-#define PRINT_POINT(s, p) NSLog(@"%@: (%.1f, %.1f)", s, (p).x, (p).y)
-#define POINT_DISTANCE(p1, p2) ( sqrt( pow( (p1).x - (p2).x, 2) + pow( (p1).y - (p2).y, 2) ) )
+#define RECT_FROM_SIZE(s) ((NSRect){NSZeroPoint, (s)})
+#define POINT_DISTANCE(p1, p2) ( sqrtf( powf( (p1).x - (p2).x, 2) + powf( (p1).y - (p2).y, 2) ) )
 #define CGRECT_FROM_NSRECT(r) CGRectMake((r).origin.x, (r).origin.y, (r).size.width, (r).size.height)
 
 #define LOCALS_FROM_CONN									\
@@ -103,42 +97,35 @@ extern const int CRDDefaultPort;
 extern const int CRDMouseEventLimit;
 extern const NSPoint CRDWindowCascadeStart;
 extern const float CRDWindowSnapSize;
-extern NSString *CRDRowIndexPboardType;
+extern NSString * const CRDRowIndexPboardType;
 
 // Globals (used for readability in rdesktop code)
 extern AppController *g_appController;
 
 // NSUserDefaults keys
-extern NSString *CRDDefaultsUnifiedDrawerShown;
-extern NSString *CRDDefaultsUnifiedDrawerSide;
-extern NSString *CRDDefaultsUnifiedDrawerWidth;
-extern NSString *CRDDefaultsDisplayMode;
-extern NSString *CRDDefaultsQuickConnectServers;
-extern NSString *CRDDefaultsSendWindowsKey;
+extern NSString * const CRDDefaultsUnifiedDrawerShown;
+extern NSString * const CRDDefaultsUnifiedDrawerSide;
+extern NSString * const CRDDefaultsUnifiedDrawerWidth;
+extern NSString * const CRDDefaultsDisplayMode;
+extern NSString * const CRDDefaultsQuickConnectServers;
+extern NSString * const CRDDefaultsSendWindowsKey;
 
 // User-configurable NSUserDefaults keys (preferences)
-extern NSString *CRDPrefsReconnectIntoFullScreen;
-extern NSString *CRDPrefsReconnectOutOfFullScreen;
-extern NSString *CRDPrefsScaleSessions;
-extern NSString *CRDPrefsMinimalisticServerList;
-extern NSString *CRDPrefsIgnoreCustomModifiers;
+extern NSString * const CRDPrefsReconnectIntoFullScreen;
+extern NSString * const CRDPrefsReconnectOutOfFullScreen;
+extern NSString * const CRDPrefsScaleSessions;
+extern NSString * const CRDPrefsMinimalisticServerList;
+extern NSString * const CRDPrefsIgnoreCustomModifiers;
 
 // Notifications
-extern NSString *CRDMinimalViewDidChangeNotification;
+extern NSString * const CRDMinimalViewDidChangeNotification;
 
 // Used to tack on the servers at the end of the Servers menu. There's probably a better way to do this, but this will do for now (works well enough)
 #define SERVERS_SEPARATOR_TAG 19991
 #define SERVERS_ITEM_TAG 20001
 
-// Convenience macros for preferences
-#define PREFERENCE_ENABLED(pref) [[NSUserDefaults standardUserDefaults] boolForKey:(pref)]
-#define SET_PREFERENCE_ENABLED(pref, b) [[NSUserDefaults standardUserDefaults] setBool:(b) forKey:(pref)]
-
-
-
 // Temporary use
-#define USE_DISK_FORWARDING 1
-#define USE_PRINTER_FORWARDING 1
+#define USE_SOUND_FORWARDING 1
 
 
 #pragma mark -

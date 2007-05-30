@@ -18,15 +18,25 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-/* TCP port for Remote Desktop Protocol */
-#define TCP_PORT_RDP 3389
 
-#define NBITMAPCACHE 3
-#define NBITMAPCACHEENTRIES 0xa00
+#define DESKTOP_CACHE_SIZE 0x38400
+#define RDPDR_MAX_DEVICES 0x10
+#define	MAX_OPEN_FILES	0x100
+#define MAX_SOUND_FORMATS 10
+
+#define BITMAP_CACHE_SIZE 3
+#define BITMAP_CACHE_ENTRIES 0xa00
+
+#define CURSOR_CACHE_SIZE 0x20
+#define TEXT_CACHE_SIZE 256
+
+#define FONT_CACHE_SIZE 12
+#define FONT_CACHE_ENTRIES 256
+
+#define TIMOUT_LENGTH 20
+
 #define NOT_SET -1
 
-#define DEFAULT_CODEPAGE	"UTF-8"
-#define WINDOWS_CODEPAGE	"UTF-16LE"
 
 /* ISO PDU codes */
 enum ISO_PDU_CODE
@@ -51,60 +61,69 @@ enum MCS_PDU_TYPE
 	MCS_SDIN = 26		/* Send Data Indication */
 };
 
-#define MCS_CONNECT_INITIAL	0x7f65
-#define MCS_CONNECT_RESPONSE	0x7f66
+#define MCS_CONNECT_INITIAL  0x7f65
+#define MCS_CONNECT_RESPONSE 0x7f66
 
-#define BER_TAG_RDCBOOLEAN		1
-#define BER_TAG_INTEGER		2
-#define BER_TAG_OCTET_STRING	4
-#define BER_TAG_RESULT		10
-#define MCS_TAG_DOMAIN_PARAMS	0x30
+#define BER_TAG_RDCBOOLEAN    1
+#define BER_TAG_INTEGER       2
+#define BER_TAG_OCTET_STRING  4
+#define BER_TAG_RESULT        10
 
-#define MCS_GLOBAL_CHANNEL	1003
-#define MCS_USERCHANNEL_BASE    1001
+#define MCS_TAG_DOMAIN_PARAMS 0x30
 
-/* RDP secure transport constants */
-#define SEC_RANDOM_SIZE		32
-#define SEC_MODULUS_SIZE	64
-#define SEC_MAX_MODULUS_SIZE	256
-#define SEC_PADDING_SIZE	8
-#define SEC_EXPONENT_SIZE	4
+#define MCS_GLOBAL_CHANNEL   1003
+#define MCS_USERCHANNEL_BASE 1001
 
-#define SEC_CLIENT_RANDOM	0x0001
-#define SEC_ENCRYPT		0x0008
-#define SEC_LOGON_INFO		0x0040
-#define SEC_LICENCE_NEG		0x0080
 
-#define SEC_TAG_SRV_INFO	0x0c01
-#define SEC_TAG_SRV_CRYPT	0x0c02
-#define SEC_TAG_SRV_CHANNELS	0x0c03
+#pragma mark -
+#pragma mark RDP secure transport
 
-#define SEC_TAG_CLI_INFO	0xc001
-#define SEC_TAG_CLI_CRYPT	0xc002
-#define SEC_TAG_CLI_CHANNELS    0xc003
-#define SEC_TAG_CLI_4           0xc004
+#define SEC_RANDOM_SIZE       32
+#define SEC_MODULUS_SIZE	  64
+#define SEC_MAX_MODULUS_SIZE  256
+#define SEC_PADDING_SIZE      8
+#define SEC_EXPONENT_SIZE     4
 
-#define SEC_TAG_PUBKEY		0x0006
-#define SEC_TAG_KEYSIG		0x0008
+#define SEC_CLIENT_RANDOM  0x0001
+#define SEC_ENCRYPT        0x0008
+#define SEC_LOGON_INFO     0x0040
+#define SEC_LICENCE_NEG    0x0080
 
-#define SEC_RSA_MAGIC		0x31415352	/* RSA1 */
+#define SEC_TAG_SRV_INFO      0x0c01
+#define SEC_TAG_SRV_CRYPT     0x0c02
+#define SEC_TAG_SRV_CHANNELS  0x0c03
 
-/* RDP licensing constants */
-#define LICENCE_TOKEN_SIZE	10
-#define LICENCE_HWID_SIZE	20
-#define LICENCE_SIGNATURE_SIZE	16
+#define SEC_TAG_CLI_INFO      0xc001
+#define SEC_TAG_CLI_CRYPT     0xc002
+#define SEC_TAG_CLI_CHANNELS  0xc003
+#define SEC_TAG_CLI_4         0xc004
 
-#define LICENCE_TAG_DEMAND	0x01
-#define LICENCE_TAG_AUTHREQ	0x02
-#define LICENCE_TAG_ISSUE	0x03
-#define LICENCE_TAG_REISSUE	0x04
-#define LICENCE_TAG_PRESENT	0x12
-#define LICENCE_TAG_REQUEST	0x13
-#define LICENCE_TAG_AUTHRESP	0x15
-#define LICENCE_TAG_RESULT	0xff
+#define SEC_TAG_PUBKEY 0x0006
+#define SEC_TAG_KEYSIG 0x0008
 
-#define LICENCE_TAG_USER	0x000f
-#define LICENCE_TAG_HOST	0x0010
+#define SEC_RSA_MAGIC 0x31415352	/* RSA1 */
+
+#pragma mark -
+#pragma mark RDP Licensing
+
+#define LICENCE_TOKEN_SIZE      10
+#define LICENCE_HWID_SIZE       20
+#define LICENCE_SIGNATURE_SIZE  16
+
+#define LICENCE_TAG_DEMAND   0x01
+#define LICENCE_TAG_AUTHREQ  0x02
+#define LICENCE_TAG_ISSUE    0x03
+#define LICENCE_TAG_REISSUE  0x04
+#define LICENCE_TAG_PRESENT  0x12
+#define LICENCE_TAG_REQUEST  0x13
+#define LICENCE_TAG_AUTHRESP 0x15
+#define LICENCE_TAG_RESULT   0xff
+
+#define LICENCE_TAG_USER 0x000f
+#define LICENCE_TAG_HOST 0x0010
+
+#pragma mark -
+#pragma mark RDP Protocol
 
 /* RDP PDU codes */
 enum RDP_PDU_TYPE
@@ -178,7 +197,7 @@ enum RDP_INPUT_DEVICE
 #define KBD_FLAG_DOWN           0x4000
 #define KBD_FLAG_UP             0x8000
 
-/* These are for synchronization; not for keystrokes */
+/* These are for synchronization, not for keystrokes */
 #define KBD_FLAG_SCROLL   0x0001
 #define KBD_FLAG_NUMLOCK  0x0002
 #define KBD_FLAG_CAPITAL  0x0004
@@ -199,116 +218,117 @@ enum RDP_INPUT_DEVICE
 #define ROP2_S(rop3) (rop3 & 0xf)
 #define ROP2_P(rop3) ((rop3 & 0x3) | ((rop3 & 0x30) >> 2))
 
-#define ROP2_COPY	0xc
-#define ROP2_XOR	0x6
-#define ROP2_AND	0x8
-#define ROP2_NXOR	0x9
-#define ROP2_OR		0xe
+#define ROP2_COPY  0xc
+#define ROP2_XOR   0x6
+#define ROP2_AND   0x8
+#define ROP2_NXOR  0x9
+#define ROP2_OR    0xe
 
 #define MIX_TRANSPARENT	0
-#define MIX_OPAQUE	1
+#define MIX_OPAQUE 1
 
-#define TEXT2_VERTICAL		0x04
-#define TEXT2_IMPLICIT_X	0x20
+#define TEXT2_VERTICAL    0x04
+#define TEXT2_IMPLICIT_X  0x20
 
-#define ALTERNATE	1
-#define WINDING		2
+#define ALTERNATE 1
+#define WINDING   2
 
 /* RDP bitmap cache (version 2) constants */
-#define BMPCACHE2_C0_CELLS	0x78
-#define BMPCACHE2_C1_CELLS	0x78
-#define BMPCACHE2_C2_CELLS	0x150
-#define BMPCACHE2_NUM_PSTCELLS	0x9f6
+#define BMPCACHE2_C0_CELLS      0x78
+#define BMPCACHE2_C1_CELLS      0x78
+#define BMPCACHE2_C2_CELLS      0x150
+#define BMPCACHE2_NUM_PSTCELLS  0x9f6
 
-#define PDU_FLAG_FIRST		0x01
-#define PDU_FLAG_LAST		0x02
+#define PDU_FLAG_FIRST  0x01
+#define PDU_FLAG_LAST   0x02
 
 /* RDP capabilities */
-#define RDP_CAPSET_GENERAL	1	/* Maps to generalCapabilitySet in T.128 page 138 */
-#define RDP_CAPLEN_GENERAL	0x18
-#define OS_MAJOR_TYPE_UNIX	4
+#define RDP_CAPSET_GENERAL 1	/* Maps to generalCapabilitySet in T.128 page 138 */
+#define RDP_CAPLEN_GENERAL 0x18
+
+#define OS_MAJOR_TYPE_UNIX 4
 #define OS_MINOR_TYPE_XSERVER	7
 
-#define RDP_CAPSET_BITMAP	2
-#define RDP_CAPLEN_BITMAP	0x1C
+#define RDP_CAPSET_BITMAP 2
+#define RDP_CAPLEN_BITMAP 0x1C
 
-#define RDP_CAPSET_ORDER	3
-#define RDP_CAPLEN_ORDER	0x58
-#define ORDER_CAP_NEGOTIATE	2
-#define ORDER_CAP_NOSUPPORT	4
+#define RDP_CAPSET_ORDER     3
+#define RDP_CAPLEN_ORDER     0x58
+#define ORDER_CAP_NEGOTIATE  2
+#define ORDER_CAP_NOSUPPORT  4
 
 #define RDP_CAPSET_BMPCACHE	4
 #define RDP_CAPLEN_BMPCACHE	0x28
 
-#define RDP_CAPSET_CONTROL	5
-#define RDP_CAPLEN_CONTROL	0x0C
+#define RDP_CAPSET_CONTROL 5
+#define RDP_CAPLEN_CONTROL 0x0C
 
 #define RDP_CAPSET_ACTIVATE	7
 #define RDP_CAPLEN_ACTIVATE	0x0C
 
-#define RDP_CAPSET_POINTER	8
-#define RDP_CAPLEN_POINTER	0x08
+#define RDP_CAPSET_POINTER 8
+#define RDP_CAPLEN_POINTER 0x08
 
-#define RDP_CAPSET_SHARE	9
-#define RDP_CAPLEN_SHARE	0x08
+#define RDP_CAPSET_SHARE 9
+#define RDP_CAPLEN_SHARE 0x08
 
 #define RDP_CAPSET_COLCACHE	10
 #define RDP_CAPLEN_COLCACHE	0x08
 
-#define RDP_CAPSET_BMPCACHE2	19
-#define RDP_CAPLEN_BMPCACHE2	0x28
-#define BMPCACHE2_FLAG_PERSIST	((uint32)1<<31)
+#define RDP_CAPSET_BMPCACHE2 19
+#define RDP_CAPLEN_BMPCACHE2 0x28
+#define BMPCACHE2_FLAG_PERSIST ((uint32)1<<31)
 
-#define RDP_SOURCE		"MSTSC"
+#define RDP_SOURCE "MSTSC"
 
 /* Logon flags */
-#define RDP_LOGON_AUTO		0x0008
-#define RDP_LOGON_NORMAL	0x0033
-#define RDP_LOGON_COMPRESSION	0x0080	/* mppc compression with 8kB histroy buffer */
-#define RDP_LOGON_BLOB		0x0100
-#define RDP_LOGON_COMPRESSION2	0x0200	/* rdp5 mppc compression with 64kB history buffer */
-#define RDP_LOGON_LEAVE_AUDIO	0x2000
+#define RDP_LOGON_AUTO         0x0008
+#define RDP_LOGON_NORMAL       0x0033
+#define RDP_LOGON_COMPRESSION  0x0080	/* mppc compression with 8kB histroy buffer */
+#define RDP_LOGON_BLOB         0x0100
+#define RDP_LOGON_COMPRESSION2 0x0200	/* rdp5 mppc compression with 64kB history buffer */
+#define RDP_LOGON_LEAVE_AUDIO  0x2000
 
-#define RDP5_DISABLE_NOTHING	0x00
-#define RDP5_NO_WALLPAPER	0x01
-#define RDP5_NO_FULLWINDOWDRAG	0x02
-#define RDP5_NO_MENUANIMATIONS	0x04
-#define RDP5_NO_THEMING		0x08
-#define RDP5_NO_CURSOR_SHADOW	0x20
-#define RDP5_NO_CURSORSETTINGS	0x40	/* disables cursor blinking */
+#define RDP5_DISABLE_NOTHING   0x00
+#define RDP5_NO_WALLPAPER      0x01
+#define RDP5_NO_FULLWINDOWDRAG 0x02
+#define RDP5_NO_MENUANIMATIONS 0x04
+#define RDP5_NO_THEMING        0x08
+#define RDP5_NO_CURSOR_SHADOW  0x20
+#define RDP5_NO_CURSORSETTINGS 0x40	/* disables cursor blinking */
 
 /* compression types */
-#define RDP_MPPC_BIG		0x01
+#define RDP_MPPC_BIG        0x01
 #define RDP_MPPC_COMPRESSED	0x20
-#define RDP_MPPC_RESET		0x40
-#define RDP_MPPC_FLUSH		0x80
-#define RDP_MPPC_DICT_SIZE      65536
+#define RDP_MPPC_RESET      0x40
+#define RDP_MPPC_FLUSH      0x80
+#define RDP_MPPC_DICT_SIZE  65536
 
-#define RDP5_COMPRESSED		0x80
+#define RDP5_COMPRESSED	0x80
 
 /* Keymap flags */
-#define MapRightShiftMask   (1<<0)
-#define MapLeftShiftMask    (1<<1)
+#define MapRightShiftMask (1<<0)
+#define MapLeftShiftMask  (1<<1)
 #define MapShiftMask (MapRightShiftMask | MapLeftShiftMask)
 
-#define MapRightAltMask     (1<<2)
-#define MapLeftAltMask      (1<<3)
+#define MapRightAltMask (1<<2)
+#define MapLeftAltMask  (1<<3)
 #define MapAltGrMask MapRightAltMask
 
-#define MapRightCtrlMask    (1<<4)
-#define MapLeftCtrlMask     (1<<5)
+#define MapRightCtrlMask (1<<4)
+#define MapLeftCtrlMask  (1<<5)
 #define MapCtrlMask (MapRightCtrlMask | MapLeftCtrlMask)
 
-#define MapRightWinMask     (1<<6)
-#define MapLeftWinMask      (1<<7)
+#define MapRightWinMask (1<<6)
+#define MapLeftWinMask  (1<<7)
 #define MapWinMask (MapRightWinMask | MapLeftWinMask)
 
-#define MapNumLockMask      (1<<8)
-#define MapCapsLockMask     (1<<9)
+#define MapNumLockMask  (1<<8)
+#define MapCapsLockMask (1<<9)
 
-#define MapLocalStateMask   (1<<10)
+#define MapLocalStateMask (1<<10)
 
-#define MapInhibitMask      (1<<11)
+#define MapInhibitMask (1<<11)
 
 #define MASK_ADD_BITS(var, mask) (var |= mask)
 #define MASK_REMOVE_BITS(var, mask) (var &= ~mask)
@@ -316,7 +336,6 @@ enum RDP_INPUT_DEVICE
 #define MASK_CHANGE_BIT(var, mask, active) (var = ((var & ~mask) | (active ? mask : 0)))
 
 /* Clipboard constants, "borrowed" from GCC system headers in the w32 cross compiler */
-
 #define CF_TEXT         1
 #define CF_BITMAP       2
 #define CF_METAFILEPICT 3
@@ -383,7 +402,6 @@ enum RDP_INPUT_DEVICE
 
 
 /* RDPDR constants */
-#define RDPDR_MAX_DEVICES               0x10
 #define DEVICE_TYPE_SERIAL              0x01
 #define DEVICE_TYPE_PARALLEL            0x02
 #define DEVICE_TYPE_PRINTER             0x04
@@ -418,9 +436,5 @@ enum RDP_INPUT_DEVICE
 #define exDiscReasonLicenseCantUpgradeLicense	0x0109
 #define exDiscReasonLicenseNoRemoteConnections	0x010a
 
-// Time to wait for remote host in seconds
-#define TIMOUT_LENGTH 20
-
-#ifndef PATH_MAX
-	#define PATH_MAX 256
-#endif
+#import "disk.h"
+#import "scancodes.h"

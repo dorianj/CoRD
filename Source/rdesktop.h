@@ -101,8 +101,8 @@
 	#define NEED_ALIGN
 #endif
 
-#import "parse.h"
 #import "constants.h"
+#import "parse.h"
 #import "types.h"
 #import "proto.h"
 

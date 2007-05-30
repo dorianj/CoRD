@@ -25,8 +25,6 @@
 #import "CRDBitmap.h"
 #import "CRDSession.h"
 
-#import "scancodes.h"
-
 @interface CRDSessionView (Private)
 	- (void)send_modifiers:(NSEvent *)ev enable:(BOOL)en;
 	- (void)recheckScheduledMouseInput:(NSTimer*)timer;
@@ -131,15 +129,10 @@
 {	
 	[super setFrame:frame];
 
-	[self setBounds:RECT_FROM_SIZE(screenSize)];
+	[self setBounds:(NSRect){frame.origin, screenSize}];
+	[self reshape];
 }
-/*
-- (void)viewDidEndLiveResize
-{
-	[super viewDidEndLiveResize];
-	[self setNeedsDisplay:YES];
-}
-*/
+
 
 #pragma mark -
 #pragma mark NSOpenGLView

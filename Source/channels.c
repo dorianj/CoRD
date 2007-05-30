@@ -21,11 +21,11 @@
 
 #import "rdesktop.h"
 
-#define MAX_CHANNELS			6
-#define CHANNEL_CHUNK_LENGTH		1600
-#define CHANNEL_FLAG_FIRST		0x01
-#define CHANNEL_FLAG_LAST		0x02
-#define CHANNEL_FLAG_SHOW_PROTOCOL	0x10
+#define MAX_CHANNELS                6
+#define CHANNEL_CHUNK_LENGTH        1600
+#define CHANNEL_FLAG_FIRST		    0x01
+#define CHANNEL_FLAG_LAST		    0x02
+#define CHANNEL_FLAG_SHOW_PROTOCOL  0x10
 
 /* FIXME: We should use the information in TAG_SRV_CHANNELS to map RDP5
    channels to MCS channels.

@@ -27,12 +27,11 @@
 #import "CRDSession.h"
 #import "CRDSwappedModifiersUtility.h"
 #import "rdesktop.h"
-#import "scancodes.h"
 #import "CRDShared.h"
 
 #define KEYMAP_ENTRY(n) [[virtualKeymap objectForKey:[NSNumber numberWithInt:(n)]] intValue]
 #define SET_KEYMAP_ENTRY(n, v) [virtualKeymap setObject:[NSNumber numberWithInt:(v)] forKey:[NSNumber numberWithInt:(n)]]
-#define GET_MODIFIER_FLAGS(f) (PREFERENCE_ENABLED(CRDPrefsIgnoreCustomModifiers) ? [CRDSwappedModifiersUtility physicalModifiersForVirtualFlags:f] : f )
+#define GET_MODIFIER_FLAGS(f) (CRDPreferenceIsEnabled(CRDPrefsIgnoreCustomModifiers) ? [CRDSwappedModifiersUtility physicalModifiersForVirtualFlags:f] : f )
 
 
 static NSDictionary *windowsKeymapTable = nil;
@@ -129,7 +128,7 @@ static NSDictionary *windowsKeymapTable = nil;
 - (void)sendScancode:(uint8)scancode flags:(uint16)flags
 {
 	if ( ((scancode == SCANCODE_CHAR_LWIN) || (scancode == SCANCODE_CHAR_RWIN)) &&
-		!PREFERENCE_ENABLED(CRDDefaultsSendWindowsKey))
+		!CRDPreferenceIsEnabled(CRDDefaultsSendWindowsKey))
 	{
 		return;
 	}

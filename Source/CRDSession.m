@@ -181,7 +181,7 @@
 		
 	free(conn);
 	conn = malloc(sizeof(RDConnection));
-	fill_default_connection(conn);
+	CRDFillDefaultConnection(conn);
 	conn->controller = self;
 	
 	// Fail quickly if it's a totally bogus host
@@ -225,12 +225,12 @@
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
 	conn->tcpPort = (!port || port>=65536) ? CRDDefaultPort : port;
-	strncpy(conn->username, safe_string_conv(username), sizeof(conn->username));
+	strncpy(conn->username, CRDSafeUTF8String(username), sizeof(conn->username));
 	
 	// Set remote keymap to match local OS X input type
 	conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
 	
-	// Set up disk redirection
+	
 	if (forwardDisks)
 	{
 		NSArray *localDrives = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
@@ -249,13 +249,18 @@
 			}
 		}
 		
-		disk_enum_devices(conn, convert_string_array(validDrives), convert_string_array(validNames), [validDrives count]);
+		disk_enum_devices(conn, CRDMakeCStringArray(validDrives), CRDMakeCStringArray(validNames), [validDrives count]);
 	}
 	
-	// Set up printer redirection
+
 	if (forwardPrinters)
 	{
 		printer_enum_devices(conn);
+	}
+	
+	if (USE_SOUND_FORWARDING)
+	{
+		
 	}
 	
 	
@@ -263,10 +268,10 @@
 	cliprdr_init(conn);
 	
 	// Make the connection
-	BOOL connected = rdp_connect(conn, safe_string_conv(hostName), 
+	BOOL connected = rdp_connect(conn, CRDSafeUTF8String(hostName), 
 							logonFlags, 
-							safe_string_conv(domain), 
-							safe_string_conv(password), 
+							CRDSafeUTF8String(domain), 
+							CRDSafeUTF8String(password), 
 							"",  /* xxx: command on logon */
 							"" /* xxx: session directory */ );
 							
@@ -322,9 +327,9 @@
 		
 		// Clear out the bitmap cache
 		int i, k;
-		for (i = 0; i < NBITMAPCACHE; i++)
+		for (i = 0; i < BITMAP_CACHE_SIZE; i++)
 		{
-			for (k = 0; k < NBITMAPCACHEENTRIES; k++)
+			for (k = 0; k < BITMAP_CACHE_ENTRIES; k++)
 			{	
 				ui_destroy_bitmap(conn->bmpcache[i][k].bitmap);
 				conn->bmpcache[i][k].bitmap = NULL;
@@ -400,7 +405,7 @@
 	NSPasteboard *pb = [NSPasteboard generalPasteboard];
 	if ([pb availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
 	{
-		NSString *pasteContent = convert_line_endings([pb stringForType:NSStringPboardType], YES);
+		NSString *pasteContent = CRDConvertLineEndings([pb stringForType:NSStringPboardType], YES);
 
 		NSData *unicodePasteContent = [pasteContent dataUsingEncoding:NSUnicodeStringEncoding allowLossyConversion:YES];
 		
@@ -420,7 +425,7 @@
 	cliprdr_send_data_request(conn, CF_UNICODETEXT);
 }
 
-// Sets the local clipboard to match the server provided data. Only called by server (via ui_stubs) when new data has actually arrived
+// Sets the local clipboard to match the server provided data. Only called by server (via CRDMixedGlue) when new data has actually arrived
 - (void)setLocalClipboard:(NSData *)data format:(int)format
 {
 	if ( ((format != CF_UNICODETEXT) && (format != CF_AUTODETECT)) || ([data length] == 0) )
@@ -435,7 +440,7 @@
 	[rawClipboardData release];
 	
 	[remoteClipboard release];
-	remoteClipboard = [convert_line_endings(temp, NO) retain];
+	remoteClipboard = [CRDConvertLineEndings(temp, NO) retain];
 	[[NSPasteboard generalPasteboard] setString:remoteClipboard forType:NSStringPboardType];
 }
 
@@ -552,7 +557,7 @@
 			else if ([name isEqualToString:@"cord row index"])
 				preferredRowIndex = numVal;
 			else if ([name isEqualToString:@"full address"]) {
-				split_hostname(value, &hostName, &port);
+				CRDSplitHostNameAndPort(value, &hostName, &port);
 				[hostName retain];
 			}
 			else if ([name isEqualToString:@"cord fullscreen"]) {
@@ -613,7 +618,7 @@
 	write_int(@"cord fullscreen", fullscreen);
 	write_int(@"cord row index", preferredRowIndex);
 	
-	write_string(@"full address", join_host_name(hostName, port));
+	write_string(@"full address", CRDJoinHostNameAndPort(hostName, port));
 	write_string(@"username", username);
 	write_string(@"domain", domain);
 	write_string(@"cord label", label);

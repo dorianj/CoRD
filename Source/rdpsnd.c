@@ -21,20 +21,20 @@
 
 #import "rdesktop.h"
 
-#define RDPSND_CLOSE		1
-#define RDPSND_WRITE		2
-#define RDPSND_SET_VOLUME	3
-#define RDPSND_UNKNOWN4		4
-#define RDPSND_COMPLETION	5
-#define RDPSND_SERVERTICK	6
-#define RDPSND_NEGOTIATE	7
+#define RDPSND_CLOSE        1
+#define RDPSND_WRITE        2
+#define RDPSND_SET_VOLUME   3
+#define RDPSND_UNKNOWN4     4
+#define RDPSND_COMPLETION   5
+#define RDPSND_SERVERTICK   6
+#define RDPSND_NEGOTIATE    7
 
-#define MAX_FORMATS		10
+
 
 static RDVirtualChannel *rdpsnd_channel;
 
 static RDBOOL device_open;
-static RDWaveFormat formats[MAX_FORMATS];
+static RDWaveFormat formats[MAX_SOUND_FORMATS];
 static unsigned int format_count;
 static unsigned int current_format;
 
@@ -78,7 +78,7 @@ rdpsnd_process_negotiate(RDStreamRef in)
 {
 	unsigned int in_format_count, i;
 	RDWaveFormat *format;
-	RDStreamRef out;
+	RDStreamRef outStream;
 	RDBOOL device_available = False;
 	int readcnt;
 	int discardcnt;
@@ -112,8 +112,7 @@ rdpsnd_process_negotiate(RDStreamRef in)
 			discardcnt = 0;
 			if (format->cbSize > MAX_CBSIZE)
 			{
-				fprintf(stderr, "cbSize too large for buffer: %d\n",
-					format->cbSize);
+				fprintf(stderr, "cbSize too large for buffer: %d\n", format->cbSize);
 				readcnt = MAX_CBSIZE;
 				discardcnt = format->cbSize - MAX_CBSIZE;
 			}
@@ -123,32 +122,32 @@ rdpsnd_process_negotiate(RDStreamRef in)
 			if (device_available && wave_out_format_supported(format))
 			{
 				format_count++;
-				if (format_count == MAX_FORMATS)
+				if (format_count == MAX_SOUND_FORMATS)
 					break;
 			}
 		}
 	}
 
 	out = rdpsnd_init_packet(RDPSND_NEGOTIATE | 0x200, 20 + 18 * format_count);
-	out_uint32_le(out, 3);	/* flags */
-	out_uint32(out, 0xffffffff);	/* volume */
-	out_uint32(out, 0);	/* pitch */
-	out_uint16(out, 0);	/* UDP port */
+	out_uint32_le(outStream, 3);	/* flags */
+	out_uint32(outStream, 0xffffffff);	/* volume */
+	out_uint32(outStream, 0);	/* pitch */
+	out_uint16(outStream, 0);	/* UDP port */
 
-	out_uint16_le(out, format_count);
-	out_uint8(out, 0x95);	/* pad? */
-	out_uint16_le(out, 2);	/* status */
-	out_uint8(out, 0x77);	/* pad? */
+	out_uint16_le(outStream, format_count);
+	out_uint8(outStream, 0x95);	/* pad? */
+	out_uint16_le(outStream, 2);	/* status */
+	out_uint8(outStream, 0x77);	/* pad? */
 
 	for (i = 0; i < format_count; i++)
 	{
 		format = &formats[i];
-		out_uint16_le(out, format->wFormatTag);
-		out_uint16_le(out, format->nChannels);
-		out_uint32_le(out, format->nSamplesPerSec);
-		out_uint32_le(out, format->nAvgBytesPerSec);
-		out_uint16_le(out, format->nBlockAlign);
-		out_uint16_le(out, format->wBitsPerSample);
+		out_uint16_le(outStream, format->wFormatTag);
+		out_uint16_le(outStream, format->nChannels);
+		out_uint32_le(outStream, format->nSamplesPerSec);
+		out_uint32_le(outStream, format->nAvgBytesPerSec);
+		out_uint16_le(outStream, format->nBlockAlign);
+		out_uint16_le(outStream, format->wBitsPerSample);
 		out_uint16(out, 0);	/* cbSize */
 	}
 
@@ -191,7 +190,7 @@ rdpsnd_process(RDStreamRef s)
 
 	if (awaiting_data_packet)
 	{
-		if (format >= MAX_FORMATS)
+		if (format >= MAX_SOUND_FORMATS)
 		{
 			error("RDPSND: Invalid format index\n");
 			return;

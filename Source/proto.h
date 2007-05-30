@@ -118,7 +118,7 @@ int pstcache_enumerate(RDConnectionRef conn, uint8 id, RDHashKey * keylist);
 RDBOOL pstcache_init(RDConnectionRef conn, uint8 id);
 
 #pragma mark -
-#pragma mark ui_stubs.m (formerly rdesktop.c)
+#pragma mark CRDVestigialGlue (formerly rdesktop.c)
 void generate_random(uint8 * random);
 void *xmalloc(int size);
 char *xstrdup(const char *s);
@@ -230,7 +230,7 @@ char *tcp_get_address(RDConnectionRef conn);
 void tcp_reset_state(RDConnectionRef conn);
 
 #pragma mark -
-#pragma mark ui_stubs.m (formerly xclip.c)
+#pragma mark CRDDrawingStubs.m (formerly xclip.c)
 void ui_clip_format_announce(RDConnectionRef conn, uint8 * data, uint32 length);
 void ui_clip_handle_data(RDConnectionRef conn, uint8 * data, uint32 length);
 void ui_clip_request_data(RDConnectionRef conn, uint32 format);
@@ -239,12 +239,12 @@ void ui_clip_request_failed(RDConnectionRef conn);
 void ui_clip_set_mode(RDConnectionRef conn, const char *optarg);
 
 #pragma mark -
-#pragma mark ui_stubs.m (formerly xkeymap.c)
+#pragma mark CRDVestigialGlue.m (formerly xkeymap.c)
 unsigned int read_keyboard_state(void);
 uint16 ui_get_numlock_state(unsigned int state);
 
 #pragma mark -
-#pragma mark ui_stubs.m (formerly xwin.c)
+#pragma mark CRDDrawingGlue.m (formerly xwin.c)
 void ui_resize_window(RDConnectionRef conn);
 void ui_destroy_window(void);
 int ui_select(RDConnectionRef conn);

@@ -18,8 +18,7 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import "disk.h"
-
+#import "rdesktop.h"
 #import "CRDShared.h"
 
 #import <sys/types.h>
@@ -34,114 +33,17 @@
 #import <utime.h>
 #import <time.h>		/* ctime */
 
-#import <Cocoa/Cocoa.h>
-#import <CoreFoundation/CoreFoundation.h>
 
 #define DIRFD(a) (dirfd(a))
 
-
-/* TODO: Fix mntent-handling for solaris
- * #import <sys/mntent.h> */
-#if (defined(HAVE_MNTENT_H) && defined(HAVE_SETMNTENT))
-#import <mntent.h>
-#define MNTENT_PATH "/etc/mtab"
-#define USE_SETMNTENT
-#endif
-
-#ifdef HAVE_SYS_VFS_H
-#import <sys/vfs.h>
-#endif
-
-#ifdef HAVE_SYS_STATVFS_H
 #import <sys/statvfs.h>
-#endif
-
-#ifdef HAVE_SYS_STATFS_H
-#import <sys/statfs.h>
-#endif
-
-#ifdef HAVE_SYS_PARAM_H
 #import <sys/param.h>
-#endif
-
-#ifdef HAVE_SYS_MOUNT_H
 #import <sys/mount.h>
-#endif
 
-#import "rdesktop.h"
 
-#ifdef STAT_STATFS3_OSF1
-#define STATFS_FN(path, buf) (statfs(path,buf,sizeof(buf)))
-#define STATFS_T statfs
-#define USE_STATFS
-#endif
-
-#ifdef STAT_STATVFS
-#define STATFS_FN(path, buf) (statvfs(path,buf))
-#define STATFS_T statvfs
-#define USE_STATVFS
-#endif
-
-#ifdef STAT_STATVFS64
-#define STATFS_FN(path, buf) (statvfs64(path,buf))
-#define STATFS_T statvfs64
-#define USE_STATVFS
-#endif
-
-#if (defined(STAT_STATFS2_FS_DATA) || defined(STAT_STATFS2_BSIZE) || defined(STAT_STATFS2_FSIZE))
 #define STATFS_FN(path, buf) (statfs(path,buf))
 #define STATFS_T statfs
-#define USE_STATFS
-#endif
-
-#ifdef STAT_STATFS4
-#define STATFS_FN(path, buf) (statfs(path,buf,sizeof(buf),0))
-#define STATFS_T statfs
-#define USE_STATFS
-#endif
-
-#if ((defined(USE_STATFS) && defined(HAVE_STRUCT_STATFS_F_NAMEMAX)) || (defined(USE_STATVFS) && defined(HAVE_STRUCT_STATVFS_F_NAMEMAX)))
-#define F_NAMELEN(buf) ((buf).f_namemax)
-#endif
-
-#if ((defined(USE_STATFS) && defined(HAVE_STRUCT_STATFS_F_NAMELEN)) || (defined(USE_STATVFS) && defined(HAVE_STRUCT_STATVFS_F_NAMELEN)))
-#define F_NAMELEN(buf) ((buf).f_namelen)
-#endif
-
-#ifndef F_NAMELEN
 #define F_NAMELEN(buf) (255)
-#endif
-
-BOOL pathIsHidden(NSString *inURL);
-
-/* Dummy statfs fallback */
-#ifndef STATFS_T
-struct dummy_statfs_t
-{
-	long f_bfree;
-	long f_bsize;
-	long f_blocks;
-	int f_namelen;
-	int f_namemax;
-};
-
-static int dummy_statfs(struct dummy_statfs_t *buf);
-
-static int
-dummy_statfs(struct dummy_statfs_t *buf)
-{
-	buf->f_blocks = 262144;
-	buf->f_bfree = 131072;
-	buf->f_bsize = 512;
-	buf->f_namelen = 255;
-	buf->f_namemax = 255;
-
-	return 0;
-}
-
-#define STATFS_T dummy_statfs_t
-#define STATFS_FN(path,buf) (dummy_statfs(buf))
-#endif
 
 typedef struct
 {
@@ -1154,7 +1056,7 @@ disk_query_directory(RDConnectionRef conn, NTHandle handle, uint32 info_class, c
 
 			if (S_ISDIR(fstat.st_mode))
 				file_attributes |= FILE_ATTRIBUTE_DIRECTORY;
-			if (pathIsHidden([NSString stringWithUTF8String:fullpath]))
+			if (CRDPathIsHidden([NSString stringWithUTF8String:fullpath]))
 				file_attributes |= FILE_ATTRIBUTE_HIDDEN;
 			if (!file_attributes)
 				file_attributes |= FILE_ATTRIBUTE_NORMAL;
@@ -1233,15 +1135,3 @@ DEVICE_FNS disk_fns = {
 	disk_write,
 	disk_device_control	/* device_control */
 };
-
-BOOL pathIsHidden(NSString *path) 
-{
-	CFURLRef fileURL = CFURLCreateWithString(NULL,(CFStringRef)[@"file://" stringByAppendingString:path],NULL);	
-	if (fileURL) {
-		LSItemInfoRecord itemInfo;
-		LSCopyItemInfoForURL(fileURL, kLSRequestAllFlags, &itemInfo);
-		CFRelease(fileURL);	
-		return itemInfo.flags & kLSItemInfoIsInvisible;
-	} else
-		return False;
-}

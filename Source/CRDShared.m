@@ -25,61 +25,61 @@ const int CRDDefaultPort = 3389;
 const int CRDMouseEventLimit = 15;
 const NSPoint CRDWindowCascadeStart = {50.0, 20.0};
 const float CRDWindowSnapSize = 30.0;
-NSString *CRDRowIndexPboardType = @"CRDRowIndexPboardType";
+NSString * const CRDRowIndexPboardType = @"CRDRowIndexPboardType";
 
 // Globals
 AppController *g_appController;
 
 // Notifications
-NSString *CRDMinimalViewDidChangeNotification = @"CRDMinimalServerListChanged";
+NSString * const CRDMinimalViewDidChangeNotification = @"CRDMinimalServerListChanged";
 
 // NSUserDefaults keys
-NSString *CRDDefaultsUnifiedDrawerShown = @"show_drawer";
-NSString *CRDDefaultsUnifiedDrawerSide = @"preferred_drawer_side";
-NSString *CRDDefaultsUnifiedDrawerWidth = @"drawer_width";
-NSString *CRDDefaultsDisplayMode = @"windowed_mode";
-NSString *CRDDefaultsQuickConnectServers = @"RecentServers";
-NSString *CRDDefaultsSendWindowsKey = @"SendWindowsKey";
+NSString * const CRDDefaultsUnifiedDrawerShown = @"show_drawer";
+NSString * const CRDDefaultsUnifiedDrawerSide = @"preferred_drawer_side";
+NSString * const CRDDefaultsUnifiedDrawerWidth = @"drawer_width";
+NSString * const CRDDefaultsDisplayMode = @"windowed_mode";
+NSString * const CRDDefaultsQuickConnectServers = @"RecentServers";
+NSString * const CRDDefaultsSendWindowsKey = @"SendWindowsKey";
 
 // User-configurable NSUserDefaults keys (preferences)
-NSString *CRDPrefsReconnectIntoFullScreen = @"reconnectFullScreen";
-NSString *CRDPrefsReconnectOutOfFullScreen = @"ReconnectWhenLeavingFullScreen";
-NSString *CRDPrefsScaleSessions = @"resizeViewToFit";
-NSString *CRDPrefsMinimalisticServerList = @"MinimalServerList";
-NSString *CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizations";
+NSString * const CRDPrefsReconnectIntoFullScreen = @"reconnectFullScreen";
+NSString * const CRDPrefsReconnectOutOfFullScreen = @"ReconnectWhenLeavingFullScreen";
+NSString * const CRDPrefsScaleSessions = @"resizeViewToFit";
+NSString * const CRDPrefsMinimalisticServerList = @"MinimalServerList";
+NSString * const CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizations";
 
 #pragma mark -
 #pragma mark General purpose routines
 
-void draw_vertical_gradient(NSColor *topColor, NSColor *bottomColor, NSRect rect)
+void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rect)
 {
 	float delta, cur = rect.origin.y, limit = rect.origin.y + rect.size.height;
-	while (limit - cur > .01)
+	while (limit - cur > .001)
 	{
 		// Interpolate the colors, draw a line for this pixel
 		delta = (float)(cur - rect.origin.y) / rect.size.height;
-		draw_horizontal_line([topColor blendedColorWithFraction:delta ofColor:bottomColor],
+		CRDDrawHorizontalLine([topColor blendedColorWithFraction:delta ofColor:bottomColor],
 					NSMakePoint(rect.origin.x, cur), rect.size.width);
 							
 		cur += 1.0;
 	}
 }
 
-inline void draw_horizontal_line(NSColor *color, NSPoint start, float width)
+inline void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width)
 {
 	[color set];
-	NSRectFillUsingOperation( NSMakeRect(start.x, start.y, width, 1.0), NSCompositeSourceOver);
+	NSRectFillUsingOperation(NSMakeRect(start.x, start.y, width, 1.0), NSCompositeSourceOver);
 }
 
-inline NSString * join_host_name(NSString *host, int port)
+inline NSString * CRDJoinHostNameAndPort(NSString *host, int port)
 {
 	if (port && port != CRDDefaultPort)
 		return [NSString stringWithFormat:@"%@:%d", host, port];
 	else
-		return [[host retain] autorelease];
+		return [[host copy] autorelease];
 }
 
-void split_hostname(NSString *address, NSString **host, int *port)
+void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port)
 { 
 	NSScanner *scan = [NSScanner scannerWithString:address];
 	NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
@@ -92,7 +92,7 @@ void split_hostname(NSString *address, NSString **host, int *port)
 		*port = CRDDefaultPort;
 }
 
-NSString * convert_line_endings(NSString *orig, BOOL withCarriageReturn)
+NSString * CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn)
 {
 	if ([orig length] == 0)
 		return @"";
@@ -104,26 +104,24 @@ NSString * convert_line_endings(NSString *orig, BOOL withCarriageReturn)
 	return new;
 }
 
-inline BOOL drawer_is_visisble(NSDrawer *drawer)
+inline BOOL CRDDrawerIsVisible(NSDrawer *drawer)
 {
-	int state = [drawer state];
-	return state == NSDrawerOpenState || state == NSDrawerOpeningState;
+	return ([drawer state] == NSDrawerOpenState) || ([drawer state] == NSDrawerOpeningState);
 }
 
-inline const char * safe_string_conv(void *src)
+inline const char * CRDSafeUTF8String(NSString *str)
 {
-	return (src) ? [(NSString *)src UTF8String] : "";
+	return (str != nil) ? [str UTF8String] : "";
 }
 
-inline void ensure_directory_exists(NSString *path)
+inline void CRDCreateDirectory(NSString *path)
 {
-	BOOL isDir;
-	if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir])
+	if (![[NSFileManager defaultManager] fileExistsAtPath:path])
 		[[NSFileManager defaultManager] createDirectoryAtPath:path attributes:nil];
 }
 
 // Keeps trying filenames until it finds one that isn't taken.. eg: given "Untitled","rdp", if  'Untitled.rdp' is taken, it will try 'Untitled 1.rdp', 'Untitled 2.rdp', etc until one is found, then it returns the found filename. Useful for duplicating files.
-NSString * increment_file_name(NSString *path, NSString *base, NSString *extension)
+NSString * CRDFindAvailableFileName(NSString *path, NSString *base, NSString *extension)
 {
 	NSString *filename = [base stringByAppendingString:extension];
 	NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -135,7 +133,7 @@ NSString * increment_file_name(NSString *path, NSString *base, NSString *extensi
 }
 
 // Returns the paths in unfilteredFiles whose extention or HFS type match the passed types
-NSArray * filter_filenames(NSArray *unfilteredFiles, NSArray *types)
+NSArray * CRDFilterFilesByType(NSArray *unfilteredFiles, NSArray *types)
 {
 	NSMutableArray *returnFiles = [NSMutableArray arrayWithCapacity:4];
 	NSEnumerator *fileEnumerator = [unfilteredFiles objectEnumerator];
@@ -161,7 +159,7 @@ NSArray * filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 
 
 // Converts a NSArray of NSStrings to an array of C-strings. Everything created is put into the autorelease pool.
-char ** convert_string_array(NSArray *stringArray)
+char ** CRDMakeCStringArray(NSArray *stringArray)
 {
 	int i = 0;
 	if ([stringArray count] == 0)
@@ -180,12 +178,12 @@ char ** convert_string_array(NSArray *stringArray)
 	return cStringPtrArray;
 }
 
-inline void set_attributed_string_color(NSMutableAttributedString *as, NSColor *color)
+inline void CRDSetAttributedStringColor(NSMutableAttributedString *as, NSColor *color)
 {
 	[as addAttribute:NSForegroundColorAttributeName value:color range:NSMakeRange(0, [as length])];
 }
 
-inline void set_attributed_string_font(NSMutableAttributedString *as, NSFont *font)
+inline void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *font)
 {
 	[as addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [as length])];
 }
@@ -212,11 +210,39 @@ inline NSString *CRDTemporaryFile(void)
 	return [baseDir stringByAppendingPathComponent:[NSString stringWithFormat:@"CoRD-TemporaryFile-%u-%u", time(NULL), rand()]];
 }
 
+BOOL CRDPathIsHidden(NSString *path)
+{
+	CFURLRef fileURL = CFURLCreateWithString(NULL, (CFStringRef)[@"file://" stringByAppendingString:path], NULL);	
+	if (fileURL != NULL)
+	{
+		LSItemInfoRecord itemInfo;
+		LSCopyItemInfoForURL(fileURL, kLSRequestAllFlags, &itemInfo);
+		CFRelease(fileURL);	
+		return itemInfo.flags & kLSItemInfoIsInvisible;
+	} else
+		return NO;
+}
+
+inline NSCellStateValue CRDButtonState(BOOL enabled)
+{
+	return enabled ? NSOnState : NSOffState;
+}
+
+inline BOOL CRDPreferenceIsEnabled(NSString *prefName)
+{
+	return [[NSUserDefaults standardUserDefaults] boolForKey:prefName];
+}
+
+inline void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled)
+{
+	[[NSUserDefaults standardUserDefaults] setBool:enabled forKey:prefName];
+}
+
 
 #pragma mark -
 #pragma mark AppController specific
 
-NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action)
+NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action)
 {
 	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
 	[item setPaletteLabel:name];
@@ -232,7 +258,7 @@ NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSSt
 #pragma mark -
 #pragma mark CRDSession specific
 
-void fill_default_connection(RDConnectionRef conn)
+void CRDFillDefaultConnection(RDConnectionRef conn)
 {
 	const char *hostString = [[[NSHost currentHost] name] cStringUsingEncoding:NSASCIIStringEncoding];
 	
@@ -256,7 +282,6 @@ void fill_default_connection(RDConnectionRef conn)
 	conn->keyboardType = 4;
 	conn->keyboardSubtype = 0;
 	conn->keyboardFunctionkeys = 12;
-	conn->packetNumber = 0;
 	conn->licenseIssued	= 0;
 	conn->pstcacheEnumerated = 0;
 	conn->ioRequest	= NULL;
