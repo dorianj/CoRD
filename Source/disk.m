@@ -486,7 +486,7 @@ disk_create(RDConnectionRef conn, uint32 device_id, uint32 accessmask, uint32 sh
 	strncpy(conn->fileInfo[handle].path, path, PATH_MAX - 1);
 	conn->fileInfo[handle].delete_on_close = False;
 	conn->notifyStamp = True;
-
+	
 	*phandle = handle;
 	return STATUS_SUCCESS;
 }
@@ -494,7 +494,7 @@ disk_create(RDConnectionRef conn, uint32 device_id, uint32 accessmask, uint32 sh
 static NTStatus
 disk_close(RDConnectionRef conn, NTHandle handle)
 {
-	struct fileinfo *pfinfo;
+	RDFileInfo *pfinfo;
 
 	pfinfo = &(conn->fileInfo[handle]);
 
@@ -606,7 +606,7 @@ disk_write(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, u
 }
 
 NTStatus
-disk_query_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, RDStreamRef out)
+disk_query_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, RDStreamRef outStream)
 {
 	uint32 file_attributes, ft_high, ft_low;
 	struct stat filestat;
@@ -618,7 +618,7 @@ disk_query_information(RDConnectionRef conn, NTHandle handle, uint32 info_class,
 	if (fstat(handle, &filestat) != 0)
 	{
 		perror("stat");
-		out_uint8(out, 0);
+		out_uint8(outStream, 0);
 		return STATUS_ACCESS_DENIED;
 	}
 
@@ -641,41 +641,37 @@ disk_query_information(RDConnectionRef conn, NTHandle handle, uint32 info_class,
 	switch (info_class)
 	{
 		case FileBasicInformation:
-			seconds_since_1970_to_filetime(get_create_time(&filestat), &ft_high,
-						       &ft_low);
-			out_uint32_le(out, ft_low);	/* create_access_time */
-			out_uint32_le(out, ft_high);
+			seconds_since_1970_to_filetime(get_create_time(&filestat), &ft_high, &ft_low);
+			out_uint32_le(outStream, ft_low);	/* create_access_time */
+			out_uint32_le(outStream, ft_high);
 
 			seconds_since_1970_to_filetime(filestat.st_atime, &ft_high, &ft_low);
-			out_uint32_le(out, ft_low);	/* last_access_time */
-			out_uint32_le(out, ft_high);
+			out_uint32_le(outStream, ft_low);	/* last_access_time */
+			out_uint32_le(outStream, ft_high);
 
 			seconds_since_1970_to_filetime(filestat.st_mtime, &ft_high, &ft_low);
-			out_uint32_le(out, ft_low);	/* last_write_time */
-			out_uint32_le(out, ft_high);
+			out_uint32_le(outStream, ft_low);	/* last_write_time */
+			out_uint32_le(outStream, ft_high);
 
 			seconds_since_1970_to_filetime(filestat.st_ctime, &ft_high, &ft_low);
-			out_uint32_le(out, ft_low);	/* last_change_time */
-			out_uint32_le(out, ft_high);
+			out_uint32_le(outStream, ft_low);	/* last_change_time */
+			out_uint32_le(outStream, ft_high);
 
-			out_uint32_le(out, file_attributes);
+			out_uint32_le(outStream, file_attributes);
 			break;
 
 		case FileStandardInformation:
-
-			out_uint32_le(out, filestat.st_size);	/* Allocation size */
-			out_uint32_le(out, 0);
-			out_uint32_le(out, filestat.st_size);	/* End of file */
-			out_uint32_le(out, 0);
-			out_uint32_le(out, filestat.st_nlink);	/* Number of links */
-			out_uint8(out, 0);	/* Delete pending */
-			out_uint8(out, S_ISDIR(filestat.st_mode) ? 1 : 0);	/* Directory */
+			out_uint64_le(outStream, filestat.st_size);	/* Allocation size */
+			out_uint64_le(outStream, filestat.st_size);	/* End of file */
+			out_uint32_le(outStream, filestat.st_nlink);	/* Number of links */
+			out_uint8(outStream, 0);	/* Delete pending */
+			out_uint8(outStream, S_ISDIR(filestat.st_mode) ? 1 : 0);	/* Directory */
 			break;
 
 		case FileObjectIdInformation:
 
-			out_uint32_le(out, file_attributes);	/* File Attributes */
-			out_uint32_le(out, 0);	/* Reparse Tag */
+			out_uint32_le(outStream, file_attributes);	/* File Attributes */
+			out_uint32_le(outStream, 0);	/* Reparse Tag */
 			break;
 
 		default:
@@ -691,7 +687,7 @@ disk_set_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, R
 {
 	uint32 length, file_attributes, ft_high, ft_low, delete_on_close;
 	char newname[PATH_MAX], fullpath[PATH_MAX];
-	struct fileinfo *pfinfo;
+	RDFileInfo *pfinfo;
 	int mode;
 	struct stat filestat;
 	time_t write_time, change_time, access_time, mod_time;
@@ -863,7 +859,7 @@ disk_set_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, R
 NTStatus
 disk_check_notify(RDConnectionRef conn, NTHandle handle)
 {
-	struct fileinfo *pfinfo;
+	RDFileInfo *pfinfo;
 	NTStatus status = STATUS_PENDING;
 
 	NOTIFY notify;
@@ -894,7 +890,7 @@ disk_check_notify(RDConnectionRef conn, NTHandle handle)
 NTStatus
 disk_create_notify(RDConnectionRef conn, NTHandle handle, uint32 info_class)
 {
-	struct fileinfo *pfinfo;
+	RDFileInfo *pfinfo;
 	NTStatus ret = STATUS_PENDING;
 
 	/* printf("start disk_create_notify info_class %X\n", info_class); */
@@ -920,7 +916,7 @@ disk_create_notify(RDConnectionRef conn, NTHandle handle, uint32 info_class)
 static NTStatus
 NotifyInfo(RDConnectionRef conn, NTHandle handle, uint32 info_class, NOTIFY * p)
 {
-	struct fileinfo *pfinfo;
+	RDFileInfo *pfinfo;
 	struct stat buf;
 	struct dirent *dp;
 	char *fullname;
@@ -1036,10 +1032,10 @@ FsVolumeInfo(char *fpath)
 
 
 NTStatus
-disk_query_volume_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, RDStreamRef out)
+disk_query_volume_information(RDConnectionRef conn, NTHandle handle, uint32 info_class, RDStreamRef outStream)
 {
 	struct STATFS_T stat_fs;
-	struct fileinfo *pfinfo;
+	RDFileInfo *pfinfo;
 	FsInfoType *fsinfo;
 
 	pfinfo = &(conn->fileInfo[handle]);
@@ -1055,34 +1051,33 @@ disk_query_volume_information(RDConnectionRef conn, NTHandle handle, uint32 info
 	switch (info_class)
 	{
 		case FileFsVolumeInformation:
+			
+			out_uint32_le(outStream, 0);	/* volume creation time low */
+			out_uint32_le(outStream, 0);	/* volume creation time high */
+			out_uint32_le(outStream, fsinfo->serial);	/* serial */
 
-			out_uint32_le(out, 0);	/* volume creation time low */
-			out_uint32_le(out, 0);	/* volume creation time high */
-			out_uint32_le(out, fsinfo->serial);	/* serial */
+			out_uint32_le(outStream, 2 * strlen(fsinfo->label));	/* length of string */
 
-			out_uint32_le(out, 2 * strlen(fsinfo->label));	/* length of string */
-
-			out_uint8(out, 0);	/* support objects? */
-			rdp_out_unistr(out, fsinfo->label, 2 * strlen(fsinfo->label) - 2);
+			out_uint8(outStream, 0);	/* support objects? */
+			rdp_out_unistr(outStream, fsinfo->label, 2 * strlen(fsinfo->label) - 2);
 			break;
 
 		case FileFsSizeInformation:
-
-			out_uint32_le(out, stat_fs.f_blocks);	/* Total allocation units low */
-			out_uint32_le(out, 0);	/* Total allocation high units */
-			out_uint32_le(out, stat_fs.f_bfree);	/* Available allocation units */
-			out_uint32_le(out, 0);	/* Available allowcation units */
-			out_uint32_le(out, stat_fs.f_bsize / 0x200);	/* Sectors per allocation unit */
-			out_uint32_le(out, 0x200);	/* Bytes per sector */
+			out_uint32_le(outStream, stat_fs.f_blocks);	/* Total allocation units low */
+			out_uint32_le(outStream, 0);	/* Total allocation high units */
+			out_uint32_le(outStream, stat_fs.f_bfree);	/* Available allocation units */
+			out_uint32_le(outStream, 0);	/* Available allowcation units */
+			out_uint32_le(outStream, stat_fs.f_bsize / 0x200);	/* Assume 512 sectors per allocation unit */
+			out_uint32_le(outStream, 0x200);	/* Assume 512 bytes per sector */
 			break;
 
 		case FileFsAttributeInformation:
 
-			out_uint32_le(out, FS_CASE_SENSITIVE | FS_CASE_IS_PRESERVED);	/* fs attributes */
-			out_uint32_le(out, F_NAMELEN(stat_fs));	/* max length of filename */
+			out_uint32_le(outStream, FS_CASE_SENSITIVE | FS_CASE_IS_PRESERVED);	/* fs attributes */
+			out_uint32_le(outStream, F_NAMELEN(stat_fs));	/* max length of filename */
 
-			out_uint32_le(out, 2 * strlen(fsinfo->type));	/* length of fs_type */
-			rdp_out_unistr(out, fsinfo->type, 2 * strlen(fsinfo->type) - 2);
+			out_uint32_le(outStream, 2 * strlen(fsinfo->type));	/* length of fs_type */
+			rdp_out_unistr(outStream, fsinfo->type, 2 * strlen(fsinfo->type) - 2);
 			break;
 
 		case FileFsLabelInformation:
@@ -1101,7 +1096,7 @@ disk_query_volume_information(RDConnectionRef conn, NTHandle handle, uint32 info
 }
 
 NTStatus
-disk_query_directory(RDConnectionRef conn, NTHandle handle, uint32 info_class, char *pattern, RDStreamRef out)
+disk_query_directory(RDConnectionRef conn, NTHandle handle, uint32 info_class, char *pattern, RDStreamRef outStream)
 {
 	uint32 file_attributes, ft_low, ft_high;
 	const char *dirname;
@@ -1109,7 +1104,7 @@ disk_query_directory(RDConnectionRef conn, NTHandle handle, uint32 info_class, c
 	DIR *pdir;
 	struct dirent *pdirent;
 	struct stat fstat;
-	struct fileinfo *pfinfo;
+	RDFileInfo *pfinfo;
 
 	pfinfo = &(conn->fileInfo[handle]);
 	pdir = pfinfo->pdir;
@@ -1152,7 +1147,7 @@ disk_query_directory(RDConnectionRef conn, NTHandle handle, uint32 info_class, c
 						/* Fatal error. By returning STATUS_NO_SUCH_FILE, 
 						   the directory list operation will be aborted */
 						perror(fullpath);
-						out_uint8(out, 0);
+						out_uint8(outStream, 0);
 						return STATUS_NO_SUCH_FILE;
 				}
 			}
@@ -1167,34 +1162,32 @@ disk_query_directory(RDConnectionRef conn, NTHandle handle, uint32 info_class, c
 				file_attributes |= FILE_ATTRIBUTE_READONLY;
 
 			/* Return requested information */
-			out_uint8s(out, 8);	/* unknown zero */
+			out_uint8s(outStream, 8);	/* unknown zero */
 
 			seconds_since_1970_to_filetime(get_create_time(&fstat), &ft_high, &ft_low);
-			out_uint32_le(out, ft_low);	/* create time */
-			out_uint32_le(out, ft_high);
+			out_uint32_le(outStream, ft_low);	/* create time */
+			out_uint32_le(outStream, ft_high);
 
 			seconds_since_1970_to_filetime(fstat.st_atime, &ft_high, &ft_low);
-			out_uint32_le(out, ft_low);	/* last_access_time */
-			out_uint32_le(out, ft_high);
+			out_uint32_le(outStream, ft_low);	/* last_access_time */
+			out_uint32_le(outStream, ft_high);
 
 			seconds_since_1970_to_filetime(fstat.st_mtime, &ft_high, &ft_low);
-			out_uint32_le(out, ft_low);	/* last_write_time */
-			out_uint32_le(out, ft_high);
+			out_uint32_le(outStream, ft_low);	/* last_write_time */
+			out_uint32_le(outStream, ft_high);
 
 			seconds_since_1970_to_filetime(fstat.st_ctime, &ft_high, &ft_low);
-			out_uint32_le(out, ft_low);	/* change_write_time */
-			out_uint32_le(out, ft_high);
+			out_uint32_le(outStream, ft_low);	/* change_write_time */
+			out_uint32_le(outStream, ft_high);
 
-			out_uint32_le(out, fstat.st_size);	/* filesize low */
-			out_uint32_le(out, 0);	/* filesize high */
-			out_uint32_le(out, fstat.st_size);	/* filesize low */
-			out_uint32_le(out, 0);	/* filesize high */
-			out_uint32_le(out, file_attributes);
-			out_uint8(out, 2 * strlen(pdirent->d_name) + 2);	/* unicode length */
-			out_uint8s(out, 7);	/* pad? */
-			out_uint8(out, 0);	/* 8.3 file length */
-			out_uint8s(out, 2 * 12);	/* 8.3 unicode length */
-			rdp_out_unistr(out, pdirent->d_name, 2 * strlen(pdirent->d_name));
+			out_uint64_le(outStream, fstat.st_size);	/* filesize */
+			out_uint64_le(outStream, fstat.st_size);	/* filesize */
+			out_uint32_le(outStream, file_attributes);
+			out_uint8(outStream, 2 * strlen(pdirent->d_name) + 2);	/* unicode length */
+			out_uint8s(outStream, 7);	/* pad? */
+			out_uint8(outStream, 0);	/* 8.3 file length */
+			out_uint8s(outStream, 2 * 12);	/* 8.3 unicode length */
+			rdp_out_unistr(outStream, pdirent->d_name, 2 * strlen(pdirent->d_name));
 			break;
 
 		default:

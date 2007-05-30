@@ -143,8 +143,7 @@ NSArray * filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 	NSString *filename, *type, *extension, *hfsFileType;	
 	while ((filename = [fileEnumerator nextObject]))
 	{
-		hfsFileType = [NSHFSTypeOfFile(filename) stringByTrimmingCharactersInSet:
-					[NSCharacterSet characterSetWithCharactersInString:@" '"]];
+		hfsFileType = [NSHFSTypeOfFile(filename) stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" '"]];
 		extension = [filename pathExtension];
 		for (i = 0; i < typeCount; i++)
 		{
@@ -161,21 +160,24 @@ NSArray * filter_filenames(NSArray *unfilteredFiles, NSArray *types)
 }
 
 
-// Converts a NSArray of NSStrings to an array of C-strings. You are responsible to free the returned array of pointers (but not the C-strings themselves as they are autoreleased).
-char ** convert_string_array(NSArray *conv)
+// Converts a NSArray of NSStrings to an array of C-strings. Everything created is put into the autorelease pool.
+char ** convert_string_array(NSArray *stringArray)
 {
-	int count, i = 0;
-	if (conv != nil && (count = [conv count]) > 0)
-	{
-		char **strings = malloc(sizeof(char *) * count);
-		NSEnumerator *enumerator = [conv objectEnumerator];
-		id o;
-		while ( (o = [enumerator nextObject]) )
-			strings[i++] = (char *)[[o description] UTF8String]; // xxx: does rdesktop want cString or utf-8 for device labels?
-		return strings;
-	}
+	int i = 0;
+	if ([stringArray count] == 0)
+		return NULL;
+
+	NSMutableData *data = [NSMutableData dataWithLength:(sizeof(char *) * [stringArray count])];
+	char **cStringPtrArray = (char **)[data mutableBytes];
 	
-	return NULL;
+	NSEnumerator *enumerator = [stringArray objectEnumerator];
+	id o;
+	
+	while ( (o = [enumerator nextObject]) )
+		cStringPtrArray[i++] = (char *)[[o description] cString];
+	
+	
+	return cStringPtrArray;
 }
 
 inline void set_attributed_string_color(NSMutableAttributedString *as, NSColor *color)

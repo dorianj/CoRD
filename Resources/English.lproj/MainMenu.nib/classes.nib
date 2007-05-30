@@ -35,7 +35,6 @@
             LANGUAGE = ObjC; 
             OUTLETS = {
                 "gui_addNewButton" = NSButton; 
-                "gui_cacheBitmaps" = NSButton; 
                 "gui_colorCount" = NSPopUpButton; 
                 "gui_connectButton" = NSButton; 
                 "gui_consoleSession" = NSButton; 
@@ -45,6 +44,7 @@
                 "gui_enableAnimations" = NSButton; 
                 "gui_enableThemes" = NSButton; 
                 "gui_forwardDisks" = NSButton; 
+                "gui_forwardPrinters" = NSButton; 
                 "gui_host" = NSTextField; 
                 "gui_inspector" = NSWindow; 
                 "gui_inspectorButton" = NSButton; 

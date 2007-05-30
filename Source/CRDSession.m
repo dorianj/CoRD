@@ -55,6 +55,7 @@
 	cellRepresentation = [[CRDServerCell alloc] init];
 	[cellRepresentation setImage:[AppController sharedDocumentIcon]];
 	
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(redirectedFileHasDataAvailable:) name:NSFileHandleDataAvailableNotification object:nil];
 	
 	[self setStatus:CRDConnectionClosed];
 	
@@ -120,8 +121,7 @@
 {
 	if (streamEvent == NSStreamEventErrorOccurred)
 	{
-		[g_appController performSelectorOnMainThread:@selector(disconnectInstance:)
-				withObject:self waitUntilDone:NO];
+		[g_appController performSelectorOnMainThread:@selector(disconnectInstance:) withObject:self waitUntilDone:NO];
 		return;
 	}
 
@@ -137,8 +137,7 @@
 		s = rdp_recv(conn, &type);
 		if (s == NULL)
 		{
-			[g_appController performSelectorOnMainThread:@selector(disconnectInstance:)
-					withObject:self waitUntilDone:NO];
+			[g_appController performSelectorOnMainThread:@selector(disconnectInstance:) withObject:self waitUntilDone:NO];
 			return;
 		}
 		
@@ -194,11 +193,9 @@
 	
 	// Set status to connecting. Do on main thread so that the cell's progress
 	//	indicator timer is on the main thread.
-	[self performSelectorOnMainThread:@selector(setStatusAsNumber:)
-			withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
+	[self performSelectorOnMainThread:@selector(setStatusAsNumber:) withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
 	
-	[g_appController performSelectorOnMainThread:@selector(validateControls)
-			withObject:nil waitUntilDone:NO];
+	[g_appController performSelectorOnMainThread:@selector(validateControls) withObject:nil waitUntilDone:NO];
 
 	// RDP5 performance flags
 	int performanceFlags = RDP5_DISABLE_NOTHING;
@@ -232,9 +229,9 @@
 	
 	// Set remote keymap to match local OS X input type
 	conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
-	/*
+	
 	// Set up disk redirection
-	if (forwardDisks && !DISK_FORWARDING_DISABLED)
+	if (forwardDisks)
 	{
 		NSArray *localDrives = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
 		NSMutableArray *validDrives = [NSMutableArray arrayWithCapacity:5];
@@ -256,14 +253,11 @@
 	}
 	
 	// Set up printer redirection
-	if ( USE_PRINTER_FORWARDING)
+	if (forwardPrinters)
 	{
-		NSArray *printers = [NSPrinter printerNames];
+		printer_enum_devices(conn);
+	}
 	
-	
-		printer_enum_devices(conn, convert_string_array(printers), [printers count]);
-	}	
-	*/
 	
 	rdpdr_init(conn);
 	cliprdr_init(conn);
@@ -352,7 +346,6 @@
 	[pool release];
 	[self release];
 }
-
 
 #pragma mark -
 #pragma mark Working with the input run loop
@@ -474,7 +467,7 @@
 #pragma mark Working with the represented file
 
 // This probably isn't safe to call from anywhere other than initWith.. in its current form
-- (BOOL) readRDPFile:(NSString *)path
+- (BOOL)readRDPFile:(NSString *)path
 {
 	if ([path length] == 0 || ![[NSFileManager defaultManager] isReadableFileAtPath:path])
 		return NO;
@@ -528,6 +521,8 @@
 				consoleSession = numVal;
 			else if ([name isEqualToString:@"redirectdrives"])
 				forwardDisks = numVal;
+			else if ([name isEqualToString:@"redirectprinters"])
+				forwardPrinters = numVal;
 			else if ([name isEqualToString:@"disable wallpaper"])
 				drawDesktop = !numVal;
 			else if ([name isEqualToString:@"disable full window drag"])
@@ -592,7 +587,7 @@
 }
 
 // Saves all of the current settings to a Microsoft RDC client compatible file
-- (BOOL) writeRDPFile:(NSString *)path
+- (BOOL)writeRDPFile:(NSString *)path
 {
 	#define write_int(n, v)	 [o appendString:[NSString stringWithFormat:@"%@:i:%d\r\n", (n), (v)]]
 	#define write_string(n, v) [o appendString:[NSString stringWithFormat:@"%@:s:%@\r\n", (n), (v) ? (v) : @""]]
@@ -604,6 +599,7 @@
 	
 	write_int(@"connect to console", consoleSession);
 	write_int(@"redirectdrives", forwardDisks);
+	write_int(@"redirectprinters", forwardPrinters);
 	write_int(@"disable wallpaper", !drawDesktop);
 	write_int(@"disable full window drag", !windowDrags);
 	write_int(@"disable menu anims", !windowAnimation);

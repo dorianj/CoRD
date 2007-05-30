@@ -43,8 +43,10 @@ get_printer_id(RDConnectionRef conn, NTHandle handle)
 }
 
 void
-printer_enum_devices(RDConnectionRef conn, char **printerNames, int printerCount)
+printer_enum_devices(RDConnectionRef conn)
 {
+
+/*
 	RDPrinterInfo *pprinter_data;
 	int i;
 	
@@ -72,7 +74,7 @@ printer_enum_devices(RDConnectionRef conn, char **printerNames, int printerCount
 		
 		conn->rdpdrDevice[conn->numDevices].device_type = DEVICE_TYPE_PRINTER;
 		conn->rdpdrDevice[conn->numDevices].pdevice_data = (void *) pprinter_data;
-	}
+	}*/
 }
 
 static NTStatus

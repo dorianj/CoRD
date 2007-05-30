@@ -102,7 +102,7 @@ int parallel_enum_devices(RDConnectionRef conn, uint32 * id, char *optarg);
 
 #pragma mark -
 #pragma mark printer.c
-void printer_enum_devices(RDConnectionRef conn, char **printerNames, int printerCount);
+void printer_enum_devices(RDConnectionRef conn);
 
 #pragma mark -
 #pragma mark printercache.c
@@ -177,9 +177,8 @@ RDBOOL process_redirect_pdu(RDConnectionRef conn, RDStreamRef s);
 int get_device_index(RDConnectionRef conn, NTHandle handle);
 void convert_to_unix_filename(char *filename);
 RDBOOL rdpdr_init(RDConnectionRef conn);
-void rdpdr_add_fds(RDConnectionRef conn, int *n, fd_set * rfds, fd_set * wfds, struct timeval *tv, RDBOOL * timeout);
-struct async_iorequest *rdpdr_remove_iorequest(RDConnectionRef conn, struct async_iorequest *prev, struct async_iorequest *iorq);
-void rdpdr_check_fds(RDConnectionRef conn, fd_set * rfds, fd_set * wfds, RDBOOL timed_out);
+RDAsynchronousIORequest *rdpdr_remove_iorequest(RDConnectionRef conn, uint32 fd, RDAsynchronousIORequest *requestToRemove);
+void rdpdr_io_available_event(RDConnectionRef conn, uint32 file, RDAsynchronousIORequest *iorq);
 RDBOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status);
 
 #pragma mark -

@@ -1,4 +1,4 @@
-/*
+ /*
    rdesktop: A Remote Desktop Protocol client.
    Master include file
    Copyright (C) Matthew Chapman 1999-2005
@@ -94,7 +94,6 @@
 #elif defined(__BIG_ENDIAN__)
 	#define B_ENDIAN
 #endif
-
 
 
 // Alignment is needed on PPC, but not x86

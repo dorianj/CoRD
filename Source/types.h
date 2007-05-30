@@ -37,6 +37,8 @@ typedef unsigned short uint16;
 typedef signed short sint16;
 typedef unsigned int uint32;
 typedef signed int sint32;
+typedef unsigned long long uint64; 
+typedef signed long long sint64; 
 
 typedef CRDBitmap * RDBitmapRef;
 typedef CRDBitmap * RDGlyphRef;
@@ -211,7 +213,21 @@ typedef struct notify_data
 }
 NOTIFY;
 
-typedef struct fileinfo
+
+typedef struct _DEVICE_FNS DEVICE_FNS;
+
+// Used to store incoming io request, until they are ready to be completed using a linked list ensures that they are processed in the right order, if multiple ios are being done on the same fd
+typedef struct _RDAsynchronousIORequest
+{
+	uint32 fd, major, minor, offset, device, fid, length, partial_len, aborted;
+	uint8 *buffer;
+	DEVICE_FNS *fns;
+	
+	NSFileHandle *fileHandle;
+	struct _RDAsynchronousIORequest *next;
+} RDAsynchronousIORequest;
+
+typedef struct _RDFileInfo
 {
 	uint32 device_id, flags_and_attributes, accessmask;
 	char path[PATH_MAX];
@@ -221,24 +237,12 @@ typedef struct fileinfo
 	RDBOOL delete_on_close;
 	NOTIFY notify;
 	uint32 info_class;
-}
-FILEINFO;
+	RDAsynchronousIORequest *firstIORequest;
+} RDFileInfo;
 
-typedef struct _DEVICE_FNS DEVICE_FNS;
 
-/* Used to store incoming io request, until they are ready to be completed */
-/* using a linked list ensures that they are processed in the right order, */
-/* if multiple ios are being done on the same fd */
-struct async_iorequest
-{
-	uint32 fd, major, minor, offset, device, fid, length, partial_len;
-	long timeout,		/* Total timeout */
-		itv_timeout;		/* Interval timeout (between serial characters) */
-	uint8 *buffer;
-	DEVICE_FNS *fns;
-	
-	struct async_iorequest *next;	/* next element in list */
-};
+
+
 
 #import "orders.h"
 
@@ -290,12 +294,12 @@ struct RDConnection
 	unsigned int numChannels, numDevices;
 	int clipboardRequestType;
 	NTHandle minTimeoutFd;
-	FILEINFO fileInfo[0x100];		// MAX_OPEN_FILES taken from disk.h
+	RDFileInfo fileInfo[0x100];		// MAX_OPEN_FILES taken from disk.h
 	RDRedirectedDevice rdpdrDevice[0x10];	//RDPDR_MAX_DEVICES taken from constants.h
 	RDVirtualChannel channels[6];
 	RDVirtualChannel *rdpdrChannel;
 	RDVirtualChannel *cliprdrChannel;
-	struct async_iorequest *ioRequest;
+	RDAsynchronousIORequest *ioRequest;
 	char *printerNames[255];
 	
 	// MCS/licence

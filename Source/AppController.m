@@ -1158,6 +1158,7 @@
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)		forKey:@"themes"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)		forKey:@"savePassword"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)		forKey:@"forwardDisks"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)	forKey:@"forwardPrinters"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)	forKey:@"consoleSession"];
 	
 	// Text fields
@@ -1206,8 +1207,7 @@
 	}
 	else
 	{
-		[gui_inspector setTitle:[NSLocalizedString(@"Inspector: ", @"Inspector -> Enabled title")
-				stringByAppendingString:[newSettings label]]];
+		[gui_inspector setTitle:[NSLocalizedString(@"Inspector: ", @"Inspector -> Enabled title") stringByAppendingString:[newSettings label]]];
 	}
 		
 	// All checkboxes 
@@ -1217,6 +1217,7 @@
 	[gui_enableThemes		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"themes"])];
 	[gui_savePassword		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"savePassword"])];
 	[gui_forwardDisks		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"forwardDisks"])];
+	[gui_forwardPrinters	setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"forwardPrinters"])];
 	[gui_consoleSession		setState:NUMBER_AS_BSTATE([newSettings valueForKey:@"consoleSession"])];
 	
 	// Most of the text fields
