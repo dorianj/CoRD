@@ -70,6 +70,7 @@ inline void set_attributed_string_color(NSMutableAttributedString *as, NSColor *
 inline void set_attributed_string_font(NSMutableAttributedString *as, NSFont *font);
 inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
 	unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
+inline NSString *CRDTemporaryFile(void);
 
 // AppController specific
 NSToolbarItem * create_static_toolbar_item(NSString *name, NSString *label, NSString *tooltip, SEL action);

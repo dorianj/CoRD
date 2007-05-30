@@ -45,7 +45,8 @@ typedef CRDBitmap * RDGlyphRef;
 typedef unsigned int * RDColorMapRef;
 typedef CRDBitmap * RDCursorRef;
 
-typedef struct RDConnection * RDConnectionRef;
+typedef struct _RDConnection RDConnection;
+typedef struct _RDConnection * RDConnectionRef;
 
 typedef struct _RDPoint
 {
@@ -196,11 +197,11 @@ typedef struct _RDParallelDevice
 
 typedef struct _RDPrinterInfo
 {
-	FILE *printer_fp;
-	char *driver, *printer;
-	uint32 bloblen;
-	uint8 *blob;
-	RDBOOL default_printer;
+	PMPrinter printer;
+	BOOL isDefaultPrinter;
+	char *rdpDriver, *rdpName;
+	uint32 rdpBlobLen;
+	uint8 *rdpBlob;
 } RDPrinterInfo;
 
 // xxx: won't be needed
@@ -262,7 +263,7 @@ typedef enum _RDConnectionError
 	ConnectionErrorCanceled = 4
 } RDConnectionError;
 
-struct RDConnection
+struct _RDConnection
 {
 	// Connection settings
 	char username[64];

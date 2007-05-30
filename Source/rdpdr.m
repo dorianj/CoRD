@@ -164,13 +164,13 @@ announcedata_size(RDConnectionRef conn)
 		if (conn->rdpdrDevice[i].device_type == DEVICE_TYPE_PRINTER)
 		{
 			printerinfo = (RDPrinterInfo *) conn->rdpdrDevice[i].pdevice_data;
-			printerinfo->bloblen =
-				printercache_load_blob(printerinfo->printer, &(printerinfo->blob));
+			printerinfo->rdpBlobLen =
+				printercache_load_blob(printerinfo->rdpName, &(printerinfo->rdpBlob));
 
 			size += 0x18;
-			size += 2 * strlen(printerinfo->driver) + 2;
-			size += 2 * strlen(printerinfo->printer) + 2;
-			size += printerinfo->bloblen;
+			size += 2 * strlen(printerinfo->rdpDriver) + 2;
+			size += 2 * strlen(printerinfo->rdpName) + 2;
+			size += printerinfo->rdpBlobLen;
 		}
 	}
 
@@ -204,22 +204,22 @@ rdpdr_send_available(RDConnectionRef conn)
 			case DEVICE_TYPE_PRINTER:
 				printerinfo = (RDPrinterInfo *) conn->rdpdrDevice[i].pdevice_data;
 
-				driverlen = 2 * strlen(printerinfo->driver) + 2;
-				printerlen = 2 * strlen(printerinfo->printer) + 2;
-				bloblen = printerinfo->bloblen;
+				driverlen = 2 * strlen(printerinfo->rdpDriver) + 2;
+				printerlen = 2 * strlen(printerinfo->rdpName) + 2;
+				bloblen = printerinfo->rdpBlobLen;
 
 				out_uint32_le(s, 24 + driverlen + printerlen + bloblen);	/* length of extra info */
-				out_uint32_le(s, printerinfo->default_printer ? 2 : 0);
+				out_uint32_le(s, printerinfo->isDefaultPrinter ? 2 : 0);
 				out_uint8s(s, 8);	/* unknown */
 				out_uint32_le(s, driverlen);
 				out_uint32_le(s, printerlen);
 				out_uint32_le(s, bloblen);
-				rdp_out_unistr(s, printerinfo->driver, driverlen - 2);
-				rdp_out_unistr(s, printerinfo->printer, printerlen - 2);
-				out_uint8a(s, printerinfo->blob, bloblen);
+				rdp_out_unistr(s, printerinfo->rdpDriver, driverlen - 2);
+				rdp_out_unistr(s, printerinfo->rdpName, printerlen - 2);
+				out_uint8a(s, printerinfo->rdpBlob, bloblen);
 
-				if (printerinfo->blob)
-					xfree(printerinfo->blob);	/* Blob is sent twice if reconnecting */
+				if (printerinfo->rdpBlob)
+					xfree(printerinfo->rdpBlob);	/* Blob is sent twice if reconnecting */
 				break;
 			default:
 				out_uint32(s, 0);

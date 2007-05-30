@@ -180,7 +180,7 @@
 		return NO;
 		
 	free(conn);
-	conn = malloc(sizeof(struct RDConnection));
+	conn = malloc(sizeof(RDConnection));
 	fill_default_connection(conn);
 	conn->controller = self;
 	
@@ -331,7 +331,7 @@
 			}
 		}
 		
-		memset(conn, 0, sizeof(struct RDConnection));
+		memset(conn, 0, sizeof(RDConnection));
 		free(conn);
 		conn = NULL;
 		

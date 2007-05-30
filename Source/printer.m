@@ -18,73 +18,62 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#import "CRDShared.h"
 #import "rdesktop.h"
 #import "Carbon/Carbon.h"
 #import "sys/fcntl.h"
 
 static NTStatus printer_create(RDConnectionRef conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition, uint32 flags, char *filename, NTHandle * handle);
-static int get_printer_id(RDConnectionRef conn, NTHandle handle);
 static NTStatus printer_close(RDConnectionRef conn, NTHandle handle);
 static NTStatus printer_write(RDConnectionRef conn, NTHandle handle, uint8 * data, uint32 length, uint32 offset, uint32 * result);
 
 
-
-static int
-get_printer_id(RDConnectionRef conn, NTHandle handle)
-{
-	int index;
-
-	for (index = 0; index < RDPDR_MAX_DEVICES; index++)
-	{
-		if (handle == conn->rdpdrDevice[index].handle)
-			return index;
-	}
-	return -1;
-}
-
 void
 printer_enum_devices(RDConnectionRef conn)
 {
-
-/*
-	RDPrinterInfo *pprinter_data;
-	int i;
+	CFArrayRef printerList;
 	
-	for (i = 0; i < printerCount; i++, conn->numDevices++)
+	PMServerCreatePrinterList(kPMServerLocal, &printerList);
+	
+	for (int i = 0; i < CFArrayGetCount(printerList); i++, conn->numDevices++)
 	{
-		printf("Adding printer %s\n", printerNames[i]);
-		
-		
-		
-		pprinter_data = (RDPrinterInfo *) xmalloc(sizeof(RDPrinterInfo));
-	
-		strcpy(conn->rdpdrDevice[conn->numDevices].name, "PRN");
-		strcat(conn->rdpdrDevice[conn->numDevices].name, l_to_a(i + 1, 10));
-		
+		PMPrinter printer = (void *)CFArrayGetValueAtIndex(printerList, i);
+		const char *printerName = [[NSString stringWithString:(NSString *)PMPrinterGetName(printer)] cString];
 
-		pprinter_data->default_printer = (i == 0);
+		RDRedirectedDevice *device = &conn->rdpdrDevice[conn->numDevices];
+		RDPrinterInfo *printerInfo = (RDPrinterInfo *) xmalloc(sizeof(RDPrinterInfo));
 		
-		conn->printerNames[i] = malloc(strlen(printerNames[i])+1);
-		pprinter_data->printer = malloc(strlen(printerNames[i])+1);
-		strcpy(pprinter_data->printer, printerNames[i]);
-		strcpy(conn->printerNames[i], printerNames[i]);
+		printerInfo->printer = printer;
 		
-		pprinter_data->driver = malloc(strlen("HP Color LaserJet 8500 PS")+1);
-		strcpy(pprinter_data->driver, "HP Color LaserJet 8500 PS");
+		printerInfo->rdpName = xmalloc(strlen(printerName)+1);
+		strcpy(printerInfo->rdpName, printerName);
 		
-		conn->rdpdrDevice[conn->numDevices].device_type = DEVICE_TYPE_PRINTER;
-		conn->rdpdrDevice[conn->numDevices].pdevice_data = (void *) pprinter_data;
-	}*/
+		strcpy(device->name, "PRN");
+		strcat(device->name, l_to_a(i + 1, 10));
+		
+		const char *driverName = "HP Color LaserJet 8500 PS";
+		printerInfo->rdpDriver = xmalloc(strlen(driverName)+1);
+		strcpy(printerInfo->rdpDriver, driverName);
+		
+		device->device_type = DEVICE_TYPE_PRINTER;
+		device->handle = 0;
+		device->local_path = NULL;
+		device->pdevice_data = (void *)printerInfo;
+	}
 }
 
 static NTStatus
 printer_create(RDConnectionRef conn, uint32 device_id, uint32 access, uint32 share_mode, uint32 disposition, uint32 flags, char *filename, NTHandle * handle)
 {	
-
-	asprintf(&conn->rdpdrDevice[device_id].local_path, "/tmp/CoRD_PrintFile%d-%d.eps", device_id, time(NULL));
-	int fd = open(conn->rdpdrDevice[device_id].local_path, O_RDWR | O_TRUNC | O_APPEND | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH);
+	RDRedirectedDevice *device = &conn->rdpdrDevice[device_id];
+	const char *tempPath = [[CRDTemporaryFile() stringByAppendingString:@".eps"] cStringUsingEncoding:NSASCIIStringEncoding];
 	
-	*handle = conn->rdpdrDevice[device_id].handle = fd;
+	device->local_path = xmalloc(strlen(tempPath)+1);
+	strcpy(device->local_path, tempPath);
+	
+	int fd = open(tempPath, O_RDWR | O_TRUNC | O_APPEND | O_CREAT, S_IRWXU | S_IRGRP | S_IROTH);
+	
+	*handle = device->handle = fd;
 	
 	return STATUS_SUCCESS;
 }
@@ -92,27 +81,37 @@ printer_create(RDConnectionRef conn, uint32 device_id, uint32 access, uint32 sha
 static NTStatus
 printer_close(RDConnectionRef conn, NTHandle handle)
 {
-	int device_id = get_printer_id(conn, handle);
+	RDRedirectedDevice *device = &conn->rdpdrDevice[get_device_index(conn, handle)];
+	RDPrinterInfo *printerInfo = (void *)device->pdevice_data;
+	
+	// Close the temp file
 	close(handle);
 	
+	// Create printing environment variables, send to printer
 	PMPrintSession currentSession;
 	PMCreateSession(&currentSession);
 	
-	PMPrinter currentPrinter;
-	PMSessionGetCurrentPrinter(currentSession, &currentPrinter);
+	PMPrintSettings printSettings;
+	PMCreatePrintSettings(&printSettings);
+	PMSessionDefaultPrintSettings(currentSession, printSettings);
 	
-	PMPrintSettings defaultPrintSettings;
-	PMCreatePrintSettings(&defaultPrintSettings);
+	PMPageFormat pageFormat;
+	PMCreatePageFormat(&pageFormat);
+	PMSessionDefaultPageFormat(currentSession, pageFormat);
 	
-	PMPageFormat defaultPageFormat;
-	PMCreatePageFormat(&defaultPageFormat);
+	CFURLRef filePath = CFURLCreateFromFileSystemRepresentation(NULL, (void *)device->local_path, strlen(device->local_path), false);
 	
+	OSStatus err =  PMPrinterPrintWithFile(printerInfo->printer, printSettings, pageFormat, CFStringCreateWithCString(NULL, "application/postscript", kCFStringEncodingASCII), filePath);
+
+	NSLog(@"Err was %d", err);
+
+	PMRelease(currentSession);
+	PMRelease(printSettings);
+	PMRelease(pageFormat);
+	CFRelease(filePath);
 	
-	CFURLRef filePath = CFURLCreateFromFileSystemRepresentation(NULL, (const unsigned char *)conn->rdpdrDevice[device_id].local_path, strlen(conn->rdpdrDevice[device_id].local_path), NO);
-	
-	OSStatus err =  PMPrinterPrintWithFile(currentPrinter, defaultPrintSettings, defaultPageFormat, CFStringCreateWithCString(NULL, "application/postscript", kCFStringEncodingASCII), filePath);
-	
-	remove(conn->rdpdrDevice[device_id].local_path);
+	// Delete the temp file
+	remove(device->local_path);
 	
 	return STATUS_SUCCESS;
 }

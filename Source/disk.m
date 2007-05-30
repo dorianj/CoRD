@@ -312,7 +312,7 @@ disk_enum_devices(RDConnectionRef conn, char ** paths, char **names, int count)
 {
 	int i;
 	
-	for (i=0;i<count;i++, conn->numDevices++)
+	for (i = 0 ; i < count; i++, conn->numDevices++)
 	{	
 		strncpy(conn->rdpdrDevice[conn->numDevices].name,names[i], sizeof(conn->rdpdrDevice[conn->numDevices].name) -1);
 		if (strlen(names[i]) > (sizeof(conn->rdpdrDevice[conn->numDevices].name) -1 ))

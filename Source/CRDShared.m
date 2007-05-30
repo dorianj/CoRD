@@ -202,6 +202,16 @@ inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
 	return ie;
 }
 
+inline NSString *CRDTemporaryFile(void)
+{
+	NSString *baseDir = NSTemporaryDirectory();
+	
+	if (baseDir == nil)
+		baseDir = @"/tmp";
+		
+	return [baseDir stringByAppendingPathComponent:[NSString stringWithFormat:@"CoRD-TemporaryFile-%u-%u", time(NULL), rand()]];
+}
+
 
 #pragma mark -
 #pragma mark AppController specific
