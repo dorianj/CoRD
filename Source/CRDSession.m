@@ -176,9 +176,10 @@
 		while (connectionStatus == CRDConnectionDisconnecting)
 			usleep(1000);
 	}
-	else if (connectionStatus != CRDConnectionClosed)
+	
+	if (connectionStatus != CRDConnectionClosed)
 		return NO;
-		
+	
 	free(conn);
 	conn = malloc(sizeof(RDConnection));
 	CRDFillDefaultConnection(conn);
@@ -214,7 +215,7 @@
 	conn->rdp5PerformanceFlags = performanceFlags;
 	
 
-	// Simple heuristic to guess if use wants to auto log-in
+	// Simple heuristic to guess if user wants to auto log-in
 	int logonFlags = RDP_LOGON_NORMAL;
 	if ([username length] > 0 && ([password length] > 0 || savePassword))
 		logonFlags |= RDP_LOGON_AUTO;
@@ -307,6 +308,9 @@
 	[self setStatus:CRDConnectionDisconnecting];
 	if (connectionRunLoopFinished || [block boolValue])
 	{
+		// Try to break out of the run loop
+		[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
+		
 		while (!connectionRunLoopFinished)
 			usleep(1000);
 			
@@ -370,13 +374,14 @@
 			[pool release];
 			pool = [[NSAutoreleasePool alloc] init];
 		}
-		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
 	
+	// Cleanup of this thread
 	if (conn != NULL)
 		[(id)conn->inputStream removeFromRunLoop:connectionRunLoop forMode:NSDefaultRunLoopMode];
 	
-	
+	[connectionRunLoop removePort:inputEventPort forMode:(NSString *)kCFRunLoopCommonModes];
 	connectionRunLoopFinished = YES;
 	
 	[pool release];
@@ -860,11 +865,11 @@
         CRDInputEvent *ie = [[inputEventStack objectAtIndex:0] pointerValue];
         [inputEventStack removeObjectAtIndex:0];
 		if (ie != NULL)
-		{
 			[self sendInputOnConnectionThread:ie->time type:ie->type flags:ie->deviceFlags param1:ie->param1 param2:ie->param2];
-			free(ie);
-		}
-    };
+		
+		free(ie);
+    }
+	
     [inputEventLock unlock];
 }
 
@@ -874,8 +879,8 @@
 	if (inputEventStack != nil)
 		return;
 
-	connectionThread = [[NSThread currentThread] retain];
-	connectionRunLoop  = [[NSRunLoop currentRunLoop] retain];
+	connectionThread = [NSThread currentThread];
+	connectionRunLoop  = [NSRunLoop currentRunLoop];
 	inputEventStack = [[NSMutableArray alloc] init];
 	inputEventLock = [[NSLock alloc] init];
 

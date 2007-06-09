@@ -147,9 +147,8 @@
 
 - (void)reshape
 {
-    NSRect rect = [self bounds];
-    rect.size = [self convertSize:rect.size toView:nil];
-    glViewport(0.0, 0.0, NSWidth(rect), NSHeight(rect));
+    NSSize newSize = [self convertSize:[self bounds].size toView:nil];
+    glViewport(0.0, 0.0, newSize.width, newSize.height);
 }
 
 
