@@ -22,10 +22,8 @@
 @interface CRDBitmap : NSObject
 {
 	NSImage *image;
-	NSBitmapImageRep *bitmap;
 	NSData *data;
 	NSCursor *cursor;
-	unsigned char *planes[2];
 	NSColor *color;
 }
 

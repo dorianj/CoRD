@@ -129,7 +129,7 @@
 	
 	[self setNeedsDisplay:YES];
 	
-	if (  (oldSelection != selectedRow) )
+	if (oldSelection != selectedRow)
 		[[NSNotificationCenter defaultCenter] postNotificationName:NSTableViewSelectionDidChangeNotification object:self];	
 }
 
@@ -172,7 +172,7 @@
 		return nil;
 	
 	NSRect rowRect = [self rectOfRow:row];	
-	NSImage *dragImage = [[NSImage alloc] initWithSize:rowRect.size];
+	NSImage *dragImage = [[[NSImage alloc] initWithSize:rowRect.size] autorelease];
 	[dragImage setFlipped:YES];
 	
 	[dragImage lockFocus];
@@ -184,13 +184,23 @@
 		
 		BOOL highlighted = [[self cellForRow:row] isHighlighted];
 		[[self cellForRow:row] setHighlighted:NO];
-		[[self cellForRow:row] drawWithFrame:RECT_FROM_SIZE(rowRect.size) inView:nil];
+		[[self cellForRow:row] drawWithFrame:RECT_FROM_SIZE([dragImage size]) inView:nil];
 		[[self cellForRow:row] setHighlighted:highlighted];
 		
 	} [dragImage unlockFocus];
 	
+	// Get it into a 60% opaque image. xxx: This is ugly.
+	NSImage *dragImage2 = [[NSImage alloc] initWithSize:rowRect.size];
+	[dragImage2 lockFocus];
+	{
+		NSAffineTransform *xform = [NSAffineTransform transform];
+		[xform translateXBy:0.0 yBy:rowRect.size.height];
+		[xform scaleXBy:1.0 yBy:-1.0];
+		[xform concat]; 
+		[dragImage drawAtPoint:NSZeroPoint fromRect:(NSRect){NSZeroPoint, [dragImage size]} operation:NSCompositeCopy fraction:0.6];
+	} [dragImage2 unlockFocus];
 
-	return [dragImage autorelease];
+	return [dragImage2 autorelease];
 }
 
 - (BOOL)canDragRowsWithIndexes:(NSIndexSet *)rowIndexes atPoint:(NSPoint)mouseDownPoint

@@ -792,7 +792,7 @@
 		
 		NSArray *allowedItems = [toolbarItems allKeys];
 			
-		return [menuExtras arrayByAddingObjectsFromArray:allowedItems];
+		return [extras arrayByAddingObjectsFromArray:allowedItems];
 }
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)tb
@@ -1777,7 +1777,10 @@
 - (void) listUpdated
 {	
 	[gui_serverList noteNumberOfRowsChanged];
-	[gui_serverList setNeedsDisplay:YES];
+	
+	if ([self serverInstanceForRow:[gui_serverList selectedRow]] == nil)
+		[gui_serverList selectRow:-1];
+	
 	
 	
 	// Update servers menu

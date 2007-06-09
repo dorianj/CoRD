@@ -17,7 +17,7 @@
 
 /*	Notes:
 		- The ivar 'data' is used because NSBitmapImageRep does not copy the bitmap data.
-		- The stored bitmap is ARGB8888 with alpha data regardless if source has alpha as a memory-speed tradeoff: vImage can convert RGB565 directly only to ARGB8888. Also, (to my knowledge from inspecting Shark dumps), Quartz will translate whatever we paint into a 32 bitmap internally, so there's no disadvantage there.
+		- The stored bitmap (for non cursors/glyphs) is ARGB8888 regardless of source type for simplicity.
 		- Using an accelerated buffer would speed up drawing. An option could be used for the situations where an NSImage is required. My tests on a machine with a capable graphics card show that CGImage would speed normal drawing up about 30-40%, and CGLayer would be 2-12 times quicker. The hassle is that some situations, a normal NSImage is needed (eg: when using the image as a pattern for NSColor and patblt), so it would either have to create both or have a switch for which to create, and neither CGImage nor CGLayer have a way to draw only a portion of itself, meaning the only way to do it is clip drawing to match the origin. I've written some basic code to use CFLayer, but it needs more work before I commit it.
 */
 
@@ -81,7 +81,6 @@
 	}
 	else if (bitsPerPixel == 15)
 	{
-		// vImage won't let us set the alpha channel to one  (it reads it as ARGB1555, not paddded RGB555)
 		while (p < end)
 		{
 			unsigned short c = p[0] | (p[1] << 8);
@@ -97,7 +96,6 @@
 	}
 	else if (bitsPerPixel == 24 || bitsPerPixel == 32)
 	{
-		// No use for vimage here.
 		while (p < end)
 		{
 			nc[0] = 255;
@@ -112,10 +110,9 @@
 	
 	data = [[NSData alloc] initWithBytesNoCopy:(void *)outputBitmap length:newLength];
 	
-	planes[0] = (unsigned char *)[data bytes];
-	planes[1] = NULL;
+	unsigned char *planes[2] = {(unsigned char *)[data bytes], NULL};
 	
-	bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
+	NSBitmapImageRep *bitmap = [[[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
 													 pixelsWide:width
 													 pixelsHigh:height
 												  bitsPerSample:8
@@ -125,7 +122,7 @@
 												 colorSpaceName:NSDeviceRGBColorSpace
 												   bitmapFormat:NSAlphaFirstBitmapFormat
 													bytesPerRow:width * 4
-												   bitsPerPixel:32];
+												   bitsPerPixel:32] autorelease];
 
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
@@ -143,9 +140,10 @@
 	int width = s.width, height = s.height, scanline = ((int)width + 7) / 8;
 	
 	data = [[NSData alloc] initWithBytes:d length:scanline * height];
-	planes[0] = planes[1] = (unsigned char *)[data bytes];
+
+	unsigned char *planes[2] = {(unsigned char *)[data bytes], (unsigned char *)[data bytes]};
 	
-	bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
+	NSBitmapImageRep *bitmap = [[[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
 													 pixelsWide:width
 													 pixelsHigh:height
 												  bitsPerSample:1
@@ -154,13 +152,12 @@
 													   isPlanar:YES
 												 colorSpaceName:NSDeviceBlackColorSpace
 													bytesPerRow:scanline
-												   bitsPerPixel:0];	
+												   bitsPerPixel:0] autorelease];	
 	
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
 	[self setColor:[NSColor blackColor]];
-	
 	
 	return self;
 }
@@ -211,12 +208,10 @@
 		p += 3;
 		np += 4;
 	}
-		
-	planes[0] = (unsigned char *)[data bytes];
-	planes[1] = NULL;
 	
+	unsigned char *planes[2] = {(unsigned char *)[data bytes], NULL};
 	
-	bitmap = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
+	NSBitmapImageRep *bitmap = [[[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
 													 pixelsWide:s.width
 													 pixelsHigh:s.height
 												  bitsPerSample:8
@@ -225,7 +220,7 @@
 													   isPlanar:NO
 												 colorSpaceName:NSDeviceRGBColorSpace
 													bytesPerRow:scanline * 4
-												   bitsPerPixel:0];	
+												   bitsPerPixel:0] autorelease];	
 	
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
@@ -269,7 +264,6 @@
 {
 	[cursor release];
 	[image release];
-	[bitmap release];
 	[data release];
 	[color release];
 	[super dealloc];
