@@ -109,9 +109,9 @@ inline BOOL CRDDrawerIsVisible(NSDrawer *drawer)
 	return ([drawer state] == NSDrawerOpenState) || ([drawer state] == NSDrawerOpeningState);
 }
 
-inline const char * CRDSafeUTF8String(NSString *str)
+inline const char * CRDMakeWindowsString(NSString *str)
 {
-	return (str != nil) ? [str UTF8String] : "";
+	return (str != nil) ? [str cStringUsingEncoding:NSWindowsCP1250StringEncoding] : "";
 }
 
 inline void CRDCreateDirectory(NSString *path)
@@ -172,7 +172,7 @@ char ** CRDMakeCStringArray(NSArray *stringArray)
 	id o;
 	
 	while ( (o = [enumerator nextObject]) )
-		cStringPtrArray[i++] = (char *)[[o description] cString];
+		cStringPtrArray[i++] = (char *)[[o description] UTF8String];
 	
 	
 	return cStringPtrArray;
