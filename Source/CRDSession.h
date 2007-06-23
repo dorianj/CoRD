@@ -115,8 +115,7 @@
 - (CRDConnectionStatus)status;
 - (NSWindow *)window;
 
-- (void)setLabel:(NSString *)s;
-- (void)setHostName:(NSString *)s;
+- (void)setHostName:(NSString *)newHost;
 - (void)setUsername:(NSString *)s;
 - (void)setPassword:(NSString *)pass;
 @end

@@ -113,7 +113,7 @@
 	NSSize qcSize = [gui_quickConnect frame].size;
 	[quickConnectItem setMinSize:NSMakeSize(160.0, qcSize.height)];
 	[quickConnectItem setMaxSize:NSMakeSize(160.0, qcSize.height)];
-	[quickConnectItem setLabel:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label")];
+	[quickConnectItem setValue:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label") forKey:@"label"];
 	[quickConnectItem setToolTip:NSLocalizedString(@"Quick Connect Tooltip", @"Quick Connect toolbar item -> tooltip")];
 	
 	toolbarItems = [[NSMutableDictionary alloc] init];
@@ -294,7 +294,7 @@
 		
 	[inst setTemporary:NO];
 	[inst setFilename:path];
-	[inst setLabel:[[path lastPathComponent] stringByDeletingPathExtension]];
+	[inst setValue:[[path lastPathComponent] stringByDeletingPathExtension] forKey:@"label"];
 	[inst flushChangesToFile];
 	
 	[self addSavedServer:inst];
@@ -769,6 +769,7 @@
 - (IBAction)sortSavedServersAlphabetically:(id)sender
 {
 	[self sortSavedServersAlphabetically];
+	[self storeSavedServerPositions];
 	[self listUpdated];
 }
 
@@ -831,7 +832,7 @@
 				: NSLocalizedString(@"Unified", @"Display Mode toolbar item -> Unified label");
 				
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
-		[toolbarItem setLabel:localizedLabel];	
+		[toolbarItem setValue:localizedLabel forKey:@"label"];	
 	}
 	else if ([itemId isEqualToString:TOOLBAR_DISCONNECT])
 	{
@@ -841,7 +842,7 @@
 				: NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> Disconnect label");
 				
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
-		[toolbarItem setLabel:localizedLabel];
+		[toolbarItem setValue:localizedLabel forKey:@"label"];
 		return ([inst status] == CRDConnectionConnecting) || 
 				( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
 	}
@@ -1342,6 +1343,19 @@
 	[inst writeToFile:[sheet filename] atomically:YES updateFilenames:NO];
 }
 
+// xxx probably should be private
+- (CRDSession *)serverInstanceForRow:(int)row
+{
+	int connectedCount = [connectedServers count];
+	int savedCount = [savedServers count];
+	if ( (row <= 0) || (row == 1+connectedCount) || (row > 1 + connectedCount + savedCount) )
+		return nil;
+	else if (row <= connectedCount)
+		return [connectedServers objectAtIndex:row-1];
+	else 
+		return [savedServers objectAtIndex:row - connectedCount - 2];
+}
+
 
 #pragma mark -
 #pragma mark Accessors
@@ -1403,51 +1417,25 @@
 		return [self serverInstanceForRow:[gui_serverList selectedRow]];
 }
 
-
 #pragma mark -
-#pragma mark Application-wide resources
+#pragma mark KVO
 
-+ (NSImage *)sharedDocumentIcon
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-	static NSImage *s_documentIcon = nil;
-	
-	if (s_documentIcon == nil)
+	if ([keyPath isEqualToString:@"label"])
 	{
-		// The stored icon is loaded flipped for whatever reason, so flip it back
-		NSImage *icon = [NSImage imageNamed:@"rdp document.icns"];
-		s_documentIcon = [[NSImage alloc] initWithSize:[icon size]];
-		[icon setFlipped:YES];
-		[s_documentIcon lockFocus];
+		NSString *newLabel = [change objectForKey:NSKeyValueChangeNewKey];
+		if ( ([newLabel length] > 0) && ![newLabel isEqual:[change objectForKey:NSKeyValueChangeOldKey]] && ![object temporary])
 		{
-			[icon drawInRect:CRDRectFromSize([icon size]) fromRect:CRDRectFromSize([icon size]) operation:NSCompositeSourceOver fraction:1.0];
-		} [s_documentIcon unlockFocus];
-	}
-	
-	return s_documentIcon;
-}
-
-+ (NSString *)savedServersPath
-{
-	static NSString *s_savedServersPath = nil;
-	
-	if (s_savedServersPath == nil)
-	{
-		s_savedServersPath = [[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoRD/Servers"];
+			NSString *newPath = CRDFindAvailableFileName([AppController savedServersPath], newLabel, @".rdp");
+			
+			[[NSFileManager defaultManager] movePath:[object filename] toPath:newPath handler:nil];
+			
+			[object setFilename:newPath];
+		}
 	}
 
-	return s_savedServersPath;
-}
 
-- (CRDSession *)serverInstanceForRow:(int)row
-{
-	int connectedCount = [connectedServers count];
-	int savedCount = [savedServers count];
-	if ( (row <= 0) || (row == 1+connectedCount) || (row > 1 + connectedCount + savedCount) )
-		return nil;
-	else if (row <= connectedCount)
-		return [connectedServers objectAtIndex:row-1];
-	else 
-		return [savedServers objectAtIndex:row - connectedCount - 2];
 }
 
 @end
@@ -1956,6 +1944,8 @@
 	
 	if (select)
 		[gui_serverList selectRow:(2 + [connectedServers count] + [savedServers indexOfObjectIdenticalTo:inst])];
+		
+	[inst addObserver:self forKeyPath:@"label" options:(NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld) context:NULL];
 }
 
 - (void)removeSavedServer:(CRDSession *)inst deleteFile:(BOOL)deleteFile
@@ -1965,6 +1955,8 @@
 		[inst clearKeychainData];
 		[[NSFileManager defaultManager] removeFileAtPath:[inst filename] handler:nil];
 	}
+	
+	[inst removeObserver:self forKeyPath:@"label"];
 	
 	[savedServers removeObject:inst];
 	
@@ -1996,6 +1988,43 @@
 	
 	while ( (inst = [enumerator nextObject]) )
 		[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObject:inst]] forKey:@"preferredRowIndex"];	
+}
+
+@end
+
+#pragma mark -
+
+@implementation AppController (SharedResources)
+
++ (NSImage *)sharedDocumentIcon
+{
+	static NSImage *s_documentIcon = nil;
+	
+	if (s_documentIcon == nil)
+	{
+		// The stored icon is loaded flipped for whatever reason, so flip it back
+		NSImage *icon = [NSImage imageNamed:@"rdp document.icns"];
+		s_documentIcon = [[NSImage alloc] initWithSize:[icon size]];
+		[icon setFlipped:YES];
+		[s_documentIcon lockFocus];
+		{
+			[icon drawInRect:CRDRectFromSize([icon size]) fromRect:CRDRectFromSize([icon size]) operation:NSCompositeSourceOver fraction:1.0];
+		} [s_documentIcon unlockFocus];
+	}
+	
+	return s_documentIcon;
+}
+
++ (NSString *)savedServersPath
+{
+	static NSString *s_savedServersPath = nil;
+	
+	if (s_savedServersPath == nil)
+	{
+		s_savedServersPath = [[[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoRD/Servers"] retain];
+	}
+
+	return s_savedServersPath;
 }
 
 @end

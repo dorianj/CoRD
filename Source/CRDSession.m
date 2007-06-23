@@ -588,6 +588,8 @@
 			[cellRepresentation setImage:base];
 		}
 	}
+	
+	[g_appController cellNeedsDisplay:cellRepresentation];
 }
 
 - (void)createWindow:(BOOL)useScrollView
@@ -793,9 +795,13 @@
 
 - (void)setFilename:(NSString *)path
 {
-	[path retain];
-	[rdpFilename release];
-	rdpFilename = path;
+	if ([path isEqualToString:rdpFilename])
+		return;
+			
+	[self willChangeValueForKey:@"rdpFilename"];
+	[rdpFilename autorelease];
+	rdpFilename = [path copy];
+	[self didChangeValueForKey:@"rdpFilename"];
 }
 
 - (BOOL)temporary
@@ -805,7 +811,12 @@
 
 - (void)setTemporary:(BOOL)temp
 {
+	if (temp == temporary)
+		return;
+		
+	[self willChangeValueForKey:@"temporary"];
 	temporary = temp;
+	[self didChangeValueForKey:@"temporary"];
 	[self updateCellData];
 }
 
@@ -834,38 +845,58 @@
 	return window;
 }
 
-// Do a few simple setters that would otherwise be caught by key-value coding so that updateCellData can be called and keychain data can be updated. Keychain data must be done here and not at save time because the keychain item might already exist so it has to be edited, not created.
-- (void)setLabel:(NSString *)s
-{
+// KVC/KVO compliant setters that are used to propagate changes to the keychain item
+
+- (void)setLabel:(NSString *)newLabel
+{	
+	if ([newLabel isEqualToString:label])
+		return;
+	
 	[label autorelease];
-	label = [s retain];
+	label = [newLabel copy];
 	[self updateCellData];
 }
 
-- (void)setHostName:(NSString *)s
-{
-	[self updateKeychainData:s user:username password:password force:NO];
+- (void)setHostName:(NSString *)newHost
+{	
+	if ([newHost isEqualToString:hostName])
+		return;
+		
+	[self updateKeychainData:newHost user:username password:password force:NO];
+	
 	[hostName autorelease];
-	hostName = [s retain];
+	hostName = [newHost copy];
 	[self updateCellData];
 }
 
-- (void)setUsername:(NSString *)s
+- (void)setUsername:(NSString *)newUser
 {
+	if ([newUser isEqualToString:username])
+		return;
+
+	[self updateKeychainData:hostName user:newUser password:password force:NO];
+	
 	[username autorelease];
-	username = [s retain];
+	username = [newUser copy];
 	[self updateCellData];
 }
 
-- (void)setPassword:(NSString *)pass
+- (void)setPassword:(NSString *)newPassword
 {
-	[self updateKeychainData:hostName user:username password:pass force:NO];
-	[password autorelease];
-	password = [pass retain];
+	if ([newPassword isEqualToString:password])
+		return;
+		
+	[self updateKeychainData:hostName user:username password:newPassword force:NO];
+	
+	[newPassword autorelease];
+	password = [newPassword copy];
 }
 
 - (void)setPort:(int)newPort
 {
+	if (port == newPort)
+		return;
+		
 	port = newPort;
 	[self updateCellData];
 }
@@ -885,7 +916,6 @@
 #pragma mark -
 
 @implementation CRDSession (Private)
-
 
 #pragma mark -
 #pragma mark Represented file
@@ -1016,8 +1046,7 @@
 // Force makes it save data to keychain regardless if it has changed. savePassword  is always respected.
 - (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force
 {
-	if (savePassword && (force || ![hostName isEqualToString:newHost] || 
-		![username isEqualToString:newUser] || ![password isEqualToString:newPassword]) )
+	if (savePassword && (force || ![hostName isEqualToString:newHost] || ![username isEqualToString:newUser] || ![password isEqualToString:newPassword]) )
 	{
 		keychain_update_password([hostName UTF8String], [username UTF8String], [newHost UTF8String], [newUser UTF8String], [newPassword UTF8String]);
 	}

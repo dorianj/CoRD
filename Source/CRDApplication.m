@@ -27,7 +27,7 @@
 
 - (void)sendEvent:(NSEvent *)ev
 {
-	#define viewIsFocused ([[v window] isKeyWindow] && [[v window] isMainWindow] && ([[v window] firstResponder] == v) )
+	#define viewIsFocused ( [[v window] isKeyWindow] && [[v window] isMainWindow] && ([[v window] firstResponder] == v) )
 	
 	CRDSessionView *v = [[g_appController viewedServer] view];
 

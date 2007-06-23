@@ -120,9 +120,13 @@
 - (void)holdSavedServer:(int)row;
 - (void)reinsertHeldSavedServer:(int)intoRow;
 
+
+
+@end
+
+@interface AppController (SharedResources)
 + (NSImage *)sharedDocumentIcon;
 + (NSString *)savedServersPath;
-
 @end
 
 
