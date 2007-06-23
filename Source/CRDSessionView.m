@@ -80,6 +80,13 @@
 
 - (void)drawRect:(NSRect)rect
 {
+	if (![self openGLContext])
+	{
+		[[NSColor blackColor] set];
+		NSRectFill(rect);
+		return;	
+	}
+	
 	[self generateTexture];
 	
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -461,7 +468,7 @@
 
 - (void)resetClip
 {
-	clipRect = RECT_FROM_SIZE(screenSize);
+	clipRect = CRDRectFromSize(screenSize);
 }
 
 
@@ -651,7 +658,7 @@
 - (void)setScreenSize:(NSSize)newSize
 {
 	screenSize = newSize;
-	[self setBounds:RECT_FROM_SIZE(screenSize)];
+	[self setBounds:CRDRectFromSize(screenSize)];
 	
 	[self destroyBackingStore];
 	[self createBackingStore:screenSize];

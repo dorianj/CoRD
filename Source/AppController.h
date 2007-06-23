@@ -99,9 +99,9 @@
 - (IBAction)toggleServerListMinimal:(id)sender;
 - (IBAction)performDisconnect:(id)sender;
 - (IBAction)saveSelectedServer:(id)sender;
+- (IBAction)sortSavedServersAlphabetically:(id)sender;
 
-// Other methods, in no particular order
-- (void)validateControls;
+// Other methods are in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;
 
 - (void)connectInstance:(CRDSession *)inst;

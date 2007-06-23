@@ -49,9 +49,11 @@
 	- (void)addSavedServer:(CRDSession *)inst;
 	- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index;
 	- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index select:(BOOL)select;
-	- (void)sortSavedServers;
-	- (void)storeSavedServerPositions;
 	- (void)removeSavedServer:(CRDSession *)inst deleteFile:(BOOL)deleteFile;
+	- (void)sortSavedServersByStoredListPosition;
+	- (void)sortSavedServersAlphabetically;
+	- (void)storeSavedServerPositions;
+	- (void)validateControls;
 @end
 
 
@@ -150,52 +152,43 @@
 	
 	[gui_unifiedWindow setToolbar:gui_toolbar];
 
-
 	
-	// Load saved servers from the CoRD Application Support folder
+	// Assure that the app support directory exists
+	NSString *appSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
 	
-	NSFileManager *fileManager = [NSFileManager defaultManager];
-	
-	// Assure that the CoRD application support folder is created, locate and store other useful paths
-	NSString *appSupport = 
-		[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
-			NSUserDomainMask, YES) objectAtIndex:0];
-	NSString *cordDirectory = [[appSupport stringByAppendingPathComponent:@"CoRD"] retain];
-	
-	CRDCreateDirectory(cordDirectory);
+	CRDCreateDirectory([appSupport stringByAppendingPathComponent:@"CoRD"]);
 	CRDCreateDirectory([AppController savedServersPath]);
-
-	// Read each .rdp file
-	CRDSession *rdpinfo;
-	NSString *path;
-	NSArray *files = [fileManager directoryContentsAtPath:[AppController savedServersPath]];
+	
+	
+	// Load servers from the saved servers directory
+	CRDSession *savedSession;
+	NSArray *files = [[NSFileManager defaultManager] directoryContentsAtPath:[AppController savedServersPath]];
 	NSEnumerator *enumerator = [files objectEnumerator];
 	id filename;
 	while ( (filename = [enumerator nextObject]) )
 	{
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
-			path = [[AppController savedServersPath] stringByAppendingPathComponent:filename];
-			rdpinfo = [[CRDSession alloc] initWithRDPFile:path];
-			if (rdpinfo != nil)
-				[self addSavedServer:rdpinfo];
+			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
+			if (savedSession != nil)
+				[self addSavedServer:savedSession];
 			else
 				NSLog(@"RDP file '%@' failed to load!", filename);
 				
-			[rdpinfo release];
+			[savedSession release];
 		}
 	}
 	
 	[gui_serverList deselectAll:nil];
-	[self sortSavedServers];
+	[self sortSavedServersByStoredListPosition];
 	[self storeSavedServerPositions];
 	
 	
-	// Register for drag operations.
+	// Register for drag operations
 	NSArray *types = [NSArray arrayWithObjects:CRDRowIndexPboardType, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
 	[gui_serverList registerForDraggedTypes:types];
 
-	// Custom gui settings not accessable from IB
+	// Custom interface settings not accessable from IB
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 	[gui_unifiedWindow setExcludedFromWindowsMenu:YES];
@@ -300,9 +293,9 @@
 			NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
 		
 	[inst setTemporary:NO];
-	[inst setRdpFilename:path];
+	[inst setFilename:path];
 	[inst setLabel:[[path lastPathComponent] stringByDeletingPathExtension]];
-	[inst writeRDPFile:nil];
+	[inst flushChangesToFile];
 	
 	[self addSavedServer:inst];
 	
@@ -541,8 +534,8 @@
 	[gui_fullScreenWindow setInitialFirstResponder:serverView];
 	[gui_tabView release];	
 
-	[gui_tabView setFrame:RECT_FROM_SIZE([serverView bounds].size)];
-	[serverView setFrame:RECT_FROM_SIZE([serverView bounds].size)];
+	[gui_tabView setFrame:CRDRectFromSize([serverView bounds].size)];
+	[serverView setFrame:CRDRectFromSize([serverView bounds].size)];
 	
 	[gui_fullScreenWindow startFullScreen];
 
@@ -567,7 +560,7 @@
 	NSSize contentSize = [[gui_unifiedWindow contentView] frame].size;
 	
 	// Autosizing will get screwed up if the size is bigger than the content view
-	[gui_tabView setFrame:RECT_FROM_SIZE(contentSize)];
+	[gui_tabView setFrame:CRDRectFromSize(contentSize)];
 	
 	[[gui_unifiedWindow contentView] addSubview:gui_tabView];
 	[gui_tabView release];
@@ -773,6 +766,13 @@
 	[savePanel beginSheetForDirectory:nil file:[[inst label] stringByAppendingPathExtension:@"rdp"] modalForWindow:gui_unifiedWindow modalDelegate:self didEndSelector:@selector(savePanelDidEnd:returnCode:contextInfo:) contextInfo:inst];
 }
 
+- (IBAction)sortSavedServersAlphabetically:(id)sender
+{
+	[self sortSavedServersAlphabetically];
+	[self listUpdated];
+}
+
+
 #pragma mark -
 #pragma mark Toolbar methods
 
@@ -865,7 +865,7 @@
 	id file;
 	while ( (file = [enumerator nextObject]) )
 	{
-		CRDSession *inst = [[CRDSession alloc] initWithRDPFile:file];
+		CRDSession *inst = [[CRDSession alloc] initWithPath:file];
 		
 		if (inst != nil)
 		{
@@ -918,7 +918,7 @@
 	
 	while ( (inst = [enumerator nextObject]) )
 	{
-		[inst writeRDPFile:[inst rdpFilename]];
+		[inst flushChangesToFile];
 	}	
 }
 
@@ -1016,11 +1016,11 @@
 		
 		while ( (file = [enumerator nextObject]) )
 		{
-			inst = [[CRDSession alloc] initWithRDPFile:file];
+			inst = [[CRDSession alloc] initWithPath:file];
 			
 			if (inst != nil)
 			{
-				[inst setRdpFilename:CRDFindAvailableFileName([AppController savedServersPath], [inst label], @".rdp")];
+				[inst setFilename:CRDFindAvailableFileName([AppController savedServersPath], [inst label], @".rdp")];
 				[self addSavedServer:inst atIndex:insertIndex];
 			}
 			
@@ -1050,7 +1050,7 @@
 	int row = [rowIndexes firstIndex];
 	
 	[pboard declareTypes:[NSArray arrayWithObjects:CRDRowIndexPboardType, NSFilenamesPboardType, nil] owner:nil];
-	[pboard setPropertyList:[NSArray arrayWithObject:[inst rdpFilename]] forType:NSFilenamesPboardType];
+	[pboard setPropertyList:[NSArray arrayWithObject:[inst filename]] forType:NSFilenamesPboardType];
 	[pboard setString:[NSString stringWithFormat:@"%d", row] forType:CRDRowIndexPboardType];
 
 	return YES;
@@ -1086,7 +1086,7 @@
 
 		return;
 	} else {
-		[inspectedServer writeRDPFile:nil];	
+		[inspectedServer flushChangesToFile];	
 	}
 
 	[self setInspectorEnabled:YES];
@@ -1149,6 +1149,416 @@
 	// xxx: May be used to auto-center tab view items (otherwise an NSTabView subclass will be made)
 }
 
+
+#pragma mark -
+#pragma mark NSWindow delegate
+
+- (void)windowWillClose:(NSNotification *)sender
+{
+	if ([sender object] == gui_inspector)
+	{
+		[self fieldEdited:nil];
+		[self saveInspectedServer];
+
+		[self validateControls];
+		
+		if ( ([self viewedServer] == nil) && CRDDrawerIsVisible(gui_serversDrawer))
+			[gui_unifiedWindow makeFirstResponder:gui_serverList];
+	}
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)sender
+{
+	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
+	{
+		[[self viewedServer] announceNewClipboardData];
+	}
+}
+
+- (void)windowDidResignKey:(NSNotification *)sender
+{
+	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
+	{
+		[[self viewedServer] requestRemoteClipboardData];
+	}
+}
+
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
+{
+	if ( (sender == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) && ([self viewedServer] != nil) )
+	{
+		NSSize realSize = [[[self viewedServer] view] bounds].size;
+		realSize.height += [gui_unifiedWindow frame].size.height - [[gui_unifiedWindow contentView] frame].size.height;
+		if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) &&
+			 (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
+		{
+			return realSize;	
+		}
+	}
+	
+	return proposedFrameSize;
+}
+
+
+#pragma mark -
+#pragma mark Managing connected servers
+
+// Starting point to connect to a instance
+- (void)connectInstance:(CRDSession *)inst
+{
+	if (inst == nil)
+		return;
+	
+	if ([inst status] == CRDConnectionConnected)
+		[self disconnectInstance:inst];
+		
+	[inst retain];
+	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self withObject:inst];
+}
+
+// Assures that the passed instance is disconnected and removed from view.
+- (void)disconnectInstance:(CRDSession *)inst
+{
+	if (inst == nil || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
+		return;
+		
+	if (displayMode != CRDDisplayWindowed && [inst tabViewRepresentation] != nil)
+	{
+		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
+	}
+	
+	if ([inst status] == CRDConnectionConnected)
+		[inst disconnect];
+		
+	if ([[inst valueForKey:@"temporarilyFullscreen"] boolValue])
+	{
+		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"fullscreen"];
+		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"temporarilyFullscreen"];
+	}
+	
+
+	[[inst retain] autorelease];
+	[connectedServers removeObject:inst];
+	
+	if (![inst temporary])
+	{
+		// Move to saved servers
+		if ([inst filename] == nil)
+		{
+			NSString *path = CRDFindAvailableFileName([AppController savedServersPath], [inst label], @".rdp");
+
+			[inst writeToFile:path atomically:YES updateFilenames:YES];
+		}
+		
+		[self addSavedServer:inst atIndex:[[inst valueForKey:@"preferredRowIndex"] intValue] select:YES];
+	}
+	else
+	{
+		// If temporary and in the CoRD servers directory, delete it
+		if ( [[[inst filename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
+		{
+			[inst clearKeychainData];
+			[[NSFileManager defaultManager] removeFileAtPath:[inst filename] handler:nil];
+		}
+		
+		[gui_serverList deselectAll:self];
+	}
+
+	[self listUpdated];
+		
+	if ( (displayMode == CRDDisplayFullscreen) && ([gui_tabView numberOfTabViewItems] == 1) )
+	{
+		[self autosizeUnifiedWindowWithAnimation:NO];
+		[self endFullscreen:self];
+	}
+	else if (displayMode == CRDDisplayUnified)
+	{
+		[self autosizeUnifiedWindowWithAnimation:!isTerminating];
+		
+		if ([self viewedServer] == nil && CRDDrawerIsVisible(gui_serversDrawer))
+			[gui_unifiedWindow makeFirstResponder:gui_serverList];
+	}
+	else if (displayMode == CRDDisplayWindowed)
+	{
+		if ( ([connectedServers count] == 0) && ![gui_unifiedWindow isVisible])
+			[gui_unifiedWindow makeKeyAndOrderFront:nil];
+	}
+}
+
+- (void)cancelConnectingInstance:(CRDSession *)inst
+{
+	if ([inst status] != CRDConnectionConnecting)
+		return;
+	
+	[inst cancelConnection];
+	
+	[gui_serverList deselectAll:nil];
+	[connectedServers removeObject:inst];
+	inspectedServer = nil;
+	[self listUpdated];
+}
+
+#pragma mark -
+#pragma mark Support for dragging of saved servers
+
+- (void)holdSavedServer:(int)row
+{
+	CRDSession *inst = [self serverInstanceForRow:row];
+	int index = [savedServers indexOfObjectIdenticalTo:inst];
+	
+	if ( (inst == nil) || (index == NSNotFound) )
+		return;
+	
+	dumpedInstanceWasSelected = [self selectedServerInstance] == inst;
+	dumpedInstance = [inst retain];
+	[inst setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
+	
+	[savedServers removeObject:inst];
+}
+
+- (void)reinsertHeldSavedServer:(int)intoRow
+{
+	int index = (intoRow == -1) ? [[dumpedInstance valueForKey:@"preferredRowIndex"] intValue] : (intoRow - 2 - [connectedServers count]);
+	[self addSavedServer:dumpedInstance atIndex:index select:dumpedInstanceWasSelected];
+	[dumpedInstance setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
+}
+
+
+#pragma mark -
+#pragma mark Other
+
+- (BOOL)mainWindowIsFocused
+{
+	return [gui_unifiedWindow isMainWindow] && [gui_unifiedWindow isKeyWindow];
+}
+
+- (void)savePanelDidEnd:(NSSavePanel *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo
+{
+	CRDSession *inst = contextInfo;
+	
+	if ( (inst == nil) || (returnCode != NSOKButton) || ([[sheet filename] length] == 0) )
+		return;
+	
+	[inst writeToFile:[sheet filename] atomically:YES updateFilenames:NO];
+}
+
+
+#pragma mark -
+#pragma mark Accessors
+
+- (CRDDisplayMode)displayMode
+{
+	return displayMode;
+}
+
+- (NSWindow *)unifiedWindow
+{
+	return gui_unifiedWindow;
+}
+
+- (CRDFullScreenWindow *)fullScreenWindow
+{
+	return gui_fullScreenWindow;
+}
+
+// Returns the connected server that the tab view is displaying
+- (CRDSession *)viewedServer
+{
+	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
+	{
+		NSTabViewItem *selectedItem = [gui_tabView selectedTabViewItem];
+
+		if (selectedItem == nil)
+			return nil;
+			
+		NSEnumerator *enumerator = [connectedServers objectEnumerator];
+		id item;
+		
+		while ( (item = [enumerator nextObject]) )
+		{
+			if ([item tabViewRepresentation] == selectedItem)
+				return item;
+		}
+	}
+	else
+	{
+		NSEnumerator *enumerator = [connectedServers objectEnumerator];
+		CRDSession *inst;
+		
+		while ( (inst = [enumerator nextObject]) )
+		{
+			if ([[inst window] isMainWindow])
+				return inst;
+		}
+	}
+	
+	return nil;
+}
+
+- (CRDSession *)selectedServerInstance
+{
+	if (!CRDDrawerIsVisible(gui_serversDrawer))
+		return nil;
+	else
+		return [self serverInstanceForRow:[gui_serverList selectedRow]];
+}
+
+
+#pragma mark -
+#pragma mark Application-wide resources
+
++ (NSImage *)sharedDocumentIcon
+{
+	static NSImage *s_documentIcon = nil;
+	
+	if (s_documentIcon == nil)
+	{
+		// The stored icon is loaded flipped for whatever reason, so flip it back
+		NSImage *icon = [NSImage imageNamed:@"rdp document.icns"];
+		s_documentIcon = [[NSImage alloc] initWithSize:[icon size]];
+		[icon setFlipped:YES];
+		[s_documentIcon lockFocus];
+		{
+			[icon drawInRect:CRDRectFromSize([icon size]) fromRect:CRDRectFromSize([icon size]) operation:NSCompositeSourceOver fraction:1.0];
+		} [s_documentIcon unlockFocus];
+	}
+	
+	return s_documentIcon;
+}
+
++ (NSString *)savedServersPath
+{
+	static NSString *s_savedServersPath = nil;
+	
+	if (s_savedServersPath == nil)
+	{
+		s_savedServersPath = [[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoRD/Servers"];
+	}
+
+	return s_savedServersPath;
+}
+
+- (CRDSession *)serverInstanceForRow:(int)row
+{
+	int connectedCount = [connectedServers count];
+	int savedCount = [savedServers count];
+	if ( (row <= 0) || (row == 1+connectedCount) || (row > 1 + connectedCount + savedCount) )
+		return nil;
+	else if (row <= connectedCount)
+		return [connectedServers objectAtIndex:row-1];
+	else 
+		return [savedServers objectAtIndex:row - connectedCount - 2];
+}
+
+@end
+
+
+#pragma mark -
+
+@implementation AppController (Private)
+
+
+#pragma mark -
+#pragma mark General
+
+- (void) listUpdated
+{	
+	[gui_serverList noteNumberOfRowsChanged];
+	
+	if ([self serverInstanceForRow:[gui_serverList selectedRow]] == nil)
+		[gui_serverList selectRow:-1];
+	
+	
+	
+	// Update servers menu
+	int separatorIndex = [gui_serversMenu indexOfItemWithTag:SERVERS_SEPARATOR_TAG], i; 
+	
+	while ( (i = [gui_serversMenu numberOfItems]-1) > separatorIndex)
+		[gui_serversMenu removeItemAtIndex:i];
+	
+	NSMenuItem *menuItem;
+	NSEnumerator *enumerator;
+	CRDSession *inst;
+	
+	enumerator = [connectedServers objectEnumerator];
+	while ( (inst = [enumerator nextObject]) )
+	{
+		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
+					action:@selector(performServerMenuItem:) keyEquivalent:@""];
+		[menuItem setRepresentedObject:inst];
+		[gui_serversMenu addItem:menuItem];
+		[menuItem autorelease];
+	}
+	
+	enumerator = [savedServers objectEnumerator];
+	while ( (inst = [enumerator nextObject]) )
+	{
+		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
+					action:@selector(performServerMenuItem:) keyEquivalent:@""];
+		[menuItem setRepresentedObject:inst];
+		[gui_serversMenu addItem:menuItem];
+		[menuItem autorelease];
+	}
+}
+
+// Validates non-menu and toolbar interface items
+- (void)validateControls
+{
+	CRDSession *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	
+	[gui_connectButton setEnabled:(inst != nil && [inst status] == CRDConnectionClosed)];
+	[gui_inspectorButton setEnabled:(inst != nil)];
+}
+
+- (void)setInspectorEnabled:(BOOL)enabled
+{
+	[self toggleControlsEnabledInView:[gui_inspector contentView] enabled:enabled];
+	[gui_inspector display];
+}
+
+- (void)createWindowForInstance:(CRDSession *)inst
+{
+	[inst createWindow:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions)];
+	
+	NSWindow *window = [inst window];
+	[window cascadeTopLeftFromPoint:windowCascadePoint];
+	[window makeFirstResponder:[inst view]];
+	[window makeKeyAndOrderFront:self];
+}
+
+- (void) saveInspectedServer
+{
+	if ([inspectedServer modified])
+		[inspectedServer flushChangesToFile];
+}
+
+// Enables/disables non-inspector gui controls as needed
+- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled
+{
+	if ([view isKindOfClass:[NSControl class]])
+	{
+		if ([view isKindOfClass:[NSTextField class]] && ![(NSTextField *)view drawsBackground])
+		{
+			// setTextColor is buggy in 10.4, thus use white to get the greyed color while disabled
+			if (enabled)
+				[(NSTextField *)view setTextColor:[NSColor blackColor]];
+			else
+				[(NSTextField *)view setTextColor:[NSColor whiteColor]];
+
+		}
+		[(NSControl *)view setEnabled:enabled];
+	}
+	else
+	{
+		NSEnumerator *enumerator = [[view subviews] objectEnumerator];
+		id subview;
+		while ( (subview = [enumerator nextObject]) )
+		{
+			[self toggleControlsEnabledInView:subview enabled:enabled];
+		}
+	}
+	
+}
 
 #pragma mark -
 #pragma mark Managing inspector settings
@@ -1266,78 +1676,19 @@
 	#undef BUTTON_STATE_FOR_KEY
 }
 
-- (void) saveInspectedServer
+- (void)toggleDrawer:(id)sender visible:(BOOL)visible
 {
-	if ([inspectedServer modified])
-		[inspectedServer writeRDPFile:nil];
+	if (visible)
+		[gui_serversDrawer open];
+	else
+		[gui_serversDrawer close];
+	
+	[gui_toolbar validateVisibleItems];
 }
 
 
 #pragma mark -
-#pragma mark NSWindow delegate
-
-- (void)windowWillClose:(NSNotification *)sender
-{
-	if ([sender object] == gui_inspector)
-	{
-		[self fieldEdited:nil];
-		[self saveInspectedServer];
-
-		[self validateControls];
-		
-		if ( ([self viewedServer] == nil) && CRDDrawerIsVisible(gui_serversDrawer))
-			[gui_unifiedWindow makeFirstResponder:gui_serverList];
-	}
-}
-
-- (void)windowDidBecomeKey:(NSNotification *)sender
-{
-	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
-	{
-		[[self viewedServer] announceNewClipboardData];
-	}
-}
-
-- (void)windowDidResignKey:(NSNotification *)sender
-{
-	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
-	{
-		[[self viewedServer] requestRemoteClipboardData];
-	}
-}
-
-- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
-{
-	if ( (sender == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) && ([self viewedServer] != nil) )
-	{
-		NSSize realSize = [[[self viewedServer] view] bounds].size;
-		realSize.height += [gui_unifiedWindow frame].size.height - [[gui_unifiedWindow contentView] frame].size.height;
-		if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) &&
-			 (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
-		{
-			return realSize;	
-		}
-	}
-	
-	return proposedFrameSize;
-}
-
-
-#pragma mark -
-#pragma mark Managing connected servers
-
-// Starting point to connect to a instance
-- (void)connectInstance:(CRDSession *)inst
-{
-	if (inst == nil)
-		return;
-	
-	if ([inst status] == CRDConnectionConnected)
-		[self disconnectInstance:inst];
-		
-	[inst retain];
-	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self withObject:inst];
-}
+#pragma mark Connecting to servers asynchronously
 
 // Should only be called by connectInstance
 - (void)connectAsync:(CRDSession *)inst
@@ -1446,192 +1797,9 @@
 	}	
 }
 
-// Assures that the passed instance is disconnected and removed from view.
-- (void)disconnectInstance:(CRDSession *)inst
-{
-	if (inst == nil || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
-		return;
-		
-	if (displayMode != CRDDisplayWindowed && [inst tabViewRepresentation] != nil)
-	{
-		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
-	}
-	
-	if ([inst status] == CRDConnectionConnected)
-		[inst disconnect];
-		
-	if ([[inst valueForKey:@"temporarilyFullscreen"] boolValue])
-	{
-		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"fullscreen"];
-		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"temporarilyFullscreen"];
-	}
-	
-
-	[[inst retain] autorelease];
-	[connectedServers removeObject:inst];
-	
-	if (![inst temporary])
-	{
-		// Move to saved servers
-		if ([inst rdpFilename] == nil)
-		{
-			NSString *path = CRDFindAvailableFileName([AppController savedServersPath], [inst label], @".rdp");
-			[inst setRdpFilename:path];
-			[inst writeRDPFile:path];
-		}
-		
-		[self addSavedServer:inst atIndex:[[inst valueForKey:@"preferredRowIndex"] intValue] select:YES];
-	}
-	else
-	{
-		// If temporary and in the CoRD servers directory, delete it
-		if ( [[[inst rdpFilename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
-		{
-			[inst clearKeychainData];
-			[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
-		}
-		
-		[gui_serverList deselectAll:self];
-	}
-
-	[self listUpdated];
-		
-	if ( (displayMode == CRDDisplayFullscreen) && ([gui_tabView numberOfTabViewItems] == 1) )
-	{
-		[self autosizeUnifiedWindowWithAnimation:NO];
-		[self endFullscreen:self];
-	}
-	else if (displayMode == CRDDisplayUnified)
-	{
-		[self autosizeUnifiedWindowWithAnimation:!isTerminating];
-		
-		if ([self viewedServer] == nil && CRDDrawerIsVisible(gui_serversDrawer))
-			[gui_unifiedWindow makeFirstResponder:gui_serverList];
-	}
-	else if (displayMode == CRDDisplayWindowed)
-	{
-		if ( ([connectedServers count] == 0) && ![gui_unifiedWindow isVisible])
-			[gui_unifiedWindow makeKeyAndOrderFront:nil];
-	}
-}
-
-- (void)cancelConnectingInstance:(CRDSession *)inst
-{
-	if ([inst status] != CRDConnectionConnecting)
-		return;
-	
-	[inst cancelConnection];
-	
-	[gui_serverList deselectAll:nil];
-	[connectedServers removeObject:inst];
-	inspectedServer = nil;
-	[self listUpdated];
-}
-
 
 #pragma mark -
-#pragma mark Managing saved servers
-
-- (void)addSavedServer:(CRDSession *)inst
-{
-	[self addSavedServer:inst atIndex:[savedServers count] select:YES];
-}
-
-- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index
-{
-	[self addSavedServer:inst atIndex:index select:NO];
-}
-
-- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index select:(BOOL)select
-{
-	if ( (inst == nil) || (index < 0) || (index > [savedServers count]) )
-		return;
-	
-	[inst setTemporary:NO];
-	
-	index = MIN(MAX(index, 0), [savedServers count]);
-		
-	[savedServers insertObject:inst atIndex:index];
-	[gui_serverList noteNumberOfRowsChanged];
-	
-	if (select)
-		[gui_serverList selectRow:(2 + [connectedServers count] + [savedServers indexOfObjectIdenticalTo:inst])];
-}
-
-- (void)removeSavedServer:(CRDSession *)inst deleteFile:(BOOL)deleteFile
-{
-	if (deleteFile)
-	{
-		[inst clearKeychainData];
-		[[NSFileManager defaultManager] removeFileAtPath:[inst rdpFilename] handler:nil];
-	}
-	
-	[savedServers removeObject:inst];
-	
-	if (inspectedServer == inst)
-		inspectedServer = nil;
-	
-	[self listUpdated];
-}
-
-- (void)sortSavedServers
-{
-	[savedServers sortUsingSelector:@selector(compareUsingPreferredOrder:)];
-}
-
-- (void)storeSavedServerPositions
-{
-	NSEnumerator *enumerator = [savedServers objectEnumerator];
-	CRDSession *inst;
-	
-	while ( (inst = [enumerator nextObject]) )
-		[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObject:inst]] forKey:@"preferredRowIndex"];	
-}
-
-
-#pragma mark -
-#pragma mark Support for dragging of saved servers
-
-- (void)holdSavedServer:(int)row
-{
-	CRDSession *inst = [self serverInstanceForRow:row];
-	int index = [savedServers indexOfObjectIdenticalTo:inst];
-	
-	if ( (inst == nil) || (index == NSNotFound) )
-		return;
-	
-	dumpedInstanceWasSelected = [self selectedServerInstance] == inst;
-	dumpedInstance = [inst retain];
-	[inst setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
-	
-	[savedServers removeObject:inst];
-}
-
-- (void)reinsertHeldSavedServer:(int)intoRow
-{
-	int index = (intoRow == -1) ? [[dumpedInstance valueForKey:@"preferredRowIndex"] intValue] : (intoRow - 2 - [connectedServers count]);
-	[self addSavedServer:dumpedInstance atIndex:index select:dumpedInstanceWasSelected];
-	[dumpedInstance setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
-}
-
-
-#pragma mark -
-#pragma mark Other
-
-- (BOOL)mainWindowIsFocused
-{
-	return [gui_unifiedWindow isMainWindow] && [gui_unifiedWindow isKeyWindow];
-}
-
-- (void)toggleDrawer:(id)sender visible:(BOOL)visible
-{
-	if (visible)
-		[gui_serversDrawer open];
-	else
-		[gui_serversDrawer close];
-	
-	[gui_toolbar validateVisibleItems];
-}
+#pragma mark Autmatic window sizing
 
 - (void)autosizeUnifiedWindow
 {
@@ -1760,215 +1928,74 @@
 	[gui_unifiedWindow setFrame:newWindowFrame display:YES animate:animate];
 }
 
-- (void)savePanelDidEnd:(NSSavePanel *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo
+
+#pragma mark -
+#pragma mark Managing saved servers
+
+- (void)addSavedServer:(CRDSession *)inst
 {
-	CRDSession *inst = contextInfo;
-	
-	if ( (inst == nil) || (returnCode != NSOKButton) )
+	[self addSavedServer:inst atIndex:[savedServers count] select:YES];
+}
+
+- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index
+{
+	[self addSavedServer:inst atIndex:index select:NO];
+}
+
+- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index select:(BOOL)select
+{
+	if ( (inst == nil) || (index < 0) || (index > [savedServers count]) )
 		return;
 	
+	[inst setTemporary:NO];
 	
-	[inst writeRDPFile:[sheet filename]];
-}
-
-
-#pragma mark -
-#pragma mark Internal use
-- (void) listUpdated
-{	
+	index = MIN(MAX(index, 0), [savedServers count]);
+		
+	[savedServers insertObject:inst atIndex:index];
 	[gui_serverList noteNumberOfRowsChanged];
 	
-	if ([self serverInstanceForRow:[gui_serverList selectedRow]] == nil)
-		[gui_serverList selectRow:-1];
+	if (select)
+		[gui_serverList selectRow:(2 + [connectedServers count] + [savedServers indexOfObjectIdenticalTo:inst])];
+}
+
+- (void)removeSavedServer:(CRDSession *)inst deleteFile:(BOOL)deleteFile
+{
+	if (deleteFile)
+	{
+		[inst clearKeychainData];
+		[[NSFileManager defaultManager] removeFileAtPath:[inst filename] handler:nil];
+	}
 	
+	[savedServers removeObject:inst];
 	
+	if (inspectedServer == inst)
+		inspectedServer = nil;
 	
-	// Update servers menu
-	int separatorIndex = [gui_serversMenu indexOfItemWithTag:SERVERS_SEPARATOR_TAG], i; 
-	
-	while ( (i = [gui_serversMenu numberOfItems]-1) > separatorIndex)
-		[gui_serversMenu removeItemAtIndex:i];
-	
-	NSMenuItem *menuItem;
-	NSEnumerator *enumerator;
+	[self listUpdated];
+}
+
+- (void)sortSavedServersByStoredListPosition
+{
+	[savedServers sortUsingSelector:@selector(compareUsingPreferredOrder:)];
+}
+
+- (void)sortSavedServersAlphabetically
+{
+	NSArray *sortDescriptors = [NSArray arrayWithObjects:
+			[[[NSSortDescriptor alloc] initWithKey:@"label" ascending:YES] autorelease],
+			[[[NSSortDescriptor alloc] initWithKey:@"hostName" ascending:YES] autorelease],
+			[[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES] autorelease],
+			nil];
+	[savedServers sortUsingDescriptors:sortDescriptors];
+}
+
+- (void)storeSavedServerPositions
+{
+	NSEnumerator *enumerator = [savedServers objectEnumerator];
 	CRDSession *inst;
 	
-	enumerator = [connectedServers objectEnumerator];
 	while ( (inst = [enumerator nextObject]) )
-	{
-		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
-					action:@selector(performServerMenuItem:) keyEquivalent:@""];
-		[menuItem setRepresentedObject:inst];
-		[gui_serversMenu addItem:menuItem];
-		[menuItem autorelease];
-	}
-	
-	enumerator = [savedServers objectEnumerator];
-	while ( (inst = [enumerator nextObject]) )
-	{
-		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
-					action:@selector(performServerMenuItem:) keyEquivalent:@""];
-		[menuItem setRepresentedObject:inst];
-		[gui_serversMenu addItem:menuItem];
-		[menuItem autorelease];
-	}
+		[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObject:inst]] forKey:@"preferredRowIndex"];	
 }
-
-- (CRDSession *)serverInstanceForRow:(int)row
-{
-	int connectedCount = [connectedServers count];
-	int savedCount = [savedServers count];
-	if ( (row <= 0) || (row == 1+connectedCount) || (row > 1 + connectedCount + savedCount) )
-		return nil;
-	else if (row <= connectedCount)
-		return [connectedServers objectAtIndex:row-1];
-	else 
-		return [savedServers objectAtIndex:row - connectedCount - 2];
-}
-
-- (CRDSession *)selectedServerInstance
-{
-	if (!CRDDrawerIsVisible(gui_serversDrawer))
-		return nil;
-	else
-		return [self serverInstanceForRow:[gui_serverList selectedRow]];
-}
-
-// Returns the connected server that the tab view is displaying
-- (CRDSession *)viewedServer
-{
-	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
-	{
-		NSTabViewItem *selectedItem = [gui_tabView selectedTabViewItem];
-
-		if (selectedItem == nil)
-			return nil;
-			
-		NSEnumerator *enumerator = [connectedServers objectEnumerator];
-		id item;
-		
-		while ( (item = [enumerator nextObject]) )
-		{
-			if ([item tabViewRepresentation] == selectedItem)
-				return item;
-		}
-	}
-	else
-	{
-		NSEnumerator *enumerator = [connectedServers objectEnumerator];
-		CRDSession *inst;
-		
-		while ( (inst = [enumerator nextObject]) )
-		{
-			if ([[inst window] isMainWindow])
-				return inst;
-		}
-	}
-	
-	return nil;
-}
-
-// Enables/disables non-inspector gui controls as needed
-- (void)validateControls
-{
-	CRDSession *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
-	
-	[gui_connectButton setEnabled:(inst != nil && [inst status] == CRDConnectionClosed)];
-	[gui_inspectorButton setEnabled:(inst != nil)];
-}
-
-- (void)setInspectorEnabled:(BOOL)enabled
-{
-	[self toggleControlsEnabledInView:[gui_inspector contentView] enabled:enabled];
-	[gui_inspector display];
-}
-
-- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled
-{
-	if ([view isKindOfClass:[NSControl class]])
-	{
-		if ([view isKindOfClass:[NSTextField class]] && ![(NSTextField *)view drawsBackground])
-		{
-			// setTextColor is buggy in 10.4, thus use white to get the greyed color while disabled
-			if (enabled)
-				[(NSTextField *)view setTextColor:[NSColor blackColor]];
-			else
-				[(NSTextField *)view setTextColor:[NSColor whiteColor]];
-
-		}
-		[(NSControl *)view setEnabled:enabled];
-	}
-	else
-	{
-		NSEnumerator *enumerator = [[view subviews] objectEnumerator];
-		id subview;
-		while ( (subview = [enumerator nextObject]) )
-		{
-			[self toggleControlsEnabledInView:subview enabled:enabled];
-		}
-	}
-	
-}
-
-- (void)createWindowForInstance:(CRDSession *)inst
-{
-	[inst createWindow:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions)];
-	
-	NSWindow *window = [inst window];
-	[window cascadeTopLeftFromPoint:windowCascadePoint];
-	[window makeFirstResponder:[inst view]];
-	[window makeKeyAndOrderFront:self];
-}
-
-
-#pragma mark -
-#pragma mark Accessors
-
-- (CRDDisplayMode)displayMode
-{
-	return displayMode;
-}
-
-- (NSWindow *)unifiedWindow
-{
-	return gui_unifiedWindow;
-}
-
-- (CRDFullScreenWindow *)fullScreenWindow
-{
-	return gui_fullScreenWindow;
-}
-
-
-#pragma mark -
-#pragma mark Application-wide resources
-
-+ (NSImage *)sharedDocumentIcon
-{
-	static NSImage *shared_documentIcon = nil;
-	if (shared_documentIcon == nil)
-	{
-		// The stored icon is loaded flipped for whatever reason, so flip it back
-		NSImage *icon = [NSImage imageNamed:@"rdp document.icns"];
-		shared_documentIcon = [[NSImage alloc] initWithSize:[icon size]];
-		[icon setFlipped:YES];
-		[shared_documentIcon lockFocus];
-		
-		NSRect r = RECT_FROM_SIZE([icon size]);
-		[icon drawInRect:r fromRect:r operation:NSCompositeSourceOver fraction:1.0];
-		
-		[shared_documentIcon unlockFocus];
-	}
-	
-	return shared_documentIcon;
-}
-
-+ (NSString *)savedServersPath
-{
-	NSString *appSupport = 
-			[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-	return [appSupport stringByAppendingPathComponent:@"CoRD/Servers"];
-}
-
 
 @end

@@ -66,7 +66,7 @@
 	NSWindow *window;
 }
 
-- (id)initWithRDPFile:(NSString *)path;
+- (id)initWithPath:(NSString *)path;
 
 // Working with rdesktop
 - (BOOL)connect;
@@ -96,23 +96,23 @@
 - (void)destroyWindow;
 
 // Working with the represented file
-- (BOOL)readRDPFile:(NSString *)path;
-- (BOOL)writeRDPFile:(NSString *)path;
+- (void)setFilename:(NSString *)filename;
+- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)atomicFlag updateFilenames:(BOOL)updateNamesFlag;
+- (void)flushChangesToFile;
 
 
 // Accessors
 - (RDConnectionRef)conn;
 - (NSString *)label;
 - (CRDSessionView *)view;
-- (NSString *)rdpFilename;
-- (void)setRdpFilename:(NSString *)path;
+- (NSString *)filename;
+- (void)setFilename:(NSString *)path;
 - (BOOL)temporary;
 - (void)setTemporary:(BOOL)temp;
 - (CRDServerCell *)cellRepresentation;
 - (NSTabViewItem *)tabViewRepresentation;
 - (BOOL)modified;
 - (CRDConnectionStatus)status;
-- (void)setStatusAsNumber:(NSNumber *)status;
 - (NSWindow *)window;
 
 - (void)setLabel:(NSString *)s;

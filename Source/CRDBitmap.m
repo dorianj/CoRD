@@ -249,7 +249,7 @@
 {
 	[image lockFocus]; {
 		[c setFill];
-		NSRectFillUsingOperation(RECT_FROM_SIZE([image size]), NSCompositeSourceAtop);
+		NSRectFillUsingOperation(CRDRectFromSize([image size]), NSCompositeSourceAtop);
 	} [image unlockFocus];
 }
 

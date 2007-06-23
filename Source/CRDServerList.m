@@ -184,7 +184,7 @@
 		
 		BOOL highlighted = [[self cellForRow:row] isHighlighted];
 		[[self cellForRow:row] setHighlighted:NO];
-		[[self cellForRow:row] drawWithFrame:RECT_FROM_SIZE([dragImage size]) inView:nil];
+		[[self cellForRow:row] drawWithFrame:CRDRectFromSize([dragImage size]) inView:nil];
 		[[self cellForRow:row] setHighlighted:highlighted];
 		
 	} [dragImage unlockFocus];

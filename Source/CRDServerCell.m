@@ -142,7 +142,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 			
 		[NSGraphicsContext saveGraphicsState];
 		[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh]; 
-		[image drawInRect:imgRect fromRect:RECT_FROM_SIZE([image size]) operation:NSCompositeSourceOver fraction:1.0];
+		[image drawInRect:imgRect fromRect:CRDRectFromSize([image size]) operation:NSCompositeSourceOver fraction:1.0];
 		[NSGraphicsContext restoreGraphicsState];
 	}
 	
@@ -258,7 +258,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	if (progressIndicator != nil)
 		return;
 		
-	progressIndicator = [[NSProgressIndicator alloc] initWithFrame:RECT_FROM_SIZE([self cellSize])];
+	progressIndicator = [[NSProgressIndicator alloc] initWithFrame:CRDRectFromSize([self cellSize])];
 	[progressIndicator setIndeterminate:YES];
 	[progressIndicator setStyle:NSProgressIndicatorSpinningStyle];
 }

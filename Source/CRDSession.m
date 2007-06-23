@@ -27,11 +27,14 @@
 #define NOTIFY_POLL_SPEED 10.0
 
 @interface CRDSession (Private)
-	- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force;
-	- (void)setStatus:(CRDConnectionStatus)status;
-	- (void)createScrollEnclosure:(NSRect)frame;
-	- (void)createViewWithFrameValue:(NSValue *)frameRect;
-	- (void)setUpConnectionThread;
+- (BOOL)readFileAtPath:(NSString *)path;
+- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force;
+- (void)setStatus:(CRDConnectionStatus)status;
+- (void)setStatusAsNumber:(NSNumber *)status;
+- (void)createScrollEnclosure:(NSRect)frame;
+- (void)createViewWithFrameValue:(NSValue *)frameRect;
+- (void)setUpConnectionThread;
+	
 @end
 
 #pragma mark -
@@ -43,7 +46,6 @@
 	if (![super init])
 		return nil;
 	
-	// Defaults
 	label = hostName = username = password = domain = @"";
 	preferredRowIndex = -1;
 	screenDepth = 16;
@@ -54,20 +56,18 @@
 	otherAttributes = [[NSMutableDictionary alloc] init];
 	cellRepresentation = [[CRDServerCell alloc] init];
 	[cellRepresentation setImage:[AppController sharedDocumentIcon]];
-	
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(redirectedFileHasDataAvailable:) name:NSFileHandleDataAvailableNotification object:nil];
-	
+		
 	[self setStatus:CRDConnectionClosed];
 	
 	return self;
 }
 
-- (id)initWithRDPFile:(NSString *)path
+- (id)initWithPath:(NSString *)path
 {
 	if (![self init])
 		return nil;
 	
-	if (![self readRDPFile:path])
+	if (![self readFileAtPath:path])
 	{
 		[self autorelease];
 		return nil;
@@ -226,7 +226,7 @@
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
 	conn->tcpPort = (!port || port>=65536) ? CRDDefaultPort : port;
-	strncpy(conn->username, CRDSafeUTF8String(username), sizeof(conn->username));
+	strncpy(conn->username, CRDMakeWindowsString(username), sizeof(conn->username));
 	
 	// Set remote keymap to match local OS X input type
 	conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
@@ -269,10 +269,10 @@
 	cliprdr_init(conn);
 	
 	// Make the connection
-	BOOL connected = rdp_connect(conn, CRDSafeUTF8String(hostName), 
+	BOOL connected = rdp_connect(conn, CRDMakeWindowsString(hostName), 
 							logonFlags, 
-							CRDSafeUTF8String(domain), 
-							CRDSafeUTF8String(password), 
+							CRDMakeWindowsString(domain), 
+							CRDMakeWindowsString(password), 
 							"",  /* xxx: command on logon */
 							"" /* xxx: session directory */ );
 							
@@ -476,15 +476,428 @@
 #pragma mark -
 #pragma mark Working with the represented file
 
-// This probably isn't safe to call from anywhere other than initWith.. in its current form
-- (BOOL)readRDPFile:(NSString *)path
+// Saves all of the current settings to a Microsoft RDC client compatible file
+
+- (BOOL)writeToFile:(NSString *)path atomically:(BOOL)atomicFlag updateFilenames:(BOOL)updateNamesFlag
+{
+	#define write_int(n, v)	 [outputBuffer appendString:[NSString stringWithFormat:@"%@:i:%d\r\n", (n), (v)]]
+	#define write_string(n, v) [outputBuffer appendString:[NSString stringWithFormat:@"%@:s:%@\r\n", (n), (v) ? (v) : @""]]
+	
+	if ([path length] == 0)
+		return NO;
+
+	NSMutableString *outputBuffer = [[NSMutableString alloc] init];
+	
+	write_int(@"connect to console", consoleSession);
+	write_int(@"redirectdrives", forwardDisks);
+	write_int(@"redirectprinters", forwardPrinters);
+	write_int(@"disable wallpaper", !drawDesktop);
+	write_int(@"disable full window drag", !windowDrags);
+	write_int(@"disable menu anims", !windowAnimation);
+	write_int(@"disable themes", !themes);
+	write_int(@"audiomode", forwardAudio);
+	write_int(@"desktopwidth", screenWidth);
+	write_int(@"desktopheight", screenHeight);
+	write_int(@"session bpp", screenDepth);
+	write_int(@"cord save password", savePassword);
+	write_int(@"startdisplay", startDisplay);
+	write_int(@"cord fullscreen", fullscreen);
+	write_int(@"cord row index", preferredRowIndex);
+	
+	write_string(@"full address", CRDJoinHostNameAndPort(hostName, port));
+	write_string(@"username", username);
+	write_string(@"domain", domain);
+	write_string(@"cord label", label);
+	
+	// Write all entries in otherAttributes
+	NSEnumerator *enumerator = [otherAttributes keyEnumerator];
+	id key, value;
+	while ( (key = [enumerator nextObject]) && (value = [otherAttributes valueForKey:key]) )
+	{
+		if ([value isKindOfClass:[NSNumber class]])
+			write_int(key, [value intValue]);
+		else
+			write_string(key, value);	
+	}
+	
+	BOOL writeToFileSucceeded = [outputBuffer writeToFile:path atomically:atomicFlag encoding:fileEncoding error:NULL] | [outputBuffer writeToFile:path atomically:atomicFlag encoding:(fileEncoding = NSUTF8StringEncoding) error:NULL];
+	
+	[outputBuffer release];
+	
+	if (writeToFileSucceeded)
+	{
+		NSDictionary *newAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:'RDP '] forKey:NSFileHFSTypeCode];
+		[[NSFileManager defaultManager] changeFileAttributes:newAttrs atPath:path];
+	}
+	else
+	{
+		NSLog(@"Error writing to '%@'", path);
+	}
+
+	if (writeToFileSucceeded && updateNamesFlag)
+	{
+		modified = NO;
+		[self setFilename:path];
+	}
+	
+	return writeToFileSucceeded;
+	
+	#undef write_int(n, v)
+	#undef write_string(n, v)
+}
+
+- (void)flushChangesToFile
+{
+	[self writeToFile:[self filename] atomically:YES updateFilenames:NO];
+}
+
+
+#pragma mark -
+#pragma mark Working with GUI
+
+// Updates the CRDServerCell this instance manages to match the current details.
+- (void)updateCellData
+{
+	// Update the text
+	NSString *fullHost = (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", hostName, port] : hostName;
+	[cellRepresentation setDisplayedText:label username:username address:fullHost];
+	
+	// Update the image
+	if (connectionStatus != CRDConnectionConnecting)
+	{
+		NSImage *base = [AppController sharedDocumentIcon];
+		if ([self temporary])
+		{
+			// Copy the document image into a new image and badge it with the clock
+			NSImage *icon = [[base copy] autorelease];
+
+			[icon lockFocus]; {
+				[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
+				[base drawInRect:CRDRectFromSize([icon size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];	
+			
+				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon.png"];
+				NSSize clockSize = [clockIcon size], iconSize = [icon size];
+				NSRect dest = NSMakeRect(iconSize.width - clockSize.width - 1.0, iconSize.height - clockSize.height, clockSize.width, clockSize.height);
+				[clockIcon drawInRect:dest fromRect:CRDRectFromSize(clockSize) operation:NSCompositeSourceOver fraction:0.9];
+			} [icon unlockFocus];
+			
+			[cellRepresentation setImage:icon];
+		}
+		else
+		{
+			[cellRepresentation setImage:base];
+		}
+	}
+}
+
+- (void)createWindow:(BOOL)useScrollView
+{
+	[window release];
+	NSRect sessionScreenSize = [view bounds];
+	window = [[NSWindow alloc] initWithContentRect:sessionScreenSize styleMask:(NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask) backing:NSBackingStoreBuffered defer:NO];
+	
+	[window setContentMaxSize:sessionScreenSize.size];
+	[window setTitle:label];
+	[window setAcceptsMouseMovedEvents:YES];
+	[window setDelegate:self];
+	[window setReleasedWhenClosed:NO];
+	[[window contentView] setAutoresizesSubviews:YES];
+	[window setContentMinSize:NSMakeSize(100.0, 75.0)];
+	
+	[view setFrameOrigin:NSZeroPoint];
+	[view removeFromSuperview];
+	
+	if (useScrollView)
+	{
+		[self createScrollEnclosure:[[window contentView] bounds]];
+		[[window contentView] addSubview:scrollEnclosure];
+	}
+	else
+	{
+		[view setFrameSize:[[window contentView] frame].size];
+		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+		[window setContentAspectRatio:sessionScreenSize.size];	
+		[[window contentView] addSubview:view];
+		[view setNeedsDisplay:YES];
+	}
+	
+	[window makeFirstResponder:view];
+	[window display];
+}
+
+
+- (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure
+{	
+	[tabViewRepresentation release];
+	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];
+	[tabViewRepresentation setLabel:label];	
+	
+	if (useScrollView)
+	{
+		[self createScrollEnclosure:enclosure];
+		[tabViewRepresentation setView:scrollEnclosure];
+	}
+	else
+	{
+		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
+		[tabViewRepresentation setView:view];
+	}	
+}
+
+- (void)destroyUnified
+{
+	[tabViewRepresentation release];
+	tabViewRepresentation = nil;
+}
+
+- (void)destroyWindow
+{
+	[window setDelegate:nil];
+	[window close];
+	window = nil;
+}
+
+#pragma mark -
+#pragma mark NSWindow delegate
+
+- (void)windowWillClose:(NSNotification *)aNotification
+{
+	if (connectionStatus == CRDConnectionConnected)
+		[g_appController disconnectInstance:self];
+}
+
+- (void)windowDidBecomeKey:(NSNotification *)sender
+{
+	if ([sender object] == window)
+		[self announceNewClipboardData];
+}
+
+- (void)windowDidResignKey:(NSNotification *)sender
+{
+	if ([sender object] == window)
+		[self requestRemoteClipboardData];
+}
+
+- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
+{
+	NSSize realSize = [view bounds].size;
+	realSize.height += [sender frame].size.height - [[sender contentView] frame].size.height;
+	
+	if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) && (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
+	{
+		return realSize;	
+	}
+		
+	return proposedFrameSize;
+}
+
+
+#pragma mark -
+#pragma mark Sending input from other threads
+
+- (void)sendInputOnConnectionThread:(uint32)time type:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2
+{
+	if (connectionStatus != CRDConnectionConnected)
+		return;
+	
+	if ([NSThread currentThread] == connectionThread)
+	{
+		rdp_send_input(conn, time, type, flags, param1, param2);
+	}
+	else
+	{	
+		// Push this event onto the event stack and handle it in the connection thread
+		CRDInputEvent queuedEvent = CRDMakeInputEvent(time, type, flags, param1, param2), *e;
+		
+		e = malloc(sizeof(CRDInputEvent));
+		memcpy(e, &queuedEvent, sizeof(CRDInputEvent));
+		
+		[inputEventLock lock]; {
+			[inputEventStack addObject:[NSValue valueWithPointer:e]];	
+		} [inputEventLock unlock];
+		
+		[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
+	}
+}
+
+- (void)handleMachMessage:(void *)msg
+{
+    [inputEventLock lock];
+    while ([inputEventStack count] != 0)
+	{
+        CRDInputEvent *ie = [[inputEventStack objectAtIndex:0] pointerValue];
+        [inputEventStack removeObjectAtIndex:0];
+		if (ie != NULL)
+			[self sendInputOnConnectionThread:ie->time type:ie->type flags:ie->deviceFlags param1:ie->param1 param2:ie->param2];
+		
+		free(ie);
+    }
+	
+    [inputEventLock unlock];
+}
+
+
+#pragma mark -
+#pragma mark Working With CoRD
+
+- (void)cancelConnection
+{
+	if ( (connectionStatus != CRDConnectionConnecting) || (conn == NULL))
+		return;
+	
+	conn->errorCode = ConnectionErrorCanceled;
+}
+
+- (NSComparisonResult)compareUsingPreferredOrder:(id)compareTo
+{
+	int otherOrder = [[compareTo valueForKey:@"preferredRowIndex"] intValue];
+	
+	if (preferredRowIndex == otherOrder)
+		return [[compareTo label] compare:label];
+	else
+		return (preferredRowIndex - otherOrder > 0) ? NSOrderedDescending : NSOrderedAscending;
+}
+
+
+#pragma mark -
+#pragma mark Keychain
+
+- (void)clearKeychainData
+{
+	keychain_clear_password([hostName UTF8String], [username UTF8String]);
+}
+
+
+#pragma mark -
+#pragma mark Accessors
+
+- (RDConnectionRef)conn
+{
+	return conn;
+}
+
+- (NSString *)label
+{
+	return label;
+}
+
+- (CRDSessionView *)view
+{
+	return view;
+}
+
+- (NSString *)filename
+{
+	return rdpFilename;
+}
+
+- (void)setFilename:(NSString *)path
+{
+	[path retain];
+	[rdpFilename release];
+	rdpFilename = path;
+}
+
+- (BOOL)temporary
+{
+	return temporary;
+}
+
+- (void)setTemporary:(BOOL)temp
+{
+	temporary = temp;
+	[self updateCellData];
+}
+
+- (CRDServerCell *)cellRepresentation
+{
+	return cellRepresentation;
+}
+
+- (NSTabViewItem *)tabViewRepresentation
+{
+	return tabViewRepresentation;
+}
+
+- (BOOL)modified
+{
+	return modified;
+}
+
+- (CRDConnectionStatus)status
+{
+	return connectionStatus;
+}
+
+- (NSWindow *)window
+{
+	return window;
+}
+
+// Do a few simple setters that would otherwise be caught by key-value coding so that updateCellData can be called and keychain data can be updated. Keychain data must be done here and not at save time because the keychain item might already exist so it has to be edited, not created.
+- (void)setLabel:(NSString *)s
+{
+	[label autorelease];
+	label = [s retain];
+	[self updateCellData];
+}
+
+- (void)setHostName:(NSString *)s
+{
+	[self updateKeychainData:s user:username password:password force:NO];
+	[hostName autorelease];
+	hostName = [s retain];
+	[self updateCellData];
+}
+
+- (void)setUsername:(NSString *)s
+{
+	[username autorelease];
+	username = [s retain];
+	[self updateCellData];
+}
+
+- (void)setPassword:(NSString *)pass
+{
+	[self updateKeychainData:hostName user:username password:pass force:NO];
+	[password autorelease];
+	password = [pass retain];
+}
+
+- (void)setPort:(int)newPort
+{
+	port = newPort;
+	[self updateCellData];
+}
+
+- (void)setSavePassword:(BOOL)saves
+{
+	savePassword = saves;
+	
+	if (!savePassword)	
+		[self clearKeychainData];
+	else
+		[self updateKeychainData:hostName user:username password:password force:YES];
+}
+
+@end
+
+#pragma mark -
+
+@implementation CRDSession (Private)
+
+
+#pragma mark -
+#pragma mark Represented file
+
+- (BOOL)readFileAtPath:(NSString *)path
 {
 	if ([path length] == 0 || ![[NSFileManager defaultManager] isReadableFileAtPath:path])
 		return NO;
 
 	NSString *fileContents = [NSString stringWithContentsOfFile:path usedEncoding:&fileEncoding error:NULL];
 			
-	if (!fileContents)
+	if (fileContents == nil)
 		fileContents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
 	
 	NSArray *fileLines = [fileContents componentsSeparatedByString:@"\r\n"];
@@ -495,7 +908,7 @@
 		return NO;
 	}
 		
-	[self setRdpFilename:path];
+	[self setFilename:path];
 		
 	NSScanner *scan;
 	NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"],
@@ -596,178 +1009,39 @@
 	return YES;
 }
 
-// Saves all of the current settings to a Microsoft RDC client compatible file
-- (BOOL)writeRDPFile:(NSString *)path
+
+#pragma mark -
+#pragma mark Keychain
+
+// Force makes it save data to keychain regardless if it has changed. savePassword  is always respected.
+- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force
 {
-	#define write_int(n, v)	 [o appendString:[NSString stringWithFormat:@"%@:i:%d\r\n", (n), (v)]]
-	#define write_string(n, v) [o appendString:[NSString stringWithFormat:@"%@:s:%@\r\n", (n), (v) ? (v) : @""]]
-	
-	if (path == nil && (path = [self rdpFilename]) == nil)
-		return nil;
-
-	NSMutableString *o = [[NSMutableString alloc] init];
-	
-	write_int(@"connect to console", consoleSession);
-	write_int(@"redirectdrives", forwardDisks);
-	write_int(@"redirectprinters", forwardPrinters);
-	write_int(@"disable wallpaper", !drawDesktop);
-	write_int(@"disable full window drag", !windowDrags);
-	write_int(@"disable menu anims", !windowAnimation);
-	write_int(@"disable themes", !themes);
-	write_int(@"audiomode", forwardAudio);
-	write_int(@"desktopwidth", screenWidth);
-	write_int(@"desktopheight", screenHeight);
-	write_int(@"session bpp", screenDepth);
-	write_int(@"cord save password", savePassword);
-	write_int(@"startdisplay", startDisplay);
-	write_int(@"cord fullscreen", fullscreen);
-	write_int(@"cord row index", preferredRowIndex);
-	
-	write_string(@"full address", CRDJoinHostNameAndPort(hostName, port));
-	write_string(@"username", username);
-	write_string(@"domain", domain);
-	write_string(@"cord label", label);
-	
-	// Write all entries in otherAttributes
-	NSEnumerator *enumerator = [otherAttributes keyEnumerator];
-	id key, value;
-	while ( (key = [enumerator nextObject]) && (value = [otherAttributes valueForKey:key]) )
+	if (savePassword && (force || ![hostName isEqualToString:newHost] || 
+		![username isEqualToString:newUser] || ![password isEqualToString:newPassword]) )
 	{
-		if ([value isKindOfClass:[NSNumber class]])
-			write_int(key, [value intValue]);
-		else
-			write_string(key, value);	
+		keychain_update_password([hostName UTF8String], [username UTF8String], [newHost UTF8String], [newUser UTF8String], [newPassword UTF8String]);
 	}
-	
-	BOOL success = [o writeToFile:path atomically:YES encoding:fileEncoding error:NULL];
-	
-	if (!success)
-		success = [o writeToFile:path atomically:YES encoding:(fileEncoding = NSUTF8StringEncoding) error:NULL];
-
-	if (!success)
-		NSLog(@"Error writing to '%@'", path);
-	else
-	{
-		NSDictionary *newAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:'RDP '] forKey:NSFileHFSTypeCode];
-		[[NSFileManager defaultManager] changeFileAttributes:newAttrs atPath:path];
-	}
-	
-	[o release];
-
-	modified = NO;
-	
-	return success;
-	
-	#undef write_int(n, v)
-	#undef write_string(n, v)
 }
 
 
 #pragma mark -
-#pragma mark Working with GUI
+#pragma mark Connection status
 
-// Updates the CRDServerCell this instance manages to match the current details.
-- (void)updateCellData
+- (void)setStatus:(CRDConnectionStatus)status
 {
-	// Update the text
-	NSString *fullHost = (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", hostName, port] : hostName;
-	[cellRepresentation setDisplayedText:label username:username address:fullHost];
-	
-	// Update the image
-	if (connectionStatus != CRDConnectionConnecting)
-	{
-		NSImage *base = [AppController sharedDocumentIcon];
-		if ([self temporary])
-		{
-			// Copy the document image into a new image and badge it with the clock
-			NSImage *icon = [[base copy] autorelease];
-
-			[icon lockFocus]; {
-				[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
-				[base drawInRect:RECT_FROM_SIZE([icon size]) fromRect:RECT_FROM_SIZE([base size]) operation:NSCompositeSourceOver fraction:1.0];	
-			
-				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon.png"];
-				NSSize clockSize = [clockIcon size], iconSize = [icon size];
-				NSRect dest = NSMakeRect(iconSize.width - clockSize.width - 1.0, iconSize.height - clockSize.height, clockSize.width, clockSize.height);
-				[clockIcon drawInRect:dest fromRect:RECT_FROM_SIZE(clockSize) operation:NSCompositeSourceOver fraction:0.9];
-			} [icon unlockFocus];
-			
-			[cellRepresentation setImage:icon];
-		}
-		else
-		{
-			[cellRepresentation setImage:base];
-		}
-	}
+	[cellRepresentation setStatus:status];
+	connectionStatus = status;
 }
 
-- (void)createWindow:(BOOL)useScrollView
+// Status needs to be set on the main thread when setting it to Connecting so the the CRDServerCell will create its progress indicator timer in the main run loop
+- (void)setStatusAsNumber:(NSNumber *)status
 {
-	[window release];
-	NSRect sessionScreenSize = [view bounds];
-	window = [[NSWindow alloc] initWithContentRect:sessionScreenSize styleMask:(NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask) backing:NSBackingStoreBuffered defer:NO];
-	
-	[window setContentMaxSize:sessionScreenSize.size];
-	[window setTitle:label];
-	[window setAcceptsMouseMovedEvents:YES];
-	[window setDelegate:self];
-	[window setReleasedWhenClosed:NO];
-	[[window contentView] setAutoresizesSubviews:YES];
-	[window setContentMinSize:NSMakeSize(100.0, 75.0)];
-	
-	[view setFrameOrigin:NSZeroPoint];
-	[view removeFromSuperview];
-	
-	if (useScrollView)
-	{
-		[self createScrollEnclosure:[[window contentView] bounds]];
-		[[window contentView] addSubview:scrollEnclosure];
-	}
-	else
-	{
-		[view setFrameSize:[[window contentView] frame].size];
-		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-		[window setContentAspectRatio:sessionScreenSize.size];	
-		[[window contentView] addSubview:view];
-		[view setNeedsDisplay:YES];
-	}
-	
-	[window makeFirstResponder:view];
-	[window display];
+	[self setStatus:[status intValue]];
 }
 
 
-- (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure
-{	
-	[tabViewRepresentation release];
-	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];
-	[tabViewRepresentation setLabel:label];	
-	
-	if (useScrollView)
-	{
-		[self createScrollEnclosure:enclosure];
-		[tabViewRepresentation setView:scrollEnclosure];
-	}
-	else
-	{
-		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-		[tabViewRepresentation setView:view];
-	}	
-}
-
-- (void)destroyUnified
-{
-	[tabViewRepresentation release];
-	tabViewRepresentation = nil;
-}
-
-- (void)destroyWindow
-{
-	[window setDelegate:nil];
-	[window close];
-	window = nil;
-}
-
+#pragma mark -
+#pragma mark Interface
 
 - (void)createScrollEnclosure:(NSRect)frame
 {
@@ -795,84 +1069,7 @@
 
 
 #pragma mark -
-#pragma mark NSWindow delegate
-
-- (void)windowWillClose:(NSNotification *)aNotification
-{
-	if (connectionStatus == CRDConnectionConnected)
-		[g_appController disconnectInstance:self];
-}
-
-- (void)windowDidBecomeKey:(NSNotification *)sender
-{
-	if ([sender object] == window)
-		[self announceNewClipboardData];
-}
-
-- (void)windowDidResignKey:(NSNotification *)sender
-{
-	if ([sender object] == window)
-		[self requestRemoteClipboardData];
-}
-
-- (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
-{
-	NSSize realSize = [view bounds].size;
-	realSize.height += [sender frame].size.height - [[sender contentView] frame].size.height;
-	
-	if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) && (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
-	{
-		return realSize;	
-	}
-		
-	return proposedFrameSize;
-}
-
-
-#pragma mark -
-#pragma mark Sending input from other threads
-
-- (void)sendInputOnConnectionThread:(uint32)time type:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2
-{
-	if (connectionStatus != CRDConnectionConnected)
-		return;
-	
-	if ([NSThread currentThread] == connectionThread)
-	{
-		rdp_send_input(conn, time, type, flags, param1, param2);
-	}
-	else
-	{	
-		// Push this event onto the event stack and handle it in the connection thread
-		CRDInputEvent queuedEvent = CRDMakeInputEvent(time, type, flags, param1, param2), *e;
-		
-		e = malloc(sizeof(CRDInputEvent));
-		memcpy(e, &queuedEvent, sizeof(CRDInputEvent));
-		
-		[inputEventLock lock]; {
-			[inputEventStack addObject:[NSValue valueWithPointer:e]];	
-		} [inputEventLock unlock];
-		
-		[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
-	}
-}
-
-- (void)handleMachMessage:(void *)msg
-{
-    [inputEventLock lock];
-    while ([inputEventStack count] != 0)
-	{
-        CRDInputEvent *ie = [[inputEventStack objectAtIndex:0] pointerValue];
-        [inputEventStack removeObjectAtIndex:0];
-		if (ie != NULL)
-			[self sendInputOnConnectionThread:ie->time type:ie->type flags:ie->deviceFlags param1:ie->param1 param2:ie->param2];
-		
-		free(ie);
-    }
-	
-    [inputEventLock unlock];
-}
-
+#pragma mark General
 
 - (void)setUpConnectionThread
 {
@@ -889,173 +1086,5 @@
 	[connectionRunLoop addPort:inputEventPort forMode:(NSString *)kCFRunLoopCommonModes];
 }
 
-
-#pragma mark -
-#pragma mark Working With CoRD
-
-- (void)cancelConnection
-{
-	if ( (connectionStatus != CRDConnectionConnecting) || (conn == NULL))
-		return;
-	
-	conn->errorCode = ConnectionErrorCanceled;
-}
-
-- (NSComparisonResult)compareUsingPreferredOrder:(id)compareTo
-{
-	int otherOrder = [[compareTo valueForKey:@"preferredRowIndex"] intValue];
-	
-	if (preferredRowIndex == otherOrder)
-		return [[compareTo label] compare:label];
-	else
-		return (preferredRowIndex - otherOrder > 0) ? NSOrderedDescending : NSOrderedAscending;
-}
-
-
-#pragma mark -
-#pragma mark Keychain
-
-// Force makes it save data to keychain regardless if it has changed. savePassword  is always respected.
-- (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force
-{
-	if (savePassword && (force || ![hostName isEqualToString:newHost] || 
-		![username isEqualToString:newUser] || ![password isEqualToString:newPassword]) )
-	{
-		keychain_update_password([hostName UTF8String], [username UTF8String], [newHost UTF8String], [newUser UTF8String], [newPassword UTF8String]);
-	}
-}
-
-- (void)clearKeychainData
-{
-	keychain_clear_password([hostName UTF8String], [username UTF8String]);
-}
-
-
-#pragma mark -
-#pragma mark Accessors
-
-- (RDConnectionRef)conn
-{
-	return conn;
-}
-
-- (NSString *)label
-{
-	return label;
-}
-
-- (CRDSessionView *)view
-{
-	return view;
-}
-
-- (NSString *)rdpFilename
-{
-	return rdpFilename;
-}
-
-- (void)setRdpFilename:(NSString *)path
-{
-	[path retain];
-	[rdpFilename release];
-	rdpFilename = path;
-}
-
-- (BOOL)temporary
-{
-	return temporary;
-}
-
-- (void)setTemporary:(BOOL)temp
-{
-	temporary = temp;
-	[self updateCellData];
-}
-
-- (CRDServerCell *)cellRepresentation
-{
-	return cellRepresentation;
-}
-
-- (NSTabViewItem *)tabViewRepresentation
-{
-	return tabViewRepresentation;
-}
-
-- (BOOL)modified
-{
-	return modified;
-}
-
-- (CRDConnectionStatus)status
-{
-	return connectionStatus;
-}
-
-- (NSWindow *)window
-{
-	return window;
-}
-
-- (void)setStatus:(CRDConnectionStatus)status
-{
-	[cellRepresentation setStatus:status];
-	connectionStatus = status;
-}
-
-// Status needs to be set on the main thread when setting it to Connecting so the the CRDServerCell will create its progress indicator timer in the main run loop
-- (void)setStatusAsNumber:(NSNumber *)status
-{
-	[self setStatus:[status intValue]];
-}
-
-
-// Do a few simple setters that would otherwise be caught by key-value coding so that updateCellData can be called and keychain data can be updated. Keychain data must be done here and not at save time because the keychain item might already exist so it has to be edited, not created.
-- (void)setLabel:(NSString *)s
-{
-	[label autorelease];
-	label = [s retain];
-	[self updateCellData];
-}
-
-- (void)setHostName:(NSString *)s
-{
-	[self updateKeychainData:s user:username password:password force:NO];
-	[hostName autorelease];
-	hostName = [s retain];
-	[self updateCellData];
-}
-
-- (void)setUsername:(NSString *)s
-{
-	[username autorelease];
-	username = [s retain];
-	[self updateCellData];
-}
-
-- (void)setPassword:(NSString *)pass
-{
-	[self updateKeychainData:hostName user:username password:pass force:NO];
-	[password autorelease];
-	password = [pass retain];
-}
-
-- (void)setPort:(int)newPort
-{
-	port = newPort;
-	[self updateCellData];
-}
-
-- (void)setSavePassword:(BOOL)saves
-{
-	savePassword = saves;
-	
-	if (!savePassword)	
-		[self clearKeychainData];
-	else
-		[self updateKeychainData:hostName user:username password:password force:YES];
-}
-
 @end
-
 

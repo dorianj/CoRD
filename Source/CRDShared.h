@@ -61,7 +61,7 @@ void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port);
 inline NSString *CRDJoinHostNameAndPort(NSString *host, int port);
 NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);
 inline BOOL CRDDrawerIsVisible(NSDrawer *drawer);
-inline const char *CRDSafeUTF8String(NSString *src);
+inline const char *CRDMakeWindowsString(NSString *src);
 inline void CRDCreateDirectory(NSString *directory);
 NSString *CRDFindAvailableFileName(NSString *path, NSString *base, NSString *extension);
 NSArray *CRDFilterFilesByType(NSArray *unfilteredFiles, NSArray *types);
@@ -80,7 +80,7 @@ void CRDFillDefaultConnection(RDConnectionRef conn);
 
 // Convenience macros
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
-#define RECT_FROM_SIZE(s) ((NSRect){NSZeroPoint, (s)})
+#define CRDRectFromSize(s) ((NSRect){NSZeroPoint, (s)})
 #define POINT_DISTANCE(p1, p2) ( sqrtf( powf( (p1).x - (p2).x, 2) + powf( (p1).y - (p2).y, 2) ) )
 #define CGRECT_FROM_NSRECT(r) CGRectMake((r).origin.x, (r).origin.y, (r).size.width, (r).size.height)
 
