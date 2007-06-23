@@ -1,0 +1,105 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                addNewSavedServer = id; 
+                connect = id; 
+                disconnect = id; 
+                doNothing = id; 
+                endFullscreen = id; 
+                fieldEdited = id; 
+                helpForConnectionOptions = id; 
+                keepSelectedServer = id; 
+                performConnectOrDisconnect = id; 
+                performDisconnect = id; 
+                performFullScreen = id; 
+                performQuickConnect = id; 
+                performServerMenuItem = id; 
+                performStop = id; 
+                performUnified = id; 
+                removeSelectedSavedServer = id; 
+                saveSelectedServer = id; 
+                selectNext = id; 
+                selectPrevious = id; 
+                showOpen = id; 
+                sortSavedServersAlphabetically = id; 
+                startFullscreen = id; 
+                startUnified = id; 
+                startWindowed = id; 
+                stopConnection = id; 
+                takeScreenCapture = id; 
+                toggleDrawer = id; 
+                toggleInspector = id; 
+                togglePerformanceDisclosure = id; 
+            }; 
+            CLASS = AppController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "gui_addNewButton" = NSButton; 
+                "gui_colorCount" = NSPopUpButton; 
+                "gui_connectButton" = NSButton; 
+                "gui_consoleSession" = NSButton; 
+                "gui_displayDragging" = NSButton; 
+                "gui_domain" = NSTextField; 
+                "gui_drawDesktop" = NSButton; 
+                "gui_enableAnimations" = NSButton; 
+                "gui_enableThemes" = NSButton; 
+                "gui_forwardDisks" = NSButton; 
+                "gui_forwardPrinters" = NSButton; 
+                "gui_host" = NSTextField; 
+                "gui_inspector" = NSWindow; 
+                "gui_inspectorButton" = NSButton; 
+                "gui_label" = NSTextField; 
+                "gui_password" = NSTextField; 
+                "gui_performanceOptions" = NSBox; 
+                "gui_quickConnect" = NSComboBox; 
+                "gui_savePassword" = NSButton; 
+                "gui_screenResolution" = NSPopUpButton; 
+                "gui_serverList" = CRDServerList; 
+                "gui_serversDrawer" = NSDrawer; 
+                "gui_serversMenu" = NSMenu; 
+                "gui_tabView" = CRDTabView; 
+                "gui_unifiedWindow" = NSWindow; 
+                "gui_username" = NSTextField; 
+                userDefaultsController = NSUserDefaultsController; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = CRDApplication; LANGUAGE = ObjC; SUPERCLASS = NSApplication; }, 
+        {CLASS = CRDHeaderCell; LANGUAGE = ObjC; SUPERCLASS = NSTableHeaderCell; }, 
+        {CLASS = CRDLabelCell; LANGUAGE = ObjC; SUPERCLASS = NSCell; }, 
+        {CLASS = CRDServerCell; LANGUAGE = ObjC; SUPERCLASS = NSCell; }, 
+        {CLASS = CRDServerList; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CRDServersColumn; LANGUAGE = ObjC; SUPERCLASS = NSTableColumn; }, 
+        {
+            ACTIONS = {
+                selectFirstItem = id; 
+                selectItem = id; 
+                selectLastItem = id; 
+                selectNextItem = id; 
+                selectPreviousItem = id; 
+            }; 
+            CLASS = CRDTabView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {delegate = id; }; 
+            SUPERCLASS = NSView; 
+        }, 
+        {
+            ACTIONS = {"" = id; }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = NSObject; LANGUAGE = ObjC; }, 
+        {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
+        {CLASS = RDCSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
+        {
+            ACTIONS = {checkForUpdates = id; }; 
+            CLASS = SUUpdater; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = TableViewButton; LANGUAGE = ObjC; SUPERCLASS = NSButtonCell; }
+    ); 
+    IBVersion = 1; 
+}
