@@ -202,7 +202,7 @@
 	[g_appController performSelectorOnMainThread:@selector(validateControls) withObject:nil waitUntilDone:NO];
 
 	// RDP5 performance flags
-	int performanceFlags = RDP5_DISABLE_NOTHING;
+	unsigned performanceFlags = RDP5_DISABLE_NOTHING;
 	if (!windowDrags)
 		performanceFlags |= RDP5_NO_FULLWINDOWDRAG;
 	
@@ -219,7 +219,7 @@
 	
 
 	// Simple heuristic to guess if user wants to auto log-in
-	int logonFlags = RDP_LOGON_NORMAL;
+	unsigned logonFlags = RDP_LOGON_NORMAL;
 	if ([username length] > 0 && ([password length] > 0 || savePassword))
 		logonFlags |= RDP_LOGON_AUTO;
 	
@@ -238,8 +238,7 @@
 	if (forwardDisks)
 	{
 		NSArray *localDrives = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
-		NSMutableArray *validDrives = [NSMutableArray arrayWithCapacity:5];
-		NSMutableArray *validNames = [NSMutableArray arrayWithCapacity:5];
+		NSMutableArray *validDrives = [NSMutableArray array], *validNames = [NSMutableArray array];
 		
 		NSFileManager *fm = [NSFileManager defaultManager];
 		NSEnumerator *volumeEnumerator = [localDrives objectEnumerator];
@@ -836,9 +835,6 @@
 
 - (void)setLabel:(NSString *)newLabel
 {	
-	if ([newLabel isEqualToString:label])
-		return;
-	
 	[label autorelease];
 	label = [newLabel copy];
 	[self updateCellData];
@@ -846,9 +842,6 @@
 
 - (void)setHostName:(NSString *)newHost
 {	
-	if ([newHost isEqualToString:hostName])
-		return;
-		
 	[self updateKeychainData:newHost user:username password:password force:NO];
 	
 	[hostName autorelease];
@@ -858,9 +851,6 @@
 
 - (void)setUsername:(NSString *)newUser
 {
-	if ([newUser isEqualToString:username])
-		return;
-
 	[self updateKeychainData:hostName user:newUser password:password force:NO];
 	
 	[username autorelease];
@@ -870,12 +860,9 @@
 
 - (void)setPassword:(NSString *)newPassword
 {
-	if ([newPassword isEqualToString:password])
-		return;
-		
 	[self updateKeychainData:hostName user:username password:newPassword force:NO];
 	
-	[newPassword autorelease];
+	[password autorelease];
 	password = [newPassword copy];
 }
 

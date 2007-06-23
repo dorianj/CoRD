@@ -65,8 +65,9 @@
 {
 	[[NSUserDefaults standardUserDefaults] registerDefaults: [NSDictionary dictionaryWithContentsOfFile:
 		[[NSBundle mainBundle] pathForResource: @"Defaults" ofType: @"plist"]]];
+		
+	//LSSetDefaultHandlerForURLScheme(@"rdp", 
 }
-
 
 - (id)init
 {
@@ -200,7 +201,9 @@
 
 	// Register for preferences KVO notification
 	[[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"MinimalServerList" options:NSKeyValueObservingOptionNew context:NULL];
-
+	
+	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:self andSelector:@selector(openUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
+	
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
 	[self listUpdated];
@@ -936,10 +939,8 @@
 		
 	if ([userDefaults boolForKey:CRDDefaultsUnifiedDrawerShown])
 		[gui_serversDrawer openOnEdge:[userDefaults integerForKey:CRDDefaultsUnifiedDrawerSide]];
-		
+	
 	[self validateControls];
-		
-
 }
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)hasVisibleWindows
@@ -1356,6 +1357,60 @@
 		return [connectedServers objectAtIndex:row-1];
 	else 
 		return [savedServers objectAtIndex:row - connectedCount - 2];
+}
+
+- (void)openUrl:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
+{
+	NSMutableString *url = [[[[event paramDescriptorForKeyword:keyDirectObject] stringValue] mutableCopy] autorelease];	
+	[url deleteCharactersInRange:[url rangeOfString:@"rdp://"]];
+	
+	NSString *cleanURL = [url stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
+	NSLog(@"Parsing URL '%@'", cleanURL);
+	
+	NSString *username = @"", *password = @"", *host;
+	int port;
+	
+
+	unsigned int ampersandLocation = [url rangeOfString:@"@"].location;
+	if (ampersandLocation != NSNotFound)
+	{
+		NSScanner *scanner = [NSScanner scannerWithString:[cleanURL substringToIndex:ampersandLocation]];
+		
+		NSCharacterSet *windowsUsernameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"\\/\"[]:|<>+=;,?*@\n\r"], *emptySet = [NSCharacterSet characterSetWithCharactersInString:@""];
+		
+		[scanner setCharactersToBeSkipped:windowsUsernameCharacters];
+		[scanner scanUpToCharactersFromSet:windowsUsernameCharacters intoString:&username];
+		
+		if (![scanner isAtEnd])
+		{	
+			[scanner setScanLocation:([scanner scanLocation] + 1)];
+			[scanner setCharactersToBeSkipped:emptySet];
+			[scanner scanUpToCharactersFromSet:emptySet intoString:&password];
+		}
+		
+		ampersandLocation++;
+	}
+	else
+	{
+		ampersandLocation = 0;
+	}
+	
+	CRDSplitHostNameAndPort([cleanURL substringFromIndex:ampersandLocation], &host, &port);
+	
+	
+	CRDSession *session = [[[CRDSession alloc] init] autorelease];
+
+	[session setValue:host forKey:@"label"];
+	[session setValue:host forKey:@"hostName"];
+	[session setValue:username forKey:@"username"];
+	[session setValue:password forKey:@"password"];
+	[session setValue:[NSNumber numberWithInt:port] forKey:@"port"];
+	[session setTemporary:YES];
+	
+	[connectedServers addObject:session];
+	[gui_serverList deselectAll:self];
+	[self listUpdated];
+	[self connectInstance:session];
 }
 
 

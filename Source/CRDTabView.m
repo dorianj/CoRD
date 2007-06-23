@@ -112,8 +112,9 @@
 	}
 	else
 	{
-		[self addSubview:finalContentView];
+		
 		[initialContentView removeFromSuperviewWithoutNeedingDisplay];
+		[self addSubview:finalContentView];
 	}
 	
 	_selectedItem = item;

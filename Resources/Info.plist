@@ -29,6 +29,17 @@
 			<string>Binary</string>
 		</dict>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Remote Desktop Protocol Server</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>rdp</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleHelpBookFolder</key>
