@@ -531,14 +531,13 @@
 	[gui_tabView retain];
 	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
 	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
-	[gui_fullScreenWindow setInitialFirstResponder:serverView];
 	[gui_tabView release];	
 
 	[gui_tabView setFrame:CRDRectFromSize([serverView bounds].size)];
 	[serverView setFrame:CRDRectFromSize([serverView bounds].size)];
 	
 	[gui_fullScreenWindow startFullScreen];
-
+	
 	[gui_fullScreenWindow makeFirstResponder:serverView];
 	
 	displayMode = CRDDisplayFullscreen;
@@ -949,6 +948,20 @@
 	return YES;
 }
 
+- (NSResponder *)application:(NSApplication *)application shouldForwardEvent:(NSEvent *)ev
+{
+	CRDSessionView *viewedSessionView = [[self viewedServer] view];
+	NSWindow *viewedSessionWindow = [viewedSessionView window];
+	
+	BOOL shouldForward = YES;
+	
+	shouldForward &= ([ev type] == NSKeyDown) || ([ev type] == NSKeyUp) || ([ev type] == NSFlagsChanged);
+			
+	shouldForward &= ([viewedSessionWindow firstResponder] == viewedSessionView) && [viewedSessionWindow isKeyWindow] && ([viewedSessionWindow isMainWindow] || ([self displayMode] == CRDDisplayFullscreen));
+	
+	return shouldForward ? viewedSessionView : nil;
+
+}
 
 #pragma mark -
 #pragma mark NSTableDataSource methods
@@ -1213,7 +1226,6 @@
 	if ([inst status] == CRDConnectionConnected)
 		[self disconnectInstance:inst];
 		
-	[inst retain];
 	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self withObject:inst];
 }
 
@@ -1241,7 +1253,18 @@
 	[[inst retain] autorelease];
 	[connectedServers removeObject:inst];
 	
-	if (![inst temporary])
+	if ([inst temporary])
+	{
+		// If temporary and in the CoRD servers directory, delete it
+		if ([[[inst filename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
+		{
+			[inst clearKeychainData];
+			[[NSFileManager defaultManager] removeFileAtPath:[inst filename] handler:nil];
+		}
+		
+		[gui_serverList deselectAll:self];
+	}
+	else
 	{
 		// Move to saved servers
 		if ([inst filename] == nil)
@@ -1252,17 +1275,6 @@
 		}
 		
 		[self addSavedServer:inst atIndex:[[inst valueForKey:@"preferredRowIndex"] intValue] select:YES];
-	}
-	else
-	{
-		// If temporary and in the CoRD servers directory, delete it
-		if ( [[[inst filename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
-		{
-			[inst clearKeychainData];
-			[[NSFileManager defaultManager] removeFileAtPath:[inst filename] handler:nil];
-		}
-		
-		[gui_serverList deselectAll:self];
 	}
 
 	[self listUpdated];
@@ -1692,18 +1704,16 @@
 	
 	BOOL connected = [inst connect];
 	
-	[self performSelectorOnMainThread:@selector(completeConnection:)
-			withObject:inst waitUntilDone:NO];
+	[self performSelectorOnMainThread:@selector(completeConnection:) withObject:inst waitUntilDone:NO];
 					
 	if (connected)	
-		[inst startInputRunLoop];
+		[inst runConnectionRunLoop];
 		
 	if ([inst status] == CRDConnectionConnected)
 	{
 		[self disconnectInstance:inst];
 	}
 
-	[inst release];
 	[pool release];
 }
 

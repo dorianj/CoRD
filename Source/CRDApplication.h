@@ -24,4 +24,10 @@
 
 }
 
++ (SEL)selectorForEvent:(NSEvent *)ev;
+
+@end
+
+@interface NSObject (CRDApplicationDelegate)
+- (NSResponder *)application:(NSApplication *)application shouldForwardEvent:(NSEvent *)ev;
 @end

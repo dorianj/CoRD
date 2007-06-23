@@ -42,7 +42,6 @@
 	NSThread *connectionThread;
 	NSMachPort *inputEventPort;
 	NSMutableArray *inputEventStack;
-	NSLock *inputEventLock;
 
 	// General information about instance
 	BOOL temporary, modified, temporarilyFullscreen;
@@ -73,7 +72,7 @@
 - (void)disconnect;
 - (void)disconnectAsync:(NSNumber *)block;
 - (void)sendInputOnConnectionThread:(uint32)time type:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
-- (void)startInputRunLoop;
+- (void)runConnectionRunLoop;
 
 // Clipboard
 - (void)announceNewClipboardData;

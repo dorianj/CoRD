@@ -27,49 +27,34 @@
 
 - (void)sendEvent:(NSEvent *)ev
 {
-	#define viewIsFocused ( [[v window] isKeyWindow] && [[v window] isMainWindow] && ([[v window] firstResponder] == v) )
+	if ( ([ev type] == NSKeyDown) && [[self menu] performKeyEquivalent:ev])
+		return;
+		
+	NSResponder *forwardEventTo = ([[self delegate] application:self shouldForwardEvent:ev]);
 	
-	CRDSessionView *v = [[g_appController viewedServer] view];
+	if ( (forwardEventTo != nil) && [forwardEventTo tryToPerform:[CRDApplication selectorForEvent:ev] with:ev])
+		return;
 
+	[super sendEvent:ev];
+}
+
+
++ (SEL)selectorForEvent:(NSEvent *)ev
+{
 	switch ([ev type])
 	{
 		case NSKeyDown:	
-			if (viewIsFocused)
-			{
-				if (![[self menu] performKeyEquivalent:ev])
-					[v keyDown:ev];
-				
-				return;
-			}
-			break;
-			
+			return @selector(keyDown:);
+
 		case NSKeyUp:
-			if (viewIsFocused)
-			{
-				[v keyUp:ev];
-				return;
-			}
-			
-			break;
-			
+			return @selector(keyUp:);
+
 		case NSFlagsChanged:
-			if (viewIsFocused)
-			{
-				[v flagsChanged:ev];
-				return;
-			}
-			
-			break;
+			return @selector(flagsChanged:);
 			
 		default:
-			break;
+			return NULL;
 	}
-	
-	
-    [super sendEvent:ev];
-	
-	#undef viewIsFocused
 }
-
 
 @end

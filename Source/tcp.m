@@ -160,9 +160,9 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	//	letting NSOutputStream block later when we do the first write:)
 	time_t start = time(NULL);
 	int timedOut = False;
-	while (![os hasSpaceAvailable] && !timedOut && conn->errorCode != ConnectionErrorCanceled)
+	while (![os hasSpaceAvailable] && !timedOut && (conn->errorCode != ConnectionErrorCanceled) )
 	{
-		usleep(1000); // sleep for a millisecond
+		usleep(1000); // one millisecond
 		timedOut = (time(NULL) - start > TIMOUT_LENGTH);
 	}
 	
@@ -176,21 +176,15 @@ tcp_connect(RDConnectionRef conn, const char *server)
 		return False;
 	}
 	
-	[is retain];
-	[os retain];
-	
-	
-	
-	conn->host = host;
-	conn->inputStream = is;
-	conn->outputStream = os;
+	conn->inputStream = [is retain];
+	conn->outputStream = [os retain];
 	
 
 	conn->inStream.size = 4096;
-	conn->inStream.data = (uint8 *) xmalloc(conn->inStream.size);
+	conn->inStream.data = xmalloc(conn->inStream.size);
 
 	conn->outStream.size = 4096;
-	conn->outStream.data = (uint8 *) xmalloc(conn->outStream.size);
+	conn->outStream.data = xmalloc(conn->outStream.size);
 
 	return True;
 }
@@ -199,15 +193,12 @@ tcp_connect(RDConnectionRef conn, const char *server)
 void
 tcp_disconnect(RDConnectionRef conn)
 {
-	NSInputStream *is;
-	NSOutputStream *os;
-	is = conn->inputStream;
-	os = conn->outputStream;
-	
-	[is close];
-	[os close];
-	[is release];
-	[os release];
+	[conn->inputStream release];
+	[conn->outputStream release];
+	conn->inputStream = NULL;
+	conn->outputStream = NULL;
+	[conn->inputStream close];
+	[conn->outputStream close];
 }
 
 char *

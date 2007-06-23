@@ -34,6 +34,7 @@
 - (void)createScrollEnclosure:(NSRect)frame;
 - (void)createViewWithFrameValue:(NSValue *)frameRect;
 - (void)setUpConnectionThread;
+- (void)discardConnectionThread;
 	
 @end
 
@@ -56,7 +57,8 @@
 	otherAttributes = [[NSMutableDictionary alloc] init];
 	cellRepresentation = [[CRDServerCell alloc] init];
 	[cellRepresentation setImage:[AppController sharedDocumentIcon]];
-		
+	inputEventStack = [[NSMutableArray alloc] init];
+	
 	[self setStatus:CRDConnectionClosed];
 	
 	return self;
@@ -84,7 +86,6 @@
 	[inputEventPort invalidate];
 	[inputEventPort release];
 	[inputEventStack release];
-	[inputEventLock release];
 	
 	[label release];
 	[hostName release];
@@ -180,6 +181,8 @@
 	if (connectionStatus != CRDConnectionClosed)
 		return NO;
 	
+	connectionStatus = CRDConnectionConnecting;
+	
 	free(conn);
 	conn = malloc(sizeof(RDConnection));
 	CRDFillDefaultConnection(conn);
@@ -188,12 +191,12 @@
 	// Fail quickly if it's a totally bogus host
 	if ([hostName length] < 2)
 	{
+		connectionStatus = CRDConnectionClosed;
 		conn->errorCode = ConnectionErrorHostResolution;
 		return NO;
 	}
 	
-	// Set status to connecting. Do on main thread so that the cell's progress
-	//	indicator timer is on the main thread.
+	// Set status to connecting on main thread so that the cell's progress indicator timer is on the main thread
 	[self performSelectorOnMainThread:@selector(setStatusAsNumber:) withObject:[NSNumber numberWithInt:CRDConnectionConnecting] waitUntilDone:NO];
 	
 	[g_appController performSelectorOnMainThread:@selector(validateControls) withObject:nil waitUntilDone:NO];
@@ -298,7 +301,6 @@
 
 - (void)disconnect
 {
-	[self retain];
 	[self disconnectAsync:[NSNumber numberWithBool:NO]];
 }
 
@@ -308,8 +310,12 @@
 	[self setStatus:CRDConnectionDisconnecting];
 	if (connectionRunLoopFinished || [block boolValue])
 	{
-		// Try to break out of the run loop
-		[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
+	
+		// Try to forcefully break out of the run loop 
+		@synchronized(self)
+		{
+			[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
+		}
 		
 		while (!connectionRunLoopFinished)
 			usleep(1000);
@@ -318,7 +324,7 @@
 		tcp_disconnect(conn);
 		
 		// UI cleanup
-		[window setDelegate:nil];
+		[window setDelegate:nil]; // avoid the last windowWillClose delegate message
 		[window close];
 		[window release];
 		window = nil;
@@ -348,18 +354,16 @@
 	}
 	else
 	{
-		[self retain];
 		[NSThread detachNewThreadSelector:@selector(disconnectAsync:) toTarget:self withObject:[NSNumber numberWithBool:YES]];	
 	}
 	
 	[pool release];
-	[self release];
 }
 
 #pragma mark -
 #pragma mark Working with the input run loop
 
-- (void)startInputRunLoop
+- (void)runConnectionRunLoop
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
@@ -377,13 +381,10 @@
 		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
 	
-	// Cleanup of this thread
-	if (conn != NULL)
-		[(id)conn->inputStream removeFromRunLoop:connectionRunLoop forMode:NSDefaultRunLoopMode];
+	[self discardConnectionThread];
 	
-	[connectionRunLoop removePort:inputEventPort forMode:(NSString *)kCFRunLoopCommonModes];
 	connectionRunLoopFinished = YES;
-	
+
 	[pool release];
 }
 
@@ -714,9 +715,10 @@
 		e = malloc(sizeof(CRDInputEvent));
 		memcpy(e, &queuedEvent, sizeof(CRDInputEvent));
 		
-		[inputEventLock lock]; {
+		@synchronized(inputEventStack)
+		{
 			[inputEventStack addObject:[NSValue valueWithPointer:e]];	
-		} [inputEventLock unlock];
+		}
 		
 		[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
 	}
@@ -724,18 +726,18 @@
 
 - (void)handleMachMessage:(void *)msg
 {
-    [inputEventLock lock];
-    while ([inputEventStack count] != 0)
+    @synchronized(inputEventStack)
 	{
-        CRDInputEvent *ie = [[inputEventStack objectAtIndex:0] pointerValue];
-        [inputEventStack removeObjectAtIndex:0];
-		if (ie != NULL)
-			[self sendInputOnConnectionThread:ie->time type:ie->type flags:ie->deviceFlags param1:ie->param1 param2:ie->param2];
-		
-		free(ie);
-    }
-	
-    [inputEventLock unlock];
+		while ([inputEventStack count] != 0)
+		{
+			CRDInputEvent *ie = [[inputEventStack objectAtIndex:0] pointerValue];
+			[inputEventStack removeObjectAtIndex:0];
+			if (ie != NULL)
+				[self sendInputOnConnectionThread:ie->time type:ie->type flags:ie->deviceFlags param1:ie->param1 param2:ie->param2];
+			
+			free(ie);
+		}
+	}
 }
 
 
@@ -912,6 +914,7 @@
 }
 
 @end
+
 
 #pragma mark -
 
@@ -1102,17 +1105,38 @@
 
 - (void)setUpConnectionThread
 {
-	if (inputEventStack != nil)
-		return;
+	@synchronized(self)
+	{
+		connectionThread = [NSThread currentThread];
+		connectionRunLoop  = [NSRunLoop currentRunLoop];
 
-	connectionThread = [NSThread currentThread];
-	connectionRunLoop  = [NSRunLoop currentRunLoop];
-	inputEventStack = [[NSMutableArray alloc] init];
-	inputEventLock = [[NSLock alloc] init];
+		inputEventPort = [[NSMachPort alloc] init];
+		[inputEventPort setDelegate:self];
+		[connectionRunLoop addPort:inputEventPort forMode:(NSString *)kCFRunLoopCommonModes];
+	}
+}
 
-	inputEventPort = [[NSMachPort alloc] init];
-	[inputEventPort setDelegate:self];
-	[connectionRunLoop addPort:inputEventPort forMode:(NSString *)kCFRunLoopCommonModes];
+- (void)discardConnectionThread
+{
+	@synchronized(self)
+	{
+		[connectionRunLoop removePort:inputEventPort forMode:(NSString *)kCFRunLoopCommonModes];
+		[inputEventPort invalidate];
+		[inputEventPort release];
+		inputEventPort = nil;
+	
+		@synchronized(inputEventStack)
+		{
+			while ([inputEventStack count] != 0)
+			{
+				free([[inputEventStack objectAtIndex:0] pointerValue]);
+				[inputEventStack removeObjectAtIndex:0];				
+			}
+		}
+		
+		connectionThread = nil;
+		connectionRunLoop = nil;
+	}
 }
 
 @end

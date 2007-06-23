@@ -316,7 +316,6 @@ struct _RDConnection
 	unsigned char *nextPacket;
 	NSInputStream *inputStream; 
  	NSOutputStream *outputStream;
-	void *host;
 	RDStream inStream, outStream;
 	RDStreamRef rdpStream;
 	
