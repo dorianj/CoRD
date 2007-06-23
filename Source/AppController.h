@@ -23,6 +23,7 @@
 @class CRDLabelCell;
 @class CRDServerList;
 @class CRDSession;
+@class CRDTabView;
 
 @interface AppController : NSObject
 {
@@ -45,7 +46,7 @@
 	// Unified window
 	IBOutlet NSWindow *gui_unifiedWindow;
 	IBOutlet NSComboBox *gui_quickConnect;
-	IBOutlet NSTabView *gui_tabView;
+	IBOutlet CRDTabView *gui_tabView;
 	NSToolbar *gui_toolbar;
 	NSMutableDictionary *toolbarItems;
 
@@ -96,10 +97,10 @@
 - (IBAction)performQuickConnect:(id)sender;
 - (IBAction)helpForConnectionOptions:(id)sender;
 - (IBAction)performServerMenuItem:(id)sender;
-- (IBAction)toggleServerListMinimal:(id)sender;
 - (IBAction)performDisconnect:(id)sender;
 - (IBAction)saveSelectedServer:(id)sender;
 - (IBAction)sortSavedServersAlphabetically:(id)sender;
+- (IBAction)doNothing:(id)sender;
 
 // Other methods are in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;

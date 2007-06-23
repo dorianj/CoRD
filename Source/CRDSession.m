@@ -328,8 +328,6 @@
 		[window close];
 		[window release];
 		window = nil;
-		[tabViewRepresentation release];
-		tabViewRepresentation = nil;	
 		[scrollEnclosure release];
 		scrollEnclosure = nil;
 		[view release];
@@ -631,26 +629,18 @@
 
 - (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure
 {	
-	[tabViewRepresentation release];
-	tabViewRepresentation = [[NSTabViewItem alloc] initWithIdentifier:label];
-	[tabViewRepresentation setLabel:label];	
-	
 	if (useScrollView)
 	{
 		[self createScrollEnclosure:enclosure];
-		[tabViewRepresentation setView:scrollEnclosure];
 	}
 	else
 	{
 		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-		[tabViewRepresentation setView:view];
 	}	
 }
 
 - (void)destroyUnified
 {
-	[tabViewRepresentation release];
-	tabViewRepresentation = nil;
 }
 
 - (void)destroyWindow
@@ -825,11 +815,6 @@
 - (CRDServerCell *)cellRepresentation
 {
 	return cellRepresentation;
-}
-
-- (NSTabViewItem *)tabViewRepresentation
-{
-	return tabViewRepresentation;
 }
 
 - (BOOL)modified

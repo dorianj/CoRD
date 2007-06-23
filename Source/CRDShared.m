@@ -57,7 +57,7 @@ void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rec
 	while (limit - cur > .001)
 	{
 		// Interpolate the colors, draw a line for this pixel
-		delta = (float)(cur - rect.origin.y) / rect.size.height;
+		delta = 1.0 - (float)(cur - rect.origin.y) / rect.size.height;
 		CRDDrawHorizontalLine([topColor blendedColorWithFraction:delta ofColor:bottomColor],
 					NSMakePoint(rect.origin.x, cur), rect.size.width);
 							

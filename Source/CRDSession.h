@@ -61,7 +61,6 @@
 	CRDSessionView *view;
 	NSScrollView *scrollEnclosure;
 	CRDServerCell *cellRepresentation;
-	NSTabViewItem *tabViewRepresentation;
 	NSWindow *window;
 }
 
@@ -109,7 +108,6 @@
 - (BOOL)temporary;
 - (void)setTemporary:(BOOL)temp;
 - (CRDServerCell *)cellRepresentation;
-- (NSTabViewItem *)tabViewRepresentation;
 - (BOOL)modified;
 - (CRDConnectionStatus)status;
 - (NSWindow *)window;

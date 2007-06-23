@@ -53,6 +53,7 @@
 		
 	// OpenGL initialization
 	[self createBackingStore:screenSize];
+	[self prepareOpenGL];
 		
 	// Other initializations
 	[self setCursor:[NSCursor arrowCursor]];
@@ -80,13 +81,6 @@
 
 - (void)drawRect:(NSRect)rect
 {
-	if (![self openGLContext])
-	{
-		[[NSColor blackColor] set];
-		NSRectFill(rect);
-		return;	
-	}
-	
 	[self generateTexture];
 	
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -140,6 +134,22 @@
 	[self reshape];
 }
 
+- (void)cacheDisplayInRect:(NSRect)rect toBitmapImageRep:(NSBitmapImageRep *)bitmapImageRep
+{
+	CGImageRef rdBufferImage = CGBitmapContextCreateImage(rdBufferContext);
+	
+	[NSGraphicsContext saveGraphicsState];
+	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithBitmapImageRep:bitmapImageRep]];
+
+	CGContextRef cacheDisplayContext = [[NSGraphicsContext currentContext] graphicsPort];
+	
+	CGContextTranslateCTM(cacheDisplayContext, -rect.origin.x, -rect.origin.y + rdBufferHeight);
+	CGContextScaleCTM(cacheDisplayContext, 1.0, -1.0);
+	CGContextDrawImage(cacheDisplayContext, CGRectMake(0, 0, rdBufferWidth, rdBufferHeight), rdBufferImage);
+	[NSGraphicsContext restoreGraphicsState];
+	
+	CGImageRelease(rdBufferImage);
+}
 
 #pragma mark -
 #pragma mark NSOpenGLView
@@ -503,7 +513,7 @@
 	rdBufferHeight = s.height;
 		
 	rdBufferBitmapLength = rdBufferWidth*rdBufferHeight*4;
-	rdBufferBitmapData = malloc(rdBufferBitmapLength);
+	rdBufferBitmapData = calloc(rdBufferBitmapLength, 1);
 
 	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 	

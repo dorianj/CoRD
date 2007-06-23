@@ -5,6 +5,7 @@
                 addNewSavedServer = id; 
                 connect = id; 
                 disconnect = id; 
+                doNothing = id; 
                 endFullscreen = id; 
                 fieldEdited = id; 
                 helpForConnectionOptions = id; 
@@ -30,7 +31,6 @@
                 toggleDrawer = id; 
                 toggleInspector = id; 
                 togglePerformanceDisclosure = id; 
-                toggleServerListMinimal = id; 
             }; 
             CLASS = AppController; 
             LANGUAGE = ObjC; 
@@ -58,7 +58,7 @@
                 "gui_serverList" = CRDServerList; 
                 "gui_serversDrawer" = NSDrawer; 
                 "gui_serversMenu" = NSMenu; 
-                "gui_tabView" = NSTabView; 
+                "gui_tabView" = CRDTabView; 
                 "gui_unifiedWindow" = NSWindow; 
                 "gui_username" = NSTextField; 
                 userDefaultsController = NSUserDefaultsController; 
@@ -72,11 +72,25 @@
         {CLASS = CRDServerList; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {CLASS = CRDServersColumn; LANGUAGE = ObjC; SUPERCLASS = NSTableColumn; }, 
         {
+            ACTIONS = {
+                selectFirstItem = id; 
+                selectItem = id; 
+                selectLastItem = id; 
+                selectNextItem = id; 
+                selectPreviousItem = id; 
+            }; 
+            CLASS = CRDTabView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {delegate = id; }; 
+            SUPERCLASS = NSView; 
+        }, 
+        {
             ACTIONS = {"" = id; }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
+        {CLASS = NSObject; LANGUAGE = ObjC; }, 
         {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {CLASS = RDCSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
         {

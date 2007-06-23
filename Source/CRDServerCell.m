@@ -186,9 +186,9 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 {
 	NSSize textSize, overallSize;
 	
-	textSize.height = [label size].height;
+	/*textSize.height = [label size].height;
 	
-	/*if (abbreviatedSize)
+	if (abbreviatedSize)
 		textSize.height += [user size].height + [host size].height + PADDING_TEXT*2;*/
 		
 	textSize.width  = [label size].width;

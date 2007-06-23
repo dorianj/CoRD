@@ -23,6 +23,7 @@
 
 #import "CRDServerList.h"
 #import "CRDFullScreenWindow.h"
+#import "CRDTabView.h"
 #import "CRDShared.h"
 
 #define TOOLBAR_DISCONNECT	@"Disconnect"
@@ -192,9 +193,13 @@
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 	[gui_unifiedWindow setExcludedFromWindowsMenu:YES];
+	[gui_tabView setAnimatesWhenSwitchingItems:NO];
 
 	// Load a few user defaults that need to be loaded before anything is displayed
 	displayMode = [[userDefaults objectForKey:CRDDefaultsDisplayMode] intValue];
+
+	// Register for preferences KVO notification
+	[[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"MinimalServerList" options:NSKeyValueObservingOptionNew context:NULL];
 
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
@@ -215,13 +220,11 @@
     else if (action == @selector(disconnect:))
 		return (inst != nil) && [inst status] != CRDConnectionClosed;
 	else if (action == @selector(selectNext:))
-		return [gui_tabView numberOfTabViewItems] > 2; /* Greater than 2 because 1 blank is added */ 
+		return [gui_tabView numberOfItems] > 1;
 	else if (action == @selector(selectPrevious:))
-		return [gui_tabView numberOfTabViewItems] > 2;
+		return [gui_tabView numberOfItems] > 1;
 	else if (action == @selector(takeScreenCapture:))
 		return viewedInst != nil;
-	else if (action == @selector(toggleServerListMinimal:))
-		[item setState:CRDButtonState(CRDPreferenceIsEnabled(CRDPrefsMinimalisticServerList))];
 	else if (action == @selector(performDisconnect:))
 		return [NSApp keyWindow] != nil;
 	else if (action == @selector(toggleInspector:))
@@ -452,7 +455,7 @@
 
 - (IBAction)selectNext:(id)sender
 {
-	[gui_tabView selectNextTabViewItem:sender];
+	[gui_tabView selectNextItem:sender];
 	
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
@@ -464,10 +467,10 @@
 
 - (IBAction)selectPrevious:(id)sender
 {
-	if ([gui_tabView indexOfTabViewItem:[gui_tabView selectedTabViewItem]] == 1)
+	if ([gui_tabView indexOfSelectedItem] == 1)
 		return;
 	
-	[gui_tabView selectPreviousTabViewItem:sender];
+	[gui_tabView selectPreviousItem:sender];
 	
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
@@ -532,7 +535,8 @@
 	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
 	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
 	[gui_tabView release];	
-
+	
+	[gui_tabView setAnimatesWhenSwitchingItems:YES];
 	[gui_tabView setFrame:CRDRectFromSize([serverView bounds].size)];
 	[serverView setFrame:CRDRectFromSize([serverView bounds].size)];
 	
@@ -563,6 +567,8 @@
 	
 	[[gui_unifiedWindow contentView] addSubview:gui_tabView];
 	[gui_tabView release];
+	
+	[gui_tabView setAnimatesWhenSwitchingItems:NO];
 	
 	[gui_unifiedWindow display];
 	
@@ -615,7 +621,7 @@
 	
 	while ( (inst = [enumerator nextObject]) )
 	{
-		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
+		[gui_tabView removeItem:inst];
 		[self createWindowForInstance:inst];
 	}	
 		
@@ -639,10 +645,10 @@
 	{
 		[inst destroyWindow];
 		[inst createUnified:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions) enclosure:[gui_tabView frame]];
-		[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
+		[gui_tabView addItem:inst];
 	}	
 	
-	[gui_tabView selectLastTabViewItem:self];
+	[gui_tabView selectLastItem:self];
 	
 	[self autosizeUnifiedWindowWithAnimation:(sender != self)];
 }
@@ -713,7 +719,7 @@
 		// connected server, switch to it
 		if (displayMode == CRDDisplayUnified)
 		{
-			[gui_tabView selectTabViewItem:[inst tabViewRepresentation]];
+			[gui_tabView selectItem:inst];
 			[gui_unifiedWindow makeFirstResponder:[inst view]];
 			[self autosizeUnifiedWindow];
 		}
@@ -727,15 +733,6 @@
 	{
 		[self connectInstance:inst];
 	}
-}
-
-- (IBAction)toggleServerListMinimal:(id)sender
-{
-	CRDSetPreferenceIsEnabled(CRDPrefsMinimalisticServerList, !CRDPreferenceIsEnabled(CRDPrefsMinimalisticServerList));
-	
-	[[NSNotificationCenter defaultCenter] postNotificationName:CRDMinimalViewDidChangeNotification object:nil];
-	
-	[gui_serverList noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [gui_serverList numberOfRows])]];
 }
 
 // If in unified and with sessions, disconnects active. Otherwise, close the window. Similar to Safari/Camino's 'Close Tab'
@@ -770,6 +767,11 @@
 	[self sortSavedServersAlphabetically];
 	[self storeSavedServerPositions];
 	[self listUpdated];
+}
+
+- (IBAction)doNothing:(id)sender
+{
+
 }
 
 
@@ -1111,10 +1113,10 @@
 	// If the new selection is an active session and this wasn't called from self, change the selected view
 	if (inst != nil && aNotification != nil && [inst status] == CRDConnectionConnected)
 	{
-		if ( ([gui_tabView indexOfTabViewItem:[inst tabViewRepresentation]] != NSNotFound) &&
+		if ( ([gui_tabView indexOfItem:inst] != NSNotFound) &&
 					([self viewedServer] != inspectedServer) )
 		{
-			[gui_tabView selectTabViewItem:[inspectedServer tabViewRepresentation]];
+			[gui_tabView selectItem:inspectedServer];
 			[gui_unifiedWindow makeFirstResponder:[[self viewedServer] view]];
 			[self autosizeUnifiedWindow];
 		}
@@ -1149,18 +1151,6 @@
 - (void)cellNeedsDisplay:(NSCell *)cell
 {
 	[gui_serverList setNeedsDisplay:YES];
-}
-
-
-#pragma mark -
-#pragma mark NSTabView delegate
-
-- (void)tabView:(NSTabView *)tabView didSelectTabViewItem:(NSTabViewItem *)tabViewItem
-{
-	if ([self viewedServer] == nil)
-		return;
-	
-	// xxx: May be used to auto-center tab view items (otherwise an NSTabView subclass will be made)
 }
 
 
@@ -1235,9 +1225,9 @@
 	if (inst == nil || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
 		return;
 		
-	if (displayMode != CRDDisplayWindowed && [inst tabViewRepresentation] != nil)
+	if (displayMode != CRDDisplayWindowed && inst != nil)
 	{
-		[gui_tabView removeTabViewItem:[inst tabViewRepresentation]];
+		[gui_tabView removeItem:inst];
 	}
 	
 	if ([inst status] == CRDConnectionConnected)
@@ -1279,7 +1269,7 @@
 
 	[self listUpdated];
 		
-	if ( (displayMode == CRDDisplayFullscreen) && ([gui_tabView numberOfTabViewItems] == 1) )
+	if ( (displayMode == CRDDisplayFullscreen) && ([gui_tabView numberOfItems] == 0) )
 	{
 		[self autosizeUnifiedWindowWithAnimation:NO];
 		[self endFullscreen:self];
@@ -1392,7 +1382,7 @@
 {
 	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
 	{
-		NSTabViewItem *selectedItem = [gui_tabView selectedTabViewItem];
+		id selectedItem = [gui_tabView selectedItem];
 
 		if (selectedItem == nil)
 			return nil;
@@ -1402,7 +1392,7 @@
 		
 		while ( (item = [enumerator nextObject]) )
 		{
-			if ([item tabViewRepresentation] == selectedItem)
+			if (item == selectedItem)
 				return item;
 		}
 	}
@@ -1446,8 +1436,17 @@
 			[object setFilename:newPath];
 		}
 	}
-
-
+	else if ([keyPath isEqualToString:CRDPrefsScaleSessions])
+	{
+	
+	
+	}
+	else if ([keyPath isEqualToString:CRDPrefsMinimalisticServerList])
+	{
+		[[NSNotificationCenter defaultCenter] postNotificationName:CRDMinimalViewDidChangeNotification object:nil];
+	
+		[gui_serverList noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [gui_serverList numberOfRows])]];
+	}
 }
 
 @end
@@ -1737,8 +1736,8 @@
 		if ( (displayMode == CRDDisplayUnified) || (displayMode == CRDDisplayFullscreen) )
 		{
 			[inst createUnified:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions) enclosure:[gui_tabView frame]];
-			[gui_tabView addTabViewItem:[inst tabViewRepresentation]];
-			[gui_tabView selectLastTabViewItem:self];
+			[gui_tabView addItem:inst];
+			[gui_tabView selectLastItem:self];
 			[gui_unifiedWindow makeFirstResponder:[inst view]];
 		}
 		else
