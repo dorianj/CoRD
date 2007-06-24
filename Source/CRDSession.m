@@ -546,7 +546,8 @@
 
 - (void)flushChangesToFile
 {
-	[self writeToFile:[self filename] atomically:YES updateFilenames:NO];
+	// xxx: so I don't destroy while debugging bindings
+	//[self writeToFile:[self filename] atomically:YES updateFilenames:NO];
 }
 
 
@@ -868,9 +869,6 @@
 
 - (void)setPort:(int)newPort
 {
-	if (port == newPort)
-		return;
-		
 	port = newPort;
 	[self updateCellData];
 }

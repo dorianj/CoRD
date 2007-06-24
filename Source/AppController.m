@@ -1097,8 +1097,10 @@
 	// If there's no selection, clear the inspector
 	if (selectedRow == -1)
 	{
-		[self setInspectorSettings:nil];	
+		[self setInspectorSettings:nil];
+		[self willChangeValueForKey:@"inspectedServer"];
 		inspectedServer = nil;
+		[self didChangeValueForKey:@"inspectedServer"];
 		[self setInspectorEnabled:NO];
 
 		return;
@@ -1107,8 +1109,11 @@
 	}
 
 	[self setInspectorEnabled:YES];
-
+	
+	[self willChangeValueForKey:@"inspectedServer"];
 	inspectedServer =  inst;
+	[self didChangeValueForKey:@"inspectedServer"];
+	
 	[self setInspectorSettings:inst];
 	
 	// If the new selection is an active session and this wasn't called from self, change the selected view
@@ -1121,7 +1126,12 @@
 			[self autosizeUnifiedWindow];
 		}
 	}
-	
+	[self didChangeValueForKey:@"selectedServer"];
+}
+
+- (void)tableViewSelectionWillChange:(NSTableView *)aTableView
+{	
+	[self willChangeValueForKey:@"selectedServer"];
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex
@@ -1473,6 +1483,7 @@
 		return [self serverInstanceForRow:[gui_serverList selectedRow]];
 }
 
+
 #pragma mark -
 #pragma mark KVO
 
@@ -1481,7 +1492,7 @@
 	if ([keyPath isEqualToString:@"label"])
 	{
 		NSString *newLabel = [change objectForKey:NSKeyValueChangeNewKey];
-		if ( ([newLabel length] > 0) && ![newLabel isEqual:[change objectForKey:NSKeyValueChangeOldKey]] && ![object temporary])
+		if ( ([newLabel length] > 0) && ![newLabel isEqual:[change objectForKey:NSKeyValueChangeOldKey]] && ![object temporary] && [[object filename] hasPrefix:[AppController savedServersPath]])
 		{
 			NSString *newPath = CRDFindAvailableFileName([AppController savedServersPath], newLabel, @".rdp");
 			
@@ -1619,22 +1630,6 @@
 // Sets all of the values in the passed CRDSession to match the inspector
 - (void)updateInstToMatchInspector:(CRDSession *)inst
 {
-	// Checkboxes
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)	forKey:@"windowDrags"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)		forKey:@"drawDesktop"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)	forKey:@"windowAnimation"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)		forKey:@"themes"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)		forKey:@"savePassword"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)		forKey:@"forwardDisks"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)	forKey:@"forwardPrinters"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)	forKey:@"consoleSession"];
-	
-	// Text fields
-	[inst setValue:[gui_label stringValue]		forKey:@"label"];
-	[inst setValue:[gui_username stringValue]	forKey:@"username"];
-	[inst setValue:[gui_domain stringValue]		forKey:@"domain"];	
-	[inst setValue:[gui_password stringValue]	forKey:@"password"];
-	
 	// Host
 	int port;
 	NSString *s;
@@ -1643,8 +1638,7 @@
 	[inst setValue:s forKey:@"hostName"];
 	
 	// Screen depth
-	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8]
-			forKey:@"screenDepth"];
+	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8] forKey:@"screenDepth"];
 			
 	// Screen resolution
 	int width, height;
@@ -1679,21 +1673,7 @@
 	{
 		[gui_inspector setTitle:[NSLocalizedString(@"Inspector: ", @"Inspector -> Enabled title") stringByAppendingString:[newSettings label]]];
 	}
-		
-	// All checkboxes 
-	[gui_displayDragging    setState:BUTTON_STATE_FOR_KEY(@"windowDrags")];
-	[gui_drawDesktop        setState:BUTTON_STATE_FOR_KEY(@"drawDesktop")];
-	[gui_enableAnimations   setState:BUTTON_STATE_FOR_KEY(@"windowAnimation")];
-	[gui_enableThemes       setState:BUTTON_STATE_FOR_KEY(@"themes")];
-	[gui_savePassword       setState:BUTTON_STATE_FOR_KEY(@"savePassword")];
-	[gui_forwardDisks       setState:BUTTON_STATE_FOR_KEY(@"forwardDisks")];
-	[gui_forwardPrinters    setState:BUTTON_STATE_FOR_KEY(@"forwardPrinters")];
-	[gui_consoleSession     setState:BUTTON_STATE_FOR_KEY(@"consoleSession")];
 	
-	// Most of the text fields
-	[gui_label    setStringValue:[newSettings valueForKey:@"label"]];
-	[gui_username setStringValue:[newSettings valueForKey:@"username"]];
-	[gui_domain   setStringValue:[newSettings valueForKey:@"domain"]];
 	[gui_password setStringValue:[newSettings valueForKey:@"password"]];
 	
 	// Host

@@ -41,4 +41,5 @@
 @interface NSObject (CRDServerListDataSource)
 	- (BOOL)tableView:(NSTableView *)aTableView canDragRow:(unsigned)rowIndex;
 	- (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(unsigned)rowIndex;
+	- (void)tableViewSelectionWillChange:(NSTableView *)aTableView;
 @end

@@ -110,7 +110,7 @@
 - (void)cancelConnectingInstance:(CRDSession *)inst;
 
 - (CRDSession *)serverInstanceForRow:(int)row;
-- (CRDSession *)selectedServerInstance;
+- (CRDSession *)selectedServer;
 - (CRDSession *)viewedServer;
 
 - (BOOL)mainWindowIsFocused;
