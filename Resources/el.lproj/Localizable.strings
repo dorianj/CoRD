@@ -1,104 +1,105 @@
 /* File name for screen captures */
-" Screen Capture" = " Screen Capture";
+" Screen Capture" = " ÁíôéãñáöÞ Ïèüíçò";
 
 /* Servers list label 1 */
-"Active sessions" = "Active Sessions";
+"Active sessions" = "ÅíåñãÝò ðåñßïäïé åñãáóßáò";
 
 /* Delete server confirm alert -> Cancel button */
-"Cancel" = "Cancel";
+"Cancel" = "Áêýñùóç";
 
 /* Disconnect toolbar item -> tooltip */
-"Close selected connection" = "Close selected connection";
+"Close selected connection" = "Êëåßóéìï åðéëåãìÝíçò óýíäåóçò";
 
 /* Connection error alert -> Title */
-"Couldn't connect to %@" = "Couldn't connect to %@";
+"Couldn't connect to %@" = "Äåí åßíáé åöéêôÞ ç óýíäåóç ìå %@";
 
 /* Delete server confirm alert -> Yes button */
-"Delete" = "Delete";
+"Delete" = "ÄéáãñáöÞ";
 
 /* Delete server confirm alert -> Title */
-"Delete saved server" = "Delete saved server";
+"Delete saved server" = "ÄéáãñáöÞ áðïèçêåõìÝíïõ äéáêïìéóôÞ";
 
 /* Disconnect toolbar item -> Disconnect label
    Disconnect toolbar item -> label */
-"Disconnect" = "Disconnect";
+"Disconnect" = "Áðïóýíäåóç";
 
 /* Disconnect toolbar item -> tool tip */
-"Enter fullscreen mode" = "Enter fullscreen mode";
+"Enter fullscreen mode" = "Åßóïäïò óå ðëÞñç ïèüíç";
 
 /* View menu -> Exit Full Screen */
-"Exit Full Screen" = "Exit Full Screen";
+"Exit Full Screen" = "¸îïäïò áðü ðëÞñç ïèüíç";
 
 /* Full Screen toolbar item -> label */
-"Full Screen" = "Full Screen";
+"Full Screen" = "ÐëÞñçò ïèüíç";
 
 /* View menu -> Show Inspector */
-"Hide Inspector" = "Hide Inspector";
+"Hide Inspector" = "Áðüêñõøç åëåãêôÞ";
 
 /* View menu -> Show Servers Drawer */
-"Hide Servers Drawer" = "Hide Servers Drawer";
+"Hide Servers Drawer" = "Áðüêñõøç ðßíáêá äéáêïìéóôþí";
 
 /* Inspector -> Enabled title */
-"Inspector: " = "Inspector: ";
+"Inspector: " = "ÅëåãêôÞò: ";
 
 /* Inspector -> Disabled title */
-"Inspector: No Server Selected" = "Inspector: No Server Selected";
+"Inspector: No Server Selected" = "ÅëåãêôÞò: Äåí Ý÷åé åðéëåãåß äéáêïìéóôÞò";
 
 /* Name of newly added servers */
-"New Server" = "New Server";
+"New Server" = "ÍÝïò äéáêïìéóôÞò";
 
 /* Quick Connect toolbar item -> label */
-"Quick Connect" = "Quick Connect";
+"Quick Connect" = "ÃñÞãïñç óýíäåóç";
 
 /* Quick Connect toolbar item -> tooltip */
-"Quick Connect Tooltip" = "Connect to a computer with default settings. Can optionally specify port number with :port.";
+"Quick Connect Tooltip" = "Óýíäåóç ìå Ýíá õðïëïãéóôÞ ìå ôéò ðñïåðéëåãìÝíåò ñõèìßóåéò. Ìðïñåßôå ðñïáéñåôéêÜ íá ïñßóåôå áñéèìü äéáýëïõ ìå :port.";
 
 /* Delete server confirm alert -> Detail text */
-"Really delete" = "Are you sure you wish to delete the saved server '%@'?";
+"Really delete" = "ÈÝëåôå óßãïõñá íá äéáãñÜøåôå ôïí áðïèçêåõìÝíï äéáêïìéóôÞ '%@';";
 
 /* Connection errors -> Retry button */
-"Retry" = "Retry";
+"Retry" = "ÅðáíÜëçøç";
 
 /* Servers list label 2 */
-"Saved Servers" = "Saved Servers";
+"Saved Servers" = "ÁðïèçêåõìÝíïé äéáêïìéóôÝò";
 
 /* Hide/show drawer toolbar item -> label */
-"Servers" = "Servers";
+"Servers" = "ÄéáêïìéóôÝò";
 
 /* View menu -> Hide Inspector */
-"Show Inspector" = "Show Inspector";
+"Show Inspector" = "ÅìöÜíéóç åëåãêôÞ";
 
 /* View menu -> Hide Servers Drawer */
-"Show Servers Drawer" = "Show Servers Drawer";
+"Show Servers Drawer" = "ÅìöÜíéóç ðßíáêá äéáêïìéóôþí";
 
 /* View menu -> Start Full Screen */
-"Start Full Screen" = "Start Full Screen";
+"Start Full Screen" = "¸íáñîç ðëÞñïõò ïèüíçò";
 
 /* Disconnect toolbar item -> Stop label */
-"Stop" = "Stop";
+"Stop" = "ÄéáêïðÞ";
 
 /* Display Mode toolbar item -> tool tip */
-"Switch between unified and windowed mode" = "Switch between unified and windowed mode";
+"Switch between unified and windowed mode" = "ÅíáëëáãÞ ìåôáîý åíïðïéçìÝíçò êáé ðáñáèõñéêÞò êáôÜóôáóçò";
 
 /* Connection errors -> Timeout */
-"The connection timed out." = "The connection timed out.";
+"The connection timed out." = "Ï ÷ñüíïò ãéá ôçí óýíäåóç Ýëçîå.";
 
 /* Connection errors -> Host not found */
-"The host name could not be resolved." = "The host name could not be resolved.";
+"The host name could not be resolved." = "Ôï üíïìá ôïõ åîõðçñåôçôÞ äåí âñÝèçêå.";
 
 /* Connection errors -> Couldn't connect */
-"There was an error connecting." = "There was an error connecting.";
+"There was an error connecting." = "Åìöáíßóôçêå ëÜèïò óôçí óýíäåóç.";
 
 /* Hide/show drawer toolbar item -> tooltip */
-"Toggle Servers Drawer" = "Hide or show the servers drawer";
+"Toggle Servers Drawer" = "Áðüêñõøç Þ åìöÜíéóç ôïõ ðßíáêá äéáêïìéóôþí";
 
 /* Display Mode toolbar item -> Unified label */
-"Unified" = "Unified";
+"Unified" = "ÅíïðïéçìÝíç";
 
 /* Display Mode toolbar item -> label
    Display Mode toolbar item -> Windowed label */
-"Windowed" = "Windowed";
+"Windowed" = "ÐáñáèõñéêÞ";
 
 /* Connection errors -> User canceled */
-"You canceled the connection." = "You canceled the connection.";
+"You canceled the connection." = "Áêõñþóáôå ôçí óýíäåóç.";
+
 

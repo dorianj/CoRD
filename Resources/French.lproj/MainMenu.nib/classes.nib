@@ -5,19 +5,24 @@
                 addNewSavedServer = id; 
                 connect = id; 
                 disconnect = id; 
+                doNothing = id; 
                 endFullscreen = id; 
                 fieldEdited = id; 
                 helpForConnectionOptions = id; 
                 keepSelectedServer = id; 
+                performConnectOrDisconnect = id; 
+                performDisconnect = id; 
                 performFullScreen = id; 
                 performQuickConnect = id; 
                 performServerMenuItem = id; 
                 performStop = id; 
                 performUnified = id; 
                 removeSelectedSavedServer = id; 
+                saveSelectedServer = id; 
                 selectNext = id; 
                 selectPrevious = id; 
                 showOpen = id; 
+                sortSavedServersAlphabetically = id; 
                 startFullscreen = id; 
                 startUnified = id; 
                 startWindowed = id; 
@@ -26,13 +31,11 @@
                 toggleDrawer = id; 
                 toggleInspector = id; 
                 togglePerformanceDisclosure = id; 
-                toggleServerListMinimal = id; 
             }; 
             CLASS = AppController; 
             LANGUAGE = ObjC; 
             OUTLETS = {
                 "gui_addNewButton" = NSButton; 
-                "gui_cacheBitmaps" = NSButton; 
                 "gui_colorCount" = NSPopUpButton; 
                 "gui_connectButton" = NSButton; 
                 "gui_consoleSession" = NSButton; 
@@ -42,6 +45,7 @@
                 "gui_enableAnimations" = NSButton; 
                 "gui_enableThemes" = NSButton; 
                 "gui_forwardDisks" = NSButton; 
+                "gui_forwardPrinters" = NSButton; 
                 "gui_host" = NSTextField; 
                 "gui_inspector" = NSWindow; 
                 "gui_inspectorButton" = NSButton; 
@@ -54,7 +58,7 @@
                 "gui_serverList" = CRDServerList; 
                 "gui_serversDrawer" = NSDrawer; 
                 "gui_serversMenu" = NSMenu; 
-                "gui_tabView" = NSTabView; 
+                "gui_tabView" = CRDTabView; 
                 "gui_unifiedWindow" = NSWindow; 
                 "gui_username" = NSTextField; 
                 userDefaultsController = NSUserDefaultsController; 
@@ -68,11 +72,25 @@
         {CLASS = CRDServerList; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
         {CLASS = CRDServersColumn; LANGUAGE = ObjC; SUPERCLASS = NSTableColumn; }, 
         {
+            ACTIONS = {
+                selectFirstItem = id; 
+                selectItem = id; 
+                selectLastItem = id; 
+                selectNextItem = id; 
+                selectPreviousItem = id; 
+            }; 
+            CLASS = CRDTabView; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {delegate = id; }; 
+            SUPERCLASS = NSView; 
+        }, 
+        {
             ACTIONS = {"" = id; }; 
             CLASS = FirstResponder; 
             LANGUAGE = ObjC; 
             SUPERCLASS = NSObject; 
         }, 
+        {CLASS = NSObject; LANGUAGE = ObjC; }, 
         {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
         {CLASS = RDCSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
         {

@@ -21,14 +21,9 @@
 	<array>
 		<integer>741</integer>
 	</array>
-	<key>IBOpenObjects</key>
-	<array>
-		<integer>21</integer>
-		<integer>29</integer>
-		<integer>794</integer>
-		<integer>741</integer>
-	</array>
 	<key>IBSystem Version</key>
 	<string>8R2218</string>
+	<key>IBUsesTextArchiving</key>
+	<true/>
 </dict>
 </plist>

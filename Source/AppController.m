@@ -212,7 +212,7 @@
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
 	BOOL drawerVisible = CRDDrawerIsVisible(gui_serversDrawer);
-	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServer];
 	CRDSession *viewedInst = [self viewedServer];
 	SEL action = [item action];
 	
@@ -315,7 +315,7 @@
 // Removes the currently selected server, and deletes the file.
 - (IBAction)removeSelectedSavedServer:(id)sender
 {
-	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServer];
 	
 	if (inst == nil || [inst temporary] || ([inst status] != CRDConnectionClosed) )
 		return;
@@ -346,7 +346,7 @@
 // Connects to the currently selected saved server
 - (IBAction)connect:(id)sender
 {
-	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServer];
 	
 	if (inst == nil)
 		return;
@@ -372,7 +372,7 @@
 // Either connects or disconnects the selected server, depending on whether it's connected
 - (IBAction)performConnectOrDisconnect:(id)sender
 {
-	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServer];
 	
 	if ([inst status] == CRDConnectionClosed)
 		[self connectInstance:inst];
@@ -384,7 +384,7 @@
 // Toggles whether or not the selected server is kept after disconnect
 - (IBAction)keepSelectedServer:(id)sender
 {
-	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServer];
 	if (inst == nil)
 		return;
 	
@@ -749,7 +749,7 @@
 
 - (IBAction)saveSelectedServer:(id)sender
 {
-	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServer];
 	
 	if (inst == nil)
 		return;
@@ -823,7 +823,7 @@
 {
 	NSString *itemId = [toolbarItem itemIdentifier];
 	
-	CRDSession *inst = [self selectedServerInstance];
+	CRDSession *inst = [self selectedServer];
 	CRDSession *viewedInst = [self viewedServer];
 	
 	if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
@@ -1114,8 +1114,7 @@
 	// If the new selection is an active session and this wasn't called from self, change the selected view
 	if (inst != nil && aNotification != nil && [inst status] == CRDConnectionConnected)
 	{
-		if ( ([gui_tabView indexOfItem:inst] != NSNotFound) &&
-					([self viewedServer] != inspectedServer) )
+		if ( ([gui_tabView indexOfItem:inst] != NSNotFound) && ([self viewedServer] != inspectedServer) )
 		{
 			[gui_tabView selectItem:inspectedServer];
 			[gui_unifiedWindow makeFirstResponder:[[self viewedServer] view]];
@@ -1313,7 +1312,7 @@
 	if ( (inst == nil) || (index == NSNotFound) )
 		return;
 	
-	dumpedInstanceWasSelected = [self selectedServerInstance] == inst;
+	dumpedInstanceWasSelected = [self selectedServer] == inst;
 	dumpedInstance = [inst retain];
 	[inst setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
 	
@@ -1466,7 +1465,7 @@
 	return nil;
 }
 
-- (CRDSession *)selectedServerInstance
+- (CRDSession *)selectedServer
 {
 	if (!CRDDrawerIsVisible(gui_serversDrawer))
 		return nil;
