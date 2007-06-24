@@ -546,8 +546,7 @@
 
 - (void)flushChangesToFile
 {
-	// xxx: so I don't destroy while debugging bindings
-	//[self writeToFile:[self filename] atomically:YES updateFilenames:NO];
+	[self writeToFile:[self filename] atomically:YES updateFilenames:NO];
 }
 
 

@@ -298,3 +298,4 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 	conn->updateEntireScreen = 0;
 }
 
+

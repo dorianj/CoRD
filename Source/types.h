@@ -204,7 +204,6 @@ typedef struct _RDPrinterInfo
 	uint8 *rdpBlob;
 } RDPrinterInfo;
 
-// xxx: won't be needed
 typedef struct notify_data
 {
 	time_t modify_time;

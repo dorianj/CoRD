@@ -209,8 +209,7 @@
 {
 	int flags = [ev modifierFlags];
 	if ((flags & NSShiftKeyMask) && (flags & NSControlKeyMask))
-	{
-		// xxx: this doesn't respect left or right			
+	{		
 		[keyTranslator sendScancode:SCANCODE_CHAR_LSHIFT flags:RDP_KEYRELEASE];
 		[keyTranslator sendScancode:SCANCODE_CHAR_LCTRL flags:RDP_KEYRELEASE];
 		[self rightMouseDown:ev];

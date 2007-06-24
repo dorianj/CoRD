@@ -29,8 +29,7 @@
 {
 	// Inspector
 	IBOutlet NSWindow *gui_inspector;
-	IBOutlet NSTextField *gui_label, *gui_host, *gui_username, *gui_password, *gui_domain;
-    IBOutlet NSButton *gui_savePassword, *gui_consoleSession, *gui_forwardDisks, *gui_forwardPrinters, *gui_displayDragging, *gui_drawDesktop, *gui_enableAnimations, *gui_enableThemes;
+	IBOutlet NSTextField *gui_host, *gui_password;
 
     IBOutlet NSPopUpButton *gui_screenResolution, *gui_colorCount;
 	IBOutlet NSBox *gui_performanceOptions;
@@ -49,14 +48,16 @@
 	IBOutlet CRDTabView *gui_tabView;
 	NSToolbar *gui_toolbar;
 	NSMutableDictionary *toolbarItems;
+	BOOL unifiedWindowSizeIsUserSet;
 
 	// Other display modes
 	CRDFullScreenWindow *gui_fullScreenWindow;
-	CRDDisplayMode displayMode, displayModeBeforeFullscreen;
-	NSPoint windowCascadePoint;
-	IBOutlet NSUserDefaultsController *userDefaultsController;
+	CRDDisplayMode displayMode;
+	BOOL isInFullScreenMode;
+	NSPoint windowCascadePoint; // xxx: this is bad
+	
 	NSUserDefaults *userDefaults;
-	CRDSession *instanceReconnectingForFullscreen;
+	
 	
 	// Menu
 	IBOutlet NSMenu *gui_serversMenu;
@@ -87,12 +88,8 @@
 - (IBAction)stopConnection:(id)sender;
 - (IBAction)showOpen:(id)sender;
 - (IBAction)toggleDrawer:(id)sender;
-- (IBAction)startFullscreen:(id)sender;
-- (IBAction)endFullscreen:(id)sender;
 - (IBAction)performFullScreen:(id)sender;
 - (IBAction)performUnified:(id)sender;
-- (IBAction)startWindowed:(id)sender;
-- (IBAction)startUnified:(id)sender;
 - (IBAction)takeScreenCapture:(id)sender;
 - (IBAction)performQuickConnect:(id)sender;
 - (IBAction)helpForConnectionOptions:(id)sender;
@@ -112,6 +109,14 @@
 - (CRDSession *)serverInstanceForRow:(int)row;
 - (CRDSession *)selectedServer;
 - (CRDSession *)viewedServer;
+
+- (void)startUnifiedWithAnimation:(BOOL)animate;
+- (void)endUnified;
+- (void)startWindowedWithAnimation:(BOOL)animate;
+- (void)endWindowed;
+- (void)startFullscreen;
+- (void)endFullscreen;
+
 
 - (BOOL)mainWindowIsFocused;
 - (CRDDisplayMode)displayMode;
