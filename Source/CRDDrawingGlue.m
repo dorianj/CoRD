@@ -719,7 +719,8 @@ void ui_move_pointer(RDConnectionRef conn, int x, int y)
 	NSPoint windowOrigin = [[v window] frame].origin;
 	
 	NSLog(@"Setting point to remote (%d, %d), or local screen %@", x, y, NSStringFromPoint(NSMakePoint(windowPoint.x+windowOrigin.x, windowPoint.y+windowPoint.y)));
-	CGWarpMouseCursorPosition(CGPointMake(windowPoint.x+windowOrigin.x, windowPoint.y+windowPoint.y));
+	// xxx: wrong function
+	//CGWarpMouseCursorPosition(CGPointMake(windowPoint.x+windowOrigin.x, windowPoint.y+windowPoint.y));
 	
 	//NSLog(@"Should move mouse to %d, %d", x, y);
 }
