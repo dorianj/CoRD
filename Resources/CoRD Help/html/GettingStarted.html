@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html>
+<a name="GettingStarted"></a>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="AppleTitle" content="GettingStarted" />
+	<meta name="AppleIcon" content="images/CoRDIcon.png" />
+	<title>Getting Started With CoRD</title>
+	<link rel="stylesheet" type="text/css" href="../Style/contentpage.css" />
+</head>
+
+<body>
+<div id="entirepage">
+	<div id="breadcrumbbar">
+		<a class="bread" href="../index.html">CoRD Help</a>
+	</div>
+	
+	<h1>Getting Started</h1>
+	
+	<p>CoRD is a remote desktop client for Microsoft Terminal Services servers. This means you can connect to a computer running Windows and control the computer remotely. CoRD, however, doesn't work with the built in Apple remote desktop client or server, nor VNC servers.</p>
+	
+	<h2>Connecting to a server</h2>
+	<p>The quickest way to connect to a server is to type the IP address or host name of the computer you want to connect to into the Quick Connect toolbar item and press enter. That will connect you immediately with the default options. If you need to customize the connection (to change the screen size or configure it with a user name and password to automatically log in), you must create a saved server. Saved servers are kept after CoRD is closed and allow you to customize many options. To create a saved server, click the '+' button in the servers drawer. An inspector editing this new server will open. For details on all the options, see the <a href="ConnectionOptions.html">Connections options reference</a>. After you're done editing, close the inspector. You can connect to a saved server by double clicking on it, selecting it and pressing the play button, or by selecting it and pressing return.
+		
+	<h2>Working with Microsoft Remote Desktop Connection</h2>
+	<p>Although CoRD does most of the things MS RDC does, you may find that you need to use the MS client from time to time (or to use CoRD settings on a Windows computer). To open a CoRD saved server in MS RDC, copy the saved server out of CoRD by dragging it to finder. This will give you an rdc file you can use in MS RDC. Your saved server will be unaffected. To import a saved server back in, simply drag it from Finder into the servers list. All options except password will be preserved between CoRD and MS RDC.</p>
+	
+	<h2>Using full screen mode</h2>
+	<p>The easiest way to use full screen is to select 'Full screen' for the saved servers' screen size in the inspector (for other methods, see the preferences guide). To exit fullscreen mode, you can either use the key shortcut Command-Option-Return, or move your mouse to the very top of the screen until the menu appears, and use the Exit Full Screen menu item (under the View menu).</p>
+	
+	<h2>Server Configuration</h2>
+	<p>CoRD supports Windows 2000 Server, Windows XP Pro and Windows Server 2003. Vista and older versions of Windows are not currently supported. For help on configuring a Windows XP machine to allow remote desktop connections, follow this <a href="http://www.microsoft.com/windowsxp/using/mobility/getstarted/remoteintro.mspx">Microsoft's guide</a>.
+	
+	<h1>Preferences</h1>
+	<h2>Reconnect for fullscreen</h2>
+	<p>If you're viewing a non-fullscreen session and start full screen mode, CoRD will reconnect the session to fill the entire screen. CoRD will only reconnect if the current view size is smaller than your display. Disable this if servers you connect to end your session when you disconnect.</p>
+	
+	<h2>Scale display to fit</h2>
+	<p>When viewing a session with a larger screen size than you can display, CoRD will scale the it down to fit. If disabled, CoRD will instead use scroll bars to fit the display.</p>
+	
+</div>
+</body>
+</html>
+
+
+
+
