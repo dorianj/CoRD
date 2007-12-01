@@ -1,0 +1,85 @@
+{
+    IBClasses = (
+        {
+            ACTIONS = {
+                addNewSavedServer = id; 
+                connect = id; 
+                disconnect = id; 
+                endFullscreen = id; 
+                fieldEdited = id; 
+                helpForConnectionOptions = id; 
+                keepSelectedServer = id; 
+                performFullScreen = id; 
+                performQuickConnect = id; 
+                performStop = id; 
+                performUnified = id; 
+                removeSelectedSavedServer = id; 
+                selectNext = id; 
+                selectPrevious = id; 
+                showOpen = id; 
+                startFullscreen = id; 
+                startUnified = id; 
+                startWindowed = id; 
+                stopConnection = id; 
+                takeScreenCapture = id; 
+                toggleDrawer = id; 
+                toggleInspector = id; 
+                togglePerformanceDisclosure = id; 
+            }; 
+            CLASS = AppController; 
+            LANGUAGE = ObjC; 
+            OUTLETS = {
+                "gui_addNewButton" = NSButton; 
+                "gui_cacheBitmaps" = NSButton; 
+                "gui_colorCount" = NSPopUpButton; 
+                "gui_connectButton" = NSButton; 
+                "gui_consoleSession" = NSButton; 
+                "gui_displayDragging" = NSButton; 
+                "gui_domain" = NSTextField; 
+                "gui_drawDesktop" = NSButton; 
+                "gui_enableAnimations" = NSButton; 
+                "gui_enableThemes" = NSButton; 
+                "gui_forwardDisks" = NSButton; 
+                "gui_host" = NSTextField; 
+                "gui_inspector" = NSWindow; 
+                "gui_inspectorButton" = NSButton; 
+                "gui_label" = NSTextField; 
+                "gui_password" = NSTextField; 
+                "gui_performanceOptions" = NSBox; 
+                "gui_quickConnect" = NSComboBox; 
+                "gui_savePassword" = NSButton; 
+                "gui_screenResolution" = NSPopUpButton; 
+                "gui_serverList" = CRDServerList; 
+                "gui_serversDrawer" = NSDrawer; 
+                "gui_serversMenu" = NSMenu; 
+                "gui_tabView" = NSTabView; 
+                "gui_unifiedWindow" = NSWindow; 
+                "gui_username" = NSTextField; 
+                userDefaultsController = NSUserDefaultsController; 
+            }; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = CRDApplication; LANGUAGE = ObjC; SUPERCLASS = NSApplication; }, 
+        {CLASS = CRDHeaderCell; LANGUAGE = ObjC; SUPERCLASS = NSTableHeaderCell; }, 
+        {CLASS = CRDLabelCell; LANGUAGE = ObjC; SUPERCLASS = NSCell; }, 
+        {CLASS = CRDServerCell; LANGUAGE = ObjC; SUPERCLASS = NSCell; }, 
+        {CLASS = CRDServerList; LANGUAGE = ObjC; SUPERCLASS = NSTableView; }, 
+        {CLASS = CRDServersColumn; LANGUAGE = ObjC; SUPERCLASS = NSTableColumn; }, 
+        {
+            ACTIONS = {"" = id; }; 
+            CLASS = FirstResponder; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = NSSegmentedControl; LANGUAGE = ObjC; SUPERCLASS = NSControl; }, 
+        {CLASS = RDCSplitView; LANGUAGE = ObjC; SUPERCLASS = NSSplitView; }, 
+        {
+            ACTIONS = {checkForUpdates = id; }; 
+            CLASS = SUUpdater; 
+            LANGUAGE = ObjC; 
+            SUPERCLASS = NSObject; 
+        }, 
+        {CLASS = TableViewButton; LANGUAGE = ObjC; SUPERCLASS = NSButtonCell; }
+    ); 
+    IBVersion = 1; 
+}

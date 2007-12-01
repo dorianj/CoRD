@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html>
+<a name="ConnectionOptions"></a>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="AppleTitle" content="ConnectionOptions" />
+	<meta name="AppleIcon" content="images/CoRDIcon.png" />
+	<title>Connection Options</title>
+	<link rel="stylesheet" type="text/css" href="../Style/contentpage.css" />
+</head>
+
+<body>
+<div id="entirepage">
+	<div id="breadcrumbbar">
+		<a class="bread" href="../index.html">CoRD Help</a>
+	</div>
+	
+	<h1>Connection Options</h1>
+			
+	<p>The servers inspector (accessible by the 'i' button in the servers drawer, or under the view menu) exposes all of the properties of a saved server that are used when connecting to a server. Each option is described here.</p>
+
+	<h2>Login details</h2>
+	<ul>
+		<li><strong>Address</strong> The server to connect to, either an IP address or a domain name. May include a colon followed by the port number. (ex: example.com, 192.168.1.13:1032). Required.</li>
+		<li><strong>Username</strong> The user on the server to log into. Optional: the username and password may be entered using the Windows login dialog.</li>
+		<li><strong>Password</strong> The password corresponding to the entered user on the server. Optional, to be used along with username. You can optionally store the password locally in the Keychain so you only have to enter it once.</li>
+		<li><strong>Domain</strong> The Windows domain to login to the server. Not required for most servers; usually used on Terminal Services servers. Leave blank if you are unsure.</li>
+		<li><strong>Console</strong> For Windows 2003 and newer, this allows you to connect to the physical session of the server (equivalent to "mstsc /console" on Windows). This will lock the physical desktop to other users while you use it.</li>
+	</ul>
+	
+	<h2>Appearance and local resources</h2>
+	<ul>
+		<li><strong>Screen size</strong> The screen size to use for this session. If 'Fullscreen', it will automatically be sized to fill your screen.</li>
+		<li><strong>Colors</strong> Number of colors for the session. More colors makes the session look better but slows connection down. Thousands of colors is usually the optimum balance between quality and speed.</li>
+		<li><strong>Forward local disks</strong> Make local files accessible to the remote servers. Don't enable unless you trust the server, as it is a possible security risk.</li>
+	</ul>
+	
+	
+	<h2>Performance options</h2>
+	<p>If you are on a above or below average connection, modifying these preferences may give a better experience or speed up the connection.</p>
+	
+	<ul>
+		<li><strong>Cache bitmaps</strong> Speeds up the connection by locally storing graphics. This should only be disabled if you experience graphical problems.</li>
+		<li><strong>Draw desktop background</strong> Disables the Windows desktop from being drawn and may speed up slow connections.</li>
+		<li><strong>Display window contents while dragging</strong> When disabled,an outline will be drawn instead of the entire window while dragging it, and may make window dragging quicker.</li>
+		<li><strong>Window and menu animation</strong> Minor window and menu effects; the benefits are minimal so only use very fast connections.</li>
+		<li><strong>Windows themes</strong> Enable or disable Windows themes, which makes a default Windows XP configuration look similar to Windows 2000. Can speed up a slow connections if disabled.</li>
+	</ul>
+	
+</div>
+</body>
+</html>
