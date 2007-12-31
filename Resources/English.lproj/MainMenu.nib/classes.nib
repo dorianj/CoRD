@@ -66,7 +66,6 @@
             SUPERCLASS = NSObject; 
         }, 
         {CLASS = CRDApplication; LANGUAGE = ObjC; SUPERCLASS = NSApplication; }, 
-        {CLASS = CRDGlossyButtonCell; LANGUAGE = ObjC; SUPERCLASS = NSButtonCell; }, 
         {CLASS = CRDHeaderCell; LANGUAGE = ObjC; SUPERCLASS = NSTableHeaderCell; }, 
         {CLASS = CRDLabelCell; LANGUAGE = ObjC; SUPERCLASS = NSCell; }, 
         {CLASS = CRDServerCell; LANGUAGE = ObjC; SUPERCLASS = NSCell; }, 

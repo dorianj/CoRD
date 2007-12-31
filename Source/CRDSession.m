@@ -868,6 +868,9 @@
 
 - (void)setPort:(int)newPort
 {
+	if (port == newPort)
+		return;
+		
 	port = newPort;
 	[self updateCellData];
 }

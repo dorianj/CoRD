@@ -121,12 +121,8 @@
 
 - (void)selectRow:(int)index
 {
-	int oldSelection = selectedRow, newSelection = [[self delegate] tableView:self shouldSelectRow:index] ? index : -1;
-		
-	if (newSelection != selectedRow)
-		[[self delegate] tableViewSelectionWillChange:self];
-		
-	selectedRow = newSelection;
+	int oldSelection = selectedRow;
+	selectedRow = [[self delegate] tableView:self shouldSelectRow:index] ? index : -1;
 	
 	// Bit hacky, but works better than calling super (this way, we control the notification)
 	_selectedRows = [[NSIndexSet indexSetWithIndex:selectedRow] mutableCopy];
@@ -135,7 +131,6 @@
 	
 	if (oldSelection != selectedRow)
 		[[NSNotificationCenter defaultCenter] postNotificationName:NSTableViewSelectionDidChangeNotification object:self];	
-	
 }
 
 - (void)deselectRow:(int)rowIndex

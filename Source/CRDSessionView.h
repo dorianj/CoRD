@@ -86,6 +86,7 @@
 - (void)setNeedsDisplayInRectAsValue:(NSValue *)rectValue;
 - (void)writeScreenCaptureToFile:(NSString *)path;
 - (void)setScreenSize:(NSSize)newSize;
+- (void)setNeedsDisplayOnMainThread:(id)object;
 
 // Accessors
 - (void)setController:(CRDSession *)instance;

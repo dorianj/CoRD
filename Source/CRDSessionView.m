@@ -47,6 +47,8 @@
 	
 	if (![super initWithFrame:frame pixelFormat:pf])
 		return nil;
+		
+	lastMouseEventSentAt = [[NSDate date] retain];
 
 	[self setBounds:NSMakeRect(0.0, 0.0, frame.size.width, frame.size.height)];
 	screenSize = frame.size;
@@ -209,7 +211,8 @@
 {
 	int flags = [ev modifierFlags];
 	if ((flags & NSShiftKeyMask) && (flags & NSControlKeyMask))
-	{		
+	{
+		// xxx: this doesn't respect left or right			
 		[keyTranslator sendScancode:SCANCODE_CHAR_LSHIFT flags:RDP_KEYRELEASE];
 		[keyTranslator sendScancode:SCANCODE_CHAR_LCTRL flags:RDP_KEYRELEASE];
 		[self rightMouseDown:ev];
@@ -663,6 +666,10 @@
 	[img release];
 }
 
+- (void)setNeedsDisplayOnMainThread:(id)object
+{
+	[self setNeedsDisplay:[object boolValue]];
+}
 
 - (void)setScreenSize:(NSSize)newSize
 {

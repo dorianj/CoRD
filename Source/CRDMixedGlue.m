@@ -26,6 +26,7 @@
 #pragma mark -
 #pragma mark Disk forwarding
 
+// XXX: this won't be used at all with new disk redir solution
 int ui_select(RDConnectionRef conn)
 {
 	int n = 0;

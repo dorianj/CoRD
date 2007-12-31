@@ -55,26 +55,26 @@ typedef struct _CRDInputEvent
 #pragma mark Shared routines
 
 void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rect);
-inline void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width);
-inline NSString *CRDJoinHostNameAndPort(NSString *host, int port);
+void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width);
+NSString *CRDJoinHostNameAndPort(NSString *host, int port);
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port);
-inline NSString *CRDJoinHostNameAndPort(NSString *host, int port);
+NSString *CRDJoinHostNameAndPort(NSString *host, int port);
 NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);
-inline BOOL CRDDrawerIsVisible(NSDrawer *drawer);
-inline const char *CRDMakeWindowsString(NSString *src);
-inline void CRDCreateDirectory(NSString *directory);
+BOOL CRDDrawerIsVisible(NSDrawer *drawer);
+const char *CRDMakeWindowsString(NSString *src);
+void CRDCreateDirectory(NSString *directory);
 NSString *CRDFindAvailableFileName(NSString *path, NSString *base, NSString *extension);
 NSArray *CRDFilterFilesByType(NSArray *unfilteredFiles, NSArray *types);
 char ** CRDMakeCStringArray(NSArray *conv);
-inline void CRDSetAttributedStringColor(NSMutableAttributedString *as, NSColor *color);
-inline void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *font);
-inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
+void CRDSetAttributedStringColor(NSMutableAttributedString *as, NSColor *color);
+void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *font);
+CRDInputEvent CRDMakeInputEvent(unsigned int time,
 	unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
-inline NSString *CRDTemporaryFile(void);
+NSString *CRDTemporaryFile(void);
 BOOL CRDPathIsHidden(NSString *path);
-inline NSCellStateValue CRDButtonState(BOOL enabled);
-inline BOOL CRDPreferenceIsEnabled(NSString *prefName);
-inline void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
+NSCellStateValue CRDButtonState(BOOL enabled);
+BOOL CRDPreferenceIsEnabled(NSString *prefName);
+void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
 NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action);
 void CRDFillDefaultConnection(RDConnectionRef conn);
 

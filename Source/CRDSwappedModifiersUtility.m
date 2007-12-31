@@ -37,8 +37,7 @@
 #import "IOKit/hidsystem/IOLLEvent.h"
 
 // Constants
-static NSString * const SwappedModifiersSuiteName = @"com.apple.keyboard";
-static NSString * const SwappedModifiersRootKey = @"modifiermapping";
+static NSString * const SwappedModifiersRootKey = @"com.apple.keyboard.modifiermapping";
 static NSString * const SwappedModifiersSourceKey = @"HIDKeyboardModifierMappingSrc";
 static NSString * const SwappedModifiersDestinationKey = @"HIDKeyboardModifierMappingDst";
 static NSString * const KeyFlagRight = @"KeyFlagRight";
@@ -63,12 +62,7 @@ static CRDSwappedModifiersUtility *sharedInstance;
 static NSLock *keyTranslatorLock;
 static NSDictionary *keyFlagTable, *modifierTranslator, *keyDisplayNames;
 static NSArray *rawDefaultTable;
-static NSUserDefaults *modifierPreferences;
 
-
-@interface CRDSwappedModifiersUtility (Private)
-+ (id)sharedSwappedModifiersUtility;
-@end
 
 #define KEY_NAMED(n) [keyDisplayNames objectForKey:MakeNum(n)]
 
@@ -95,14 +89,9 @@ static NSUserDefaults *modifierPreferences;
 			@"Command", MakeNum(CRDSwappedModifiersCommandKey),
 			@"Shift", MakeNum(CRDSwappedModifiersShiftKey),
 			nil] retain];
-	
-	/* xxx: doesn't actually work
-	modifierPreferences = [[NSUserDefaults alloc] init];
-	[modifierPreferences addSuiteNamed:SwappedModifiersSuiteName];
-	
-	[modifierPreferences addObserver:[CRDSwappedModifiersUtility sharedSwappedModifiersUtility] forKeyPath:SwappedModifiersRootKey options:NSKeyValueObservingOptionNew context:NULL];
-	*/
-	
+		
+	// xxx: doesn't actually inform us of changes
+	[[NSUserDefaults standardUserDefaults] addObserver:[CRDSwappedModifiersUtility sharedSwappedModifiersUtility] forKeyPath:SwappedModifiersRootKey options:0 context:NULL];	
 	[CRDSwappedModifiersUtility loadStandardTranslation];
 }
 

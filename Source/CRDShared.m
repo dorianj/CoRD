@@ -246,7 +246,7 @@ NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *to
 {
 	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
 	[item setPaletteLabel:name];
-	[item setLabel:@"label"];
+	[item setValue:label forKey:@"label"];
 	[item setToolTip:tooltip];
 	[item setAction:action];
 	[item setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%@.png", name]]];
@@ -297,5 +297,4 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 	conn->rectsNeedingUpdate = NULL;
 	conn->updateEntireScreen = 0;
 }
-
 

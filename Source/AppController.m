@@ -25,6 +25,7 @@
 #import "CRDFullScreenWindow.h"
 #import "CRDTabView.h"
 #import "CRDShared.h"
+#import "CRDLabelCell.h"
 
 #define TOOLBAR_DISCONNECT	@"Disconnect"
 #define TOOLBAR_DRAWER @"Servers"
@@ -56,6 +57,7 @@
 	- (void)storeSavedServerPositions;
 	- (void)validateControls;
 @end
+
 
 #pragma mark -
 @implementation AppController
@@ -106,8 +108,7 @@
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
 	windowCascadePoint = CRDWindowCascadeStart;
-	[[gui_unifiedWindow contentView] setAutoresizesSubviews:YES];
-	unifiedWindowSizeIsUserSet = YES;
+	
 	
 	// Create the toolbar 
 	NSToolbarItem *quickConnectItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECT] autorelease];
@@ -154,10 +155,6 @@
 	
 	[gui_unifiedWindow setToolbar:gui_toolbar];
 
-	if ([self displayMode] == CRDDisplayWindowed)
-		[self startWindowedWithAnimation:NO];
-	else
-		[self startUnifiedWithAnimation:NO];
 	
 	// Assure that the app support directory exists
 	NSString *appSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
@@ -201,7 +198,7 @@
 	[gui_tabView setAnimatesWhenSwitchingItems:NO];
 
 	// Load a few user defaults that need to be loaded before anything is displayed
-	displayMode = [userDefaults integerForKey:CRDDefaultsDisplayMode];
+	displayMode = [[userDefaults objectForKey:CRDDefaultsDisplayMode] intValue];
 
 	// Register for preferences KVO notification
 	[[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"MinimalServerList" options:NSKeyValueObservingOptionNew context:NULL];
@@ -506,26 +503,158 @@
 	[gui_toolbar validateVisibleItems];
 }
 
+- (IBAction)startFullscreen:(id)sender
+{
+	if (displayMode == CRDDisplayFullscreen || [connectedServers count] == 0)
+		return;
+		
+	displayModeBeforeFullscreen = displayMode;
+	
+	// Create the fullscreen window then move the tabview into it	
+	CRDSession *inst = [self viewedServer];
+	CRDSessionView *serverView = [inst view];
+	NSSize serverSize = [serverView bounds].size;	
+	NSRect winRect = [[NSScreen mainScreen] frame];
+
+	// If needed, reconnect the instance so that it can fill the screen
+	if (![[inst valueForKey:@"fullscreen"] boolValue]  && CRDPreferenceIsEnabled(CRDPrefsReconnectIntoFullScreen) && ( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
+	{
+		[self disconnectInstance:inst];
+		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
+		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"temporarilyFullscreen"];
+		instanceReconnectingForFullscreen = inst;
+		[self connectInstance:inst];
+		return;
+	}
+	
+	if ([self displayMode] != CRDDisplayUnified)
+		[self startUnified:self];
+	
+	instanceReconnectingForFullscreen = nil;
+	
+	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
+	[gui_fullScreenWindow setDelegate:self];
+	
+	[gui_tabView retain];
+	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
+	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
+	[gui_tabView release];	
+	
+	[gui_tabView setAnimatesWhenSwitchingItems:YES];
+	[gui_tabView setFrame:CRDRectFromSize([serverView bounds].size)];
+	[serverView setFrame:CRDRectFromSize([serverView bounds].size)];
+	
+	[gui_fullScreenWindow startFullScreen];
+	
+	[gui_fullScreenWindow makeFirstResponder:serverView];
+	
+	displayMode = CRDDisplayFullscreen;
+}
+
+- (IBAction)endFullscreen:(id)sender
+{
+	if ([self displayMode] != CRDDisplayFullscreen)
+		return;
+	
+	[gui_fullScreenWindow prepareForExit];
+	displayMode = CRDDisplayUnified;
+	
+	[self autosizeUnifiedWindowWithAnimation:NO];
+	
+	[gui_tabView retain];
+	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
+	
+	NSSize contentSize = [[gui_unifiedWindow contentView] frame].size;
+	
+	// Autosizing will get screwed up if the size is bigger than the content view
+	[gui_tabView setFrame:CRDRectFromSize(contentSize)];
+	
+	[[gui_unifiedWindow contentView] addSubview:gui_tabView];
+	[gui_tabView release];
+	
+	[gui_tabView setAnimatesWhenSwitchingItems:NO];
+	
+	[gui_unifiedWindow display];
+	
+	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
+		[self startWindowed:self];
+		
+	// Animate the fullscreen window fading away
+	[gui_fullScreenWindow exitFullScreen];
+	
+	gui_fullScreenWindow = nil;
+
+	displayMode = displayModeBeforeFullscreen;
+	
+	if (displayMode == CRDDisplayUnified)
+		[gui_unifiedWindow makeKeyAndOrderFront:nil];
+}
+
 // Toggles between full screen and previous state
 - (IBAction)performFullScreen:(id)sender
 {
-/* xxx: needs to be clean slate aware
 	if ([self displayMode] == CRDDisplayFullscreen)
-		[self endFullscreen];
+		[self endFullscreen:sender];
 	else
-		[self startFullscreen];*/
+		[self startFullscreen:sender];
 }
 
 // Toggles between Windowed and Unified modes
 - (IBAction)performUnified:(id)sender
 {
-/* xxx: needs to be clean slate aware
 	if (displayMode == CRDDisplayUnified)
-		[self startWindowedWithAnimation:YES];
+		[self startWindowed:sender];
 	else if (displayMode == CRDDisplayWindowed)
 		[self startUnified:sender];
-	*/
+	
 	[gui_toolbar validateVisibleItems];
+}
+
+- (IBAction)startWindowed:(id)sender
+{
+	if (displayMode == CRDDisplayWindowed)
+		return;
+	
+	displayMode = CRDDisplayWindowed;
+	
+	if ([connectedServers count] == 0)
+		return;
+	
+	NSEnumerator *enumerator = [connectedServers objectEnumerator];
+	CRDSession *inst;
+	
+	while ( (inst = [enumerator nextObject]) )
+	{
+		[gui_tabView removeItem:inst];
+		[self createWindowForInstance:inst];
+	}	
+		
+	[self autosizeUnifiedWindow];
+}
+
+- (IBAction)startUnified:(id)sender
+{
+	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
+		return;
+		
+	displayMode = CRDDisplayUnified;
+	
+	if ([connectedServers count] == 0)
+		return;
+	
+	NSEnumerator *enumerator = [connectedServers objectEnumerator];
+	CRDSession *inst;
+	
+	while ( (inst = [enumerator nextObject]) )
+	{
+		[inst destroyWindow];
+		[inst createUnified:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions) enclosure:[gui_tabView frame]];
+		[gui_tabView addItem:inst];
+	}	
+	
+	[gui_tabView selectLastItem:self];
+	
+	[self autosizeUnifiedWindowWithAnimation:(sender != self)];
 }
 
 - (IBAction)takeScreenCapture:(id)sender
@@ -772,12 +901,8 @@
 	[userDefaults setBool:CRDDrawerIsVisible(gui_serversDrawer) forKey:CRDDefaultsUnifiedDrawerShown];
 	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:CRDDefaultsUnifiedDrawerWidth];
 	
-	if (unifiedWindowSizeIsUserSet)
-		[gui_unifiedWindow saveFrameUsingName:@"UnifiedWindowFrameUserPosition"];
-	
-	/*xxx if (displayMode == CRDDisplayFullscreen)
+	if (displayMode == CRDDisplayFullscreen)
 		displayMode = displayModeBeforeFullscreen;
-		*/
 	[userDefaults setInteger:displayMode forKey:CRDDefaultsDisplayMode];
 	
 	
@@ -810,7 +935,6 @@
 
 	float width = [userDefaults floatForKey:CRDDefaultsUnifiedDrawerWidth];
 	float height = [gui_serversDrawer contentSize].height;
-	
 	if (width > 0)
 		[gui_serversDrawer setContentSize:NSMakeSize(width, height)];
 		
@@ -974,10 +1098,8 @@
 	// If there's no selection, clear the inspector
 	if (selectedRow == -1)
 	{
-		[self setInspectorSettings:nil];
-		[self willChangeValueForKey:@"inspectedServer"];
+		[self setInspectorSettings:nil];	
 		inspectedServer = nil;
-		[self didChangeValueForKey:@"inspectedServer"];
 		[self setInspectorEnabled:NO];
 
 		return;
@@ -986,11 +1108,8 @@
 	}
 
 	[self setInspectorEnabled:YES];
-	
-	[self willChangeValueForKey:@"inspectedServer"];
+
 	inspectedServer =  inst;
-	[self didChangeValueForKey:@"inspectedServer"];
-	
 	[self setInspectorSettings:inst];
 	
 	// If the new selection is an active session and this wasn't called from self, change the selected view
@@ -1003,12 +1122,7 @@
 			[self autosizeUnifiedWindow];
 		}
 	}
-	[self didChangeValueForKey:@"selectedServer"];
-}
-
-- (void)tableViewSelectionWillChange:(NSTableView *)aTableView
-{	
-	[self willChangeValueForKey:@"selectedServer"];
+	
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex
@@ -1092,146 +1206,6 @@
 
 
 #pragma mark -
-#pragma mark Switching between display modes
-
-// These are all very stateful and aren't clean to call alone
-
-- (void)startFullscreen
-{
-	if ([connectedServers count] == 0)
-		return;
-		
-	//xxx displayModeBeforeFullscreen = displayMode;
-	
-	// Create the fullscreen window then move the tabview into it	
-	CRDSessionView *serverView = [[self viewedServer] view];
-	NSRect winRect = [[NSScreen mainScreen] frame];
-
-	// If needed, reconnect the instance so that it can fill the screen
-	/* xxx move to upper logic
-	if (![[inst valueForKey:@"fullscreen"] boolValue]  && CRDPreferenceIsEnabled(CRDPrefsReconnectIntoFullScreen) && ( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
-	{
-		[self disconnectInstance:inst];
-		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
-		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"temporarilyFullscreen"];
-		[self connectInstance:inst];
-		return;
-	}
-	*/
-	
-	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
-	[gui_fullScreenWindow setDelegate:self];
-	
-	gui_tabView = [[[CRDTabView alloc] initWithFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)] autorelease];
-
-	[gui_tabView setAnimatesWhenSwitchingItems:YES];
-	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
-	
-	[serverView setFrame:CRDRectFromSize([serverView bounds].size)]; // zzz: make sure it's not bigger than the window
-	
-	[gui_fullScreenWindow startFullScreen];
-	
-	[gui_fullScreenWindow makeFirstResponder:serverView];
-	
-	displayMode = CRDDisplayFullscreen;
-}
-
-- (void)endFullscreen
-{
-	[gui_fullScreenWindow prepareForExit];
-	displayMode = CRDDisplayUnified;
-	
-	[self autosizeUnifiedWindowWithAnimation:NO];
-	
-	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
-	gui_tabView = nil;
-	
-	[gui_tabView release];
-	
-	[gui_tabView setAnimatesWhenSwitchingItems:NO];
-	
-	[gui_unifiedWindow display];
-	
-	/*xxx if (displayModeBeforeFullscreen == CRDDisplayWindowed)
-		[self startWindowed:self];*/
-		
-	// Animate the fullscreen window fading away
-	[gui_fullScreenWindow exitFullScreen];
-	
-	gui_fullScreenWindow = nil;
-
-	//xxx displayMode = displayModeBeforeFullscreen;
-	
-	if (displayMode == CRDDisplayUnified)
-		[gui_unifiedWindow makeKeyAndOrderFront:nil];
-}
-
-- (void)startWindowedWithAnimation:(BOOL)animate
-{	
-	displayMode = CRDDisplayWindowed;
-	
-	if ([connectedServers count] == 0)
-		return;
-	
-	NSEnumerator *enumerator = [connectedServers objectEnumerator];
-	CRDSession *inst;
-	
-	while ( (inst = [enumerator nextObject]) )
-		[self createWindowForInstance:inst];
-		
-	//[self autosizeUnifiedWindow];
-	// switch window around
-}
-
-- (void)endWindowed
-{
-	NSEnumerator *enumerator = [connectedServers objectEnumerator];
-	CRDSession *session;
-	
-	while ( (session = [enumerator nextObject]) )
-	{
-		[session destroyWindow];
-	}
-	
-	// switch main window back
-}
-
-- (void)startUnifiedWithAnimation:(BOOL)animate
-{	
-	displayMode = CRDDisplayUnified;
-	
-	
-	gui_tabView = [[CRDTabView alloc] initWithFrame:(NSRect){NSZeroPoint, [gui_unifiedWindow frame].size}];	
-	[gui_tabView setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-	[[gui_unifiedWindow contentView] addSubview:gui_tabView];
-	
-	if ([connectedServers count] == 0)
-		return;
-	
-	NSEnumerator *enumerator = [connectedServers objectEnumerator];
-	CRDSession *inst;
-	
-	while ( (inst = [enumerator nextObject]) )
-	{
-		[inst destroyWindow];
-		[inst createUnified:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions) enclosure:[gui_tabView frame]];
-		[gui_tabView addItem:inst];
-	}
-	
-	[gui_tabView selectLastItem:self];
-	
-	[self autosizeUnifiedWindowWithAnimation:animate];
-}
-
-- (void)endUnified
-{
-	if (displayMode != CRDDisplayUnified)
-		return;
-		
-}
-
-
-#pragma mark -
 #pragma mark Managing connected servers
 
 // Starting point to connect to a instance
@@ -1299,8 +1273,7 @@
 	if ( (displayMode == CRDDisplayFullscreen) && ([gui_tabView numberOfItems] == 0) )
 	{
 		[self autosizeUnifiedWindowWithAnimation:NO];
-		// xxx not clean slate aware
-		//[self endFullscreen:self];
+		[self endFullscreen:self];
 	}
 	else if (displayMode == CRDDisplayUnified)
 	{
@@ -1464,7 +1437,19 @@
 {
 	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
 	{
-		return [gui_tabView selectedItem];
+		id selectedItem = [gui_tabView selectedItem];
+
+		if (selectedItem == nil)
+			return nil;
+			
+		NSEnumerator *enumerator = [connectedServers objectEnumerator];
+		id item;
+		
+		while ( (item = [enumerator nextObject]) )
+		{
+			if (item == selectedItem)
+				return item;
+		}
 	}
 	else
 	{
@@ -1489,7 +1474,6 @@
 		return [self serverInstanceForRow:[gui_serverList selectedRow]];
 }
 
-
 #pragma mark -
 #pragma mark KVO
 
@@ -1498,7 +1482,7 @@
 	if ([keyPath isEqualToString:@"label"])
 	{
 		NSString *newLabel = [change objectForKey:NSKeyValueChangeNewKey];
-		if ( ([newLabel length] > 0) && ![newLabel isEqual:[change objectForKey:NSKeyValueChangeOldKey]] && ![object temporary] && [[object filename] hasPrefix:[AppController savedServersPath]])
+		if ( ([newLabel length] > 0) && ![newLabel isEqual:[change objectForKey:NSKeyValueChangeOldKey]] && ![object temporary])
 		{
 			NSString *newPath = CRDFindAvailableFileName([AppController savedServersPath], newLabel, @".rdp");
 			
@@ -1636,6 +1620,22 @@
 // Sets all of the values in the passed CRDSession to match the inspector
 - (void)updateInstToMatchInspector:(CRDSession *)inst
 {
+	// Checkboxes
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)	forKey:@"windowDrags"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)		forKey:@"drawDesktop"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)	forKey:@"windowAnimation"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)		forKey:@"themes"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)		forKey:@"savePassword"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)		forKey:@"forwardDisks"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)	forKey:@"forwardPrinters"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)	forKey:@"consoleSession"];
+	
+	// Text fields
+	[inst setValue:[gui_label stringValue]		forKey:@"label"];
+	[inst setValue:[gui_username stringValue]	forKey:@"username"];
+	[inst setValue:[gui_domain stringValue]		forKey:@"domain"];	
+	[inst setValue:[gui_password stringValue]	forKey:@"password"];
+	
 	// Host
 	int port;
 	NSString *s;
@@ -1644,7 +1644,8 @@
 	[inst setValue:s forKey:@"hostName"];
 	
 	// Screen depth
-	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8] forKey:@"screenDepth"];
+	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8]
+			forKey:@"screenDepth"];
 			
 	// Screen resolution
 	int width, height;
@@ -1679,7 +1680,21 @@
 	{
 		[gui_inspector setTitle:[NSLocalizedString(@"Inspector: ", @"Inspector -> Enabled title") stringByAppendingString:[newSettings label]]];
 	}
+		
+	// All checkboxes 
+	[gui_displayDragging    setState:BUTTON_STATE_FOR_KEY(@"windowDrags")];
+	[gui_drawDesktop        setState:BUTTON_STATE_FOR_KEY(@"drawDesktop")];
+	[gui_enableAnimations   setState:BUTTON_STATE_FOR_KEY(@"windowAnimation")];
+	[gui_enableThemes       setState:BUTTON_STATE_FOR_KEY(@"themes")];
+	[gui_savePassword       setState:BUTTON_STATE_FOR_KEY(@"savePassword")];
+	[gui_forwardDisks       setState:BUTTON_STATE_FOR_KEY(@"forwardDisks")];
+	[gui_forwardPrinters    setState:BUTTON_STATE_FOR_KEY(@"forwardPrinters")];
+	[gui_consoleSession     setState:BUTTON_STATE_FOR_KEY(@"consoleSession")];
 	
+	// Most of the text fields
+	[gui_label    setStringValue:[newSettings valueForKey:@"label"]];
+	[gui_username setStringValue:[newSettings valueForKey:@"username"]];
+	[gui_domain   setStringValue:[newSettings valueForKey:@"domain"]];
 	[gui_password setStringValue:[newSettings valueForKey:@"password"]];
 	
 	// Host
@@ -1788,8 +1803,7 @@
 		
 		if ([[inst valueForKey:@"fullscreen"] boolValue] || [[inst valueForKey:@"temporarilyFullscreen"] boolValue])
 		{
-			// xxx: not clean slate aware
-			//[self startFullscreen:self];	
+			[self startFullscreen:self];	
 			return;
 		}
 		
@@ -1848,31 +1862,15 @@
 {
 	CRDSession *inst = [self viewedServer];
 	NSSize newContentSize;
-	
-	if ( ([self displayMode] == CRDDisplayUnified) && (inst != nil) )
+	if ([self displayMode] == CRDDisplayUnified && inst != nil)
 	{
-		NSLog(@"Using computed size");
-		if (unifiedWindowSizeIsUserSet)
-		{
-			[gui_unifiedWindow saveFrameUsingName:@"UnifiedWindowFrameUserPosition"];
-			//NSLog(@"Saved %@ size to autosave", [gui_unifiedWindow stringWithSavedFrame]);
-		}
-		unifiedWindowSizeIsUserSet = NO;
-		
 		newContentSize = [[inst view] bounds].size;
 		[gui_unifiedWindow setContentMaxSize:newContentSize];
 	}
 	else
 	{
-		NSLog(@"Using user-saved size %@", [gui_unifiedWindow stringWithSavedFrame]);
-		unifiedWindowSizeIsUserSet = YES;
+		newContentSize = NSMakeSize(600, 400);
 		[gui_unifiedWindow setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
-		[gui_unifiedWindow setContentResizeIncrements:NSMakeSize(1, 1)];
-		
-		[gui_unifiedWindow setFrameUsingName:@"UnifiedWindowFrameUserPosition"];
-
-	
-		return;
 	}
 
 	NSRect windowFrame = [gui_unifiedWindow frame];
