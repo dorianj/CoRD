@@ -21,7 +21,6 @@
 @class CRDBitmap;
 @class CRDSession;
 @class CRDSessionView;
-@class CRDSessionDeviceManager;
 
 
 typedef int RDBOOL;

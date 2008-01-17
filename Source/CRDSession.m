@@ -22,10 +22,6 @@
 #import "AppController.h"
 #import "keychain.h"
 
-
-// Part of a hacky attempt to fix disk forwarding
-#define NOTIFY_POLL_SPEED 10.0
-
 @interface CRDSession (Private)
 - (BOOL)readFileAtPath:(NSString *)path;
 - (void)updateKeychainData:(NSString *)newHost user:(NSString *)newUser password:(NSString *)newPassword force:(BOOL)force;

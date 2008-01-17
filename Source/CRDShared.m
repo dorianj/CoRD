@@ -16,6 +16,8 @@
 */
 
 #include "CRDShared.h"
+#include <unistd.h>
+
 
 #pragma mark -
 #pragma mark Storage for externs
@@ -58,8 +60,7 @@ void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rec
 	{
 		// Interpolate the colors, draw a line for this pixel
 		delta = 1.0 - (float)(cur - rect.origin.y) / rect.size.height;
-		CRDDrawHorizontalLine([topColor blendedColorWithFraction:delta ofColor:bottomColor],
-					NSMakePoint(rect.origin.x, cur), rect.size.width);
+		CRDDrawHorizontalLine([topColor blendedColorWithFraction:delta ofColor:bottomColor], NSMakePoint(rect.origin.x, cur), rect.size.width);
 							
 		cur += 1.0;
 	}
@@ -94,7 +95,7 @@ void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port)
 
 NSString * CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn)
 {
-	if ([orig length] == 0)
+	if (![orig length])
 		return @"";
 		
 	NSMutableString *new = [[orig mutableCopy] autorelease];
@@ -188,8 +189,7 @@ inline void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *fo
 	[as addAttribute:NSFontAttributeName value:font range:NSMakeRange(0, [as length])];
 }
 
-inline CRDInputEvent CRDMakeInputEvent(unsigned int time,
-	unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2)
+inline CRDInputEvent CRDMakeInputEvent(unsigned int time, unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2)
 {
 	CRDInputEvent ie;
 	ie.time = time;
@@ -260,7 +260,8 @@ NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *to
 
 void CRDFillDefaultConnection(RDConnectionRef conn)
 {
-	const char *hostString = [[[NSHost currentHost] name] cStringUsingEncoding:NSASCIIStringEncoding];
+	char hostString[_POSIX_HOST_NAME_MAX+1];
+	gethostname(hostString, _POSIX_HOST_NAME_MAX);
 	
 	conn->tcpPort = CRDDefaultPort;
 	conn->screenWidth = 1024;
