@@ -1109,7 +1109,7 @@
 
 	[self setInspectorEnabled:YES];
 
-	inspectedServer =  inst;
+	inspectedServer = inst;
 	[self setInspectorSettings:inst];
 	
 	// If the new selection is an active session and this wasn't called from self, change the selected view
@@ -1580,7 +1580,7 @@
 	[window makeKeyAndOrderFront:self];
 }
 
-- (void) saveInspectedServer
+- (void)saveInspectedServer
 {
 	if ([inspectedServer modified])
 		[inspectedServer flushChangesToFile];
@@ -1620,6 +1620,8 @@
 // Sets all of the values in the passed CRDSession to match the inspector
 - (void)updateInstToMatchInspector:(CRDSession *)inst
 {
+	if (!inst)
+		
 	// Checkboxes
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)	forKey:@"windowDrags"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)		forKey:@"drawDesktop"];
@@ -1644,8 +1646,7 @@
 	[inst setValue:s forKey:@"hostName"];
 	
 	// Screen depth
-	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8]
-			forKey:@"screenDepth"];
+	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8] forKey:@"screenDepth"];
 			
 	// Screen resolution
 	int width, height;
@@ -1761,13 +1762,11 @@
 	[self performSelectorOnMainThread:@selector(completeConnection:) withObject:inst waitUntilDone:NO];
 					
 	if (connected)	
-		[inst runConnectionRunLoop];
+		[inst runConnectionRunLoop]; // this will block until the connection is finished
 		
 	if ([inst status] == CRDConnectionConnected)
-	{
 		[self disconnectInstance:inst];
-	}
-
+	
 	[pool release];
 }
 

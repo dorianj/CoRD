@@ -31,8 +31,7 @@
 
 	// User configurable RDP settings
 	NSString *label, *hostName, *username, *password, *domain;	
-	BOOL savePassword, forwardDisks, forwardPrinters, drawDesktop, windowDrags,
-			windowAnimation, themes, consoleSession, fullscreen;
+	BOOL savePassword, forwardDisks, forwardPrinters, drawDesktop, windowDrags, windowAnimation, themes, consoleSession, fullscreen;
 	int startDisplay, forwardAudio, screenDepth, screenWidth, screenHeight, port;
 	NSMutableDictionary *otherAttributes;
 	
