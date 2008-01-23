@@ -15,6 +15,8 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
+#import <CoreServices/CoreServices.h>
+
 #import "CRDSession.h"
 #import "CRDSessionView.h"
 #import "CRDKeyboard.h"
@@ -267,12 +269,14 @@
 	cliprdr_init(conn);
 	
 	// Make the connection
-	BOOL connected = rdp_connect(conn, CRDMakeWindowsString(hostName), 
+	BOOL connected = rdp_connect(conn,
+							CRDMakeWindowsString(hostName), 
 							logonFlags, 
 							CRDMakeWindowsString(domain), 
 							CRDMakeWindowsString(password), 
 							"",  /* xxx: command on logon */
-							"" /* xxx: session directory */ );
+							"" /* xxx: session directory */
+							);
 							
 	// Upon success, set up the input socket
 	if (connected)
@@ -402,17 +406,30 @@
 		return;
 		
 	NSPasteboard *pb = [NSPasteboard generalPasteboard];
-	if ([pb availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
-	{
-		NSString *pasteContent = CRDConvertLineEndings([pb stringForType:NSStringPboardType], YES);
+	if (![pb availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]])
+		return;
+	
+	NSString *pasteContent = CRDConvertLineEndings([pb stringForType:NSStringPboardType], YES);
 
-		NSData *unicodePasteContent = [pasteContent dataUsingEncoding:NSUnicodeStringEncoding allowLossyConversion:YES];
-		
-		if ([unicodePasteContent length] > 0)
+	NSMutableData *unicodePasteContent = [[[pasteContent dataUsingEncoding:NSUnicodeStringEncoding allowLossyConversion:YES] mutableCopy] autorelease];
+	
+	if (![unicodePasteContent length])
+		return;
+	
+	// a bit of a hack: assure it's little-endian... not sure of the proper API for this (CoreEndian doesn't seem appropriate)
+#ifdef __BIG_ENDIAN__
+		char *d = [unicodePasteContent mutableBytes], t;
+		int p = 0;
+		do
 		{
-			cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes] + 2 /* skip endianess marker */, [unicodePasteContent length]);
-		}
-	}
+			t = d[p];
+			d[p] = d[p+1];
+			d[p+1] = t;
+			p += 2;
+		} while (p+1 < [unicodePasteContent length]);
+#endif
+		
+	cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes] + 2 /* skip endianess marker */, [unicodePasteContent length]);
 }
 
 - (void)requestRemoteClipboardData
@@ -427,7 +444,7 @@
 // Sets the local clipboard to match the server provided data. Only called by server (via CRDMixedGlue) when new data has actually arrived
 - (void)setLocalClipboard:(NSData *)data format:(int)format
 {
-	if ( ((format != CF_UNICODETEXT) && (format != CF_AUTODETECT)) || ([data length] == 0) )
+	if ( ((format != CF_UNICODETEXT) && (format != CF_AUTODETECT)) || ![data length] )
 		return;
 	
 	unsigned char endiannessMarker[] = {0xFF, 0xFE};
@@ -625,13 +642,9 @@
 - (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure
 {	
 	if (useScrollView)
-	{
 		[self createScrollEnclosure:enclosure];
-	}
 	else
-	{
 		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-	}	
 }
 
 - (void)destroyUnified
@@ -672,9 +685,7 @@
 	realSize.height += [sender frame].size.height - [[sender contentView] frame].size.height;
 	
 	if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) && (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
-	{
-		return realSize;	
-	}
+		return realSize;
 		
 	return proposedFrameSize;
 }
@@ -936,60 +947,60 @@
 		
 		// Don't use KVC because none of the side effects in the setters are desirable at load time
 		
-		if (b)
+		if (!b)
+			continue;
+			
+		
+		if ([type isEqualToString:@"i"])
+			numVal = [value intValue];
+		
+		if ([name isEqualToString:@"connect to console"])
+			consoleSession = numVal;
+		else if ([name isEqualToString:@"redirectdrives"])
+			forwardDisks = numVal;
+		else if ([name isEqualToString:@"redirectprinters"])
+			forwardPrinters = numVal;
+		else if ([name isEqualToString:@"disable wallpaper"])
+			drawDesktop = !numVal;
+		else if ([name isEqualToString:@"disable full window drag"])
+			windowDrags = !numVal;
+		else if ([name isEqualToString:@"disable menu anims"])
+			windowAnimation = !numVal;
+		else if ([name isEqualToString:@"disable themes"])
+			themes = !numVal;
+		else if ([name isEqualToString:@"audiomode"])
+			forwardAudio = numVal;
+		else if ([name isEqualToString:@"desktopwidth"]) 
+			screenWidth = numVal;
+		else if ([name isEqualToString:@"desktopheight"]) 
+			screenHeight = numVal;
+		else if ([name isEqualToString:@"session bpp"]) 
+			screenDepth = numVal;
+		else if ([name isEqualToString:@"username"])
+			username = [value retain];
+		else if ([name isEqualToString:@"cord save password"]) 
+			savePassword = numVal;
+		else if ([name isEqualToString:@"domain"])
+			domain = [value retain];
+		else if ([name isEqualToString:@"startdisplay"])
+			startDisplay = numVal;
+		else if ([name isEqualToString:@"cord label"])
+			label = [value retain];			
+		else if ([name isEqualToString:@"cord row index"])
+			preferredRowIndex = numVal;
+		else if ([name isEqualToString:@"full address"]) {
+			CRDSplitHostNameAndPort(value, &hostName, &port);
+			[hostName retain];
+		}
+		else if ([name isEqualToString:@"cord fullscreen"])
+			fullscreen = numVal;
+		else
 		{
 			if ([type isEqualToString:@"i"])
-				numVal = [value intValue];
-			
-			if ([name isEqualToString:@"connect to console"])
-				consoleSession = numVal;
-			else if ([name isEqualToString:@"redirectdrives"])
-				forwardDisks = numVal;
-			else if ([name isEqualToString:@"redirectprinters"])
-				forwardPrinters = numVal;
-			else if ([name isEqualToString:@"disable wallpaper"])
-				drawDesktop = !numVal;
-			else if ([name isEqualToString:@"disable full window drag"])
-				windowDrags = !numVal;
-			else if ([name isEqualToString:@"disable menu anims"])
-				windowAnimation = !numVal;
-			else if ([name isEqualToString:@"disable themes"])
-				themes = !numVal;
-			else if ([name isEqualToString:@"audiomode"])
-				forwardAudio = numVal;
-			else if ([name isEqualToString:@"desktopwidth"]) 
-				screenWidth = numVal;
-			else if ([name isEqualToString:@"desktopheight"]) 
-				screenHeight = numVal;
-			else if ([name isEqualToString:@"session bpp"]) 
-				screenDepth = numVal;
-			else if ([name isEqualToString:@"username"])
-				username = [value retain];
-			else if ([name isEqualToString:@"cord save password"]) 
-				savePassword = numVal;
-			else if ([name isEqualToString:@"domain"])
-				domain = [value retain];
-			else if ([name isEqualToString:@"startdisplay"])
-				startDisplay = numVal;
-			else if ([name isEqualToString:@"cord label"])
-				label = [value retain];			
-			else if ([name isEqualToString:@"cord row index"])
-				preferredRowIndex = numVal;
-			else if ([name isEqualToString:@"full address"]) {
-				CRDSplitHostNameAndPort(value, &hostName, &port);
-				[hostName retain];
-			}
-			else if ([name isEqualToString:@"cord fullscreen"]) {
-				fullscreen = numVal;
-			}
+				[otherAttributes setObject:[NSNumber numberWithInt:numVal] forKey:name];
 			else
-			{
-				if ([type isEqualToString:@"i"])
-					[otherAttributes setObject:[NSNumber numberWithInt:numVal] forKey:name];
-				else
-					[otherAttributes setObject:value forKey:name];				
-			}
-		}		
+				[otherAttributes setObject:value forKey:name];				
+		}
 	}
 		
 	modified = NO;

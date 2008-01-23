@@ -85,6 +85,7 @@ void CRDFillDefaultConnection(RDConnectionRef conn);
 #define CGRECT_FROM_NSRECT(r) CGRectMake((r).origin.x, (r).origin.y, (r).size.width, (r).size.height)
 
 #define LOCALS_FROM_CONN									\
+	/*TRACE_FUNC;*/ \
 	CRDSessionView *v = (CRDSessionView *)conn->ui;			\
 	CRDSession *inst = (CRDSession *)conn->controller;
 
@@ -125,7 +126,7 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 #define SERVERS_ITEM_TAG 20001
 
 // Temporary use
-#define USE_SOUND_FORWARDING 1
+#define USE_SOUND_FORWARDING 0
 
 
 
@@ -133,7 +134,7 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 #pragma mark Controlling debugging output
 
 //#define WITH_DEBUG_KEYBOARD 1
-//#define WITH_DEBUG_UI 1
+#define WITH_DEBUG_UI 1
 //#define WITH_MID_LEVEL_DEBUG 1
 
 #ifdef WITH_MID_LEVEL_DEBUG

@@ -22,47 +22,6 @@
 #import "CRDShared.h"
 #import "CRDSession.h"
 
-/* now even more unneeded
-#pragma mark -
-#pragma mark Disk forwarding
-
-// XXX: this won't be used at all with new disk redir solution
-int ui_select(RDConnectionRef conn)
-{
-	int n = 0;
-	fd_set rfds, wfds;
-	struct timeval tv;
-	RDBOOL s_timeout = False;
-	
-	// If there are no pending IO requests, no need to check any files
-	if (!conn->ioRequest)
-		return 1;
-	
-	FD_ZERO(&rfds);
-	FD_ZERO(&wfds);	
-
-	rdpdr_add_fds(conn, &n, &rfds, &wfds, &tv, &s_timeout);
-	
-	struct timeval noTimeout;
-	noTimeout.tv_sec = 0;
-	noTimeout.tv_usec = 500; // one millisecond is 1000
-
-	switch (select(n, &rfds, &wfds, NULL, &noTimeout))
-	{
-		case -1:
-			error("select: %s\n", strerror(errno));
-			break;
-		case 0:
-			rdpdr_check_fds(conn, &rfds, &wfds, 1);
-			break;
-		default:
-			rdpdr_check_fds(conn, &rfds, &wfds, 0);
-			break;
-	}
-	
-	return 1;
-}*/
-
 
 #pragma mark -
 #pragma mark Clipboard

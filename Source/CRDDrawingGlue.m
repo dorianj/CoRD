@@ -144,8 +144,7 @@ void ui_destroy_bitmap(RDBitmapRef bmp)
 #pragma mark -
 #pragma mark Desktop Cache
 
-// Takes a section of the desktop cache (backing store) and stores it into the 
-//	rdesktop bitmap cache (using RDP colors). Adequately optimized, not critical.
+// Takes a section of the desktop cache (backing store) and stores it into the rdesktop bitmap cache (using RDP colors). Adequately optimized, not critical.
 void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, int h)
 {
 	LOCALS_FROM_CONN;
@@ -681,8 +680,7 @@ void ui_bell(void)
 #pragma mark -
 #pragma mark Cursors and Pointers
 
-RDCursorRef ui_create_cursor(RDConnectionRef conn, unsigned int x, unsigned int y, int width, int height,
-						 uint8 * andmask, uint8 * xormask)
+RDCursorRef ui_create_cursor(RDConnectionRef conn, unsigned int x, unsigned int y, int width, int height, uint8 * andmask, uint8 * xormask)
 {
 	return  [[CRDBitmap alloc] initWithCursorData:andmask alpha:xormask 
 			size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui];
@@ -713,12 +711,14 @@ void ui_move_pointer(RDConnectionRef conn, int x, int y)
 {
 	LOCALS_FROM_CONN;
 	//xxx: check if this conn is active
-	
-	NSPoint windowPoint = [v convertPoint:NSMakePoint(x,y) toView:nil];
+	/* this is incorrect; not sure why this should be implemented
+	NSPoint windowPoint = [v convertPoint:NSMakePoint(x,y) fromView:nil];
 	NSPoint windowOrigin = [[v window] frame].origin;
 	
 	NSLog(@"Setting point to remote (%d, %d), or local screen %@", x, y, NSStringFromPoint(NSMakePoint(windowPoint.x+windowOrigin.x, windowPoint.y+windowPoint.y)));
 	CGWarpMouseCursorPosition(CGPointMake(windowPoint.x+windowOrigin.x, windowPoint.y+windowPoint.y));
-	
+	*/
 	//NSLog(@"Should move mouse to %d, %d", x, y);
 }
+
+
