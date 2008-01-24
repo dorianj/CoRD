@@ -1,4 +1,4 @@
-/*	Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+/*	Copyright (c) 2007-2008 Dorian Johnson <info-2008@dorianjohnson.com>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -109,6 +109,32 @@
 		modified |= ![key isEqualToString:@"view"];
 		[super setValue:value forKey:key];
 	}
+}
+
+- (void)copyWithZone:(NSZone *)zone
+{
+	CRDSession *newSession = [[CRDSession alloc] init];
+	
+	newSession->label = [label copy];
+	newSession->hostName = [hostName copy];
+	newSession->username = [username copy];
+	newSession->password = [password copy];
+	newSession->domain = [domain copy];
+	newSession->startDisplay = startDisplay;
+	newSession->forwardDisks = forwardDisks; 
+	newSession->forwardAudio = forwardAudio;
+	newSession->forwardPrinters = forwardPrinters;
+	newSession->savePassword = savePassword;
+	newSession->drawDesktop = drawDesktop;
+	newSession->windowDrags = windowDrags;
+	newSession->windowAnimation = windowAnimation;
+	newSession->themes = themes;
+	newSession->consoleSession = consoleSession;
+	newSession->fullscreen = fullscreen;
+	newSession->screenDepth = screenDepth;
+	newSession->screenWidth = screenWidth;
+	newSession->screenHeight = screenHeight;
+	newSession->port = port;
 }
 
 
@@ -230,8 +256,10 @@
 	strncpy(conn->username, CRDMakeWindowsString(username), sizeof(conn->username));
 	
 	// Set remote keymap to match local OS X input type
-	conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
-	
+	if (CRDPreferenceIsEnabled(CRDSetServerKeyboardLayout))
+		conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
+	else
+		conn->keyboardLayout = 0;
 	
 	if (forwardDisks)
 	{
@@ -716,6 +744,7 @@
 			[inputEventStack addObject:[NSValue valueWithPointer:e]];	
 		}
 		
+		// Inform the connection thread it has unprocessed events
 		[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
 	}
 }

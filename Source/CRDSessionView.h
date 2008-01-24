@@ -1,4 +1,4 @@
-/*  Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+/*  Copyright (c) 2006-2008 Dorian Johnson <info-2008@dorianjohnson.com>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the

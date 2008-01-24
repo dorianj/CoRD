@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
+/*	Copyright (c) 2007-2008 Dorian Johnson <info-2008@dorianjohnson.com>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -778,13 +778,29 @@
 
 }
 
+- (IBAction)duplicateSelectedServer:(id)sender
+{
+	CRDSession *selectedServer = [self selectedServer];
+	
+	if (!selectedServer)
+		return;
+	
+	int serverIndex;
+	
+	if ( (serverIndex = [savedServers indexOfObject:selectedServer]) == NSNotFound)
+		serverIndex = [savedServers count]-1;
+	
+	CRDSession *duplicate = [selectedServer copy];
+	[duplicate setFilename:CRDFindAvailableFileName([AppController savedServersPath], [duplicate label], @".rdp")];
+	[self addSavedServer:duplicate atIndex:serverIndex+1 select:YES];
+	[gui_serverList noteNumberOfRowsChanged];
+}
+
 
 #pragma mark -
 #pragma mark Toolbar methods
 
-- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar 
-		itemForItemIdentifier:(NSString *)itemIdentifier 
-		willBeInsertedIntoToolbar:(BOOL)flag
+- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag
 {	
 	return [toolbarItems objectForKey:itemIdentifier];
 }
@@ -1593,7 +1609,7 @@
 	{
 		if ([view isKindOfClass:[NSTextField class]] && ![(NSTextField *)view drawsBackground])
 		{
-			// setTextColor is buggy in 10.4, thus use white to get the greyed color while disabled
+			// setTextColor is buggy in 10.4, thus use white to get the greyed color while disabled.  don't know what 10.5 does.
 			if (enabled)
 				[(NSTextField *)view setTextColor:[NSColor blackColor]];
 			else

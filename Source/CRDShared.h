@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
+/*	Copyright (c) 2007-2008 Dorian Johnson <info-2008@dorianjohnson.com>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -117,6 +117,7 @@ extern NSString * const CRDPrefsReconnectOutOfFullScreen;
 extern NSString * const CRDPrefsScaleSessions;
 extern NSString * const CRDPrefsMinimalisticServerList;
 extern NSString * const CRDPrefsIgnoreCustomModifiers;
+extern NSString * const CRDSetServerKeyboardLayout;
 
 // Notifications
 extern NSString * const CRDMinimalViewDidChangeNotification;
@@ -134,7 +135,7 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 #pragma mark Controlling debugging output
 
 //#define WITH_DEBUG_KEYBOARD 1
-#define WITH_DEBUG_UI 1
+//#define WITH_DEBUG_UI 1
 //#define WITH_MID_LEVEL_DEBUG 1
 
 #ifdef WITH_MID_LEVEL_DEBUG

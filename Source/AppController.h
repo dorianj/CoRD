@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
+/*	Copyright (c) 2007-2008 Dorian Johnson <info-2008@dorianjohnson.com>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -101,6 +101,7 @@
 - (IBAction)saveSelectedServer:(id)sender;
 - (IBAction)sortSavedServersAlphabetically:(id)sender;
 - (IBAction)doNothing:(id)sender;
+- (IBAction)duplicateSelectedServer:(id)sender;
 
 // Other methods are in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;

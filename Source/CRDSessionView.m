@@ -1,4 +1,4 @@
-/*	Copyright (c) 2006 Craig Dooley <xlnxminusx@gmail.com>
+/*	Copyright (c) 2006-2008 Dorian Johnson <info-2008@dorianjohnson.com>
 
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -285,30 +285,35 @@
 	[self mouseMoved:ev];
 }
 
+- (void)rightMouseDragged:(NSEvent *)ev 
+{
+	[self mouseMoved:ev];
+}
+
 - (void)mouseMoved:(NSEvent *)ev
 {
-
-	if ([self checkMouseInBounds:ev])
-	{
-		if ([mouseInputScheduler isValid])
-			[mouseInputScheduler invalidate];
-				
-		[mouseInputScheduler release];
-		mouseInputScheduler = nil;
+	if (![self checkMouseInBounds:ev])
+		return;
 		
-		if ( [[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0/CRDMouseEventLimit) )
-		{
-			[lastMouseEventSentAt release];
-			lastMouseEventSentAt = [[NSDate date] retain];
-			[self sendMouseInput:MOUSE_FLAG_MOVE];
-		}
-		else
-		{
-			mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:(1.0/CRDMouseEventLimit)
-					target:self selector:@selector(recheckScheduledMouseInput:)
-					userInfo:nil repeats:NO] retain];
-		}		
+	if ([mouseInputScheduler isValid])
+		[mouseInputScheduler invalidate];
+	
+	[mouseInputScheduler release];
+	mouseInputScheduler = nil;
+	
+	if ( [[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0/CRDMouseEventLimit) )
+	{
+		[lastMouseEventSentAt release];
+		lastMouseEventSentAt = [[NSDate date] retain];
+		[self sendMouseInput:MOUSE_FLAG_MOVE];
 	}
+	else
+	{
+		mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:(1.0/CRDMouseEventLimit)
+				target:self selector:@selector(recheckScheduledMouseInput:)
+				userInfo:nil repeats:NO] retain];
+	}		
+
 }
 
 
@@ -452,8 +457,6 @@
 	}
 	
 	[glyph drawInRect:r fromRect:NSMakeRect(0, 0, NSWidth(r), NSHeight(r)) operation:NSCompositeSourceOver];
-	
-	//NSRectFill(r);
 }
 
 - (void)swapRect:(NSRect)r
@@ -622,8 +625,7 @@
 {
 	NSRect r = [rectValue rectValue];
 	
-	// Hack: make the box 1px bigger all around; seems to make updates much more
-	//	reliable when the screen is stretched
+	// Hack: make the box 1px bigger all around; seems to make updates much more reliable when the screen is stretched
 	r.origin.x = (int)r.origin.x - 1.0f;
 	r.origin.y = (int)r.origin.y - 1.0f;
 	r.size.width = (int)r.size.width + 2.0f;
@@ -702,12 +704,12 @@
 
 - (int)width
 {
-	return [self bounds].size.width;
+	return NSWidth([self bounds]);
 }
 
 - (int)height
 {
-	return [self bounds].size.height;
+	return NSHeight([self bounds]);
 }
 
 - (unsigned int *)colorMap

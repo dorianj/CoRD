@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
+/*	Copyright (c) 2007-2008 Dorian Johnson <arcadiclife@gmail.com>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -273,9 +273,7 @@ void ui_end_update(RDConnectionRef conn)
 	LOCALS_FROM_CONN;
 	
 	if (conn->updateEntireScreen)
-	{
 		[v performSelectorOnMainThread:@selector(setNeedsDisplayOnMainThread:) withObject:[NSNumber numberWithBool:YES] waitUntilDone:NO];
-	}
 	
 	conn->updateEntireScreen = NO;
 }

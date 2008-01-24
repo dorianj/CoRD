@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007 Dorian Johnson <arcadiclife@gmail.com>
+/*	Copyright (c) 2007-2008 Dorian Johnson <arcadiclife@gmail.com>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -282,7 +282,7 @@ static NSDictionary *windowsKeymapTable = nil;
 #pragma mark Class methods
 
 // This method isn't fully re-entrant but shouldn't be a problem in practice
-+ (unsigned) windowsKeymapForMacKeymap:(NSString *)keymapName
++ (unsigned)windowsKeymapForMacKeymap:(NSString *)keymapName
 {
 	// Load 'OSX keymap name' --> 'Windows keymap number' lookup table if it isn't already loaded
 	if (windowsKeymapTable == nil)
@@ -332,8 +332,7 @@ static NSDictionary *windowsKeymapTable = nil;
 			if ([prefix length] >= 4)
 			{ 
 				windowsKeymap = [windowsKeymapTable objectForKey:potentialKeymapName];
-				DEBUG_KEYBOARD( (@"windowsKeymapForMacKeymap: substituting keymap '%@' for passed '%@', giving Windows keymap '%x'",
-								 potentialKeymapName, keymapName, [windowsKeymap intValue]));
+				DEBUG_KEYBOARD( (@"windowsKeymapForMacKeymap: substituting keymap '%@' for passed '%@', giving Windows keymap '%x'", potentialKeymapName, keymapName, [windowsKeymap intValue]));
 				break;
 			}
 		}
