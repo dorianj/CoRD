@@ -98,7 +98,6 @@ void * xmalloc(int size)
     return mem;
 }
 
-/* realloc; exit if out of memory */
 void * xrealloc(void *oldmem, int size)
 {
     void *mem;

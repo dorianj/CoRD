@@ -24,7 +24,9 @@
 
 - (id)initWithScreen:(NSScreen *)screen;
 - (void)startFullScreen;
+- (void)startFullScreenWithAnimation:(BOOL)animate;
 - (void)prepareForExit;
 - (void)exitFullScreen;
+- (void)exitFullScreenWithAnimation:(BOOL)animate;
 
 @end

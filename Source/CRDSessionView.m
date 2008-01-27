@@ -153,6 +153,15 @@
 	CGImageRelease(rdBufferImage);
 }
 
+- (NSImage *)cacheDisplayInRectAsImage:(NSRect)rect
+{
+	NSBitmapImageRep *imageRep = [self bitmapImageRepForCachingDisplayInRect:rect];
+	[self cacheDisplayInRect:rect toBitmapImageRep:imageRep];
+	NSImage *img = [[[NSImage alloc] initWithSize:rect.size] autorelease];
+	[img addRepresentation:imageRep];
+	return img;
+}
+
 #pragma mark -
 #pragma mark NSOpenGLView
 

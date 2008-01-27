@@ -68,7 +68,7 @@
 	CRDSession *dumpedInstance;
 	BOOL dumpedInstanceWasSelected;
 	
-	BOOL isTerminating, useMinimalServersList;
+	BOOL _appIsTerminating, useMinimalServersList;
 }
 
 // Actions
@@ -111,8 +111,7 @@
 - (void)cancelConnectingInstance:(CRDSession *)inst;
 
 - (CRDSession *)serverInstanceForRow:(int)row;
-- (CRDSession *)selectedServer; // different than below?
-//- (CRDSession *)selectedServerInstance;
+- (CRDSession *)selectedServer;
 - (CRDSession *)viewedServer;
 
 - (BOOL)mainWindowIsFocused;
@@ -122,7 +121,6 @@
 
 - (void)holdSavedServer:(int)row;
 - (void)reinsertHeldSavedServer:(int)intoRow;
-
 
 
 @end

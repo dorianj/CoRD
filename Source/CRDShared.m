@@ -49,7 +49,7 @@ NSString * const CRDPrefsReconnectOutOfFullScreen = @"ReconnectWhenLeavingFullSc
 NSString * const CRDPrefsScaleSessions = @"resizeViewToFit";
 NSString * const CRDPrefsMinimalisticServerList = @"MinimalServerList";
 NSString * const CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizations";
-NSString * const CRDSetServerKeyboardLayout = @"CRDSetServerKeyboardLayout";
+NSString * const CRDSetServerKeyboardLayout = @"SetServerKeyboardLayout";
 
 #pragma mark -
 #pragma mark General purpose routines
@@ -75,10 +75,7 @@ inline void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width)
 
 inline NSString * CRDJoinHostNameAndPort(NSString *host, int port)
 {
-	if (port && port != CRDDefaultPort)
-		return [NSString stringWithFormat:@"%@:%d", host, port];
-	else
-		return [[host copy] autorelease];
+	return (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", host, port] : [[host copy] autorelease];
 }
 
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port)
@@ -100,8 +97,7 @@ NSString * CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn)
 		return @"";
 		
 	NSMutableString *new = [[orig mutableCopy] autorelease];
-	NSString *replace = withCarriageReturn ? @"\n" : @"\r\n",
-			 *with = withCarriageReturn ? @"\r\n" : @"\n";
+	NSString *replace = withCarriageReturn ? @"\n" : @"\r\n", *with = withCarriageReturn ? @"\r\n" : @"\n";
 	[new replaceOccurrencesOfString:replace withString:with options:NSLiteralSearch range:NSMakeRange(0, [orig length])];
 	return new;
 }
@@ -113,7 +109,7 @@ inline BOOL CRDDrawerIsVisible(NSDrawer *drawer)
 
 inline const char * CRDMakeWindowsString(NSString *str)
 {
-	return (str != nil) ? [str cStringUsingEncoding:NSWindowsCP1250StringEncoding] : "";
+	return str ? [str cStringUsingEncoding:NSWindowsCP1250StringEncoding] : "";
 }
 
 inline void CRDCreateDirectory(NSString *path)
@@ -214,14 +210,13 @@ inline NSString *CRDTemporaryFile(void)
 BOOL CRDPathIsHidden(NSString *path)
 {
 	CFURLRef fileURL = CFURLCreateWithString(NULL, (CFStringRef)[@"file://" stringByAppendingString:path], NULL);	
-	if (fileURL != NULL)
-	{
-		LSItemInfoRecord itemInfo;
-		LSCopyItemInfoForURL(fileURL, kLSRequestAllFlags, &itemInfo);
-		CFRelease(fileURL);	
-		return itemInfo.flags & kLSItemInfoIsInvisible;
-	} else
+	if (!fileURL)
 		return NO;
+	
+	LSItemInfoRecord itemInfo;
+	LSCopyItemInfoForURL(fileURL, kLSRequestAllFlags, &itemInfo);
+	CFRelease(fileURL);	
+	return itemInfo.flags & kLSItemInfoIsInvisible;
 }
 
 inline NSCellStateValue CRDButtonState(BOOL enabled)

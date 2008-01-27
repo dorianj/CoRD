@@ -18,6 +18,8 @@
 #import "CRDFullScreenWindow.h"
 #import "Carbon/Carbon.h"
 
+#import "CRDShared.h"
+
 #pragma mark -
 @implementation CRDFullScreenWindow
 
@@ -33,16 +35,17 @@
 	[self setHasShadow:NO];
 	[[self contentView] setAutoresizesSubviews:NO];
 	
-	hideMenu = ([[NSScreen screens] count] > 0) && (screen == [[NSScreen screens] objectAtIndex:0]);
+	hideMenu = [[NSScreen screens] count] && (screen == [[NSScreen screens] objectAtIndex:0]);
 	
 	return self;
 }
 
-- (void)startFullScreen
+- (void)startFullScreenWithAnimation:(BOOL)animate
 {
 	[self setAlphaValue:0.0];
 	[self setLevel:NSPopUpMenuWindowLevel];
 	[self makeKeyAndOrderFront:self];
+	[self display];
 
 	NSDictionary *animDict = [NSDictionary dictionaryWithObjectsAndKeys:
 						self, NSViewAnimationTargetKey,
@@ -54,7 +57,7 @@
 	[viewAnim setAnimationCurve:NSAnimationEaseIn];
 	
 	[viewAnim startAnimation];
-	[viewAnim release];	
+	[viewAnim release];
 	
 	if (hideMenu)
 		SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
@@ -64,29 +67,45 @@
 	[self display];
 }
 
+- (void)startFullScreen
+{
+	[self startFullScreenWithAnimation:YES];
+}
+
 - (void)prepareForExit
 {
 	[self setLevel:NSPopUpMenuWindowLevel];
+	
 	
 	if (hideMenu)
 		SetSystemUIMode(kUIModeNormal, 0);
 }
 
-- (void)exitFullScreen
+- (void)exitFullScreenWithAnimation:(BOOL)animate
 {	
-	NSDictionary *fadeWindow = [NSDictionary dictionaryWithObjectsAndKeys:
-						self, NSViewAnimationTargetKey,
-						NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
-						nil];
-	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:fadeWindow]];
-	[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
-	[viewAnim setDuration:0.5];
-	[viewAnim setAnimationCurve:NSAnimationEaseOut];
-		
-	[viewAnim startAnimation];
-	[viewAnim release];	
+	if (animate)
+	{
+		NSDictionary *fadeWindow = [NSDictionary dictionaryWithObjectsAndKeys:
+							self, NSViewAnimationTargetKey,
+							NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
+							nil];
+		NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:fadeWindow]];
+		[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
+		[viewAnim setDuration:0.5];
+		[viewAnim setAnimationCurve:NSAnimationEaseOut];
+			
+		[viewAnim startAnimation];
+		[viewAnim release];	
+	}
+	else
+	NSLog(@"not animating the close");
 	
 	[self close];
+}
+
+- (void)exitFullScreen
+{
+	[self exitFullScreenWithAnimation:YES];
 }
 
 // Windows that use the NSBorderlessWindowMask can't become key by default.
@@ -94,6 +113,7 @@
 {
     return YES;
 }
+
 
 @end
 

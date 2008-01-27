@@ -96,7 +96,6 @@
 #endif
 
 
-// Alignment is needed on PPC, but not x86
 #ifndef __i386__
 	#define NEED_ALIGN
 #endif

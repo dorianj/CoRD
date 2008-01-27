@@ -73,6 +73,7 @@
 - (void)focusBackingStore;
 - (void)releaseBackingStore;
 - (int)getBackingStoreBytes:(unsigned char **)retBytes;
+- (NSImage *)cacheDisplayInRectAsImage:(NSRect)rect;
 
 - (BOOL)checkMouseInBounds:(NSEvent *)ev;
 - (void)sendMouseInput:(unsigned short)flags;

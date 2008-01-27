@@ -15,7 +15,7 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-//	Replaces: xwin.c
+// Glue between CoRD and rdesktop; replaces: xwin.c
 
 
 #import <Cocoa/Cocoa.h>
@@ -52,7 +52,6 @@
 static void schedule_display(RDConnectionRef conn);
 static void schedule_display_in_rect(RDConnectionRef conn, NSRect r);
 
-static CRDBitmap *nullCursor = nil;
 
 #pragma mark -
 #pragma mark Resizing the Connection Window
@@ -159,7 +158,7 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 	} CGContextRestoreGState(screenDumpContext);
 	
 		
-	// Translate the 32-bit RGBA screen dump into RDP colors, using vImage if possible
+	// Translate the 32-bit RGBA screen dump into RDP colors
 	uint8 *output, *o, *p;
 	int i=0, len=w*h, bytespp = (conn->serverBpp+7)/8;
 	
@@ -669,24 +668,20 @@ void ui_reset_clip(RDConnectionRef conn)
 	[v resetClip];
 }
 
-void ui_bell(void)
-{
-	NSBeep();
-}
-
 
 #pragma mark -
 #pragma mark Cursors and Pointers
 
 RDCursorRef ui_create_cursor(RDConnectionRef conn, unsigned int x, unsigned int y, int width, int height, uint8 * andmask, uint8 * xormask)
 {
-	return  [[CRDBitmap alloc] initWithCursorData:andmask alpha:xormask 
-			size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui];
+	return  [[CRDBitmap alloc] initWithCursorData:andmask alpha:xormask size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui];
 }
 
 void ui_set_null_cursor(RDConnectionRef conn)
 {
-	if (nullCursor == nil)
+	static CRDBitmap *nullCursor = nil;
+
+	if (!nullCursor)
 		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL);
 		
 	ui_set_cursor(conn, nullCursor);
@@ -718,5 +713,16 @@ void ui_move_pointer(RDConnectionRef conn, int x, int y)
 	*/
 	//NSLog(@"Should move mouse to %d, %d", x, y);
 }
+
+
+
+#pragma mark -
+#pragma mark User Alerts
+
+void ui_bell(void)
+{
+	NSBeep();
+}
+
 
 

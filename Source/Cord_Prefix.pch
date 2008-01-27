@@ -1,6 +1,4 @@
-//
-// Prefix header for all source files of the 'Cord' target in the 'Cord' project
-//
+// Prefix header for all source files of the 'CoRC' target in the 'CoRD' project
 
 #ifdef __OBJC__
 	#import <Cocoa/Cocoa.h>

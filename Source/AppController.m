@@ -505,9 +505,9 @@
 
 - (IBAction)startFullscreen:(id)sender
 {
-	if (displayMode == CRDDisplayFullscreen || [connectedServers count] == 0)
+	if (displayMode == CRDDisplayFullscreen || ![connectedServers count] || ![self viewedServer])
 		return;
-		
+	
 	displayModeBeforeFullscreen = displayMode;
 	
 	// Create the fullscreen window then move the tabview into it	
@@ -517,7 +517,7 @@
 	NSRect winRect = [[NSScreen mainScreen] frame];
 
 	// If needed, reconnect the instance so that it can fill the screen
-	if (![[inst valueForKey:@"fullscreen"] boolValue]  && CRDPreferenceIsEnabled(CRDPrefsReconnectIntoFullScreen) && ( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
+	if (CRDPreferenceIsEnabled(CRDPrefsReconnectIntoFullScreen) && ( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
 	{
 		[self disconnectInstance:inst];
 		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
@@ -534,19 +534,38 @@
 	
 	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
 	[gui_fullScreenWindow setDelegate:self];
-	
-	[gui_tabView retain];
-	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
-	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
-	[gui_tabView release];	
-	
 	[gui_tabView setAnimatesWhenSwitchingItems:YES];
-	[gui_tabView setFrame:CRDRectFromSize([serverView bounds].size)];
-	[serverView setFrame:CRDRectFromSize([serverView bounds].size)];
 	
+	[[gui_tabView retain] autorelease];
+	
+	
+	// Force the unified window to maintain content by copying currently viewed server into an NSImageView and display it. see endFullscreen for details on why
+	NSImageView *visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [serverView bounds].size}] autorelease];
+	[visibleSessionCacheImageView setImage:[serverView cacheDisplayInRectAsImage:[serverView bounds]]];
+	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
+	[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
+	[visibleSessionCacheImageView setFrame:CRDRectFromSize([[gui_unifiedWindow contentView] frame].size)];
+	
+	NSDisableScreenUpdates(); {
+		[[gui_tabView retain] autorelease];
+		[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
+		[[gui_unifiedWindow contentView] addSubview:visibleSessionCacheImageView];
+		[gui_unifiedWindow display];
+	} NSEnableScreenUpdates();
+	
+	
+	[gui_tabView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
+	// xxxtodo: need if logic here to make sure the serverView is properly sized (not blown up)
+	[serverView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
+	
+	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
+	
+	NSEnableScreenUpdates(); // Disable may have been used for slightly deferred fullscreen (see completeConnection:)
 	[gui_fullScreenWindow startFullScreen];
-	
+
 	[gui_fullScreenWindow makeFirstResponder:serverView];
+	
+	[visibleSessionCacheImageView removeFromSuperview];
 	
 	displayMode = CRDDisplayFullscreen;
 }
@@ -556,38 +575,54 @@
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
 	
-	[gui_fullScreenWindow prepareForExit];
-	displayMode = CRDDisplayUnified;
+	BOOL animate = _appIsTerminating;
 	
+	CRDSessionView *sessionView = [[self selectedServer] view];
+	
+	[gui_fullScreenWindow prepareForExit];
+
+	// Misc preparation
+	[gui_tabView setAnimatesWhenSwitchingItems:NO];
+	displayMode = CRDDisplayUnified;
 	[self autosizeUnifiedWindowWithAnimation:NO];
 	
-	[gui_tabView retain];
-	[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
+
+	// Force the full screen window to maintain content by copying currently viewed server into an NSImageView and display it. The OpenGL-drawing CRDSession doesn't play nicely with being moved between windows (it clears the fullscreen window as soon as it's removed by removeFromSuperviewWithoutNeedingDisplay)
+	NSImageView *visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [sessionView bounds].size}] autorelease];
+	[visibleSessionCacheImageView setImage:[sessionView cacheDisplayInRectAsImage:[sessionView bounds]]];
+	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
+	[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
+	[visibleSessionCacheImageView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
 	
-	NSSize contentSize = [[gui_unifiedWindow contentView] frame].size;
+	NSDisableScreenUpdates(); {
+		[[gui_tabView retain] autorelease];
+		[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
+		[[gui_fullScreenWindow contentView] addSubview:visibleSessionCacheImageView];
+		[gui_fullScreenWindow display];
+	} NSEnableScreenUpdates();
+	
+	
+	// Move the tab view to the unified view
 	
 	// Autosizing will get screwed up if the size is bigger than the content view
-	[gui_tabView setFrame:CRDRectFromSize(contentSize)];
+	[gui_tabView setFrame:CRDRectFromSize([[gui_unifiedWindow contentView] frame].size)];
 	
-	[[gui_unifiedWindow contentView] addSubview:gui_tabView];
-	[gui_tabView release];
-	
-	[gui_tabView setAnimatesWhenSwitchingItems:NO];
-	
+	[[gui_unifiedWindow contentView] addSubview:gui_tabView];	
 	[gui_unifiedWindow display];
 	
 	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
 		[self startWindowed:self];
 		
-	// Animate the fullscreen window fading away
-	[gui_fullScreenWindow exitFullScreen];
-	
+	// Animate the fullscreen window fading away, dispose of window
+	[gui_fullScreenWindow exitFullScreenWithAnimation:animate];
 	gui_fullScreenWindow = nil;
-
+	
 	displayMode = displayModeBeforeFullscreen;
 	
 	if (displayMode == CRDDisplayUnified)
 		[gui_unifiedWindow makeKeyAndOrderFront:nil];
+	else
+		[[[self selectedServer] window] makeKeyAndOrderFront:nil];
 }
 
 // Toggles between full screen and previous state
@@ -639,7 +674,7 @@
 		
 	displayMode = CRDDisplayUnified;
 	
-	if ([connectedServers count] == 0)
+	if (![connectedServers count])
 		return;
 	
 	NSEnumerator *enumerator = [connectedServers objectEnumerator];
@@ -908,7 +943,7 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
-	isTerminating = YES;
+	_appIsTerminating = YES;
 	
 	[self tableViewSelectionDidChange:nil];
 	
@@ -917,31 +952,36 @@
 	[userDefaults setBool:CRDDrawerIsVisible(gui_serversDrawer) forKey:CRDDefaultsUnifiedDrawerShown];
 	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:CRDDefaultsUnifiedDrawerWidth];
 	
+	NSDisableScreenUpdates();
+	
+	// Clean up the fullscreen window
 	if (displayMode == CRDDisplayFullscreen)
+	{
+		[gui_tabView setAnimatesWhenSwitchingItems:NO];
+		[gui_fullScreenWindow orderOut:nil];
 		displayMode = displayModeBeforeFullscreen;
+	}
 	[userDefaults setInteger:displayMode forKey:CRDDefaultsDisplayMode];
 	
-	
-	// Other cleanup
+	// Disconnect all connected servers
 	NSEnumerator *enumerator;
 	CRDSession *inst;
-	
-	// Disconnect all connected servers
 	enumerator = [connectedServers objectEnumerator];
 	
 	while ( (inst = [enumerator nextObject]) )
-	{
 		[self disconnectInstance:inst];
-	}
+	
+	[gui_unifiedWindow orderOut:nil];
+	
+	NSEnableScreenUpdates();
+	
 	
 	// Flush each saved server to file (so that the perferred row will be saved)
 	[self storeSavedServerPositions];
 	enumerator = [savedServers objectEnumerator];
 	
 	while ( (inst = [enumerator nextObject]) )
-	{
 		[inst flushChangesToFile];
-	}	
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -1274,7 +1314,7 @@
 	else
 	{
 		// Move to saved servers
-		if ([inst filename] == nil)
+		if (![inst filename])
 		{
 			NSString *path = CRDFindAvailableFileName([AppController savedServersPath], [inst label], @".rdp");
 
@@ -1286,14 +1326,14 @@
 
 	[self listUpdated];
 		
-	if ( (displayMode == CRDDisplayFullscreen) && ([gui_tabView numberOfItems] == 0) )
+	if ((displayMode == CRDDisplayFullscreen) && ![gui_tabView numberOfItems])
 	{
 		[self autosizeUnifiedWindowWithAnimation:NO];
 		[self endFullscreen:self];
 	}
 	else if (displayMode == CRDDisplayUnified)
 	{
-		[self autosizeUnifiedWindowWithAnimation:!isTerminating];
+		[self autosizeUnifiedWindowWithAnimation:!_appIsTerminating];
 		
 		if ([self viewedServer] == nil && CRDDrawerIsVisible(gui_serversDrawer))
 			[gui_unifiedWindow makeFirstResponder:gui_serverList];
@@ -1818,13 +1858,15 @@
 		
 		if ([[inst valueForKey:@"fullscreen"] boolValue] || [[inst valueForKey:@"temporarilyFullscreen"] boolValue])
 		{
-			[self startFullscreen:self];	
+			// defer the switch to fullscreen so that the server has a chance to set the background color of the screen so that the animation into fullscreen isn't abrupt. Very short time so as not to make interface laggy, but just long enough for the draw command to come in on LAN servers
+			NSDisableScreenUpdates();
+			[NSTimer scheduledTimerWithTimeInterval:0.15 target:self selector:@selector(startFullscreen:) userInfo:nil repeats:NO];
+			
 			return;
 		}
 		
 		if (displayMode == CRDDisplayUnified)
 			[self autosizeUnifiedWindow];
-		
 	}
 	else
 	{

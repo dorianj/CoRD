@@ -20,7 +20,8 @@
 	<false/>
 	<key>IgnoreModifierKeyCustomizations</key>
 	<true/>
-	<key>CRDSetServerKeyboardLayout</key>
+	<key>SetServerKeyboardLayout</key>
 	<true/>
+	
 </dict>
 </plist>

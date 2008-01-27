@@ -15,6 +15,8 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
+
+
 #import "CRDTabView.h"
  
 #import "CRDShared.h"
@@ -38,7 +40,7 @@
 	return self;
 }
 
-- (void) dealloc
+- (void)dealloc
 {
 	_selectedItem = nil;
 	[_items release];
@@ -65,10 +67,8 @@
 	
 	if ([self animatesWhenSwitchingItems])
 	{
-		NSLog(@"Attempting to animate");
-		
-
-	
+		NSLog(@"Attempting to animate tab switch");
+			
 		NSMutableArray *viewAnims = [NSMutableArray array];
 		
 		if (initialContentView != nil)
@@ -93,7 +93,7 @@
 			NSLog(@"Animating the fade in");
 		}
 
-		if ([viewAnims count] == 0)
+		if (![viewAnims count])
 		{
 			NSLog(@"Nothing to animate!");
 			_selectedItem = item;
@@ -112,9 +112,11 @@
 	}
 	else
 	{
+		NSLog(@"Not bothering to animate");
 		
 		[initialContentView removeFromSuperviewWithoutNeedingDisplay];
 		[self addSubview:finalContentView];
+		[finalContentView drawRect:[finalContentView bounds]];
 	}
 	
 	_selectedItem = item;
