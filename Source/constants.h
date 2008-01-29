@@ -33,7 +33,7 @@
 #define FONT_CACHE_SIZE 12
 #define FONT_CACHE_ENTRIES 256
 
-#define TIMOUT_LENGTH 20
+#define TIMEOUT_LENGTH 20
 
 #define NOT_SET -1
 

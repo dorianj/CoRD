@@ -538,10 +538,10 @@
 	
 	[[gui_tabView retain] autorelease];
 	
-	
-	// Force the unified window to maintain content by copying currently viewed server into an NSImageView and display it. see endFullscreen for details on why
+
+	// Force the unified window to maintain content by copying currently viewed server into an NSImageView and display it. see endFullscreen for details on why. xxx: doesn't do the right thing when scrollers are on (needs to copy full tabview, but cacheDisplayInRectAsImage'ing gui_tabView doesn't work since CRDSessionView is opengl
 	NSImageView *visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [serverView bounds].size}] autorelease];
-	[visibleSessionCacheImageView setImage:[serverView cacheDisplayInRectAsImage:[serverView bounds]]];
+	[visibleSessionCacheImageView setImage:[serverView cacheDisplayInRectAsImage:[serverView frame]]]; // xxx: needs to change for scrollers
 	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
 	[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
 	[visibleSessionCacheImageView setFrame:CRDRectFromSize([[gui_unifiedWindow contentView] frame].size)];
@@ -552,7 +552,6 @@
 		[[gui_unifiedWindow contentView] addSubview:visibleSessionCacheImageView];
 		[gui_unifiedWindow display];
 	} NSEnableScreenUpdates();
-	
 	
 	[gui_tabView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
 	// xxxtodo: need if logic here to make sure the serverView is properly sized (not blown up)
@@ -575,7 +574,7 @@
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
 	
-	BOOL animate = _appIsTerminating;
+	BOOL animate = !_appIsTerminating;
 	
 	CRDSessionView *sessionView = [[self selectedServer] view];
 	
@@ -587,7 +586,7 @@
 	[self autosizeUnifiedWindowWithAnimation:NO];
 	
 
-	// Force the full screen window to maintain content by copying currently viewed server into an NSImageView and display it. The OpenGL-drawing CRDSession doesn't play nicely with being moved between windows (it clears the fullscreen window as soon as it's removed by removeFromSuperviewWithoutNeedingDisplay)
+	// Force the full screen window to maintain content by copying currently viewed server into an NSImageView and display it. The OpenGL-drawing CRDSession doesn't play nicely with being moved between windows (it clears the fullscreen window as soon as it's removed by removeFromSuperviewWithoutNeedingDisplay). xxx: same scroller problem as startFullscreen
 	NSImageView *visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [sessionView bounds].size}] autorelease];
 	[visibleSessionCacheImageView setImage:[sessionView cacheDisplayInRectAsImage:[sessionView bounds]]];
 	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
@@ -1228,6 +1227,7 @@
 	}
 }
 
+
 - (void)windowDidBecomeKey:(NSNotification *)sender
 {
 	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
@@ -1244,14 +1244,14 @@
 	}
 }
 
+// Implement unified window 'snap' to real size
 - (NSSize)windowWillResize:(NSWindow *)sender toSize:(NSSize)proposedFrameSize
 {
 	if ( (sender == gui_unifiedWindow) && (displayMode == CRDDisplayUnified) && ([self viewedServer] != nil) )
 	{
 		NSSize realSize = [[[self viewedServer] view] bounds].size;
 		realSize.height += [gui_unifiedWindow frame].size.height - [[gui_unifiedWindow contentView] frame].size.height;
-		if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) &&
-			 (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
+		if ( (realSize.width-proposedFrameSize.width <= CRDWindowSnapSize) && (realSize.height-proposedFrameSize.height <= CRDWindowSnapSize) )
 		{
 			return realSize;	
 		}

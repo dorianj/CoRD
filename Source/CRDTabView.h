@@ -18,7 +18,7 @@
 #import <Cocoa/Cocoa.h>
 
 @interface NSObject (CRDTabViewItem)
-	- (NSView *)view;
+	- (NSView *)tabItemView;
 @end
 
 

@@ -60,8 +60,8 @@
 
 - (void)selectItem:(id)item
 {
-	NSView *initialContentView = [[self selectedItem] view];
-	NSView *finalContentView = [item view];
+	NSView *initialContentView = [[self selectedItem] tabItemView];
+	NSView *finalContentView = [item tabItemView];
 	
 	[finalContentView setFrame:(NSRect){NSZeroPoint, [self bounds].size}];
 	
@@ -180,8 +180,8 @@
 	if (item == nil)
 		[NSException raise:NSInvalidArgumentException format:@"Can't add nil objects to CRDTabView"];
 		
-	if (![item respondsToSelector:@selector(view)])
-		[NSException raise:@"InvalidCRDTabViewItem" format:@"CRDTabView items must respond to -[obj view]!"];
+	if (![item respondsToSelector:@selector(tabItemView)])
+		[NSException raise:@"InvalidCRDTabViewItem" format:@"CRDTabView items must respond to -[obj tabItemView]!"];
 	
 	@synchronized(itemsLock)
 	{

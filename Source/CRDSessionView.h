@@ -43,7 +43,7 @@
 	CRDKeyboard *keyTranslator;
 	unsigned int *colorMap;	// always a size of 256
 	NSSize screenSize;
-	
+		
 	// For mouse event throttling
 	NSDate *lastMouseEventSentAt;
 	NSEvent *deferredMouseEvent;
@@ -73,7 +73,7 @@
 - (void)focusBackingStore;
 - (void)releaseBackingStore;
 - (int)getBackingStoreBytes:(unsigned char **)retBytes;
-- (NSImage *)cacheDisplayInRectAsImage:(NSRect)rect;
+
 
 - (BOOL)checkMouseInBounds:(NSEvent *)ev;
 - (void)sendMouseInput:(unsigned short)flags;
@@ -88,6 +88,7 @@
 - (void)writeScreenCaptureToFile:(NSString *)path;
 - (void)setScreenSize:(NSSize)newSize;
 - (void)setNeedsDisplayOnMainThread:(id)object;
+- (BOOL)isScrolled;
 
 // Accessors
 - (void)setController:(CRDSession *)instance;
@@ -95,6 +96,7 @@
 - (void)setBitdepth:(int)depth;
 - (int)width;
 - (int)height;
+- (NSSize)screenSize;
 - (unsigned int *)colorMap;
 - (void)setColorMap:(unsigned int *)map;
 - (void)setCursor:(NSCursor *)cur;

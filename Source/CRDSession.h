@@ -102,6 +102,7 @@
 - (RDConnectionRef)conn;
 - (NSString *)label;
 - (CRDSessionView *)view;
+- (NSView *)tabItemView;
 - (NSString *)filename;
 - (void)setFilename:(NSString *)path;
 - (BOOL)temporary;

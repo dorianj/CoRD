@@ -81,31 +81,6 @@
 	[super dealloc];
 }
 
-- (void)drawRect:(NSRect)rect
-{
-	[self generateTexture];
-	
-	glClear(GL_COLOR_BUFFER_BIT);
-	GLfloat textureWidth = rdBufferWidth;
-	GLfloat textureHeight = rdBufferHeight; 
-	glBindTexture(GL_TEXTURE_RECTANGLE_EXT, rdBufferTexture);
-
-	glBegin(GL_QUADS);
-	
-	glTexCoord2f(0.0f, textureHeight);
-	glVertex2f(-1.0f, 1.0f);
-	glTexCoord2f(0.0f, 0.0f);
-	glVertex2f(-1.0f, -1.0f);
-	glTexCoord2f(textureWidth, 0.0f);
-	glVertex2f(1.0f, -1.0f);
-	glTexCoord2f(textureWidth, textureHeight);
-	glVertex2f(1.0f, 1.0f);
-
-	glEnd();   
-
-	[[self openGLContext] flushBuffer];
-}
-
 - (BOOL)isFlipped
 {
 	return YES;
@@ -153,17 +128,42 @@
 	CGImageRelease(rdBufferImage);
 }
 
-- (NSImage *)cacheDisplayInRectAsImage:(NSRect)rect
-{
-	NSBitmapImageRep *imageRep = [self bitmapImageRepForCachingDisplayInRect:rect];
-	[self cacheDisplayInRect:rect toBitmapImageRep:imageRep];
-	NSImage *img = [[[NSImage alloc] initWithSize:rect.size] autorelease];
-	[img addRepresentation:imageRep];
-	return img;
-}
 
 #pragma mark -
 #pragma mark NSOpenGLView
+
+- (void)drawRect:(NSRect)rect
+{
+	[self generateTexture];
+	
+	glClear(GL_COLOR_BUFFER_BIT);
+	GLfloat textureWidth = rdBufferWidth;
+	GLfloat textureHeight = rdBufferHeight; 
+	glBindTexture(GL_TEXTURE_RECTANGLE_EXT, rdBufferTexture);
+
+
+	// Draw the session view image to screen
+	NSSize viewSize = [self isScrolled] ? [self screenSize] : [self convertSize:[self bounds].size toView:nil];
+	glBegin(GL_QUADS); {
+		// bottom left
+		glTexCoord2f(0.0f, 0);
+		glVertex2f(0, viewSize.height);
+		
+		// top left
+		glTexCoord2f(0.0f, textureHeight);
+		glVertex2f(0, 0);
+		
+		// top right
+		glTexCoord2f(textureWidth, textureHeight);
+		glVertex2f(viewSize.width, 0);
+		
+		// bottom right
+		glTexCoord2f(textureWidth, 0);
+		glVertex2f(viewSize.width, viewSize.height);
+	} glEnd();   
+
+	[[self openGLContext] flushBuffer];
+}
 
 -(void)prepareOpenGL
 {
@@ -175,8 +175,15 @@
 
 - (void)reshape
 {
-    NSSize newSize = [self convertSize:[self bounds].size toView:nil];
-    glViewport(0.0, 0.0, newSize.width, newSize.height);
+	NSRect visibleRect = [self isScrolled] ? [[[self enclosingScrollView] documentView] visibleRect] : [self convertRect:[self bounds] toView:nil];
+	
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	
+    glViewport(0.0, 0.0, visibleRect.size.width, visibleRect.size.height);
+	glOrtho(NSMinX(visibleRect), NSMaxX(visibleRect), NSMaxY(visibleRect), NSMinY(visibleRect), -1.0, 1.0);
 }
 
 
@@ -695,6 +702,12 @@
 	[self setNeedsDisplay:YES];
 }
 
+// Whether or not this view is enclosed by an scroll view
+- (BOOL)isScrolled
+{
+	return [self enclosingScrollView] != nil;
+}
+
 
 #pragma mark -
 #pragma mark Accessors
@@ -719,6 +732,11 @@
 - (int)height
 {
 	return NSHeight([self bounds]);
+}
+
+- (NSSize)screenSize
+{
+	return NSMakeSize([self width], [self height]);
 }
 
 - (unsigned int *)colorMap

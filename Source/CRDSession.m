@@ -815,6 +815,11 @@
 	return view;
 }
 
+- (NSView *)tabItemView
+{
+	return (scrollEnclosure) ? scrollEnclosure : (NSView *)view;
+}
+
 - (NSString *)filename
 {
 	return rdpFilename;
@@ -1088,6 +1093,7 @@
 	[scrollEnclosure release];
 	scrollEnclosure = [[NSScrollView alloc] initWithFrame:frame];
 	[view setAutoresizingMask:NSViewNotSizable];
+	[view setFrame:NSMakeRect(0,0, [view width], [view height])];
 	[scrollEnclosure setAutoresizingMask:(NSViewMinXMargin | NSViewMaxXMargin | NSViewMinYMargin | NSViewMaxYMargin | NSViewWidthSizable | NSViewHeightSizable)];
 	[scrollEnclosure setDocumentView:view];
 	[scrollEnclosure setHasVerticalScroller:YES];

@@ -15,6 +15,8 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
+#define CRDFullScreenTransitionDuration 0.4
+
 #import "CRDFullScreenWindow.h"
 #import "Carbon/Carbon.h"
 
@@ -53,7 +55,7 @@
 						nil];
 	NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:animDict]];
 	[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
-	[viewAnim setDuration:0.5];
+	[viewAnim setDuration:CRDFullScreenTransitionDuration];
 	[viewAnim setAnimationCurve:NSAnimationEaseIn];
 	
 	[viewAnim startAnimation];
@@ -76,7 +78,6 @@
 {
 	[self setLevel:NSPopUpMenuWindowLevel];
 	
-	
 	if (hideMenu)
 		SetSystemUIMode(kUIModeNormal, 0);
 }
@@ -91,7 +92,7 @@
 							nil];
 		NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:[NSArray arrayWithObject:fadeWindow]];
 		[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
-		[viewAnim setDuration:0.5];
+		[viewAnim setDuration:CRDFullScreenTransitionDuration];
 		[viewAnim setAnimationCurve:NSAnimationEaseOut];
 			
 		[viewAnim startAnimation];

@@ -163,7 +163,7 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	while (![os hasSpaceAvailable] && !timedOut && (conn->errorCode != ConnectionErrorCanceled) )
 	{
 		usleep(1000); // one millisecond
-		timedOut = (time(NULL) - start > TIMOUT_LENGTH);
+		timedOut = (time(NULL) - start > TIMEOUT_LENGTH);
 	}
 	
 	if (timedOut == True)
