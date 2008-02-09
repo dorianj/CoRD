@@ -279,8 +279,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	{
 		if (progressIndicatorTimer == nil)
 		{
-			progressIndicatorTimer = [[NSTimer scheduledTimerWithTimeInterval:(5.0/60.0) target:self
-					selector:@selector(progressTimerFire:) userInfo:nil repeats:YES] retain];
+			progressIndicatorTimer = [[NSTimer scheduledTimerWithTimeInterval:(5.0/60.0) target:self selector:@selector(progressTimerFire:) userInfo:nil repeats:YES] retain];
 		}
 	}
 	else

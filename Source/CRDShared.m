@@ -235,6 +235,19 @@ inline void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled)
 }
 
 
+NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure)
+{
+	// xxx: cleanup
+	BOOL widthLarger = orig.width > enclosure.width, heightLarger = orig.height > enclosure.height;
+	if (!widthLarger && !heightLarger)
+		return orig;
+
+	float origAspectRatio = orig.width / orig.height;
+	// xxx: this seems to work in practice, may not be mathematically correct
+	return (orig.width/enclosure.width >= orig.height/enclosure.height)
+		? NSMakeSize(round(enclosure.width), round(enclosure.width * (1.0 / origAspectRatio)))
+		: NSMakeSize(round(enclosure.height * origAspectRatio), round(enclosure.height));
+}
 
 #pragma mark -
 #pragma mark AppController specific

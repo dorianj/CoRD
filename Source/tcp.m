@@ -156,8 +156,7 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	[is open];
 	[os open];
 	
-	// Wait until the output socket can be written to (this is the alternative to
-	//	letting NSOutputStream block later when we do the first write:)
+	// Wait until the output socket can be written to (this is the alternative to letting NSOutputStream block later when we do the first write:)
 	time_t start = time(NULL);
 	int timedOut = False;
 	while (![os hasSpaceAvailable] && !timedOut && (conn->errorCode != ConnectionErrorCanceled) )
@@ -166,7 +165,7 @@ tcp_connect(RDConnectionRef conn, const char *server)
 		timedOut = (time(NULL) - start > TIMEOUT_LENGTH);
 	}
 	
-	if (timedOut == True)
+	if (timedOut)
 	{
 		conn->errorCode = ConnectionErrorTimeOut;
 		return False;

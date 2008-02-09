@@ -141,7 +141,6 @@
 	GLfloat textureHeight = rdBufferHeight; 
 	glBindTexture(GL_TEXTURE_RECTANGLE_EXT, rdBufferTexture);
 
-
 	// Draw the session view image to screen
 	NSSize viewSize = [self isScrolled] ? [self screenSize] : [self convertSize:[self bounds].size toView:nil];
 	glBegin(GL_QUADS); {
@@ -206,7 +205,6 @@
 	[controller requestRemoteClipboardData];	
 	return [super resignFirstResponder];
 }
-
 
 - (void)keyDown:(NSEvent *)ev
 {
@@ -317,17 +315,18 @@
 	[mouseInputScheduler release];
 	mouseInputScheduler = nil;
 	
-	if ( [[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0/CRDMouseEventLimit) )
+	if ([[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0f/CRDMouseEventLimit))
 	{
+		// It's been longer than the threshold, send event immediately
 		[lastMouseEventSentAt release];
 		lastMouseEventSentAt = [[NSDate date] retain];
 		[self sendMouseInput:MOUSE_FLAG_MOVE];
 	}
 	else
 	{
-		mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:(1.0/CRDMouseEventLimit)
-				target:self selector:@selector(recheckScheduledMouseInput:)
-				userInfo:nil repeats:NO] retain];
+		// It's been less than the threshold since the last event, schedule it to be sent later
+		deferredMouseEvent = [ev copy];
+		mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:((1.0/CRDMouseEventLimit)-[[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt]) target:self selector:@selector(recheckScheduledMouseInput:) userInfo:nil repeats:NO] retain];
 	}		
 
 }
@@ -339,17 +338,25 @@
 - (BOOL)checkMouseInBounds:(NSEvent *)ev
 { 
 	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
-	return NSPointInRect([self convertPoint:[ev locationInWindow] fromView:nil], [self bounds]);
+	return NSPointInRect(mouseLoc, [self bounds]);
 }
 
 - (void)sendMouseInput:(unsigned short)flags
 {
+	DEBUG_MOUSE((@"Sending mouse event at (%d,%d). Flags: %d. Event: %@", lrintf(mouseLoc.x), lrintf(mouseLoc.y), flags, [NSApp currentEvent]));
 	[controller sendInputOnConnectionThread:time(NULL) type:RDP_INPUT_MOUSE flags:flags param1:lrintf(mouseLoc.x) param2:lrintf(mouseLoc.y)];
 }
 
 - (void)recheckScheduledMouseInput:(NSTimer*)timer
 {
+	if (!deferredMouseEvent)
+		return;
+	
+	DEBUG_MOUSE((@"Sending deferred mouse event %@", deferredMouseEvent));
+	
 	[self mouseMoved:deferredMouseEvent];
+	[deferredMouseEvent release];
+	deferredMouseEvent = nil;
 }
 
 
@@ -365,8 +372,7 @@
 	[self releaseBackingStore];
 }
 
-- (void)polygon:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c
-		winding:(NSWindingRule)winding
+- (void)polygon:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c winding:(NSWindingRule)winding
 {
 	NSBezierPath *bp = [NSBezierPath bezierPath];
 	int i;

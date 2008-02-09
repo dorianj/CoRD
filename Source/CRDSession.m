@@ -198,8 +198,13 @@
 {
 	if (connectionStatus == CRDConnectionDisconnecting)
 	{
+		time_t startTime = time(NULL);
+		
 		while (connectionStatus == CRDConnectionDisconnecting)
 			usleep(1000);
+			
+		if (time(NULL) - startTime > 10)
+			NSLog(@"Got hung up on old, frozen connection while connecting to %@", label);
 	}
 	
 	if (connectionStatus != CRDConnectionClosed)
@@ -244,7 +249,7 @@
 
 	// Simple heuristic to guess if user wants to auto log-in
 	unsigned logonFlags = RDP_LOGON_NORMAL;
-	if ([username length] > 0 && ([password length] > 0 || savePassword))
+	if ([username length] > 0 && ([password length] || savePassword))
 		logonFlags |= RDP_LOGON_AUTO;
 	
 	// Other various settings
@@ -338,7 +343,7 @@
 	if (connectionRunLoopFinished || [block boolValue])
 	{
 	
-		// Try to forcefully break out of the run loop 
+		// Try to forcefully break out of the run loop
 		@synchronized(self)
 		{
 			[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
@@ -395,14 +400,11 @@
 	connectionRunLoopFinished = NO;
 	
 	BOOL gotInput;
-	unsigned x = 0;
 	do
 	{
-		if (x++ % 10 == 0)
-		{
-			[pool release];
-			pool = [[NSAutoreleasePool alloc] init];
-		}
+		[pool release];
+		pool = [[NSAutoreleasePool alloc] init];
+	
 		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
 	
@@ -498,9 +500,7 @@
 - (void)informServerOfPasteboardType
 {
 	if ([[NSPasteboard generalPasteboard] availableTypeFromArray:[NSArray arrayWithObject:NSStringPboardType]] == nil)
-	{
 		return;
-	}
 	
 	if (connectionStatus == CRDConnectionConnected)
 		cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);	
@@ -522,7 +522,7 @@
 	#define write_int(n, v)	 [outputBuffer appendString:[NSString stringWithFormat:@"%@:i:%d\r\n", (n), (v)]]
 	#define write_string(n, v) [outputBuffer appendString:[NSString stringWithFormat:@"%@:s:%@\r\n", (n), (v) ? (v) : @""]]
 	
-	if ([path length] == 0)
+	if (![path length])
 		return NO;
 
 	NSMutableString *outputBuffer = [[NSMutableString alloc] init];
@@ -734,14 +734,14 @@
 	else
 	{	
 		// Push this event onto the event stack and handle it in the connection thread
-		CRDInputEvent queuedEvent = CRDMakeInputEvent(time, type, flags, param1, param2), *e;
+		CRDInputEvent queuedEvent = CRDMakeInputEvent(time, type, flags, param1, param2), *ie;
 		
-		e = malloc(sizeof(CRDInputEvent));
-		memcpy(e, &queuedEvent, sizeof(CRDInputEvent));
+		ie = malloc(sizeof(CRDInputEvent));
+		memcpy(ie, &queuedEvent, sizeof(CRDInputEvent));
 		
 		@synchronized(inputEventStack)
 		{
-			[inputEventStack addObject:[NSValue valueWithPointer:e]];	
+			[inputEventStack addObject:[NSValue valueWithPointer:ie]];	
 		}
 		
 		// Inform the connection thread it has unprocessed events
@@ -749,6 +749,7 @@
 	}
 }
 
+// Called by the connection thread in the run loop when new user input needs to be sent
 - (void)handleMachMessage:(void *)msg
 {
     @synchronized(inputEventStack)
@@ -771,7 +772,7 @@
 
 - (void)cancelConnection
 {
-	if ( (connectionStatus != CRDConnectionConnecting) || (conn == NULL))
+	if ( (connectionStatus != CRDConnectionConnecting) || !conn)
 		return;
 	
 	conn->errorCode = ConnectionErrorCanceled;

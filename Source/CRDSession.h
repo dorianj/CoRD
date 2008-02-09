@@ -36,7 +36,7 @@
 	NSMutableDictionary *otherAttributes;
 	
 	// Working between main thread and connection thread
-	BOOL connectionRunLoopFinished;
+	volatile BOOL connectionRunLoopFinished;
 	NSRunLoop *connectionRunLoop;
 	NSThread *connectionThread;
 	NSMachPort *inputEventPort;
@@ -45,7 +45,7 @@
 	// General information about instance
 	BOOL temporary, modified, temporarilyFullscreen;
 	int preferredRowIndex;
-	CRDConnectionStatus connectionStatus;
+	volatile CRDConnectionStatus connectionStatus;
 	
 	// Represented file
 	NSString *rdpFilename;

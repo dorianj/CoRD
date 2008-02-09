@@ -554,8 +554,19 @@
 	} NSEnableScreenUpdates();
 	
 	[gui_tabView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
-	// xxxtodo: need if logic here to make sure the serverView is properly sized (not blown up)
-	[serverView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
+
+	if (CRDPreferenceIsEnabled(CRDPrefsScaleSessions))
+	{
+		NSSize fullScreenWindowSize = [gui_fullScreenWindow frame].size, sessionSize = [serverView screenSize];
+		if ( (sessionSize.width > fullScreenWindowSize.width) || (sessionSize.height > fullScreenWindowSize.height) )
+		{
+			NSSize newSessionSize = CRDProportionallyScaleSize(sessionSize, fullScreenWindowSize);
+			[serverView setFrame:CRDRectFromSize(newSessionSize)];
+		}
+			
+		
+	}
+	
 	
 	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
 	
@@ -1919,7 +1930,7 @@
 {
 	CRDSession *inst = [self viewedServer];
 	NSSize newContentSize;
-	if ([self displayMode] == CRDDisplayUnified && inst != nil)
+	if ([self displayMode] == CRDDisplayUnified && inst)
 	{
 		newContentSize = [[inst view] bounds].size;
 		[gui_unifiedWindow setContentMaxSize:newContentSize];
@@ -1933,7 +1944,7 @@
 	NSRect windowFrame = [gui_unifiedWindow frame];
 	NSRect screenRect = [[gui_unifiedWindow screen] visibleFrame];
 	
-	if (CRDPreferenceIsEnabled(CRDPrefsScaleSessions))
+	if (CRDPreferenceIsEnabled(CRDPrefsScaleSessions) && inst)
 		[gui_unifiedWindow setContentAspectRatio:newContentSize];
 	else
 		[gui_unifiedWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
@@ -1965,16 +1976,14 @@
 	if (!CRDPreferenceIsEnabled(CRDPrefsScaleSessions))
 	{
 		
-		if (newWindowFrame.size.height > screenRect.size.height &&
-			newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
+		if (newWindowFrame.size.height > screenRect.size.height && newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
 		{
 			newWindowFrame.origin.y = screenRect.origin.y;
 			newWindowFrame.size.height = screenRect.size.height;
 			newWindowFrame.size.width += scrollerWidth;
 
 		}
-		if (newWindowFrame.size.width > screenRect.size.width &&
-					newWindowFrame.size.height+scrollerWidth <= screenRect.size.height)
+		if (newWindowFrame.size.width > screenRect.size.width && newWindowFrame.size.height+scrollerWidth <= screenRect.size.height)
 		{
 			newWindowFrame.origin.x = screenRect.origin.x;
 			newWindowFrame.size.width = screenRect.size.width;

@@ -69,8 +69,7 @@ NSArray *CRDFilterFilesByType(NSArray *unfilteredFiles, NSArray *types);
 char ** CRDMakeCStringArray(NSArray *conv);
 void CRDSetAttributedStringColor(NSMutableAttributedString *as, NSColor *color);
 void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *font);
-CRDInputEvent CRDMakeInputEvent(unsigned int time,
-	unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
+CRDInputEvent CRDMakeInputEvent(unsigned int time, unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
 NSString *CRDTemporaryFile(void);
 BOOL CRDPathIsHidden(NSString *path);
 NSCellStateValue CRDButtonState(BOOL enabled);
@@ -78,6 +77,7 @@ BOOL CRDPreferenceIsEnabled(NSString *prefName);
 void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
 NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action);
 void CRDFillDefaultConnection(RDConnectionRef conn);
+NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
 
 // Convenience macros
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
@@ -135,7 +135,8 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 #pragma mark -
 #pragma mark Controlling debugging output
 
-//#define WITH_DEBUG_KEYBOARD 1
+//#define WITH_DEBUG_KEYBOARD
+//#define WITH_DEBUG_MOUSE
 //#define WITH_DEBUG_UI 1
 //#define WITH_MID_LEVEL_DEBUG 1
 
@@ -159,8 +160,13 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 	#define CHECKOPCODE(x) 
 #endif
 
+#ifdef WITH_DEBUG_MOUSE
+	#define DEBUG_MOUSE(args) NSLog args
+#else
+	#define DEBUG_MOUSE(args)
+#endif
 
-#if defined(CORD_RELEASE_BUILD) && (defined(WITH_MID_LEVEL_DEBUG) || defined(WITH_DEBUG_UI) || defined(WITH_DEBUG_KEYBOARD))
+#if defined(CORD_RELEASE_BUILD) && (defined(WITH_MID_LEVEL_DEBUG) || defined(WITH_DEBUG_UI) || defined(WITH_DEBUG_KEYBOARD) || defined(WITH_DEBUG_MOUSE))
 	#error Debugging output is enabled and building Release
 #endif
 
