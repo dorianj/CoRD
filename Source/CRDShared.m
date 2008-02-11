@@ -249,6 +249,7 @@ NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure)
 		: NSMakeSize(round(enclosure.height * origAspectRatio), round(enclosure.height));
 }
 
+
 #pragma mark -
 #pragma mark AppController specific
 

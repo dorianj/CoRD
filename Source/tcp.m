@@ -34,6 +34,8 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 
+static void tcp_cfhost_lookup_finished(CFHostRef theHost, CFHostInfoType typeInfo, const CFStreamError *error, void *info);
+
 @class AppController;
 
 #ifndef INADDR_NONE
@@ -136,15 +138,50 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	NSOutputStream *os = nil;
 	NSHost *host;
 	
-	if ( (host = [NSHost hostWithAddress:[NSString stringWithUTF8String:server]]) == nil)
-	{
-		if ( (host = [NSHost hostWithName:[NSString stringWithUTF8String:server]]) == nil)
-		{
-			conn->errorCode = ConnectionErrorHostResolution;
-			return False;
-		}
-	}
+	int timedOut = False;
+	time_t start;
 	
+	CFHostRef remoteHost = CFHostCreateWithName(NULL, (CFStringRef)[NSString stringWithUTF8String:server]);
+	char **addressString = malloc(sizeof(void *));
+	CFHostClientContext *clientContext = calloc(1, sizeof(CFHostClientContext));
+	clientContext->info = addressString;
+	CFHostSetClient(remoteHost, tcp_cfhost_lookup_finished, clientContext);
+	
+	CFStreamError *streamError = malloc(sizeof(CFStreamError));
+	
+	CFHostScheduleWithRunLoop(remoteHost, [[NSRunLoop currentRunLoop] getCFRunLoop], kCFRunLoopDefaultMode);
+	
+	if (!CFHostStartInfoResolution(remoteHost, kCFHostAddresses, streamError))
+		printf("Unable to start host resolution!");
+		
+	start = time(NULL);
+	NSAutoreleasePool *pool;
+	do
+	{
+		pool = [[NSAutoreleasePool alloc] init];
+		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
+		timedOut = (time(NULL) - start > TIMEOUT_LENGTH);
+		[pool release];
+	} while (!(*addressString) && !timedOut && (conn->errorCode != ConnectionErrorCanceled));
+
+		
+	if (timedOut)
+	{
+		conn->errorCode = ConnectionErrorTimeOut;
+		return False;
+	}
+	else if (conn->errorCode == ConnectionErrorCanceled)
+		return False;
+	
+	/*
+	if ( (host = [NSHost hostWithName:[NSString stringWithUTF8String:server]]) == nil)
+	{
+		conn->errorCode = ConnectionErrorHostResolution;
+		return False;
+	}
+	*/
+	printf("Resolved host: %p (deref: %s)", *addressString, addressString);
+	exit(1);
  	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
 	
 	if (is == nil || os == nil)
@@ -157,8 +194,8 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	[os open];
 	
 	// Wait until the output socket can be written to (this is the alternative to letting NSOutputStream block later when we do the first write:)
-	time_t start = time(NULL);
-	int timedOut = False;
+	start = time(NULL);
+	timedOut = false;
 	while (![os hasSpaceAvailable] && !timedOut && (conn->errorCode != ConnectionErrorCanceled) )
 	{
 		usleep(1000); // one millisecond
@@ -171,9 +208,7 @@ tcp_connect(RDConnectionRef conn, const char *server)
 		return False;
 	}
 	else if (conn->errorCode == ConnectionErrorCanceled)
-	{
 		return False;
-	}
 	
 	conn->inputStream = [is retain];
 	conn->outputStream = [os retain];
@@ -259,4 +294,13 @@ tcp_reset_state(RDConnectionRef conn)
 	conn->outStream.sec_hdr = NULL;
 	conn->outStream.rdp_hdr = NULL;
 	conn->outStream.channel_hdr = NULL;
+}
+
+
+static void
+tcp_cfhost_lookup_finished(CFHostRef theHost, CFHostInfoType typeInfo, const CFStreamError *error, void *info)
+{
+	NSLog(@"Lookup finished... putting address into %p", info);
+	*((char**)info) = malloc(10);
+	strcpy(info, "test");
 }

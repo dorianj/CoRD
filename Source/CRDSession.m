@@ -303,7 +303,7 @@
 	
 	// Make the connection
 	BOOL connected = rdp_connect(conn,
-							CRDMakeWindowsString(hostName), 
+							[hostName UTF8String], 
 							logonFlags, 
 							CRDMakeWindowsString(domain), 
 							CRDMakeWindowsString(password), 

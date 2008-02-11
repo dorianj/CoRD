@@ -563,8 +563,6 @@
 			NSSize newSessionSize = CRDProportionallyScaleSize(sessionSize, fullScreenWindowSize);
 			[serverView setFrame:CRDRectFromSize(newSessionSize)];
 		}
-			
-		
 	}
 	
 	
