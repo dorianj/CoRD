@@ -250,6 +250,7 @@ NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure)
 }
 
 
+
 #pragma mark -
 #pragma mark AppController specific
 
@@ -299,7 +300,7 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 	conn->ioRequest	= NULL;
 	conn->bmpcacheLru[0] = conn->bmpcacheLru[1] = conn->bmpcacheLru[2] = NOT_SET;
 	conn->bmpcacheMru[0] = conn->bmpcacheMru[1] = conn->bmpcacheMru[2] = NOT_SET;
-	conn->errorCode = 0;
+	conn->errorCode = ConnectionErrorNone;
 	conn->rdp5PerformanceFlags = RDP5_NO_WALLPAPER | RDP5_NO_FULLWINDOWDRAG | RDP5_NO_MENUANIMATIONS;
 	
 	conn->rdpdrClientname = malloc(strlen(hostString) + 1);

@@ -402,10 +402,9 @@
 	BOOL gotInput;
 	do
 	{
-		[pool release];
 		pool = [[NSAutoreleasePool alloc] init];
-	
 		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+		[pool release];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
 	
 	[self discardConnectionThread];

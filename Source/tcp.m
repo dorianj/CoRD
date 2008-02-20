@@ -18,15 +18,16 @@
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#import <unistd.h>		/* select read write close */
-#import <sys/socket.h>		/* socket connect setsockopt */
-#import <sys/time.h>		/* timeval */
-#import <netdb.h>		/* gethostbyname */
-#import <netinet/in.h>		/* sockaddr_in */
-#import <netinet/tcp.h>	/* TCP_NODELAY */
-#import <arpa/inet.h>		/* inet_addr */
-#import <errno.h>		/* errno */
+#import <unistd.h>       /* select read write close */
+#import <sys/socket.h>   /* socket connect setsockopt */
+#import <sys/time.h>     /* timeval */
+#import <netdb.h>        /* gethostbyname */
+#import <netinet/in.h>   /* sockaddr_in */
+#import <netinet/tcp.h>  /* TCP_NODELAY */
+#import <arpa/inet.h>    /* inet_addr */
+#import <errno.h>        /* errno */
 #import "rdesktop.h"
+
 
 #import <Foundation/NSStream.h>
 #import <Foundation/NSString.h>
@@ -142,18 +143,22 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	time_t start;
 	
 	CFHostRef remoteHost = CFHostCreateWithName(NULL, (CFStringRef)[NSString stringWithUTF8String:server]);
-	char **addressString = malloc(sizeof(void *));
+	RDHostLookupInfo volatile *lookupInfo = calloc(1, sizeof(RDHostLookupInfo));
 	CFHostClientContext *clientContext = calloc(1, sizeof(CFHostClientContext));
-	clientContext->info = addressString;
-	CFHostSetClient(remoteHost, tcp_cfhost_lookup_finished, clientContext);
+	CFStreamError *streamError = calloc(1, sizeof(CFStreamError));
+
+	clientContext->info = (void*)lookupInfo;
 	
-	CFStreamError *streamError = malloc(sizeof(CFStreamError));
-	
+	CFHostSetClient(remoteHost, tcp_cfhost_lookup_finished, clientContext);	
 	CFHostScheduleWithRunLoop(remoteHost, [[NSRunLoop currentRunLoop] getCFRunLoop], kCFRunLoopDefaultMode);
 	
 	if (!CFHostStartInfoResolution(remoteHost, kCFHostAddresses, streamError))
-		printf("Unable to start host resolution!");
-		
+	{
+		error("%s: couldn't start CFHost name resolution", __FUNCTION__);
+		conn->errorCode = ConnectionErrorHostResolution;
+		return False;
+	}
+	
 	start = time(NULL);
 	NSAutoreleasePool *pool;
 	do
@@ -162,29 +167,33 @@ tcp_connect(RDConnectionRef conn, const char *server)
 		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
 		timedOut = (time(NULL) - start > TIMEOUT_LENGTH);
 		[pool release];
-	} while (!(*addressString) && !timedOut && (conn->errorCode != ConnectionErrorCanceled));
-
+	} while (!lookupInfo->finished && !timedOut && (conn->errorCode == ConnectionErrorNone));
+	
 		
 	if (timedOut)
 	{
 		conn->errorCode = ConnectionErrorTimeOut;
 		return False;
 	}
-	else if (conn->errorCode == ConnectionErrorCanceled)
-		return False;
-	
-	/*
-	if ( (host = [NSHost hostWithName:[NSString stringWithUTF8String:server]]) == nil)
+	else if (lookupInfo->finished && !lookupInfo->address)
 	{
 		conn->errorCode = ConnectionErrorHostResolution;
 		return False;
 	}
-	*/
-	printf("Resolved host: %p (deref: %s)", *addressString, addressString);
-	exit(1);
+	else if (conn->errorCode != ConnectionErrorNone)
+		return False;
+
+	
+	if ( !(host = [NSHost hostWithAddress:[NSString stringWithUTF8String:lookupInfo->address]]) )
+	{
+		error("%s: Couldn't transform host address '%@' into NSHost", __FUNCTION__, lookupInfo->address);
+		conn->errorCode = ConnectionErrorHostResolution;
+		return False;
+	}
+	
  	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
 	
-	if (is == nil || os == nil)
+	if (!is || !os)
 	{
 		conn->errorCode = ConnectionErrorGeneral;
 		return False;
@@ -213,12 +222,17 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	conn->inputStream = [is retain];
 	conn->outputStream = [os retain];
 	
-
 	conn->inStream.size = 4096;
 	conn->inStream.data = xmalloc(conn->inStream.size);
 
 	conn->outStream.size = 4096;
 	conn->outStream.data = xmalloc(conn->outStream.size);
+
+	// clean up
+	free(lookupInfo->address);
+	free((void *)lookupInfo);
+	free(streamError);
+	free(clientContext);
 
 	return True;
 }
@@ -298,9 +312,46 @@ tcp_reset_state(RDConnectionRef conn)
 
 
 static void
-tcp_cfhost_lookup_finished(CFHostRef theHost, CFHostInfoType typeInfo, const CFStreamError *error, void *info)
+tcp_cfhost_lookup_finished(CFHostRef host, CFHostInfoType typeInfo, const CFStreamError *streamError, void *info)
 {
-	NSLog(@"Lookup finished... putting address into %p", info);
-	*((char**)info) = malloc(10);
-	strcpy(info, "test");
+	RDHostLookupInfo *lookupInfo = info;
+	
+	// if this needs to be absolutely threadsafe, this next line should be moved to the bottom and code adjusted accordingly. This is called via the run loop on the connection thread (from tcp_connect) so it's not an issue
+	lookupInfo->finished = 1;
+	
+	if (streamError && (streamError->error != noErr) )
+	{
+		error("%s: Error: %d", __FUNCTION__, (signed int)streamError->error);
+		return;
+	}
+	
+	Boolean hasBeenResolved = False;
+	CFArrayRef addresses = CFHostGetAddressing(host, &hasBeenResolved);
+	
+	if (!hasBeenResolved || !addresses)
+		return;
+		
+	char *ipaddr = calloc(1, 32);
+	for (int i = 0, len = CFArrayGetCount(addresses); i < len; i++)
+	{
+		struct sockaddr *addressInfo = (struct sockaddr *)CFDataGetBytePtr(CFArrayGetValueAtIndex(addresses, i));
+		
+		if (!addressInfo)
+			continue;
+			
+		void *src_data = addressInfo->sa_data + ((addressInfo->sa_family == AF_INET6) ? 6 : 2);
+		
+		if (!inet_ntop(addressInfo->sa_family, src_data, ipaddr, 32))
+			continue;
+	}
+	
+	if (!strlen(ipaddr))
+		return;
+		
+	lookupInfo->address = ipaddr;
 }
+
+
+
+
+

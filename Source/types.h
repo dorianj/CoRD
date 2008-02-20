@@ -257,6 +257,12 @@ typedef enum _RDConnectionError
 	ConnectionErrorCanceled = 4
 } RDConnectionError;
 
+typedef struct _RDHostLookupInfo
+{
+	int finished;
+	char *address;
+} RDHostLookupInfo;
+
 
 #import "orders.h"
 
