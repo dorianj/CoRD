@@ -81,6 +81,9 @@
 	if (connectionStatus == CRDConnectionConnected)
 		[self disconnect];
 	
+	while (connectionStatus != CRDConnectionClosed)
+		usleep(1000);
+	
 	[inputEventPort invalidate];
 	[inputEventPort release];
 	[inputEventStack release];
@@ -104,7 +107,7 @@
 
 - (void)setValue:(id)value forKey:(NSString *)key
 {
-	if ([self valueForKey:key] != value)
+	if (![[self valueForKey:key] isEqualTo:value])
 	{
 		modified |= ![key isEqualToString:@"view"];
 		[super setValue:value forKey:key];
@@ -135,6 +138,7 @@
 	newSession->screenWidth = screenWidth;
 	newSession->screenHeight = screenHeight;
 	newSession->port = port;
+	newSession->modified = modified;
 }
 
 
@@ -218,7 +222,7 @@
 	conn->controller = self;
 	
 	// Fail quickly if it's a totally bogus host
-	if ([hostName length] < 2)
+	if (![hostName length])
 	{
 		connectionStatus = CRDConnectionClosed;
 		conn->errorCode = ConnectionErrorHostResolution;
@@ -342,7 +346,6 @@
 	[self setStatus:CRDConnectionDisconnecting];
 	if (connectionRunLoopFinished || [block boolValue])
 	{
-	
 		// Try to forcefully break out of the run loop
 		@synchronized(self)
 		{
@@ -356,10 +359,7 @@
 		tcp_disconnect(conn);
 		
 		// UI cleanup
-		[window setDelegate:nil]; // avoid the last windowWillClose delegate message
-		[window close];
-		[window release];
-		window = nil;
+		[self destroyWindow];
 		[scrollEnclosure release];
 		scrollEnclosure = nil;
 		[view release];
@@ -559,7 +559,7 @@
 	}
 	
 	BOOL writeToFileSucceeded = [outputBuffer writeToFile:path atomically:atomicFlag encoding:fileEncoding error:NULL] | [outputBuffer writeToFile:path atomically:atomicFlag encoding:(fileEncoding = NSUTF8StringEncoding) error:NULL];
-	
+
 	[outputBuffer release];
 	
 	if (writeToFileSucceeded)
@@ -680,7 +680,7 @@
 
 - (void)destroyWindow
 {
-	[window setDelegate:nil];
+	[window setDelegate:nil]; // avoid the last windowWillClose delegate message
 	[window close];
 	window = nil;
 }
@@ -1086,7 +1086,7 @@
 
 
 #pragma mark -
-#pragma mark Interface
+#pragma mark User Interface
 
 - (void)createScrollEnclosure:(NSRect)frame
 {

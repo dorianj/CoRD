@@ -785,10 +785,14 @@
 // If in unified and with sessions, disconnects active. Otherwise, close the window. Similar to Safari/Camino's 'Close Tab'
 - (IBAction)performDisconnect:(id)sender
 {
-	if ( ( ([self displayMode] == CRDDisplayUnified) || ([self displayMode] == CRDDisplayFullscreen)) && ([self viewedServer] != nil))
+	if ( ( ([self displayMode] == CRDDisplayUnified) || ([self displayMode] == CRDDisplayFullscreen)) && ![self viewedServer])
 		[self disconnect:nil];
 	else
-		[[NSApp keyWindow] orderOut:nil];
+	{
+		CRDSession *inst = [self viewedServer];
+		if (inst)
+			[[inst window] performClose:nil];
+	}
 }
 
 - (IBAction)saveSelectedServer:(id)sender
@@ -1168,7 +1172,8 @@
 
 		return;
 	} else {
-		[inspectedServer flushChangesToFile];	
+		if ([inspectedServer modified])
+			[inspectedServer flushChangesToFile];	
 	}
 
 	[self setInspectorEnabled:YES];
@@ -1196,7 +1201,7 @@
 
 - (float)tableView:(NSTableView *)tableView heightOfRow:(int)row
 {	
-	if (row == 0 || row == [connectedServers count] + 1)
+	if (!row || row == [connectedServers count] + 1)
 		return [connectedServersLabel cellSize].height;
 	else
 		return [[[self serverInstanceForRow:row] cellRepresentation] cellSize].height;
@@ -1276,7 +1281,7 @@
 // Starting point to connect to a instance
 - (void)connectInstance:(CRDSession *)inst
 {
-	if (inst == nil)
+	if (!inst)
 		return;
 	
 	if ([inst status] == CRDConnectionConnected)
@@ -1288,13 +1293,11 @@
 // Assures that the passed instance is disconnected and removed from view.
 - (void)disconnectInstance:(CRDSession *)inst
 {
-	if (inst == nil || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
+	if (!inst || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
 		return;
 		
-	if (displayMode != CRDDisplayWindowed && inst != nil)
-	{
+	if (displayMode != CRDDisplayWindowed)
 		[gui_tabView removeItem:inst];
-	}
 	
 	if ([inst status] == CRDConnectionConnected)
 		[inst disconnect];
@@ -1322,7 +1325,7 @@
 	}
 	else
 	{
-		// Move to saved servers
+		// Move to saved servers if not already there
 		if (![inst filename])
 		{
 			NSString *path = CRDFindAvailableFileName([AppController savedServersPath], [inst label], @".rdp");
@@ -1344,12 +1347,12 @@
 	{
 		[self autosizeUnifiedWindowWithAnimation:!_appIsTerminating];
 		
-		if ([self viewedServer] == nil && CRDDrawerIsVisible(gui_serversDrawer))
+		if (![self viewedServer] && CRDDrawerIsVisible(gui_serversDrawer))
 			[gui_unifiedWindow makeFirstResponder:gui_serverList];
 	}
 	else if (displayMode == CRDDisplayWindowed)
 	{
-		if ( ([connectedServers count] == 0) && ![gui_unifiedWindow isVisible])
+		if (![connectedServers count] && ![gui_unifiedWindow isVisible])
 			[gui_unifiedWindow makeKeyAndOrderFront:nil];
 	}
 }
@@ -1516,7 +1519,7 @@
 				return item;
 		}
 	}
-	else
+	else // windowed mode
 	{
 		NSEnumerator *enumerator = [connectedServers objectEnumerator];
 		CRDSession *inst;
@@ -1686,6 +1689,7 @@
 - (void)updateInstToMatchInspector:(CRDSession *)inst
 {
 	if (!inst)
+		return;
 		
 	// Checkboxes
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)	forKey:@"windowDrags"];

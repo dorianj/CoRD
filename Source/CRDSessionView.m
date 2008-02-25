@@ -48,7 +48,7 @@
 	if (![super initWithFrame:frame pixelFormat:pf])
 		return nil;
 		
-	lastMouseEventSentAt = [[NSDate date] retain];
+	
 
 	[self setBounds:NSMakeRect(0.0, 0.0, frame.size.width, frame.size.height)];
 	screenSize = frame.size;
@@ -61,6 +61,7 @@
 	[self setCursor:[NSCursor arrowCursor]];
 	colorMap = calloc(256, sizeof(unsigned int));
 	keyTranslator = [[CRDKeyboard alloc] init];
+	lastMouseEventSentAt = [[NSDate date] retain];
 	
 	
 	[self resetCursorRects];
@@ -164,8 +165,12 @@
 	[[self openGLContext] flushBuffer];
 }
 
+
 -(void)prepareOpenGL
 {
+	long swapInterval = 1;
+	[[self openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
+	
 	glEnable(GL_TEXTURE_RECTANGLE_EXT);
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
