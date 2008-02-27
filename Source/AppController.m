@@ -558,9 +558,7 @@
 			float yScrollerAdjust = NSWidth([serverView bounds]) > NSWidth(visibleSessionRect) ? [NSScroller scrollerWidth] : 0.0f; 
 			[[serverView cacheDisplayInRectAsImage:(NSRect){NSZeroPoint, [serverView screenSize]}] drawInRect:(NSRect){{0, yScrollerAdjust}, drawnRect.size} fromRect:drawnRect operation:NSCompositeSourceOver fraction:1.0];
 		} [fullCapture unlockFocus];
-		
-		[[fullCapture TIFFRepresentation] writeToFile:@"/users/dorian/desktop/debug.tif" atomically:NO];
-		
+				
 		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [[gui_unifiedWindow contentView] frame].size}] autorelease];
 		[visibleSessionCacheImageView setImage:fullCapture];
 		[visibleSessionCacheImageView setImageScaling:NSScaleNone];
