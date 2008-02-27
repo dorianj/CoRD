@@ -540,10 +540,33 @@
 	
 
 	// Force the unified window to maintain content by copying currently viewed server into an NSImageView and display it. see endFullscreen for details on why. xxx: doesn't do the right thing when scrollers are on (needs to copy full tabview, but cacheDisplayInRectAsImage'ing gui_tabView doesn't work since CRDSessionView is opengl
-	NSImageView *visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [serverView bounds].size}] autorelease];
-	[visibleSessionCacheImageView setImage:[serverView cacheDisplayInRectAsImage:[serverView frame]]]; // xxx: needs to change for scrollers
+	NSImageView *visibleSessionCacheImageView = nil;
+	if (![[inst valueForKey:@"usesScrollers"] boolValue])
+	{
+		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [serverView bounds].size}] autorelease];
+		[visibleSessionCacheImageView setImage:[serverView cacheDisplayInRectAsImage:[serverView bounds]]];
+		[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
+	} 
+	else
+	{
+		// Capture the scrollbar and the image of the server separately since the server won't show up naturally
+		NSImage *fullCapture = [[gui_unifiedWindow contentView] cacheDisplayInRectAsImage:[[gui_unifiedWindow contentView] frame]]; // start with just scrollbars
+		
+		[fullCapture lockFocus]; {
+			NSRect visibleSessionRect = [[serverView enclosingScrollView] documentVisibleRect];
+			NSRect drawnRect = NSMakeRect(NSMinX(visibleSessionRect), [serverView screenSize].height-NSHeight(visibleSessionRect), NSWidth(visibleSessionRect), visibleSessionRect.size.height);		
+			float yScrollerAdjust = NSWidth([serverView bounds]) > NSWidth(visibleSessionRect) ? [NSScroller scrollerWidth] : 0.0f; 
+			[[serverView cacheDisplayInRectAsImage:(NSRect){NSZeroPoint, [serverView screenSize]}] drawInRect:(NSRect){{0, yScrollerAdjust}, drawnRect.size} fromRect:drawnRect operation:NSCompositeSourceOver fraction:1.0];
+		} [fullCapture unlockFocus];
+		
+		[[fullCapture TIFFRepresentation] writeToFile:@"/users/dorian/desktop/debug.tif" atomically:NO];
+		
+		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [[gui_unifiedWindow contentView] frame].size}] autorelease];
+		[visibleSessionCacheImageView setImage:fullCapture];
+		[visibleSessionCacheImageView setImageScaling:NSScaleNone];
+	}
+		
 	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
-	[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
 	[visibleSessionCacheImageView setFrame:CRDRectFromSize([[gui_unifiedWindow contentView] frame].size)];
 	
 	NSDisableScreenUpdates(); {
@@ -585,7 +608,8 @@
 	
 	BOOL animate = !_appIsTerminating;
 	
-	CRDSessionView *sessionView = [[self selectedServer] view];
+	CRDSession *inst = [self selectedServer];
+	CRDSessionView *sessionView = [inst view];
 	
 	[gui_fullScreenWindow prepareForExit];
 
@@ -596,10 +620,33 @@
 	
 
 	// Force the full screen window to maintain content by copying currently viewed server into an NSImageView and display it. The OpenGL-drawing CRDSession doesn't play nicely with being moved between windows (it clears the fullscreen window as soon as it's removed by removeFromSuperviewWithoutNeedingDisplay). xxx: same scroller problem as startFullscreen
-	NSImageView *visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [sessionView bounds].size}] autorelease];
-	[visibleSessionCacheImageView setImage:[sessionView cacheDisplayInRectAsImage:[sessionView bounds]]];
+	
+	NSImageView *visibleSessionCacheImageView = nil;
+	if (![[inst valueForKey:@"usesScrollers"] boolValue])
+	{
+		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [sessionView bounds].size}] autorelease];
+		[visibleSessionCacheImageView setImage:[sessionView cacheDisplayInRectAsImage:[sessionView bounds]]];
+		[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
+	} 
+	else
+	{
+		// Capture the scrollbar and the image of the server separately since the server won't show up naturally
+		NSImage *fullCapture = [[gui_fullScreenWindow contentView] cacheDisplayInRectAsImage:[[gui_fullScreenWindow contentView] frame]]; // start with just scrollbars
+		
+		[fullCapture lockFocus]; {
+			NSRect visibleSessionRect = [[sessionView enclosingScrollView] documentVisibleRect];
+			NSRect drawnRect = NSMakeRect(NSMinX(visibleSessionRect), [sessionView screenSize].height-NSHeight(visibleSessionRect), NSWidth(visibleSessionRect), visibleSessionRect.size.height);
+			float yScrollerAdjust = NSWidth([sessionView bounds]) > NSWidth(visibleSessionRect) ? [NSScroller scrollerWidth] : 0.0f; 
+			[[sessionView cacheDisplayInRectAsImage:(NSRect){NSZeroPoint, [sessionView screenSize]}] drawInRect:(NSRect){{0, yScrollerAdjust}, drawnRect.size} fromRect:drawnRect operation:NSCompositeSourceOver fraction:1.0];
+		} [fullCapture unlockFocus];
+		
+		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [[gui_unifiedWindow contentView] frame].size}] autorelease];
+		[visibleSessionCacheImageView setImage:fullCapture];
+		[visibleSessionCacheImageView setImageScaling:NSScaleNone];
+	}
+		
+	
 	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
-	[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
 	[visibleSessionCacheImageView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
 	
 	NSDisableScreenUpdates(); {

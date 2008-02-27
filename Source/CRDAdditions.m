@@ -27,24 +27,7 @@
 	[img addRepresentation:imageRep];
 	
 	
-/*
-
-	NSEnumerator *enumerator = [[self subviews] objectEnumerator];
-	NSView *childView;
-	
-	while ( (childView = [enumerator nextObject]) )
-	{
-		NSImage *cachedChildView = [childView cacheDisplayInRectAsImage:[childView visibleRect]];
-		
-		[img lockFocus]; {
-			NSLog(@"drawing %@, Orig: %@, translated: %@", childView, NSStringFromPoint([childView frame].origin), NSStringFromPoint([self convertPoint:[childView frame].origin fromView:nil]));
-			//[cachedChildView setFlipped:[childView isFlipped]];
-			[cachedChildView drawAtPoint:[self convertPoint:[childView frame].origin fromView:nil] fromRect:(NSRect){NSZeroPoint, [cachedChildView size]} operation:NSCompositeSourceOver fraction:1.0];		
-		} [img unlockFocus];
-	}
-	
-	[[img TIFFRepresentation] writeToFile:@"/users/dorian/desktop/bah.tif" atomically:YES];
-	*/
+	// code that enumerates through children is in svn revision 210
 	return img;
 }
 

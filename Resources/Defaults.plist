@@ -12,10 +12,15 @@
 	<integer>0</integer>
 	<key>SendWindowsKey</key>
 	<true/>
+	
 	<key>reconnectFullScreen</key>
 	<true/>
+	<key>ReconnectWhenLeavingFullScreen</key>
+	<false/>
+	
 	<key>resizeViewToFit</key>
 	<true/>
+	
 	<key>MinimalServerList</key>
 	<false/>
 	<key>IgnoreModifierKeyCustomizations</key>

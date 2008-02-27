@@ -43,7 +43,7 @@
 	NSMutableArray *inputEventStack;
 
 	// General information about instance
-	BOOL temporary, modified, temporarilyFullscreen;
+	BOOL temporary, modified, temporarilyFullscreen, _usesScrollers;
 	int preferredRowIndex;
 	volatile CRDConnectionStatus connectionStatus;
 	

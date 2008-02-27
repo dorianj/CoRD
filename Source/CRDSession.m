@@ -631,7 +631,8 @@
 }
 
 - (void)createWindow:(BOOL)useScrollView
-{
+{	
+	_usesScrollers = useScrollView;
 	[window release];
 	NSRect sessionScreenSize = [view bounds];
 	window = [[NSWindow alloc] initWithContentRect:sessionScreenSize styleMask:(NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask) backing:NSBackingStoreBuffered defer:NO];
@@ -668,6 +669,7 @@
 
 - (void)createUnified:(BOOL)useScrollView enclosure:(NSRect)enclosure
 {	
+	_usesScrollers = useScrollView;
 	if (useScrollView)
 		[self createScrollEnclosure:enclosure];
 	else

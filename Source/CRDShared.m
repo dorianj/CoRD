@@ -51,6 +51,7 @@ NSString * const CRDPrefsMinimalisticServerList = @"MinimalServerList";
 NSString * const CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizations";
 NSString * const CRDSetServerKeyboardLayout = @"SetServerKeyboardLayout";
 
+
 #pragma mark -
 #pragma mark General purpose routines
 
