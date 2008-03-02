@@ -179,6 +179,9 @@
 
 - (void)reshape
 {
+	if (![self openGLContext])
+		return;
+		
 	NSRect visibleRect = [self isScrolled] ? [[[self enclosingScrollView] documentView] visibleRect] : [self convertRect:[self bounds] toView:nil];
 	
 	glMatrixMode(GL_PROJECTION);
