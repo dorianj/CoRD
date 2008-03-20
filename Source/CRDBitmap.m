@@ -119,11 +119,11 @@
 												samplesPerPixel:4
 													   hasAlpha:YES
 													   isPlanar:NO
-												 colorSpaceName:NSDeviceRGBColorSpace
+												 colorSpaceName:NSCalibratedRGBColorSpace
 												   bitmapFormat:NSAlphaFirstBitmapFormat
 													bytesPerRow:width * 4
 												   bitsPerPixel:32] autorelease];
-
+	NSLog(@"%@", bitmap);
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
@@ -235,7 +235,7 @@
 #pragma mark -
 #pragma mark Drawing the CRDBitmap
 
-// The most critical region of this class and one of the most critical spots in the connection thread
+// The most critical region of this class and one of the most critical paths in the connection thread
 - (void)drawInRect:(NSRect)dstRect fromRect:(NSRect)srcRect operation:(NSCompositingOperation)op
 {
 	[image drawInRect:dstRect fromRect:srcRect operation:op fraction:1.0];

@@ -179,7 +179,7 @@
 
 - (void)reshape
 {
-	if (![self openGLContext])
+	if (![self openGLContext] || [controller status] == CRDConnectionDisconnecting) 
 		return;
 		
 	NSRect visibleRect = [self isScrolled] ? [[[self enclosingScrollView] documentView] visibleRect] : [self convertRect:[self bounds] toView:nil];
@@ -550,7 +550,7 @@
 	rdBufferBitmapLength = rdBufferWidth*rdBufferHeight*4;
 	rdBufferBitmapData = calloc(rdBufferBitmapLength, 1);
 
-	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceAdobeRGB1998);
 	
 	unsigned int byteOrder;
 

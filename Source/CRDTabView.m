@@ -50,7 +50,7 @@
 
 - (void)drawRect:(NSRect)rect
 {
-	CRDDrawVerticalGradient([NSColor colorWithDeviceWhite:.96  alpha:1.0], [NSColor colorWithDeviceWhite:0.89 alpha:1.0], [self bounds]);
+//	CRDDrawVerticalGradient([NSColor colorWithDeviceWhite:0.93  alpha:1.0], [NSColor colorWithDeviceWhite:0.875 alpha:1.0], [self bounds]);
 }
 
 
@@ -111,9 +111,7 @@
 		[initialContentView removeFromSuperview];		
 	}
 	else
-	{
-		NSLog(@"Not bothering to animate");
-		
+	{		
 		[initialContentView removeFromSuperviewWithoutNeedingDisplay];
 		[self addSubview:finalContentView];
 		[finalContentView drawRect:[finalContentView bounds]];

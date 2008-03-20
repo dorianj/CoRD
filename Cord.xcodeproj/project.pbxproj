@@ -30,6 +30,7 @@
 		9881A42E0BE943A70073D189 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 987D6E2B0B51DEF3005B8E92 /* Security.framework */; };
 		9885D1940BFBBB0800C5451D /* printer.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972470BD9D9DF0041110D /* printer.m */; };
 		98C342310C2CEFBD005F2925 /* CRDTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C3422F0C2CEFBC005F2925 /* CRDTabView.m */; };
+		98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */; };
 		98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */; };
 		98E972600BD9D9DF0041110D /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972250BD9D9DF0041110D /* AppController.m */; };
 		98E972610BD9D9DF0041110D /* bitmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972260BD9D9DF0041110D /* bitmap.c */; };
@@ -127,6 +128,7 @@
 		987D6E2B0B51DEF3005B8E92 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		98C3422E0C2CEFBC005F2925 /* CRDTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDTabView.h; path = Source/CRDTabView.h; sourceTree = "<group>"; };
 		98C3422F0C2CEFBC005F2925 /* CRDTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDTabView.m; path = Source/CRDTabView.m; sourceTree = "<group>"; };
+		98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = Credits.rtf; path = resources/Credits.rtf; sourceTree = "<group>"; };
 		98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSwappedModifiersUtility.m; path = Source/CRDSwappedModifiersUtility.m; sourceTree = "<group>"; };
 		98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSwappedModifiersUtility.h; path = Source/CRDSwappedModifiersUtility.h; sourceTree = "<group>"; };
 		98E972240BD9D9DF0041110D /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = Source/AppController.h; sourceTree = "<group>"; };
@@ -304,6 +306,7 @@
 				98E972C70BD9DA820041110D /* keymap.txt */,
 				98E972CE0BD9DA820041110D /* windows_keymap_table.txt */,
 				9860D7100BFFA565007FA463 /* Localizable.strings */,
+				98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -488,6 +491,7 @@
 				98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */,
 				98520FE80BFEC70800DD732F /* CoRD.sdef in Resources */,
 				9860D7120BFFA565007FA463 /* Localizable.strings in Resources */,
+				98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

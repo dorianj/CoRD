@@ -231,6 +231,8 @@
 		return viewedInst != nil;
 	else if (action == @selector(performDisconnect:))
 		return [NSApp keyWindow] != nil;
+	else if (action == @selector(duplicateSelectedServer:))
+		return [self selectedServer] != nil;
 	else if (action == @selector(toggleInspector:))
 	{
 		NSString *hideOrShow = [gui_inspector isVisible]
@@ -884,6 +886,7 @@
 	
 	CRDSession *duplicate = [selectedServer copy];
 	[duplicate setFilename:CRDFindAvailableFileName([AppController savedServersPath], [duplicate label], @".rdp")];
+	[duplicate flushChangesToFile ];
 	[self addSavedServer:duplicate atIndex:serverIndex+1 select:YES];
 	[gui_serverList noteNumberOfRowsChanged];
 }

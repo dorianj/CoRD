@@ -255,6 +255,9 @@
 	unsigned logonFlags = RDP_LOGON_NORMAL;
 	if ([username length] > 0 && ([password length] || savePassword))
 		logonFlags |= RDP_LOGON_AUTO;
+		
+	if (consoleSession)
+		logonFlags |= RDP_LOGON_LEAVE_AUDIO;
 	
 	// Other various settings
 	conn->serverBpp = (screenDepth==8 || screenDepth==15 || screenDepth==24) ? screenDepth : 16;
