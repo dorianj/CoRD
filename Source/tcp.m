@@ -137,10 +137,10 @@ tcp_connect(RDConnectionRef conn, const char *server)
 {
 	NSInputStream *is = nil;
 	NSOutputStream *os = nil;
-	NSHost *host;
+	NSHost *host = nil;
 	
 	int timedOut = False;
-	time_t start;
+	time_t start = 0;
 	
 	CFHostRef remoteHost = CFHostCreateWithName(NULL, (CFStringRef)[NSString stringWithUTF8String:server]);
 	RDHostLookupInfo volatile *lookupInfo = calloc(1, sizeof(RDHostLookupInfo));
@@ -156,7 +156,7 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	{
 		error("%s: couldn't start CFHost name resolution", __FUNCTION__);
 		conn->errorCode = ConnectionErrorHostResolution;
-		return False;
+		goto Cleanup;
 	}
 	
 	start = time(NULL);
@@ -168,41 +168,39 @@ tcp_connect(RDConnectionRef conn, const char *server)
 		timedOut = (time(NULL) - start > TIMEOUT_LENGTH);
 		[pool release];
 	} while (!lookupInfo->finished && !timedOut && (conn->errorCode == ConnectionErrorNone));
-	
-		
+			
 	if (timedOut)
 	{
 		conn->errorCode = ConnectionErrorTimeOut;
-		return False;
+		goto Cleanup;
 	}
 	else if (lookupInfo->finished && !lookupInfo->address)
 	{
 		conn->errorCode = ConnectionErrorHostResolution;
-		return False;
+		goto Cleanup;
 	}
 	else if (conn->errorCode != ConnectionErrorNone)
-		return False;
-
+		goto Cleanup;
 	
 	if ( !(host = [NSHost hostWithAddress:[NSString stringWithUTF8String:lookupInfo->address]]) )
 	{
 		error("%s: Couldn't transform host address '%@' into NSHost", __FUNCTION__, lookupInfo->address);
 		conn->errorCode = ConnectionErrorHostResolution;
-		return False;
+		goto Cleanup;
 	}
-	
- 	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
+
+	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
 	
 	if (!is || !os)
 	{
 		conn->errorCode = ConnectionErrorGeneral;
-		return False;
+		goto Cleanup;
 	}
 	
 	[is open];
 	[os open];
 	
-	// Wait until the output socket can be written to (this is the alternative to letting NSOutputStream block later when we do the first write:)
+	// Wait until the output socket can be written to (this is the alternative to letting NSOutputStream block later when we do the first write)
 	start = time(NULL);
 	timedOut = false;
 	while (![os hasSpaceAvailable] && !timedOut && (conn->errorCode != ConnectionErrorCanceled) )
@@ -214,27 +212,26 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	if (timedOut)
 	{
 		conn->errorCode = ConnectionErrorTimeOut;
-		return False;
+		goto Cleanup;
 	}
 	else if (conn->errorCode == ConnectionErrorCanceled)
-		return False;
+		goto Cleanup;
 	
 	conn->inputStream = [is retain];
 	conn->outputStream = [os retain];
 	
-	conn->inStream.size = 4096;
+	conn->outStream.size = conn->inStream.size = 4096;
 	conn->inStream.data = xmalloc(conn->inStream.size);
-
-	conn->outStream.size = 4096;
 	conn->outStream.data = xmalloc(conn->outStream.size);
-
-	// clean up
+	
+Cleanup:
+	CFRelease(remoteHost);
 	free(lookupInfo->address);
 	free((void *)lookupInfo);
 	free(streamError);
 	free(clientContext);
 
-	return True;
+	return conn->errorCode == ConnectionErrorNone;
 }
 
 /* Disconnect on the TCP layer */
@@ -321,7 +318,7 @@ tcp_cfhost_lookup_finished(CFHostRef host, CFHostInfoType typeInfo, const CFStre
 	
 	if (streamError && (streamError->error != noErr) )
 	{
-		error("%s: Error: %d", __FUNCTION__, (signed int)streamError->error);
+		error("%s: Couldn't resolve host; error code: %d (domain %d)\n", __FUNCTION__, (signed int)streamError->error, streamError->domain);
 		return;
 	}
 	

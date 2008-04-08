@@ -18,6 +18,10 @@
 #import <Cocoa/Cocoa.h>
 #import "CRDShared.h"
 
+#define SERVER_CELL_FULL_IMAGE_SIZE 36
+#define SERVER_CELL_ABBREVIATED_IMAGE_SIZE 16
+
+
 @interface CRDServerCell : NSCell
 {
 	NSMutableAttributedString *label, *user, *host;

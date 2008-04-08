@@ -581,7 +581,76 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		98EB11870C0129F7008D658C /* Fast Debug */ = {
+		98858F2D0DAB01D100116B11 /* Universal Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				PREBINDING = NO;
+				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
+			};
+			name = "Universal Debug";
+		};
+		98858F2E0DAB01D100116B11 /* Universal Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_BIT_PRE_XCODE_3_1 = "ppc i386";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = stabs;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_1)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_3)",
+					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_4)",
+				);
+				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/Source\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/Source\"";
+				FRAMEWORK_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/Source\"";
+				GCC_ALTIVEC_EXTENSIONS = NO;
+				GCC_CW_ASM_SYNTAX = NO;
+				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_DEBUGGING_SYMBOLS = default;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_ASM_KEYWORD = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_ENABLE_PASCAL_STRINGS = NO;
+				GCC_ENABLE_SSE3_EXTENSIONS = NO;
+				GCC_FAST_OBJC_DISPATCH = NO;
+				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
+				GCC_INPUT_FILETYPE = sourcecode.c.objc;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = Source/Cord_Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = CORD_DEBUG_BUILD;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_CHECK_SWITCH_STATEMENTS = YES;
+				GCC_WARN_MISSING_PARENTHESES = YES;
+				GCC_WARN_SHADOW = NO;
+				GCC_WARN_TYPECHECK_CALLS_TO_PRINTF = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = NO;
+				GCC_WARN_UNKNOWN_PRAGMAS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VALUE = YES;
+				GCC_WARN_UNUSED_VARIABLE = NO;
+				INFOPLIST_FILE = Resources/Info.plist;
+				INSTALL_PATH = "$(HOME)/Applications";
+				OTHER_CFLAGS = "-fnested-functions";
+				OTHER_LDFLAGS = "-lcrypto";
+				PRODUCT_NAME = Cord;
+				VERSIONING_SYSTEM = "";
+				WRAPPER_EXTENSION = app;
+				ZERO_LINK = NO;
+			};
+			name = "Universal Debug";
+		};
+		98EB11870C0129F7008D658C /* Optimized Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
@@ -634,9 +703,9 @@
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
 			};
-			name = "Fast Debug";
+			name = "Optimized Debug";
 		};
-		98EB11880C0129F7008D658C /* Fast Debug */ = {
+		98EB11880C0129F7008D658C /* Optimized Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -644,7 +713,7 @@
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
 			};
-			name = "Fast Debug";
+			name = "Optimized Debug";
 		};
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -802,7 +871,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
-				98EB11870C0129F7008D658C /* Fast Debug */,
+				98858F2E0DAB01D100116B11 /* Universal Debug */,
+				98EB11870C0129F7008D658C /* Optimized Debug */,
 				C01FCF4C08A954540054247B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
@@ -812,7 +882,8 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
-				98EB11880C0129F7008D658C /* Fast Debug */,
+				98858F2D0DAB01D100116B11 /* Universal Debug */,
+				98EB11880C0129F7008D658C /* Optimized Debug */,
 				C01FCF5008A954540054247B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;

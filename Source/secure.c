@@ -890,8 +890,11 @@ sec_connect(RDConnectionRef conn, const char *server, char *username)
 	sec_out_mcs_data(conn, &mcs_data);
 
 	if (!mcs_connect(conn, server, &mcs_data, username))
+	{
+		xfree(mcs_data.data);
 		return False;
-
+	}
+	
 	/*      sec_process_mcs_data(&mcs_data); */
 	if (conn->useEncryption)
 		sec_establish_key(conn);

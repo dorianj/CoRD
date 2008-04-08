@@ -64,8 +64,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.5.0-svn</string>
 	<key>CFBundleVersion</key>
-	<string>215</string>
-
+	<string>217</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>

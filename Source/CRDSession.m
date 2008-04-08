@@ -266,7 +266,7 @@
 	conn->screenHeight = screenHeight ? screenHeight : 768;
 	conn->tcpPort = (!port || port>=65536) ? CRDDefaultPort : port;
 	strncpy(conn->username, CRDMakeWindowsString(username), sizeof(conn->username));
-	
+
 	// Set remote keymap to match local OS X input type
 	if (CRDPreferenceIsEnabled(CRDSetServerKeyboardLayout))
 		conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
@@ -607,27 +607,30 @@
 	if (connectionStatus != CRDConnectionConnecting)
 	{
 		NSImage *base = [AppController sharedDocumentIcon];
+		NSImage *cellImage = [[[NSImage alloc] initWithSize:NSMakeSize(SERVER_CELL_FULL_IMAGE_SIZE, SERVER_CELL_FULL_IMAGE_SIZE)] autorelease];
+		
+		[cellImage lockFocus]; {
+			[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
+			[base drawInRect:CRDRectFromSize([cellImage size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];
+		} [cellImage unlockFocus];
+
 		if ([self temporary])
 		{
 			// Copy the document image into a new image and badge it with the clock
-			NSImage *icon = [[base copy] autorelease];
+			[cellImage lockFocus]; {
 
-			[icon lockFocus]; {
 				[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
-				[base drawInRect:CRDRectFromSize([icon size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];	
+
+				[base drawInRect:CRDRectFromSize([cellImage size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];	
 			
 				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon.png"];
-				NSSize clockSize = [clockIcon size], iconSize = [icon size];
+				NSSize clockSize = [clockIcon size], iconSize = [cellImage size];
 				NSRect dest = NSMakeRect(iconSize.width - clockSize.width - 1.0, iconSize.height - clockSize.height, clockSize.width, clockSize.height);
 				[clockIcon drawInRect:dest fromRect:CRDRectFromSize(clockSize) operation:NSCompositeSourceOver fraction:0.9];
-			} [icon unlockFocus];
-			
-			[cellRepresentation setImage:icon];
+			} [cellImage unlockFocus];
 		}
-		else
-		{
-			[cellRepresentation setImage:base];
-		}
+
+		[cellRepresentation setImage:cellImage];
 	}
 	
 	[g_appController cellNeedsDisplay:cellRepresentation];

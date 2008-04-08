@@ -171,6 +171,11 @@
 	long swapInterval = 1;
 	[[self openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
 	
+	// xxx: possible solutions for diagonal triangular tearing on faster gfx cards
+	//GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
+	//glEnable(GL_LINE_SMOOTH);
+	//glEnable(GL_POLYGON_SMOOTH);
+	
 	glEnable(GL_TEXTURE_RECTANGLE_EXT);
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
@@ -179,7 +184,7 @@
 
 - (void)reshape
 {
-	if (![self openGLContext] || [controller status] == CRDConnectionDisconnecting) 
+	if (![self openGLContext] || ([controller status] != CRDConnectionConnected) || [[NSThread currentThread] isEqualTo:[controller valueForKey:@"connectionThread"]] ) 
 		return;
 		
 	NSRect visibleRect = [self isScrolled] ? [[[self enclosingScrollView] documentView] visibleRect] : [self convertRect:[self bounds] toView:nil];
@@ -550,7 +555,7 @@
 	rdBufferBitmapLength = rdBufferWidth*rdBufferHeight*4;
 	rdBufferBitmapData = calloc(rdBufferBitmapLength, 1);
 
-	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceAdobeRGB1998);
+	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 	
 	unsigned int byteOrder;
 

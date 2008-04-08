@@ -123,7 +123,7 @@
 												   bitmapFormat:NSAlphaFirstBitmapFormat
 													bytesPerRow:width * 4
 												   bitsPerPixel:32] autorelease];
-	NSLog(@"%@", bitmap);
+	//debug: NSLog(@"%@", bitmap);
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];

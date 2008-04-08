@@ -157,6 +157,7 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 		CGImageRelease(backingStoreImage);
 	} CGContextRestoreGState(screenDumpContext);
 	
+	
 		
 	// Translate the 32-bit RGBA screen dump into RDP colors
 	uint8 *output, *o, *p;
@@ -234,6 +235,7 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 	
 	free(screenDumpBytes);
 	free(output);
+	CGContextRelease(screenDumpContext);
 }
 
 void ui_desktop_restore(RDConnectionRef conn, uint32 offset, int x, int y, int w, int h)

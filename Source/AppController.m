@@ -886,7 +886,7 @@
 	
 	CRDSession *duplicate = [selectedServer copy];
 	[duplicate setFilename:CRDFindAvailableFileName([AppController savedServersPath], [duplicate label], @".rdp")];
-	[duplicate flushChangesToFile ];
+	[duplicate flushChangesToFile];
 	[self addSavedServer:duplicate atIndex:serverIndex+1 select:YES];
 	[gui_serverList noteNumberOfRowsChanged];
 }
@@ -1220,7 +1220,7 @@
 
 		return;
 	} else {
-		if ([inspectedServer modified])
+		if ([inspectedServer modified] && ![inspectedServer temporary] )
 			[inspectedServer flushChangesToFile];	
 	}
 
@@ -1698,7 +1698,7 @@
 
 - (void)saveInspectedServer
 {
-	if ([inspectedServer modified])
+	if ([inspectedServer modified] && ![inspectedServer temporary])
 		[inspectedServer flushChangesToFile];
 }
 

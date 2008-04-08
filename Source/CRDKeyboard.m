@@ -16,7 +16,7 @@
 */
 
 /*	Notes: Numlock isn't synchronized because Apple keyboards don't use it.
-			CapLock will eventually be properly synchronized.
+			CapLock needs to be properly synchronized.
 */
 
 #import <Carbon/Carbon.h>
@@ -97,6 +97,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	else if ( !(newMods & NSCommandKeyMask) && (windowsKeySuppressed || (remoteModifiers & NSCommandKeyMask)) )
 	{
 		DEBUG_KEYBOARD( (@"Sending previously suppressed windows keystroke") );
+		NSLog(@"Event:\n%@", ev);
 		if ( !(remoteModifiers & NSCommandKeyMask))
 			[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYPRESS];
 		[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYRELEASE];
@@ -155,8 +156,7 @@ static NSDictionary *windowsKeymapTable = nil;
 		
 	#define UP_OR_DOWN(b) ( (b) ? RDP_KEYPRESS : RDP_KEYRELEASE )
 	
-	// keySent is used because some older keyboards may not specify right or left.
-	//	I don't know if it is actually needed.
+	// keySent is used because some older keyboards may not specify right or left. I don't know if it is actually needed.
 	
 	// Shift key
 	if ( (keySent = changedMods & NX_DEVICELSHIFTKEYMASK) )
@@ -318,7 +318,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	
 	NSNumber *windowsKeymap = [windowsKeymapTable objectForKey:keymapName];
 	
-	if (windowsKeymap == nil)
+	if (!windowsKeymap)
 	{
 		NSString *prefix;
 		
@@ -327,8 +327,7 @@ static NSDictionary *windowsKeymapTable = nil;
 		
 		while ( (potentialKeymapName = [enumerator nextObject]) )
 		{
-			prefix = [keymapName commonPrefixWithString:potentialKeymapName
-												options:NSLiteralSearch];
+			prefix = [keymapName commonPrefixWithString:potentialKeymapName options:NSLiteralSearch];
 			if ([prefix length] >= 4)
 			{ 
 				windowsKeymap = [windowsKeymapTable objectForKey:potentialKeymapName];
@@ -338,7 +337,12 @@ static NSDictionary *windowsKeymapTable = nil;
 		}
 	}
 	
-	return (windowsKeymap == nil) ? 0x409 : [windowsKeymap unsignedIntValue];
+	if (windowsKeymap)
+		DEBUG_KEYBOARD( (@"Setting remote keymap to %@ (int value: %d)", keymapName, [windowsKeymap unsignedIntValue]) );
+	else
+		DEBUG_KEYBOARD( (@"Using default American keyboard layout") );
+		
+	return (!windowsKeymap) ? 0x409 : [windowsKeymap unsignedIntValue];
 }
 
 + (NSString *) currentKeymapName
@@ -356,7 +360,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	unsigned int eventFlags = [ev modifierFlags];
 	uint16 rdFlags = 0;
 	
-	// Unless if a system to ensure modifiers before keypress is added, this is uneeded
+	// Unless if a system to ensure modifiers qre correct before keypresses is added, this is uneeded
 	//if (eventFlags & NSAlphaShiftKeyMask)
 	// 	MASK_CHANGE_BIT(rdFlags, MapCapsLockMask, 1);
 	

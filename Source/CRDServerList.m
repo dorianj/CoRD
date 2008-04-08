@@ -125,6 +125,7 @@
 	selectedRow = [[self delegate] tableView:self shouldSelectRow:index] ? index : -1;
 	
 	// Bit hacky, but works better than calling super (this way, we control the notification)
+	[_selectedRows autorelease];
 	_selectedRows = [[NSIndexSet indexSetWithIndex:selectedRow] mutableCopy];
 	
 	[self setNeedsDisplay:YES];

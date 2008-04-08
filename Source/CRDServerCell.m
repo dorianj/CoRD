@@ -33,9 +33,8 @@
 #define PADDING_RIGHT 0
 #define PADDING_LEFT 10
 
-#define FULL_IMAGE_SIZE 36
-#define ABBREVIATED_IMAGE_SIZE 16
-#define IMAGE_SIZE (abbreviatedSize ? ABBREVIATED_IMAGE_SIZE : FULL_IMAGE_SIZE)
+#define IMAGE_SIZE (abbreviatedSize ? SERVER_CELL_ABBREVIATED_IMAGE_SIZE : SERVER_CELL_FULL_IMAGE_SIZE)
+
 
 static NSDictionary *static_boldTextAtrributes, *static_regularTextAttributes;
 static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
