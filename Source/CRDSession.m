@@ -345,11 +345,13 @@
 
 - (void)disconnectAsync:(NSNumber *)block
 {
+	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
 	[self setStatus:CRDConnectionDisconnecting];
 	if (connectionRunLoopFinished || [block boolValue])
 	{
-		// Try to forcefully break out of the run loop
+		// Try to forcefully break the connection thread out of its run loop
 		@synchronized(self)
 		{
 			[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
@@ -357,10 +359,7 @@
 		
 		while (!connectionRunLoopFinished)
 			usleep(1000);
-			
-		// Low level removal
-		tcp_disconnect(conn);
-		
+
 		// UI cleanup
 		[self destroyWindow];
 		[scrollEnclosure release];
@@ -410,8 +409,8 @@
 		[pool release];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
 	
+	//rdp_disconnect(conn);
 	[self discardConnectionThread];
-	
 	connectionRunLoopFinished = YES;
 
 	[pool release];

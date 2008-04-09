@@ -1381,7 +1381,9 @@
 			[inst writeToFile:path atomically:YES updateFilenames:YES];
 		}
 		
-		[self addSavedServer:inst atIndex:[[inst valueForKey:@"preferredRowIndex"] intValue] select:YES];
+		// Re-insert into saved server list
+		int preferredRow = MIN([savedServers count], [[inst valueForKey:@"preferredRowIndex"] intValue]);
+		[self addSavedServer:inst atIndex:preferredRow select:YES];
 	}
 
 	[self listUpdated];
@@ -2112,7 +2114,7 @@
 
 - (void)addSavedServer:(CRDSession *)inst atIndex:(int)index select:(BOOL)select
 {
-	if ( (inst == nil) || (index < 0) || (index > [savedServers count]) )
+	if ( !inst || (index < 0) || (index > [savedServers count]) )
 		return;
 	
 	[inst setTemporary:NO];

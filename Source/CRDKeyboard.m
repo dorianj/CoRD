@@ -97,7 +97,6 @@ static NSDictionary *windowsKeymapTable = nil;
 	else if ( !(newMods & NSCommandKeyMask) && (windowsKeySuppressed || (remoteModifiers & NSCommandKeyMask)) )
 	{
 		DEBUG_KEYBOARD( (@"Sending previously suppressed windows keystroke") );
-		NSLog(@"Event:\n%@", ev);
 		if ( !(remoteModifiers & NSCommandKeyMask))
 			[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYPRESS];
 		[self sendScancode:SCANCODE_CHAR_LWIN flags:RDP_KEYRELEASE];
