@@ -208,7 +208,7 @@
 			usleep(1000);
 			
 		if (time(NULL) - startTime > 10)
-			NSLog(@"Got hung up on old, frozen connection while connecting to %@", label);
+			NSLog(@"Got hung up on old frozen connection while connecting to %@", label);
 	}
 	
 	if (connectionStatus != CRDConnectionClosed)

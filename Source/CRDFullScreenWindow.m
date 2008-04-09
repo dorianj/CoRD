@@ -98,8 +98,8 @@
 		[viewAnim startAnimation];
 		[viewAnim release];	
 	}
-	else
-	NSLog(@"not animating the close");
+/*	else
+	NSLog(@"not animating the close");*/
 	
 	[self close];
 }

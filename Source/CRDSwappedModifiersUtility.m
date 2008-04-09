@@ -105,9 +105,7 @@ static NSArray *rawDefaultTable;
 	userDefaultTable = [[NSUserDefaults standardUserDefaults] objectForKey:SwappedModifiersRootKey];
 
 	if ( (userDefaultTable != nil) && ![userDefaultTable isEqualToArray:rawDefaultTable])
-	{
-		NSLog(@"Reloading...", userDefaultTable, rawDefaultTable);
-		
+	{		
 		[rawDefaultTable release];
 		rawDefaultTable = [userDefaultTable retain];
 		
@@ -175,8 +173,6 @@ static NSArray *rawDefaultTable;
 	{
 		[CRDSwappedModifiersUtility loadStandardTranslation];
     }
-	
-	NSLog(@"changed!");
 }
 
 @end
