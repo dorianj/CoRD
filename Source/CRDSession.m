@@ -441,26 +441,12 @@
 		return;
 	
 	NSString *pasteContent = CRDConvertLineEndings([pb stringForType:NSStringPboardType], YES);
-
-	NSMutableData *unicodePasteContent = [[[pasteContent dataUsingEncoding:NSUnicodeStringEncoding allowLossyConversion:YES] mutableCopy] autorelease];
-	
+	NSMutableData *unicodePasteContent = [NSMutableData dataWithData:(NSData *)CFStringCreateExternalRepresentation(NULL, (CFStringRef)pasteContent, kCFStringEncodingUTF16LE, 0x20 /* unicode space */)];
+		
 	if (![unicodePasteContent length])
 		return;
-	
-	// a bit of a hack: assure it's little-endian... not sure of the proper API for this (CoreEndian doesn't seem appropriate)
-#ifdef __BIG_ENDIAN__
-		char *d = [unicodePasteContent mutableBytes], t;
-		int p = 0;
-		do
-		{
-			t = d[p];
-			d[p] = d[p+1];
-			d[p+1] = t;
-			p += 2;
-		} while (p+1 < [unicodePasteContent length]);
-#endif
 		
-	cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes] + 2 /* skip endianess marker */, [unicodePasteContent length]);
+	cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes], [unicodePasteContent length]);
 }
 
 - (void)requestRemoteClipboardData

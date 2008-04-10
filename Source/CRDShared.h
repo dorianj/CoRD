@@ -138,7 +138,7 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 //#define WITH_DEBUG_KEYBOARD
 //#define WITH_DEBUG_MOUSE
 //#define WITH_DEBUG_UI 1
-//#define WITH_MID_LEVEL_DEBUG 1
+//#define WITH__LEVEL_DEBUG 1
 
 #ifdef WITH_MID_LEVEL_DEBUG
 	#define UNIMPL NSLog(@"Unimplemented: %s", __func__)

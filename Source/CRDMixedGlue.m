@@ -54,7 +54,6 @@ void ui_clip_sync(RDConnectionRef conn)
 
 void ui_clip_request_failed(RDConnectionRef conn)
 {
-
 	
 }
 
