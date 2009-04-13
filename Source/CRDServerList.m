@@ -604,6 +604,16 @@
 		[self concludeDrag];
 }
 
+// Patch 2635326 by Jeremiah Dabney 2/24/09
+- (void)dealloc
+{
+    [autoexpansionAnimation release];
+    [autoexpansionStartRowOrigins release];
+    [autoexpansionEndRowOrigins release];
+    [autoexpansionCurrentRowOrigins release];
+    [super dealloc];
+}
+// End Patch 2635326
 
 #pragma mark -
 #pragma mark Internal use

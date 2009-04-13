@@ -57,4 +57,12 @@ static NSDictionary *static_labelStyle;
 	return NSMakeSize(s.width + PADDING_RIGHT + PADDING_LEFT, s.height + PADDING_BOTTOM + PADDING_TOP);
 }
 
+// Patch 2635326 by Jeremiah Dabney 2/24/09
+- (void)dealloc
+{
+    [label release];
+    [super dealloc];
+}
+// End Patch 2635326
+
 @end
