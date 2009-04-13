@@ -113,6 +113,8 @@
 				<string>id</string>
 				<key>helpForConnectionOptions</key>
 				<string>id</string>
+				<key>jumpToQuickConnect</key>
+				<string>id</string>
 				<key>keepSelectedServer</key>
 				<string>id</string>
 				<key>performConnectOrDisconnect</key>
@@ -200,6 +202,8 @@
 				<string>NSBox</string>
 				<key>gui_quickConnect</key>
 				<string>NSComboBox</string>
+				<key>gui_quickConnectConsole</key>
+				<string>NSButton</string>
 				<key>gui_savePassword</key>
 				<string>NSButton</string>
 				<key>gui_screenResolution</key>

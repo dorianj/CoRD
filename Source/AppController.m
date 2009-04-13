@@ -31,7 +31,8 @@
 #define TOOLBAR_DRAWER @"Servers"
 #define TOOLBAR_FULLSCREEN @"Fullscreen"
 #define TOOLBAR_UNIFIED @"Windowed"
-#define TOOLBAR_QUICKCONNECT @"Quick connect"
+#define TOOLBAR_QUICKCONNECT @"Quick Connect"
+#define TOOLBAR_QUICKCONNECTCONSOLE @"Quick Connect Console"
 
 #pragma mark -
 
@@ -116,8 +117,16 @@
 	NSSize qcSize = [gui_quickConnect frame].size;
 	[quickConnectItem setMinSize:NSMakeSize(160.0, qcSize.height)];
 	[quickConnectItem setMaxSize:NSMakeSize(160.0, qcSize.height)];
+	[quickConnectItem setPaletteLabel:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label")];
 	[quickConnectItem setValue:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label") forKey:@"label"];
 	[quickConnectItem setToolTip:NSLocalizedString(@"Quick Connect Tooltip", @"Quick Connect toolbar item -> tooltip")];
+	
+	NSToolbarItem *quickConnectConsoleItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECTCONSOLE] autorelease];
+	[quickConnectConsoleItem setView:gui_quickConnectConsole];
+	[quickConnectConsoleItem setPaletteLabel:NSLocalizedString(@"Quick Connect Console", @"Quick Connect Console toolbar item -> label")];
+	[quickConnectConsoleItem setValue:NSLocalizedString(@"Quick Connect Console", @"Quick Connect Console toolbar item -> label") forKey:@"label"];
+	[quickConnectConsoleItem setToolTip:NSLocalizedString(@"Quick Connect Console Tooltip", @"Quick Connect Console toolbar item -> tooltip")];
+	
 	
 	toolbarItems = [[NSMutableDictionary alloc] init];
 	
@@ -145,7 +154,9 @@
 			NSLocalizedString(@"Switch between unified and windowed mode", @"Display Mode toolbar item -> tool tip"),
 			@selector(performUnified:))
 		forKey:TOOLBAR_UNIFIED];
+	
 	[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
+	[toolbarItems setObject:quickConnectConsoleItem	forKey:TOOLBAR_QUICKCONNECTCONSOLE];
 	
 	gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
 	[gui_toolbar setDelegate:self];
@@ -763,7 +774,7 @@
 
 - (IBAction)performQuickConnect:(id)sender
 {
-	NSString *address = [gui_quickConnect stringValue], *hostname;
+	NSString *address = [gui_quickConnect stringValue], *hostname, *consoleSes = [gui_quickConnectConsole stringValue];
 	int port;
 	
 	CRDSplitHostNameAndPort(address, &hostname, &port);
@@ -774,6 +785,7 @@
 	[newInst setValue:hostname forKey:@"label"];
 	[newInst setValue:hostname forKey:@"hostName"];
 	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
+	[newInst setValue:[NSNumber numberWithInt:[consoleSes intValue]] forKey:@"consoleSession"];
 	
 	[connectedServers addObject:newInst];
 	[gui_serverList deselectAll:self];
@@ -891,6 +903,13 @@
 	[gui_serverList noteNumberOfRowsChanged];
 }
 
+- (IBAction)jumpToQuickConnect:(id)sender
+{
+	if (![gui_quickConnect currentEditor]) {
+		[[gui_quickConnect window] makeFirstResponder:gui_quickConnect];
+	} 
+}
+
 
 #pragma mark -
 #pragma mark Toolbar methods
@@ -918,6 +937,7 @@
 				TOOLBAR_DRAWER,
 				NSToolbarSeparatorItemIdentifier,
 				TOOLBAR_QUICKCONNECT,
+				TOOLBAR_QUICKCONNECTCONSOLE,
 				NSToolbarFlexibleSpaceItemIdentifier,
 				TOOLBAR_FULLSCREEN,
 				TOOLBAR_UNIFIED, 
@@ -961,6 +981,12 @@
 		[toolbarItem setValue:localizedLabel forKey:@"label"];
 		return ([inst status] == CRDConnectionConnecting) || 
 				( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
+	}
+	else if ([itemId isEqualToString:TOOLBAR_QUICKCONNECTCONSOLE])
+	{
+		NSString *label = @"Console";
+		NSString *localizedLabel = NSLocalizedString(@"Console", @"Quick Connect Console toolbar item -> label");
+		[toolbarItem setValue:localizedLabel forKey:@"label"];
 	}
 	
 	return YES;

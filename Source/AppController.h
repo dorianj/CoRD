@@ -47,6 +47,7 @@
 	IBOutlet NSWindow *gui_unifiedWindow;
 	IBOutlet NSComboBox *gui_quickConnect;
 	IBOutlet CRDTabView *gui_tabView;
+	IBOutlet NSButton *gui_quickConnectConsole;
 	NSToolbar *gui_toolbar;
 	NSMutableDictionary *toolbarItems;
 
@@ -102,6 +103,7 @@
 - (IBAction)sortSavedServersAlphabetically:(id)sender;
 - (IBAction)doNothing:(id)sender;
 - (IBAction)duplicateSelectedServer:(id)sender;
+- (IBAction)jumpToQuickConnect:(id)sender;
 
 // Other methods are in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;
