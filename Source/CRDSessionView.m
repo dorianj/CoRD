@@ -168,7 +168,7 @@
 
 -(void)prepareOpenGL
 {
-	long swapInterval = 1;
+	GLint swapInterval = 1;
 	[[self openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
 	
 	// xxx: possible solutions for diagonal triangular tearing on faster gfx cards
@@ -338,7 +338,8 @@
 	else
 	{
 		// It's been less than the threshold since the last event, schedule it to be sent later
-		[deferredMouseEvent release]; // Patch 2635326 by Jeremiah Dabney 2/24/09
+		[deferredMouseEvent release];
+		deferredMouseEvent = nil;
 		deferredMouseEvent = [ev copy];
 		mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:((1.0/CRDMouseEventLimit)-[[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt]) target:self selector:@selector(recheckScheduledMouseInput:) userInfo:nil repeats:NO] retain];
 	}		
