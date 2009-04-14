@@ -982,13 +982,6 @@
 		return ([inst status] == CRDConnectionConnecting) || 
 				( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
 	}
-	else if ([itemId isEqualToString:TOOLBAR_QUICKCONNECTCONSOLE])
-	{
-		NSString *label = @"Console";
-		NSString *localizedLabel = NSLocalizedString(@"Console", @"Quick Connect Console toolbar item -> label");
-		[toolbarItem setValue:localizedLabel forKey:@"label"];
-	}
-	
 	return YES;
 }
 
