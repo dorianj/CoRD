@@ -291,6 +291,16 @@
 		else
 			[item setTitle:([inst status] == CRDConnectionClosed) ? localizedConnect : localizedDisconnect];
 	}
+	else if (action == @selector(performUnified:))
+	{
+		NSString *localizedWindowed = NSLocalizedString(@"Toggle Windowed", @"View menu -> Toggle Windowed");
+		NSString *localizedUnified = NSLocalizedString(@"Toggle Unified", @"View menu -> Toggle Unified");
+		
+		if (displayMode == CRDDisplayUnified)
+			[item setTitle:localizedWindowed];
+		else if (displayMode == CRDDisplayWindowed)
+			[item setTitle:localizedUnified];
+	}
 	
 	return YES;
 }
