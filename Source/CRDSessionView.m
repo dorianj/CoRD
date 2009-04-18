@@ -541,11 +541,13 @@
 {
 	[NSGraphicsContext saveGraphicsState];
 	[NSGraphicsContext setCurrentContext:[NSGraphicsContext graphicsContextWithGraphicsPort:rdBufferContext flipped:NO]];
+	CGContextSaveGState(rdBufferContext);
 	NSRectClip(clipRect);
 }
 
 - (void)releaseBackingStore
 {
+	CGContextRestoreGState(rdBufferContext);
 	[NSGraphicsContext restoreGraphicsState];
 }
 
