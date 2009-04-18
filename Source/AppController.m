@@ -32,7 +32,6 @@
 #define TOOLBAR_FULLSCREEN @"Fullscreen"
 #define TOOLBAR_UNIFIED @"Windowed"
 #define TOOLBAR_QUICKCONNECT @"Quick Connect"
-#define TOOLBAR_QUICKCONNECTCONSOLE @"Quick Connect Console"
 
 #pragma mark -
 
@@ -121,13 +120,7 @@
 	[quickConnectItem setValue:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label") forKey:@"label"];
 	[quickConnectItem setToolTip:NSLocalizedString(@"Quick Connect Tooltip", @"Quick Connect toolbar item -> tooltip")];
 	
-	NSToolbarItem *quickConnectConsoleItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECTCONSOLE] autorelease];
-	[quickConnectConsoleItem setView:gui_quickConnectConsole];
-	[quickConnectConsoleItem setPaletteLabel:NSLocalizedString(@"Quick Connect Console", @"Quick Connect Console toolbar item -> label")];
-	[quickConnectConsoleItem setValue:NSLocalizedString(@"Quick Connect Console", @"Quick Connect Console toolbar item -> label") forKey:@"label"];
-	[quickConnectConsoleItem setToolTip:NSLocalizedString(@"Quick Connect Console Tooltip", @"Quick Connect Console toolbar item -> tooltip")];
-	
-	
+
 	toolbarItems = [[NSMutableDictionary alloc] init];
 	
 	[toolbarItems 
@@ -156,7 +149,6 @@
 		forKey:TOOLBAR_UNIFIED];
 	
 	[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
-	[toolbarItems setObject:quickConnectConsoleItem	forKey:TOOLBAR_QUICKCONNECTCONSOLE];
 	
 	gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
 	[gui_toolbar setDelegate:self];
@@ -422,10 +414,10 @@
 {
 	CRDSession *inst = [self viewedServer];
 	
-	if ([[self viewedServer] status]  == CRDConnectionConnected)
-		[self disconnect:nil];
-	else if ([[self serverInstanceForRow:[gui_serverList selectedRow]] status] == CRDConnectionConnecting)
+	if ([[self serverInstanceForRow:[gui_serverList selectedRow]] status] == CRDConnectionConnecting)
 		[self stopConnection:nil];
+	else if ([[self viewedServer] status]  == CRDConnectionConnected)
+		[self disconnect:nil];
 }
 
 - (IBAction)stopConnection:(id)sender
@@ -784,10 +776,12 @@
 
 - (IBAction)performQuickConnect:(id)sender
 {
-	NSString *address = [gui_quickConnect stringValue], *hostname, *consoleSes = [gui_quickConnectConsole stringValue];
+	NSString *address = [gui_quickConnect stringValue], *hostname;
+	BOOL isConsoleSession = (GetCurrentKeyModifiers() & shiftKey) ? YES : NO;
 	int port;
 	
 	CRDSplitHostNameAndPort(address, &hostname, &port);
+	
 	
 	CRDSession *newInst = [[[CRDSession alloc] init] autorelease];
 	
@@ -795,7 +789,7 @@
 	[newInst setValue:hostname forKey:@"label"];
 	[newInst setValue:hostname forKey:@"hostName"];
 	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
-	[newInst setValue:[NSNumber numberWithInt:[consoleSes intValue]] forKey:@"consoleSession"];
+	[newInst setValue:[NSNumber numberWithBool:isConsoleSession] forKey:@"consoleSession"];
 	
 	[connectedServers addObject:newInst];
 	[gui_serverList deselectAll:self];
@@ -816,10 +810,16 @@
 	[userDefaults synchronize];
 }
 
+
+- (IBAction)jumpToQuickConnect:(id)sender
+{
+	if (![gui_quickConnect currentEditor] && [gui_quickConnect window])
+		[[gui_quickConnect window] makeFirstResponder:gui_quickConnect];
+}
+
 - (IBAction)helpForConnectionOptions:(id)sender
 {
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ConnectionOptions"
-			inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ConnectionOptions" inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
 }
 
 // Sent when a server in the Server menu is clicked on; either connects to the server or makes it visible
@@ -913,13 +913,6 @@
 	[gui_serverList noteNumberOfRowsChanged];
 }
 
-- (IBAction)jumpToQuickConnect:(id)sender
-{
-	if (![gui_quickConnect currentEditor]) {
-		[[gui_quickConnect window] makeFirstResponder:gui_quickConnect];
-	} 
-}
-
 
 #pragma mark -
 #pragma mark Toolbar methods
@@ -947,7 +940,6 @@
 				TOOLBAR_DRAWER,
 				NSToolbarSeparatorItemIdentifier,
 				TOOLBAR_QUICKCONNECT,
-				TOOLBAR_QUICKCONNECTCONSOLE,
 				NSToolbarFlexibleSpaceItemIdentifier,
 				TOOLBAR_FULLSCREEN,
 				TOOLBAR_UNIFIED, 
