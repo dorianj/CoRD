@@ -777,7 +777,7 @@
 - (IBAction)performQuickConnect:(id)sender
 {
 	NSString *address = [gui_quickConnect stringValue], *hostname;
-	BOOL isConsoleSession = (GetCurrentKeyModifiers() & shiftKey) ? YES : NO;
+	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] && NSShiftKeyMask;
 	int port;
 	
 	CRDSplitHostNameAndPort(address, &hostname, &port);
