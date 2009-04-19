@@ -813,6 +813,9 @@
 
 - (IBAction)jumpToQuickConnect:(id)sender
 {
+	if (![[gui_quickConnect window] isKeyWindow])
+		[[gui_quickConnect window] makeKeyAndOrderFront:[gui_quickConnect window]];
+
 	if (![gui_quickConnect currentEditor] && [gui_quickConnect window])
 		[[gui_quickConnect window] makeFirstResponder:gui_quickConnect];
 }
