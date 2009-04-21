@@ -2,7 +2,7 @@
    rdesktop: A Remote Desktop Protocol client.
    Cache routines
    Copyright (C) Matthew Chapman 1999-2005
-   Copyright (C) Jeroen Meijer 2005
+   Copyright (C) Jeroen Meijer 2008
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by

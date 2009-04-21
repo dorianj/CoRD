@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 8 -*-
    rdesktop: A Remote Desktop Protocol client.
    Protocol services - ISO layer
-   Copyright (C) Matthew Chapman 1999-2005
+   Copyright (C) Matthew Chapman 1999-2008
    
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -99,7 +99,12 @@ iso_recv_msg(RDConnectionRef conn, uint8 * code, uint8 * rdpver)
 			next_be(s, length);
 		}
 	}
-	s = tcp_recv(conn, s, length - 4);
+    if (length < 4)
+	{
+        error("Bad packet header\n");    
+        return NULL;
+    }
+    s = tcp_recv(conn, s, length - 4);
 	if (s == NULL)
 		return NULL;
 	if (version != 3)

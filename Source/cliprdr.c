@@ -2,7 +2,7 @@
    rdesktop: A Remote Desktop Protocol client.
    Protocol services - Clipboard functions
    Copyright (C) Erik Forsberg <forsberg@cendio.se> 2003
-   Copyright (C) Matthew Chapman 2003
+   Copyright (C) Matthew Chapman 2008
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
 
 #import "rdesktop.h"
 
-#define CLIPRDR_CONNECT			1
+#define CLIPRDR_CONNECT             1
 #define CLIPRDR_FORMAT_ANNOUNCE		2
-#define CLIPRDR_FORMAT_ACK		3
+#define CLIPRDR_FORMAT_ACK          3
 #define CLIPRDR_DATA_REQUEST		4
 #define CLIPRDR_DATA_RESPONSE		5
 
