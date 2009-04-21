@@ -1685,15 +1685,23 @@
 		[gui_serversMenu addItem:menuItem];
 		[menuItem autorelease];
 	}
-	
+	int hotkey = 1;
 	enumerator = [savedServers objectEnumerator];
 	while ( (inst = [enumerator nextObject]) )
 	{
 		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
-					action:@selector(performServerMenuItem:) keyEquivalent:@""];
+					action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i",hotkey]];
+		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
 		[menuItem autorelease];
+		if (hotkey == 0 || hotkey == (-1))
+			hotkey = (-1);
+		else
+			hotkey++;
+		
+		if (hotkey == 10)
+			hotkey = 0;
 	}
 }
 
