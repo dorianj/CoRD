@@ -305,7 +305,7 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, const char *domain, char
 		out_uint32_le(s, 0xffffffc4);
 		out_uint32_le(s, 0xfffffffe);
 		out_uint32_le(s, conn->rdp5PerformanceFlags);
-		out_uint32(s, 0);
+		out_uint16(s, 0);
 
 
 	}
@@ -896,7 +896,7 @@ process_system_pointer_pdu(RDConnectionRef conn, RDStreamRef s)
 {
 	uint16 system_pointer_type;
 
-	in_uint16(s, system_pointer_type);
+	in_uint16_le(s, system_pointer_type);
 	switch (system_pointer_type)
 	{
 		case RDP_NULL_POINTER:
@@ -1106,10 +1106,10 @@ process_data_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason)
 	RDStream *ns = &(conn->mppcDict.ns);
 
 	in_uint8s(s, 6);	/* shareid, pad, streamid */
-	in_uint16(s, len);
+	in_uint16_le(s, len);
 	in_uint8(s, data_pdu_type);
 	in_uint8(s, ctype);
-	in_uint16(s, clen);
+	in_uint16_le(s, clen);
 	clen -= 18;
 
 	if (ctype & RDP_MPPC_COMPRESSED)

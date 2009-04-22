@@ -1,6 +1,6 @@
 /* -*- c-basic-offset: 8 -*-
    rdesktop: A Remote Desktop Protocol client.
-   Copyright (C) Matthew Chapman 1999-2005
+   Copyright (C) Matthew Chapman 1999-2008
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -536,8 +536,6 @@ rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 					
 					/*
 					in_uint32_le(s, info_level);
-
-					conn->notifyStamp = True;
 
 					status = disk_create_notify(conn, file, info_level);
 					result = 0;

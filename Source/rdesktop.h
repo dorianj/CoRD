@@ -1,7 +1,7 @@
  /*
    rdesktop: A Remote Desktop Protocol client.
    Master include file
-   Copyright (C) Matthew Chapman 1999-2005
+   Copyright (C) Matthew Chapman 1999-2008
    
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@
 #import <openssl/x509v3.h>
 #import <openssl/rc4.h>
 
-#define VERSION "1.5.0"
+#define VERSION "1.6.0"
 
 //#define WITH_DEBUG 1
 #ifdef WITH_DEBUG
@@ -54,6 +54,12 @@
 	#define DEBUG_CLIPBOARD(args) printf args;
 #else
 	#define DEBUG_CLIPBOARD(args)
+#endif
+
+#ifdef WITH_DEBUG_SOUND
+    #define DEBUG_SOUND(args) printf args;
+#else
+    #define DEBUG_SOUND(args)
 #endif
 
 //#define WITH_DEBUG_CHANNEL

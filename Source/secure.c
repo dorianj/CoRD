@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 8 -*-
    rdesktop: A Remote Desktop Protocol client.
    Protocol services - RDP encryption and licensing
-   Copyright (C) Matthew Chapman 1999-2005
+   Copyright (C) Matthew Chapman 1999-2008
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -684,7 +684,7 @@ sec_parse_crypt_info(RDConnectionRef conn, RDStreamRef s, uint32 * rc4_key_size,
 static void
 sec_process_crypt_info(RDConnectionRef conn, RDStreamRef s)
 {
-	uint8 *server_random, *modulus = NULL, *exponent = NULL;
+	uint8 *server_random = NULL, *modulus = NULL, *exponent = NULL;
 	uint8 client_random[SEC_RANDOM_SIZE];
 	uint32 rc4_key_size;
 
