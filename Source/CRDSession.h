@@ -32,7 +32,7 @@
 	// User configurable RDP settings
 	NSString *label, *hostName, *username, *password, *domain;	
 	BOOL savePassword, forwardDisks, forwardPrinters, drawDesktop, windowDrags, windowAnimation, themes, consoleSession, fullscreen;
-	int startDisplay, forwardAudio, screenDepth, screenWidth, screenHeight, port;
+	int startDisplay, forwardAudio, screenDepth, screenWidth, screenHeight, port, hotkey;
 	NSMutableDictionary *otherAttributes;
 	
 	// Working between main thread and connection thread
@@ -111,6 +111,7 @@
 - (BOOL)modified;
 - (CRDConnectionStatus)status;
 - (NSWindow *)window;
+- (int)hotkey;
 
 - (void)setHostName:(NSString *)newHost;
 - (void)setUsername:(NSString *)s;

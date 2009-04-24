@@ -49,6 +49,7 @@
 	preferredRowIndex = -1;
 	screenDepth = 16;
 	temporary = themes = YES;
+	hotkey = (-1);
 	fileEncoding = NSUTF8StringEncoding;
 	
 	// Other initialization
@@ -139,6 +140,7 @@
 	newSession->screenHeight = screenHeight;
 	newSession->port = port;
 	newSession->modified = modified;
+	newSession->hotkey = hotkey;
 }
 
 
@@ -529,6 +531,7 @@
 	write_int(@"startdisplay", startDisplay);
 	write_int(@"cord fullscreen", fullscreen);
 	write_int(@"cord row index", preferredRowIndex);
+//	write_int(@"cord hotkey", hotkey);
 	
 	write_string(@"full address", CRDJoinHostNameAndPort(hostName, port));
 	write_string(@"username", username);
@@ -865,6 +868,10 @@
 	return window;
 }
 
+- (int)hotkey
+{
+	return hotkey;
+}
 // KVC/KVO compliant setters that are used to propagate changes to the keychain item
 
 - (void)setLabel:(NSString *)newLabel
@@ -1018,9 +1025,14 @@
 		else if ([name isEqualToString:@"full address"]) {
 			CRDSplitHostNameAndPort(value, &hostName, &port);
 			[hostName retain];
+			NSLog(@"%@",hostName);
 		}
 		else if ([name isEqualToString:@"cord fullscreen"])
 			fullscreen = numVal;
+		else if ([name isEqualToString:@"cord hotkey"]) {
+			hotkey = (numVal) ? numVal : (-1);
+			NSLog(@"Hotkey: %i",hotkey);
+		}
 		else
 		{
 			if ([type isEqualToString:@"i"])

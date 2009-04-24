@@ -190,6 +190,8 @@
 				<string>NSButton</string>
 				<key>gui_host</key>
 				<string>NSTextField</string>
+				<key>gui_hotkey</key>
+				<string>NSPopUpButton</string>
 				<key>gui_inspector</key>
 				<string>NSWindow</string>
 				<key>gui_inspectorButton</key>

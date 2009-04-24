@@ -1664,7 +1664,17 @@
 	if ([self serverInstanceForRow:[gui_serverList selectedRow]] == nil)
 		[gui_serverList selectRow:-1];
 	
+	NSEnumerator *hotkeyEnumerator;
+	NSArray *hotkeyList = [[gui_hotkey menu] itemArray];
+	NSMenuItem *hotkeyMenuItem;
+
+	hotkeyEnumerator = [hotkeyList objectEnumerator];
 	
+	
+	while ( ( hotkeyMenuItem = [hotkeyEnumerator nextObject] ) )
+	{
+		[hotkeyMenuItem setHidden:NO];
+	}
 	
 	// Update servers menu
 	int separatorIndex = [gui_serversMenu indexOfItemWithTag:SERVERS_SEPARATOR_TAG], i; 
@@ -1684,24 +1694,22 @@
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
 		[menuItem autorelease];
+		if ([inst hotkey] != (-1))
+			[[[gui_hotkey menu] itemAtIndex:[inst hotkey]] setHidden:YES];
 	}
-	int hotkey = 1;
 	enumerator = [savedServers objectEnumerator];
 	while ( (inst = [enumerator nextObject]) )
 	{
+		NSLog(@"Inst Hotkey: %i",[inst hotkey]);
 		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
-					action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i",hotkey]];
+					action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i",[inst hotkey]]];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
 		[menuItem autorelease];
-		if (hotkey == 0 || hotkey == (-1))
-			hotkey = (-1);
-		else
-			hotkey++;
-		
-		if (hotkey == 10)
-			hotkey = 0;
+		if ([inst hotkey] != (-1))
+			[[[gui_hotkey menu] itemAtIndex:[inst hotkey]] setHidden:YES];
+
 	}
 }
 
@@ -1796,6 +1804,19 @@
 	[inst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
 	[inst setValue:s forKey:@"hostName"];
 	
+	//Hotkey
+	int hotkey;
+	if ([gui_hotkey indexOfSelectedItem] == 10)
+		hotkey = 0;
+	else if ([gui_hotkey indexOfSelectedItem] > 10 || [gui_hotkey indexOfSelectedItem] < 0)
+		hotkey = (-1);
+	else
+	{
+		hotkey = [gui_hotkey indexOfSelectedItem];
+		[[gui_hotkey itemAtIndex:hotkey] setHidden:YES];
+	}
+	[inst setValue:[NSNumber numberWithInt:hotkey] forKey:@"hotkey"];
+	
 	// Screen depth
 	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8] forKey:@"screenDepth"];
 			
@@ -1853,6 +1874,13 @@
 	int port = [[newSettings valueForKey:@"port"] intValue];
 	NSString *host = [newSettings valueForKey:@"hostName"];
 	[gui_host setStringValue:CRDJoinHostNameAndPort(host, port)];
+	
+	//Hotkey
+	int hotkey = [[newSettings valueForKey:@"hotkey"] intValue];
+	if (hotkey >= 0 && hotkey <= 9)
+		[gui_hotkey selectItemAtIndex:hotkey];
+	else
+		[gui_hotkey selectItemAtIndex:10];
 	
 	// Color depth
 	int colorDepth = [[newSettings valueForKey:@"screenDepth"] intValue];
