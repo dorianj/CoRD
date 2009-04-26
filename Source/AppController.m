@@ -1701,7 +1701,6 @@
 	enumerator = [savedServers objectEnumerator];
 	while ( (inst = [enumerator nextObject]) )
 	{
-		NSLog(@"Inst Hotkey for %@: %i",[inst label], [inst hotkey]);
 		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
 					action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i",[inst hotkey]]];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
