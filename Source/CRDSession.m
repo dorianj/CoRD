@@ -531,7 +531,7 @@
 	write_int(@"startdisplay", startDisplay);
 	write_int(@"cord fullscreen", fullscreen);
 	write_int(@"cord row index", preferredRowIndex);
-//	write_int(@"cord hotkey", hotkey);
+	write_int(@"cord hotkey", hotkey);
 	
 	write_string(@"full address", CRDJoinHostNameAndPort(hostName, port));
 	write_string(@"username", username);
@@ -1025,13 +1025,11 @@
 		else if ([name isEqualToString:@"full address"]) {
 			CRDSplitHostNameAndPort(value, &hostName, &port);
 			[hostName retain];
-			NSLog(@"%@",hostName);
 		}
 		else if ([name isEqualToString:@"cord fullscreen"])
 			fullscreen = numVal;
 		else if ([name isEqualToString:@"cord hotkey"]) {
-			hotkey = (numVal) ? numVal : (-1);
-			NSLog(@"Hotkey: %i",hotkey);
+			hotkey = (numVal == 0) ? (-1) : numVal;
 		}
 		else
 		{

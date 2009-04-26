@@ -1673,7 +1673,7 @@
 	
 	while ( ( hotkeyMenuItem = [hotkeyEnumerator nextObject] ) )
 	{
-		[hotkeyMenuItem setHidden:NO];
+		[hotkeyMenuItem setEnabled:YES];
 	}
 	
 	// Update servers menu
@@ -1690,17 +1690,18 @@
 	while ( (inst = [enumerator nextObject]) )
 	{
 		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
-					action:@selector(performServerMenuItem:) keyEquivalent:@""];
+					action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i",[inst hotkey]]];
+		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
 		[menuItem autorelease];
 		if ([inst hotkey] != (-1))
-			[[[gui_hotkey menu] itemAtIndex:[inst hotkey]] setHidden:YES];
+			[[[gui_hotkey menu] itemAtIndex:[inst hotkey]] setEnabled:NO];
 	}
 	enumerator = [savedServers objectEnumerator];
 	while ( (inst = [enumerator nextObject]) )
 	{
-		NSLog(@"Inst Hotkey: %i",[inst hotkey]);
+		NSLog(@"Inst Hotkey for %@: %i",[inst label], [inst hotkey]);
 		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
 					action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i",[inst hotkey]]];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
@@ -1708,7 +1709,7 @@
 		[gui_serversMenu addItem:menuItem];
 		[menuItem autorelease];
 		if ([inst hotkey] != (-1))
-			[[[gui_hotkey menu] itemAtIndex:[inst hotkey]] setHidden:YES];
+			[[[gui_hotkey menu] itemAtIndex:[inst hotkey]] setEnabled:NO];
 
 	}
 }
@@ -1806,14 +1807,12 @@
 	
 	//Hotkey
 	int hotkey;
-	if ([gui_hotkey indexOfSelectedItem] == 10)
-		hotkey = 0;
-	else if ([gui_hotkey indexOfSelectedItem] > 10 || [gui_hotkey indexOfSelectedItem] < 0)
+	if ( ( [gui_hotkey indexOfSelectedItem] > 9 ) || ( [gui_hotkey indexOfSelectedItem] == 0 ) )
 		hotkey = (-1);
 	else
 	{
 		hotkey = [gui_hotkey indexOfSelectedItem];
-		[[gui_hotkey itemAtIndex:hotkey] setHidden:YES];
+		[[gui_hotkey itemAtIndex:hotkey] setEnabled:NO];
 	}
 	[inst setValue:[NSNumber numberWithInt:hotkey] forKey:@"hotkey"];
 	
@@ -1877,10 +1876,10 @@
 	
 	//Hotkey
 	int hotkey = [[newSettings valueForKey:@"hotkey"] intValue];
-	if (hotkey >= 0 && hotkey <= 9)
+	if (hotkey > 0 && hotkey <= 9)
 		[gui_hotkey selectItemAtIndex:hotkey];
 	else
-		[gui_hotkey selectItemAtIndex:10];
+		[gui_hotkey selectItemAtIndex:0];
 	
 	// Color depth
 	int colorDepth = [[newSettings valueForKey:@"screenDepth"] intValue];
