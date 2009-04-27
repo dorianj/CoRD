@@ -832,6 +832,9 @@
 	
 	if (inst == nil)
 		return;
+	
+	// Select the Activated Server in the Server List...
+	[gui_serverList selectRow:([savedServers indexOfObject:inst] + 2 + [connectedServers count])];
 		
 	if ([connectedServers indexOfObject:inst] != NSNotFound)
 	{
