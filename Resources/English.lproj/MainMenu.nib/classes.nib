@@ -49,6 +49,38 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
+				<key>changePanes</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>PreferencesController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>connectionView</key>
+				<string>NSView</string>
+				<key>devicesBox</key>
+				<string>NSBox</string>
+				<key>generalBox</key>
+				<string>NSBox</string>
+				<key>generalView</key>
+				<string>NSView</string>
+				<key>performanceBox</key>
+				<string>NSBox</string>
+				<key>preferencesWindow</key>
+				<string>NSWindow</string>
+				<key>sessionBox</key>
+				<string>NSBox</string>
+				<key>tabView</key>
+				<string>NSTabView</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
 				<key></key>
 				<string>id</string>
 			</dict>
