@@ -97,7 +97,7 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		9816F5220BEE938600E439BE /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
 		981739840BACE45D00EAB48A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
@@ -201,7 +201,7 @@
 		999A01E10FAA1DC300FA512C /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Source/PreferencesController.h; sourceTree = "<group>"; };
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
 		999A05350FAAF42C00FA512C /* ZNLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ZNLog.m; path = Source/ZNLog.m; sourceTree = "<group>"; };
-		999A05520FAAF58E00FA512C /* ZNLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZNLog.h; sourceTree = "<group>"; };
+		999A05520FAAF58E00FA512C /* ZNLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ZNLog.h; path = Source/ZNLog.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -242,6 +242,8 @@
 				9872FCF20C08FE6800078CB2 /* CRDSessionView.m */,
 				9872FD5C0C0902DA00078CB2 /* CRDShared.h */,
 				9872FD5D0C0902DA00078CB2 /* CRDShared.m */,
+				999A01E10FAA1DC300FA512C /* PreferencesController.h */,
+				999A01E20FAA1DC300FA512C /* PreferencesController.m */,
 			);
 			name = CoRD;
 			sourceTree = "<group>";
@@ -271,7 +273,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* Cord.app */,
+				8D1107320486CEB800E47090 /* CoRD.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -279,15 +281,12 @@
 		29B97314FDCFA39411CA2CEA /* Cord */ = {
 			isa = PBXGroup;
 			children = (
-				999A05520FAAF58E00FA512C /* ZNLog.h */,
 				44D2AE410AA761C000EA19A1 /* rdesktop */,
 				080E96DDFE201D6D7F000001 /* CoRD */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				999A01E10FAA1DC300FA512C /* PreferencesController.h */,
-				999A01E20FAA1DC300FA512C /* PreferencesController.m */,
 			);
 			name = Cord;
 			sourceTree = "<group>";
@@ -297,6 +296,7 @@
 			children = (
 				98E9722B0BD9D9DF0041110D /* Cord_Prefix.pch */,
 				98E9723E0BD9D9DF0041110D /* main.m */,
+				999A05520FAAF58E00FA512C /* ZNLog.h */,
 				999A05350FAAF42C00FA512C /* ZNLog.m */,
 			);
 			name = "Other Sources";
@@ -446,7 +446,7 @@
 			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
-			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
+			productReference = 8D1107320486CEB800E47090 /* CoRD.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
