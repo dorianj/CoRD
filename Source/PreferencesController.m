@@ -27,12 +27,9 @@
 	[[preferencesWindow contentView] setWantsLayer:YES];
 	[generalView setWantsLayer:YES];
 	[connectionView setWantsLayer:YES];
-	[[preferencesWindow animator] setContentView:generalView];
-}
-
-- (void)switchToGeneral
-{
 	
+	ZNLog(@"Init General View: %@", generalView);
+	[self changePanes:nil];
 }
 
 -(void) mapTabsToToolbar
@@ -65,7 +62,7 @@
 
     // Attach the toolbar to the document window 
     [preferencesWindow setToolbar: prefsToolbar];
-	
+	[preferencesWindow setShowsToolbarButton:NO];
 	// Set up window title:
 	currPage = [tabView selectedTabViewItem];
 	if( currPage == nil )
@@ -87,9 +84,21 @@
 	else if ([[sender label] isEqualToString:@"Connections"])
 	{
 		newPane = connectionView;
+	} else {
+		ZNLog(@"No Sender, Selecting General");
+		newPane = generalView;
 	}
 	
 	if ( (newPane == nil) || (currentPane == newPane) ) return;
+	
+	
+	NSView *tempView = [[NSView alloc] initWithFrame:[[preferencesWindow contentView] frame]];
+	[preferencesWindow setContentView:tempView];
+	[tempView release]; 
+	
+	[preferencesWindow makeFirstResponder:nil];
+	[prefsToolbar setSelectedItemIdentifier:([sender label]) ? [sender label] : @"General"];
+
 	
 	ZNLog(@"newPane: %@", newPane);
 	// Preserve upper left point of window during resize.
@@ -101,8 +110,9 @@
 	newFrame.origin.y += ([[preferencesWindow contentView] frame].size.height - [newPane frame].size.height);
 	
 	ZNLog(@"Using preferences window frame: %@", NSStringFromRect(newFrame));
-	[preferencesWindow setFrame:newFrame display:YES animate:YES];
-	[preferencesWindow setContentView:newPane];
+	
+	[[preferencesWindow animator] setFrame:newFrame display:YES];
+	[[preferencesWindow animator] setContentView:newPane];
 	
 	// Set appropriate resizing on window.
 	NSSize theSize = [preferencesWindow frame].size;
@@ -207,6 +217,7 @@
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
 	//Set Cmd-W to close the current window and not hte current session
+	
 }
 
 
