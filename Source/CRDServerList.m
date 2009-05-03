@@ -366,9 +366,7 @@
 - (BOOL)performDragOperation:(id <NSDraggingInfo>)sender
 {
 	if ([self pasteboardHasValidData:[sender draggingPasteboard]])
-	{
-		NSString *pbDataType = [self pasteboardDataType:[sender draggingPasteboard]];
-		
+	{		
 		int row = [self rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
 		
 		if (row == -1)

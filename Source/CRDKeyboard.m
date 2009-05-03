@@ -73,7 +73,6 @@ static NSDictionary *windowsKeymapTable = nil;
 	uint16 keycode = [ev keyCode];
 	
 	DEBUG_KEYBOARD( (@"handleKeyEvent: virtual key 0x%x %spressed", keycode, (down) ? "" : "de") );
-	unsigned savedMods = remoteModifiers;
 	
 	[self setRemoteModifiers:GET_MODIFIER_FLAGS([ev modifierFlags])];
 	[self sendKeycode:keycode modifiers:rdflags pressed:down];

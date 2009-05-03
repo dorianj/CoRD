@@ -215,7 +215,6 @@
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
 {
-	BOOL drawerVisible = CRDDrawerIsVisible(gui_serversDrawer);
 	CRDSession *inst = [self selectedServer];
 	CRDSession *viewedInst = [self viewedServer];
 	SEL action = [item action];
@@ -411,9 +410,7 @@
 
 // Either disconnects the viewed session, or cancels a pending connection
 - (IBAction)performStop:(id)sender
-{
-	CRDSession *inst = [self viewedServer];
-	
+{	
 	if ([[self serverInstanceForRow:[gui_serverList selectedRow]] status] == CRDConnectionConnecting)
 		[self stopConnection:nil];
 	else if ([[self viewedServer] status]  == CRDConnectionConnected)
