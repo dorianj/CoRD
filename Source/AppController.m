@@ -456,7 +456,7 @@
 	NSSize minSize = [gui_inspector minSize];
 	[gui_inspector setMinSize:NSMakeSize(minSize.width, windowFrame.size.height)];
 	[gui_inspector setMaxSize:NSMakeSize(FLT_MAX, windowFrame.size.height)];
-	[gui_inspector setFrame:windowFrame display:YES animate:YES];
+	[[gui_inspector animator] setFrame:windowFrame display:YES];
 }
 
 // Called whenever anything in the inspector is edited
