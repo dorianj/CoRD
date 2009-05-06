@@ -31,10 +31,10 @@
 #define MAX_QUEUE	10
 
 int g_dsp_fd;
-RDBOOL g_dsp_busy = False;
+RD_BOOL g_dsp_busy = False;
 static int g_snd_rate;
 static short g_samplewidth;
-static RDBOOL g_driver_broken = False;
+static RD_BOOL g_driver_broken = False;
 
 static struct audio_packet
 {
@@ -44,7 +44,7 @@ static struct audio_packet
 } packet_queue[MAX_QUEUE];
 static unsigned int queue_hi, queue_lo;
 
-RDBOOL
+RD_BOOL
 wave_out_open(void)
 {
 	char *dsp_dev = getenv("AUDIODEV");
@@ -71,7 +71,7 @@ wave_out_close(void)
 	close(g_dsp_fd);
 }
 
-RDBOOL
+RD_BOOL
 wave_out_format_supported(RDWaveFormat * pwfx)
 {
 	if (pwfx->wFormatTag != WAVE_FORMAT_PCM)
@@ -84,7 +84,7 @@ wave_out_format_supported(RDWaveFormat * pwfx)
 	return True;
 }
 
-RDBOOL
+RD_BOOL
 wave_out_set_format(RDWaveFormat * pwfx)
 {
 	int stereo, format, fragments;
@@ -162,7 +162,7 @@ wave_out_set_format(RDWaveFormat * pwfx)
 void
 wave_out_volume(uint16 left, uint16 right)
 {
-	static RDBOOL use_dev_mixer = False;
+	static RD_BOOL use_dev_mixer = False;
 	uint32 volume;
 	int fd_mix = -1;
 
@@ -228,7 +228,7 @@ wave_out_play(void)
 	RDStreamRef out;
 	static long startedat_us;
 	static long startedat_s;
-	static RDBOOL started = False;
+	static RD_BOOL started = False;
 	struct timeval tv;
 	audio_buf_info info;
 

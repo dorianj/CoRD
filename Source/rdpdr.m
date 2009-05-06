@@ -63,7 +63,7 @@ extern DEVICE_FNS printer_fns;
 extern DEVICE_FNS parallel_fns;
 extern DEVICE_FNS disk_fns;
 
-static RDBOOL add_async_iorequest(RDConnectionRef conn, uint32 device, uint32 file, uint32 fid, uint32 major, uint32 length, DEVICE_FNS * fns, uint8 * buffer, uint32 offset);
+static RD_BOOL add_async_iorequest(RDConnectionRef conn, uint32 device, uint32 file, uint32 fid, uint32 major, uint32 length, DEVICE_FNS * fns, uint8 * buffer, uint32 offset);
 
 
 // Return device_id for a given handle
@@ -90,7 +90,7 @@ void convert_to_unix_filename(char *filename)
 	}
 }
 
-static RDBOOL rdpdr_handle_ok(RDConnectionRef conn, int device, int handle)
+static RD_BOOL rdpdr_handle_ok(RDConnectionRef conn, int device, int handle)
 {
 	switch (conn->rdpdrDevice[device].device_type)
 	{
@@ -277,7 +277,7 @@ rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 	uint8 *buffer, *pst_buf;
 	RDStream outStream;
 	DEVICE_FNS *fns;
-	RDBOOL r_blocking = True, w_blocking = True;
+	RD_BOOL r_blocking = True, w_blocking = True;
 	NTStatus status = STATUS_INVALID_DEVICE_REQUEST;
 
 	in_uint32_le(s, device);
@@ -742,7 +742,7 @@ rdpdr_init(RDConnectionRef conn)
 // I thought I would replace the select() async method with NSFileHandle, but NSFH doesn't all the things I needed, so this is all going to be reverted to use select (currently, none of this is used at all because non-blocking IO is disabled in process_irp). If I want to re-implement non-blocking IO, I'll use a new thread that simply spins on select() and sends a message to a mach port on the connection thread when it has new data
 
 /* Add a new io request to the table containing pending io requests so it won't block rdesktop */
-static RDBOOL
+static RD_BOOL
 add_async_iorequest(RDConnectionRef conn, uint32 device, uint32 file, uint32 fid, uint32 major, uint32 length, DEVICE_FNS * fns, uint8 * buffer, uint32 offset) 
 {
 	NSLog(@"Adding IO-req for fd %d", file);
@@ -913,7 +913,7 @@ rdpdr_io_available_event(RDConnectionRef conn, uint32 file, RDAsynchronousIORequ
 
 
 /* Abort a pending io request for a given handle and major */
-RDBOOL
+RD_BOOL
 rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status)
 {
 	uint32 result;

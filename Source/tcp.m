@@ -132,7 +132,7 @@ tcp_recv(RDConnectionRef conn, RDStreamRef s, uint32 length)
 }
 
 /* Establish a connection on the TCP layer */
-RDBOOL
+RD_BOOL
 tcp_connect(RDConnectionRef conn, const char *server)
 {
 	NSInputStream *is = nil;

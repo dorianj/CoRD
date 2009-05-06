@@ -193,7 +193,7 @@ licence_send_authresp(RDConnectionRef conn, uint8 * token, uint8 * crypt_hwid, u
 }
 
 /* Parse an authentication request packet */
-static RDBOOL
+static RD_BOOL
 licence_parse_authreq(RDStreamRef s, uint8 ** token, uint8 ** signature)
 {
 	uint16 tokenlen;

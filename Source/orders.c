@@ -51,7 +51,7 @@ rdp_in_present(RDStreamRef s, uint32 * present, uint8 flags, int size)
 
 /* Read a co-ordinate (16-bit, or 8-bit delta) */
 static void
-rdp_in_coord(RDStreamRef s, sint16 * coord, RDBOOL delta)
+rdp_in_coord(RDStreamRef s, sint16 * coord, RD_BOOL delta)
 {
 	sint8 change;
 
@@ -98,7 +98,7 @@ rdp_in_colour(RDStreamRef s, uint32 * colour)
 }
 
 /* Parse bounds information */
-static RDBOOL
+static RD_BOOL
 rdp_parse_bounds(RDStreamRef s, RDBounds * bounds)
 {
 	uint8 present;
@@ -129,7 +129,7 @@ rdp_parse_bounds(RDStreamRef s, RDBounds * bounds)
 }
 
 /* Parse a pen */
-static RDBOOL
+static RD_BOOL
 rdp_parse_pen(RDStreamRef s, RDPen * pen, uint32 present)
 {
 	if (present & 1)
@@ -145,7 +145,7 @@ rdp_parse_pen(RDStreamRef s, RDPen * pen, uint32 present)
 }
 
 /* Parse a brush */
-static RDBOOL
+static RD_BOOL
 rdp_parse_brush(RDStreamRef s, RDBrush * brush, uint32 present)
 {
 	if (present & 1)
@@ -168,7 +168,7 @@ rdp_parse_brush(RDStreamRef s, RDBrush * brush, uint32 present)
 
 /* Process a destination blt order */
 static void
-process_destblt(RDConnectionRef conn, RDStreamRef s, DESTBLT_ORDER * os, uint32 present, RDBOOL delta)
+process_destblt(RDConnectionRef conn, RDStreamRef s, DESTBLT_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	if (present & 0x01)
 		rdp_in_coord(s, &os->x, delta);
@@ -193,7 +193,7 @@ process_destblt(RDConnectionRef conn, RDStreamRef s, DESTBLT_ORDER * os, uint32 
 
 /* Process a pattern blt order */
 static void
-process_patblt(RDConnectionRef conn, RDStreamRef s, PATBLT_ORDER * os, uint32 present, RDBOOL delta)
+process_patblt(RDConnectionRef conn, RDStreamRef s, PATBLT_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	if (present & 0x0001)
 		rdp_in_coord(s, &os->x, delta);
@@ -227,7 +227,7 @@ process_patblt(RDConnectionRef conn, RDStreamRef s, PATBLT_ORDER * os, uint32 pr
 
 /* Process a screen blt order */
 static void
-process_screenblt(RDConnectionRef conn, RDStreamRef s, SCREENBLT_ORDER * os, uint32 present, RDBOOL delta)
+process_screenblt(RDConnectionRef conn, RDStreamRef s, SCREENBLT_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	if (present & 0x0001)
 		rdp_in_coord(s, &os->x, delta);
@@ -258,7 +258,7 @@ process_screenblt(RDConnectionRef conn, RDStreamRef s, SCREENBLT_ORDER * os, uin
 
 /* Process a line order */
 static void
-process_line(RDConnectionRef conn, RDStreamRef s, LINE_ORDER * os, uint32 present, RDBOOL delta)
+process_line(RDConnectionRef conn, RDStreamRef s, LINE_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	if (present & 0x0001)
 		in_uint16_le(s, os->mixmode);
@@ -297,7 +297,7 @@ process_line(RDConnectionRef conn, RDStreamRef s, LINE_ORDER * os, uint32 presen
 
 /* Process an opaque rectangle order */
 static void
-process_rect(RDConnectionRef conn, RDStreamRef s, RECT_ORDER * os, uint32 present, RDBOOL delta)
+process_rect(RDConnectionRef conn, RDStreamRef s, RECT_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	uint32 i;
 	if (present & 0x01)
@@ -337,7 +337,7 @@ process_rect(RDConnectionRef conn, RDStreamRef s, RECT_ORDER * os, uint32 presen
 
 /* Process a desktop save order */
 static void
-process_desksave(RDConnectionRef conn, RDStreamRef s, DESKSAVE_ORDER * os, uint32 present, RDBOOL delta)
+process_desksave(RDConnectionRef conn, RDStreamRef s, DESKSAVE_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	int width, height;
 
@@ -373,7 +373,7 @@ process_desksave(RDConnectionRef conn, RDStreamRef s, DESKSAVE_ORDER * os, uint3
 
 /* Process a memory blt order */
 static void
-process_memblt(RDConnectionRef conn, RDStreamRef s, MEMBLT_ORDER * os, uint32 present, RDBOOL delta)
+process_memblt(RDConnectionRef conn, RDStreamRef s, MEMBLT_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	RDBitmapRef bitmap;
 
@@ -419,7 +419,7 @@ process_memblt(RDConnectionRef conn, RDStreamRef s, MEMBLT_ORDER * os, uint32 pr
 
 /* Process a 3-way blt order */
 static void
-process_triblt(RDConnectionRef conn, RDStreamRef s, TRIBLT_ORDER * os, uint32 present, RDBOOL delta)
+process_triblt(RDConnectionRef conn, RDStreamRef s, TRIBLT_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	RDBitmapRef bitmap;
 
@@ -478,7 +478,7 @@ process_triblt(RDConnectionRef conn, RDStreamRef s, TRIBLT_ORDER * os, uint32 pr
 
 /* Process a polygon order */
 static void
-process_polygon(RDConnectionRef conn, RDStreamRef s, POLYGON_ORDER * os, uint32 present, RDBOOL delta)
+process_polygon(RDConnectionRef conn, RDStreamRef s, POLYGON_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	int index, data, next;
 	uint8 flags = 0;
@@ -557,7 +557,7 @@ process_polygon(RDConnectionRef conn, RDStreamRef s, POLYGON_ORDER * os, uint32 
 
 /* Process a polygon2 order */
 static void
-process_polygon2(RDConnectionRef conn, RDStreamRef s, POLYGON2_ORDER * os, uint32 present, RDBOOL delta)
+process_polygon2(RDConnectionRef conn, RDStreamRef s, POLYGON2_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	int index, data, next;
 	uint8 flags = 0;
@@ -642,7 +642,7 @@ process_polygon2(RDConnectionRef conn, RDStreamRef s, POLYGON2_ORDER * os, uint3
 
 /* Process a polyline order */
 static void
-process_polyline(RDConnectionRef conn, RDStreamRef s, POLYLINE_ORDER * os, uint32 present, RDBOOL delta)
+process_polyline(RDConnectionRef conn, RDStreamRef s, POLYLINE_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	int index, next, data;
 	uint8 flags = 0;
@@ -720,7 +720,7 @@ process_polyline(RDConnectionRef conn, RDStreamRef s, POLYLINE_ORDER * os, uint3
 
 /* Process an ellipse order */
 static void
-process_ellipse(RDConnectionRef conn, RDStreamRef s, ELLIPSE_ORDER * os, uint32 present, RDBOOL delta)
+process_ellipse(RDConnectionRef conn, RDStreamRef s, ELLIPSE_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	if (present & 0x01)
 		rdp_in_coord(s, &os->left, delta);
@@ -752,7 +752,7 @@ process_ellipse(RDConnectionRef conn, RDStreamRef s, ELLIPSE_ORDER * os, uint32 
 
 /* Process an ellipse2 order */
 static void
-process_ellipse2(RDConnectionRef conn, RDStreamRef s, ELLIPSE2_ORDER * os, uint32 present, RDBOOL delta)
+process_ellipse2(RDConnectionRef conn, RDStreamRef s, ELLIPSE2_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	if (present & 0x0001)
 		rdp_in_coord(s, &os->left, delta);
@@ -790,7 +790,7 @@ process_ellipse2(RDConnectionRef conn, RDStreamRef s, ELLIPSE2_ORDER * os, uint3
 
 /* Process a text order */
 static void
-process_text2(RDConnectionRef conn, RDStreamRef s, TEXT2_ORDER * os, uint32 present, RDBOOL delta)
+process_text2(RDConnectionRef conn, RDStreamRef s, TEXT2_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	int i;
 
@@ -957,7 +957,7 @@ process_bmpcache(RDConnectionRef conn, RDStreamRef s)
 
 /* Process a bitmap cache v2 order */
 static void
-process_bmpcache2(RDConnectionRef conn, RDStreamRef s, uint16 flags, RDBOOL compressed)
+process_bmpcache2(RDConnectionRef conn, RDStreamRef s, uint16 flags, RD_BOOL compressed)
 {
 	RDBitmapRef bitmap;
 	int y;
@@ -1159,7 +1159,7 @@ process_orders(RDConnectionRef conn, RDStreamRef s, uint16 num_orders)
 	uint32 present;
 	uint8 order_flags;
 	int size, processed = 0;
-	RDBOOL delta;
+	RD_BOOL delta;
 
 	while (processed < num_orders)
 	{

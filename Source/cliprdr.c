@@ -170,7 +170,7 @@ cliprdr_set_mode(RDConnectionRef conn, const char *optarg)
 	ui_clip_set_mode(conn, optarg);
 }
 
-RDBOOL
+RD_BOOL
 cliprdr_init(RDConnectionRef conn)
 {
 	conn->cliprdrChannel =

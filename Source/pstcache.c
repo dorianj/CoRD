@@ -42,7 +42,7 @@ pstcache_touch_bitmap(RDConnectionRef conn, uint8 cache_id, uint16 cache_idx, ui
 }
 
 /* Load a bitmap from the persistent cache */
-RDBOOL
+RD_BOOL
 pstcache_load_bitmap(RDConnectionRef conn, uint8 cache_id, uint16 cache_idx)
 {
 	uint8 *celldata;
@@ -71,7 +71,7 @@ pstcache_load_bitmap(RDConnectionRef conn, uint8 cache_id, uint16 cache_idx)
 }
 
 /* Store a bitmap in the persistent cache */
-RDBOOL
+RD_BOOL
 pstcache_save_bitmap(RDConnectionRef conn, uint8 cache_id, uint16 cache_idx, uint8 * key,
 		     uint16 width, uint16 height, uint16 length, uint8 * data)
 {
@@ -151,7 +151,7 @@ pstcache_enumerate(RDConnectionRef conn, uint8 id, RDHashKey * keylist)
 }
 
 /* initialise the persistent bitmap cache */
-RDBOOL
+RD_BOOL
 pstcache_init(RDConnectionRef conn, uint8 cache_id)
 {
 	int fd;

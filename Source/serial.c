@@ -163,7 +163,7 @@ get_serial_info(RDConnectionRef conn, NTHandle handle)
 	return NULL;
 }
 
-static RDBOOL
+static RD_BOOL
 get_termios(RDSerialDevice * pser_inf, NTHandle serial_fd)
 {
 	speed_t speed;
@@ -946,13 +946,13 @@ serial_device_control(RDConnectionRef conn, NTHandle handle, uint32 request, RDS
 	return STATUS_SUCCESS;
 }
 
-RDBOOL
+RD_BOOL
 serial_get_event(RDConnectionRef conn, NTHandle handle, uint32 * result)
 {
 	int index;
 	RDSerialDevice *pser_inf;
 	int bytes;
-	RDBOOL ret = False;
+	RD_BOOL ret = False;
 
 	*result = 0;
 	index = get_device_index(conn, handle);
@@ -1044,7 +1044,7 @@ serial_get_event(RDConnectionRef conn, NTHandle handle, uint32 * result)
 }
 
 /* Read timeout for a given file descripter (device) when adding fd's to select() */
-RDBOOL
+RD_BOOL
 serial_get_timeout(RDConnectionRef conn, NTHandle handle, uint32 length, uint32 * timeout, uint32 * itv_timeout)
 {
 	int index;

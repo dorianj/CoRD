@@ -18,7 +18,7 @@
 */
 
 #pragma mark bitmap.c
-RDBOOL bitmap_decompress(uint8 * output, int width, int height, uint8 * input, int size, int Bpp);
+RD_BOOL bitmap_decompress(uint8 * output, int width, int height, uint8 * input, int size, int Bpp);
 
 #pragma mark -
 #pragma mark cache.c
@@ -50,7 +50,7 @@ void cliprdr_send_native_format_announce(RDConnectionRef conn, uint8 * data, uin
 void cliprdr_send_data_request(RDConnectionRef conn, uint32 format);
 void cliprdr_send_data(RDConnectionRef conn, uint8 * data, uint32 length);
 void cliprdr_set_mode(RDConnectionRef conn, const char *optarg);
-RDBOOL cliprdr_init(RDConnectionRef conn);
+RD_BOOL cliprdr_init(RDConnectionRef conn);
 
 #pragma mark -
 #pragma mark disk.c
@@ -71,8 +71,8 @@ int mppc_expand(RDConnectionRef conn, uint8 * data, uint32 clen, uint8 ctype, ui
 RDStreamRef iso_init(RDConnectionRef conn, int length);
 void iso_send(RDConnectionRef conn, RDStreamRef s);
 RDStreamRef iso_recv(RDConnectionRef conn, uint8 * rdpver);
-RDBOOL iso_connect(RDConnectionRef conn, const char *server, char *username);
-RDBOOL iso_reconnect(RDConnectionRef conn, char *server);
+RD_BOOL iso_connect(RDConnectionRef conn, const char *server, char *username);
+RD_BOOL iso_reconnect(RDConnectionRef conn, char *server);
 void iso_disconnect(RDConnectionRef conn);
 void iso_reset_state(RDConnectionRef conn);
 
@@ -86,8 +86,8 @@ RDStreamRef mcs_init(RDConnectionRef conn, int length);
 void mcs_send_to_channel(RDConnectionRef conn, RDStreamRef s, uint16 channel);
 void mcs_send(RDConnectionRef conn, RDStreamRef s);
 RDStreamRef mcs_recv(RDConnectionRef conn, uint16 * channel, uint8 * rdpver);
-RDBOOL mcs_connect(RDConnectionRef conn, const char *server, RDStreamRef mcs_data, char *username);
-RDBOOL mcs_reconnect(RDConnectionRef conn, char *server, RDStreamRef mcs_data);
+RD_BOOL mcs_connect(RDConnectionRef conn, const char *server, RDStreamRef mcs_data, char *username);
+RD_BOOL mcs_reconnect(RDConnectionRef conn, char *server, RDStreamRef mcs_data);
 void mcs_disconnect(RDConnectionRef conn);
 void mcs_reset_state(RDConnectionRef conn);
 
@@ -112,10 +112,10 @@ void printercache_process(RDStreamRef s);
 #pragma mark -
 #pragma mark pstcache.c
 void pstcache_touch_bitmap(RDConnectionRef conn, uint8 id, uint16 idx, uint32 stamp);
-RDBOOL pstcache_load_bitmap(RDConnectionRef conn, uint8 id, uint16 idx);
-RDBOOL pstcache_save_bitmap(RDConnectionRef conn, uint8 id, uint16 idx, uint8 * hash_key, uint16 wd, uint16 ht, uint16 len, uint8 * data);
+RD_BOOL pstcache_load_bitmap(RDConnectionRef conn, uint8 id, uint16 idx);
+RD_BOOL pstcache_save_bitmap(RDConnectionRef conn, uint8 id, uint16 idx, uint8 * hash_key, uint16 wd, uint16 ht, uint16 len, uint8 * data);
 int pstcache_enumerate(RDConnectionRef conn, uint8 id, RDHashKey * keylist);
-RDBOOL pstcache_init(RDConnectionRef conn, uint8 id);
+RD_BOOL pstcache_init(RDConnectionRef conn, uint8 id);
 
 #pragma mark -
 #pragma mark CRDVestigialGlue (formerly rdesktop.c)
@@ -130,19 +130,19 @@ void unimpl(char *format, ...);
 void hexdump(unsigned char *p, unsigned int len);
 char *next_arg(char *src, char needle);
 void toupper_str(char *p);
-RDBOOL str_startswith(const char *s, const char *prefix);
-RDBOOL str_handle_lines(const char *input, char **rest, str_handle_lines_t linehandler, void *data);
-RDBOOL subprocess(char *const argv[], str_handle_lines_t linehandler, void *data);
+RD_BOOL str_startswith(const char *s, const char *prefix);
+RD_BOOL str_handle_lines(const char *input, char **rest, str_handle_lines_t linehandler, void *data);
+RD_BOOL subprocess(char *const argv[], str_handle_lines_t linehandler, void *data);
 char *l_to_a(long N, int base);
 int load_licence(unsigned char **data);
 void save_licence(unsigned char *data, int length);
-RDBOOL rd_pstcache_mkdir(void);
+RD_BOOL rd_pstcache_mkdir(void);
 int rd_open_file(char *filename);
 void rd_close_file(int fd);
 int rd_read_file(int fd, void *ptr, int len);
 int rd_write_file(int fd, void *ptr, int len);
 int rd_lseek_file(int fd, int offset);
-RDBOOL rd_lock_file(int fd, int start, int len);
+RD_BOOL rd_lock_file(int fd, int start, int len);
 
 #pragma mark -
 #pragma mark rdp5.c
@@ -161,37 +161,37 @@ void process_system_pointer_pdu(RDConnectionRef conn, RDStreamRef s);
 void process_bitmap_updates(RDConnectionRef conn, RDStreamRef s);
 void process_palette(RDConnectionRef conn, RDStreamRef s);
 void process_disconnect_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason);
-RDBOOL rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, const char *domain, const char *password, const char *command, const char *directory);
-RDBOOL rdp_reconnect(RDConnectionRef conn, const char *server, uint32 flags, const char *domain, const char *password, const char *command, const char *directory, char *cookie);
+RD_BOOL rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, const char *domain, const char *password, const char *command, const char *directory);
+RD_BOOL rdp_reconnect(RDConnectionRef conn, const char *server, uint32 flags, const char *domain, const char *password, const char *command, const char *directory, char *cookie);
 void rdp_reset_state(RDConnectionRef conn);
 void rdp_disconnect(RDConnectionRef conn);
 void rdp_reset_state(RDConnectionRef conn);
 void rdp_process_server_caps(RDConnectionRef conn, RDStreamRef s, uint16 length);
 void process_demand_active(RDConnectionRef conn, RDStreamRef s);
 void process_disconnect_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason);
-RDBOOL process_data_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason);
-RDBOOL process_redirect_pdu(RDConnectionRef conn, RDStreamRef s);
+RD_BOOL process_data_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason);
+RD_BOOL process_redirect_pdu(RDConnectionRef conn, RDStreamRef s);
 
 #pragma mark -
 #pragma mark rdpdr.c
 int get_device_index(RDConnectionRef conn, NTHandle handle);
 void convert_to_unix_filename(char *filename);
-RDBOOL rdpdr_init(RDConnectionRef conn);
+RD_BOOL rdpdr_init(RDConnectionRef conn);
 RDAsynchronousIORequest *rdpdr_remove_iorequest(RDConnectionRef conn, uint32 fd, RDAsynchronousIORequest *requestToRemove);
 void rdpdr_io_available_event(RDConnectionRef conn, uint32 file, RDAsynchronousIORequest *iorq);
-RDBOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status);
+RD_BOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus status);
 
 #pragma mark -
 #pragma mark rdpsnd.c
 void rdpsnd_send_completion(uint16 tick, uint8 packet_index);
-RDBOOL rdpsnd_init(void);
+RD_BOOL rdpsnd_init(void);
 
 #pragma mark -
 #pragma mark rdpsnd_oss.c
-RDBOOL wave_out_open(void);
+RD_BOOL wave_out_open(void);
 void wave_out_close(void);
-RDBOOL wave_out_format_supported(RDWaveFormat * pwfx);
-RDBOOL wave_out_set_format(RDWaveFormat * pwfx);
+RD_BOOL wave_out_format_supported(RDWaveFormat * pwfx);
+RD_BOOL wave_out_set_format(RDWaveFormat * pwfx);
 void wave_out_volume(uint16 left, uint16 right);
 void wave_out_write(RDStreamRef s, uint16 tick, uint8 index);
 void wave_out_play(void);
@@ -208,23 +208,23 @@ void sec_send_to_channel(RDConnectionRef conn, RDStreamRef s, uint32 flags, uint
 void sec_send(RDConnectionRef conn, RDStreamRef s, uint32 flags);
 void sec_process_mcs_data(RDConnectionRef conn, RDStreamRef s);
 RDStreamRef sec_recv(RDConnectionRef conn, uint8 * rdpver);
-RDBOOL sec_connect(RDConnectionRef conn, const char *server, char *username);
-RDBOOL sec_reconnect(RDConnectionRef conn, char *server);
+RD_BOOL sec_connect(RDConnectionRef conn, const char *server, char *username);
+RD_BOOL sec_reconnect(RDConnectionRef conn, char *server);
 void sec_disconnect(RDConnectionRef conn);
 void sec_reset_state(RDConnectionRef conn);
 
 #pragma mark -
 #pragma mark serial.c
 int serial_enum_devices(RDConnectionRef conn, uint32 * id, char *optarg);
-RDBOOL serial_get_timeout(RDConnectionRef conn, NTHandle handle, uint32 length, uint32 * timeout, uint32 * itv_timeout);
-RDBOOL serial_get_event(RDConnectionRef conn, NTHandle handle, uint32 * result);
+RD_BOOL serial_get_timeout(RDConnectionRef conn, NTHandle handle, uint32 length, uint32 * timeout, uint32 * itv_timeout);
+RD_BOOL serial_get_event(RDConnectionRef conn, NTHandle handle, uint32 * result);
 
 #pragma mark -
 #pragma mark tcp.c
 RDStreamRef tcp_init(RDConnectionRef conn, uint32 maxlen);
 void tcp_send(RDConnectionRef conn, RDStreamRef s);
 RDStreamRef tcp_recv(RDConnectionRef conn, RDStreamRef s, uint32 length);
-RDBOOL tcp_connect(RDConnectionRef conn, const char *server);
+RD_BOOL tcp_connect(RDConnectionRef conn, const char *server);
 void tcp_disconnect(RDConnectionRef conn);
 char *tcp_get_address(RDConnectionRef conn);
 void tcp_reset_state(RDConnectionRef conn);

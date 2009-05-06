@@ -23,7 +23,7 @@
 @class CRDSessionView;
 
 
-typedef int RDBOOL;
+typedef int RD_BOOL;
 
 #ifndef True
 #define True  (1)
@@ -234,7 +234,7 @@ typedef struct _RDFileInfo
 	DIR *pdir;
 	struct dirent *pdirent;
 	char pattern[PATH_MAX];
-	RDBOOL delete_on_close;
+	RD_BOOL delete_on_close;
 	NOTIFY notify;
 	uint32 info_class;
 	RDAsynchronousIORequest *firstIORequest;
@@ -312,7 +312,7 @@ struct _RDConnection
 	unsigned short mcsUserid;
 	
 	// Session directory
-	RDBOOL sessionDirRedirect;
+	RD_BOOL sessionDirRedirect;
 	char sessionDirServer[64], sessionDirDomain[16], sessionDirPassword[64], sessionDirUsername[64], sessionDirCookie[128];
 	unsigned int sessionDirFlags;
 	
@@ -359,5 +359,5 @@ struct _DEVICE_FNS
 	NTStatus(*device_control) (RDConnectionRef conn, NTHandle handle, uint32 request, RDStreamRef in, RDStreamRef out);
 };
 
-typedef RDBOOL(*str_handle_lines_t) (const char *line, void *data);
+typedef RD_BOOL(*str_handle_lines_t) (const char *line, void *data);
 

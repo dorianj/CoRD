@@ -1093,7 +1093,7 @@ process_disconnect_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_re
 }
 
 /* Process data PDU */
-RDBOOL
+RD_BOOL
 process_data_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason)
 {
 	uint8 data_pdu_type;
@@ -1179,7 +1179,7 @@ process_data_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason)
 }
 
 /* Process redirect PDU from Session Directory */
-RDBOOL
+RD_BOOL
 process_redirect_pdu(RDConnectionRef conn, RDStreamRef s /*, uint32 * ext_disc_reason */ )
 {
 	uint32 len;
@@ -1227,7 +1227,7 @@ process_redirect_pdu(RDConnectionRef conn, RDStreamRef s /*, uint32 * ext_disc_r
 }
 
 /* Establish a connection up to the RDP layer */
-RDBOOL
+RD_BOOL
 rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, const char *domain, const char *password,
 	    const char *command, const char *directory)
 {
@@ -1239,7 +1239,7 @@ rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, const char *
 }
 
 /* Establish a reconnection up to the RDP layer */
-RDBOOL
+RD_BOOL
 rdp_reconnect(RDConnectionRef conn, const char *server, uint32 flags, const char *domain, const char *password, const char *command, const char *directory, char *cookie)
 {
 	if (!sec_reconnect(conn, (char *)server))

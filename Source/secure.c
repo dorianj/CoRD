@@ -456,7 +456,7 @@ sec_out_mcs_data(RDConnectionRef conn, RDStreamRef s)
 }
 
 /* Parse a public key structure */
-static RDBOOL
+static RD_BOOL
 sec_parse_public_key(RDConnectionRef conn, RDStreamRef s, uint8 ** modulus, uint8 ** exponent)
 {
 	uint32 magic, modulus_len;
@@ -485,7 +485,7 @@ sec_parse_public_key(RDConnectionRef conn, RDStreamRef s, uint8 ** modulus, uint
 	return s_check(s);
 }
 
-static RDBOOL
+static RD_BOOL
 sec_parse_x509_key(RDConnectionRef conn, X509 * cert)
 {
 	EVP_PKEY *epk = NULL;
@@ -521,7 +521,7 @@ sec_parse_x509_key(RDConnectionRef conn, X509 * cert)
 
 
 /* Parse a crypto information structure */
-static RDBOOL
+static RD_BOOL
 sec_parse_crypt_info(RDConnectionRef conn, RDStreamRef s, uint32 * rc4_key_size,
 		     uint8 ** server_random, uint8 ** modulus, uint8 ** exponent)
 {
@@ -879,7 +879,7 @@ sec_recv(RDConnectionRef conn, uint8 * rdpver)
 }
 
 /* Establish a secure connection */
-RDBOOL
+RD_BOOL
 sec_connect(RDConnectionRef conn, const char *server, char *username)
 {
 	RDStream mcs_data;
@@ -903,7 +903,7 @@ sec_connect(RDConnectionRef conn, const char *server, char *username)
 }
 
 /* Establish a secure connection */
-RDBOOL
+RD_BOOL
 sec_reconnect(RDConnectionRef conn, char *server)
 {
 	RDStream mcs_data;
