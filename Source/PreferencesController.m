@@ -1,10 +1,29 @@
+/*	Copyright (c) 2009 Nick Peelman <nick@peelman.us>
+	
+	This file is part of CoRD.
+	CoRD is free software; you can redistribute it and/or modify it under the
+	terms of the GNU General Public License as published by the Free Software
+	Foundation; either version 2 of the License, or (at your option) any later
+	version.
+
+	CoRD is distributed in the hope that it will be useful, but WITHOUT ANY
+	WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+	FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License along with
+	CoRD; if not, write to the Free Software Foundation, Inc., 51 Franklin St,
+	Fifth Floor, Boston, MA 02110-1301 USA
+*/
+
 #import "PreferencesController.h"
+
+#pragma mark -
 
 @implementation PreferencesController
 
 -(id) init
 {
-	if( (self = [super init]) )
+	if( ( self = [super init] ) )
 	{
 		toolbarItems = [[NSMutableDictionary alloc] init];
 	}
@@ -16,19 +35,20 @@
 {
 	[prefsToolbar release];
 	[toolbarItems release];
-	
 	[super dealloc];
 }
 
 - (void)awakeFromNib
 {
-	[self mapTabsToToolbar];
 
+	//Turn Core Animation On For All Views
 	[[preferencesWindow contentView] setWantsLayer:YES];
 	[generalView setWantsLayer:YES];
 	[connectionView setWantsLayer:YES];	
 	[advancedView setWantsLayer:YES];
-//	ZNLog(@"Init General View: %@", generalView);
+
+	// Init Toolbar & Set Initial Pane
+	[self mapTabsToToolbar];
 	[self changePanes:nil];
 }
 
@@ -38,17 +58,20 @@
 	[toolbarItems removeAllObjects];
 	[toolbarItems setObject:@"General" forKey:@"General"];
 	[toolbarItems setObject:@"Connections" forKey:@"Connections"];
-//	[toolbarItems setObject:@"Advanced" forKey:@"Advanced"];
 	
-    // Create a new toolbar instance, and attach it to our document window 
+	// Future Advanced Pane
+	//[toolbarItems setObject:@"Advanced" forKey:@"Advanced"];
+	
+    // Get the Existing Toolbar (if there is one) 
 	prefsToolbar = [preferencesWindow toolbar];
-	int				itemCount = 0, x = 0;	
 	
+	// Check for the Existing Toolbar, Create one if it doesn't exist
 	if( prefsToolbar == nil )
 	{
 		prefsToolbar = [[NSToolbar alloc] initWithIdentifier: @"CoRDPrefsToolbar"];
 	}
 
+	// Set various Toolbar Settings
     [prefsToolbar setAllowsUserCustomization: NO];
     [prefsToolbar setAutosavesConfiguration: NO];
     [prefsToolbar setDisplayMode: NSToolbarDisplayModeIconAndLabel];
@@ -57,7 +80,6 @@
     // Attach the toolbar to the document window 
     [preferencesWindow setToolbar: prefsToolbar];
 	[preferencesWindow setShowsToolbarButton:NO];
-
 }
 
 -(IBAction)changePanes:(id)sender
@@ -65,15 +87,17 @@
 	NSView *currentPane = [preferencesWindow contentView];
 	NSView* newPane = nil;
 	
-	if ([[sender label] isEqualToString:@"General"])
+	NSString *paneLabel = [sender label];
+	
+	if ([paneLabel isEqualToString:@"General"])
 	{
 		newPane = generalView;
 	}
-	else if ([[sender label] isEqualToString:@"Connections"])
+	else if ([paneLabel isEqualToString:@"Connections"])
 	{
 		newPane = connectionView;
 	}
-	else if ([[sender label] isEqualToString:@"Advanced"])
+	else if ([paneLabel isEqualToString:@"Advanced"])
 	{
 		newPane = advancedView;
 	} else {
@@ -89,7 +113,7 @@
 	[tempView release]; 
 	
 	[preferencesWindow makeFirstResponder:nil];
-	[prefsToolbar setSelectedItemIdentifier:([sender label]) ? [sender label] : @"General"];
+	[prefsToolbar setSelectedItemIdentifier:(paneLabel) ? paneLabel : @"General"];
 
 	
 	//ZNLog(@"newPane: %@", newPane);
@@ -111,6 +135,8 @@
 	//ZNLog(@"Using preferences window size: %@", NSStringFromSize(theSize));
 	
 	[preferencesWindow setMinSize:theSize];
+	
+	[paneLabel release];
 }
 
 -(IBAction) toggleAdvanced: (id)sender
@@ -119,12 +145,8 @@
 }
 
 
-/* -----------------------------------------------------------------------------
- toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:
- Create an item with the proper image and name based on our list
- of tabs for the specified identifier.
- -------------------------------------------------------------------------- */
-
+#pragma mark -
+#pragma mark NSToolbar Delegate Methods
 -(NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *)itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted
 {
 	NSToolbarItem   *toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
@@ -187,6 +209,9 @@
 	return [toolbarItems allKeys];
 }
 
+
+#pragma mark -
+#pragma mark NSWindow Delegate Methods
 - (void)windowWillClose:(NSNotification *)notification
 {
 	//Set Cmd-W to close the current session and not the current window
