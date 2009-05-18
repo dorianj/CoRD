@@ -135,8 +135,6 @@
 	//ZNLog(@"Using preferences window size: %@", NSStringFromSize(theSize));
 	
 	[preferencesWindow setMinSize:theSize];
-	
-	[paneLabel release];
 }
 
 -(IBAction) toggleAdvanced: (id)sender
