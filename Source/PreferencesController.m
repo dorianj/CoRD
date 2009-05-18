@@ -60,7 +60,7 @@
 	[toolbarItems setObject:@"Connections" forKey:@"Connections"];
 	
 	// Future Advanced Pane
-	//[toolbarItems setObject:@"Advanced" forKey:@"Advanced"];
+	[toolbarItems setObject:@"Advanced" forKey:@"Advanced"];
 	
     // Get the Existing Toolbar (if there is one) 
 	prefsToolbar = [preferencesWindow toolbar];
@@ -197,7 +197,7 @@
 -(NSArray*) toolbarDefaultItemIdentifiers: (NSToolbar *) toolbar
 {
 	//NSLog(@"Checking Default Idents");
-	NSMutableArray* defaultItems = [NSMutableArray arrayWithArray:[toolbarItems allKeys]];
+	NSMutableArray* defaultItems = [NSMutableArray arrayWithArray:[NSArray arrayWithObjects:@"General",@"Connections",@"Advanced",nil]];
 	return defaultItems;
 }
 
