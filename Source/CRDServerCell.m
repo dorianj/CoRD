@@ -130,14 +130,30 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	{
 		[self createProgressIndicator];
 		if ([progressIndicator superview] != controlView)
+		{
 			[controlView addSubview:progressIndicator];
+		}
 		
+		if (abbreviatedSize)
+		{
+			[progressIndicator setControlSize:NSSmallControlSize];
+		} 
+		else
+		{
+			[progressIndicator setControlSize:NSRegularControlSize];
+		}
+
 		[progressIndicator setFrame:imgRect];
+		[progressIndicator sizeToFit];
+		[progressIndicator startAnimation:self];
 	}
 	else 
 	{
 		if ( (controlView != nil) && (progressIndicator != nil) )
+		{
+			[progressIndicator stopAnimation:self];
 			[progressIndicator removeFromSuperview];
+		}
 			
 		[NSGraphicsContext saveGraphicsState];
 		[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh]; 
@@ -258,7 +274,6 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 		return;
 		
 	progressIndicator = [[NSProgressIndicator alloc] initWithFrame:CRDRectFromSize([self cellSize])];
-	[progressIndicator setIndeterminate:YES];
 	[progressIndicator setStyle:NSProgressIndicatorSpinningStyle];
 }
 
