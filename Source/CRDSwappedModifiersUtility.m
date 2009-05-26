@@ -143,7 +143,7 @@ static NSArray *rawDefaultTable;
 	for (i = 0; i < 5; i++)
 	{	
 		realKeyNum = MakeInt([modifierTranslator objectForKey:MakeNum(keys[i])]);
-		TEST_THEN_SWAP(GetFlagForKey(keys[i], KeyFlagLeft), GetFlagForKey(realKeyNum, KeyFlagRight));
+		TEST_THEN_SWAP(GetFlagForKey(keys[i], KeyFlagRight), GetFlagForKey(realKeyNum, KeyFlagRight));
 		TEST_THEN_SWAP(GetFlagForKey(keys[i], KeyFlagLeft), GetFlagForKey(realKeyNum, KeyFlagLeft));
 		TEST_THEN_SWAP(GetFlagForKey(keys[i], KeyFlagDeviceIndependent), GetFlagForKey(realKeyNum, KeyFlagDeviceIndependent));		
 	}
