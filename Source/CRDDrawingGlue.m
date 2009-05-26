@@ -120,7 +120,15 @@ void ui_memblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy,
 			break;
 		
 		case 6:
-			compositingOp = NSCompositeCopy;
+			compositingOp = NSCompositePlusLighter;
+			break;
+			
+		case 8: // AND
+			compositingOp = NSCompositePlusDarker;
+			break;
+			
+		case 14: // OR
+			compositingOp = NSCompositePlusLighter;
 			break;
 		
 		default:
