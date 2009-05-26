@@ -447,7 +447,9 @@
 		
 	if (![unicodePasteContent length])
 		return;
-		
+
+	[unicodePasteContent increaseLengthBy:2];  // NULL terminate with 2 bytes (UTF16LE)
+	
 	cliprdr_send_data(conn, (unsigned char *)[unicodePasteContent bytes], [unicodePasteContent length]);
 }
 
