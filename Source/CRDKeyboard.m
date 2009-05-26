@@ -348,7 +348,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	CFStringRef *name;
 	KeyboardLayoutRef keyLayout;
 	KLGetCurrentKeyboardLayout(&keyLayout);
-	KLGetKeyboardLayoutProperty(keyLayout, kKLLocalizedName, (const void **)&name);
+	KLGetKeyboardLayoutProperty(keyLayout, kKLName, (const void **)&name);
 	
 	return (NSString *)name;
 }
