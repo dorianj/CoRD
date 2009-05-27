@@ -22,6 +22,7 @@
 #import <Carbon/Carbon.h>
 
 #import <IOKit/hidsystem/IOHIDTypes.h>
+#import "ZNLog.h"
 
 #import "CRDKeyboard.h"
 #import "CRDSession.h"
@@ -346,10 +347,10 @@ static NSDictionary *windowsKeymapTable = nil;
 + (NSString *) currentKeymapName
 {
 	CFStringRef *name;
-	KeyboardLayoutRef keyLayout;
-	KLGetCurrentKeyboardLayout(&keyLayout);
-	KLGetKeyboardLayoutProperty(keyLayout, kKLName, (const void **)&name);
-	
+	TISInputSourceRef keyLayout;
+	keyLayout = TISCopyCurrentKeyboardLayoutInputSource();
+	name= TISGetInputSourceProperty(keyLayout, kTISPropertyLocalizedName);
+	//ZNLog((NSString *)name);
 	return (NSString *)name;
 }
 
