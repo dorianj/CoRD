@@ -2040,7 +2040,7 @@
 {
 	CRDSession *inst = [self viewedServer];
 	NSSize newContentSize;
-	if ([self displayMode] == CRDDisplayUnified && inst)
+	if ([self displayMode] == CRDDisplayUnified && inst && !CRDConnectionConnecting)
 	{
 		newContentSize = [[inst view] bounds].size;
 		[gui_unifiedWindow setContentMaxSize:newContentSize];
