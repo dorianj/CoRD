@@ -1689,8 +1689,9 @@
 	enumerator = [connectedServers objectEnumerator];
 	while ( (inst = [enumerator nextObject]) )
 	{
-		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
-					action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i",[inst hotkey]]];
+		menuItem = [ [NSMenuItem alloc] initWithTitle:[inst label] 
+											   action:@selector(performServerMenuItem:) 
+										keyEquivalent:[NSString stringWithFormat:@"%i",[inst hotkey]] ];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
@@ -1701,8 +1702,9 @@
 	enumerator = [savedServers objectEnumerator];
 	while ( (inst = [enumerator nextObject]) )
 	{
-		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label]
-					action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i",[inst hotkey]]];
+		menuItem = [ [NSMenuItem alloc] initWithTitle:[inst label] 
+											   action:@selector(performServerMenuItem:) 
+										keyEquivalent:[NSString stringWithFormat:@"%i",[inst hotkey]] ];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];

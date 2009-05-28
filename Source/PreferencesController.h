@@ -29,6 +29,8 @@
 	IBOutlet NSBox *performanceBox;	
 	IBOutlet NSUserDefaultsController *defaultsController;
 	IBOutlet NSButton *showAdvancedCheckbox;
+	IBOutlet NSMenuItem *closeWindowMenuItem;
+	IBOutlet NSMenuItem *closeSessionMenuItem;
 
 	NSUserDefaults *userDefaults;
 	NSToolbar *prefsToolbar;

@@ -2,16 +2,17 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.03">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">9G55</string>
+		<string key="IBDocument.SystemVersion">9J61</string>
 		<string key="IBDocument.InterfaceBuilderVersion">677</string>
-		<string key="IBDocument.AppKitVersion">949.43</string>
+		<string key="IBDocument.AppKitVersion">949.46</string>
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="2049"/>
-			<integer value="2051"/>
-			<integer value="2423"/>
 			<integer value="81"/>
+			<integer value="2423"/>
+			<integer value="2049"/>
+			<integer value="744"/>
+			<integer value="2051"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -670,7 +671,7 @@
 									<reference key="NSMenu" ref="237948656"/>
 									<bool key="NSIsDisabled">YES</bool>
 									<bool key="NSIsSeparator">YES</bool>
-									<string key="NSTitle"> </string>
+									<string key="NSTitle"/>
 									<string key="NSKeyEquiv"/>
 									<int key="NSKeyEquivModMask">1048576</int>
 									<int key="NSMnemonicLoc">2147483647</int>
@@ -833,7 +834,7 @@
 				<nil key="NSDelegate"/>
 			</object>
 			<object class="NSCustomView" id="398528258">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">256</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -1054,6 +1055,7 @@
 					</object>
 				</object>
 				<string key="NSFrameSize">{200, 380}</string>
+				<reference key="NSSuperview"/>
 				<string key="NSClassName">NSView</string>
 				<string key="NSExtension">NSResponder</string>
 			</object>
@@ -4501,6 +4503,22 @@
 					</object>
 					<int key="connectionID">2544</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">closeSessionMenuItem</string>
+						<reference key="source" ref="426746519"/>
+						<reference key="destination" ref="55367964"/>
+					</object>
+					<int key="connectionID">2614</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">closeWindowMenuItem</string>
+						<reference key="source" ref="426746519"/>
+						<reference key="destination" ref="447790"/>
+					</object>
+					<int key="connectionID">2615</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -6813,8 +6831,64 @@
 					<string>2423.ImportedFromIB2</string>
 					<string>2532.IBPluginDependency</string>
 					<string>2532.ImportedFromIB2</string>
+					<string>2558.IBPluginDependency</string>
+					<string>2559.IBPluginDependency</string>
+					<string>2560.IBPluginDependency</string>
+					<string>2561.IBPluginDependency</string>
+					<string>2562.IBPluginDependency</string>
+					<string>2563.IBPluginDependency</string>
+					<string>2564.IBPluginDependency</string>
+					<string>2565.IBPluginDependency</string>
+					<string>2566.IBPluginDependency</string>
+					<string>2567.IBPluginDependency</string>
+					<string>2568.IBPluginDependency</string>
+					<string>2569.IBPluginDependency</string>
+					<string>2570.IBPluginDependency</string>
+					<string>2571.IBPluginDependency</string>
+					<string>2572.IBPluginDependency</string>
+					<string>2573.IBPluginDependency</string>
+					<string>2574.IBPluginDependency</string>
+					<string>2575.IBPluginDependency</string>
+					<string>2576.IBPluginDependency</string>
+					<string>2577.IBPluginDependency</string>
+					<string>2578.IBPluginDependency</string>
+					<string>2579.IBPluginDependency</string>
+					<string>2580.IBPluginDependency</string>
+					<string>2581.IBPluginDependency</string>
+					<string>2582.IBPluginDependency</string>
+					<string>2583.IBPluginDependency</string>
+					<string>2584.IBPluginDependency</string>
+					<string>2585.IBPluginDependency</string>
+					<string>2586.IBPluginDependency</string>
+					<string>2587.IBPluginDependency</string>
+					<string>2588.IBPluginDependency</string>
+					<string>2589.IBPluginDependency</string>
+					<string>2590.IBPluginDependency</string>
+					<string>2591.IBPluginDependency</string>
+					<string>2592.IBPluginDependency</string>
+					<string>2593.IBPluginDependency</string>
+					<string>2594.IBPluginDependency</string>
+					<string>2595.IBPluginDependency</string>
+					<string>2596.IBPluginDependency</string>
+					<string>2597.IBPluginDependency</string>
+					<string>2598.IBPluginDependency</string>
+					<string>2599.IBPluginDependency</string>
+					<string>2600.IBPluginDependency</string>
+					<string>2601.IBPluginDependency</string>
+					<string>2602.IBPluginDependency</string>
+					<string>2603.IBPluginDependency</string>
+					<string>2604.IBPluginDependency</string>
+					<string>2605.IBPluginDependency</string>
+					<string>2606.IBPluginDependency</string>
+					<string>2607.IBPluginDependency</string>
+					<string>2608.IBPluginDependency</string>
+					<string>2609.IBPluginDependency</string>
+					<string>2610.IBPluginDependency</string>
+					<string>2611.IBPluginDependency</string>
 					<string>2611.IBShouldRemoveOnLegacySave</string>
+					<string>2612.IBPluginDependency</string>
 					<string>2612.IBShouldRemoveOnLegacySave</string>
+					<string>2613.IBPluginDependency</string>
 					<string>2613.IBShouldRemoveOnLegacySave</string>
 					<string>29.IBEditorWindowLastContentRect</string>
 					<string>29.IBPluginDependency</string>
@@ -6861,6 +6935,7 @@
 					<string>700.ImportedFromIB2</string>
 					<string>731.IBPluginDependency</string>
 					<string>731.ImportedFromIB2</string>
+					<string>741.IBEditorWindowLastContentRect</string>
 					<string>741.IBPluginDependency</string>
 					<string>741.ImportedFromIB2</string>
 					<string>744.IBPluginDependency</string>
@@ -7286,10 +7361,10 @@
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
-					<string>{{21, 854}, {336, 257}}</string>
+					<string>{{58, 735}, {336, 257}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
-					<string>{{42, 824}, {443, 264}}</string>
+					<string>{{359, 259}, {443, 264}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
 					<reference ref="5"/>
@@ -7304,21 +7379,71 @@
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
-					<string>{{0, 780}, {472, 354}}</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<reference ref="5"/>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<reference ref="5"/>
-					<reference ref="5"/>
-					<reference ref="5"/>
-					<reference ref="5"/>
-					<string>{{0, 1125}, {405, 20}}</string>
+					<string>{{531, 629}, {472, 354}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<reference ref="5"/>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<reference ref="5"/>
+					<string>{{131, 638}, {405, 20}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -7357,6 +7482,13 @@
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<reference ref="5"/>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<reference ref="5"/>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<reference ref="5"/>
+					<string>{{0, 615}, {200, 380}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -7405,7 +7537,7 @@
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
-					<string>{{70, 912}, {234, 213}}</string>
+					<string>{{201, 425}, {234, 213}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -7539,7 +7671,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">2613</int>
+			<int key="maxID">2615</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -7787,6 +7919,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">FirstResponder</string>
+					<string key="superclassName">NSObject</string>
 					<object class="NSMutableDictionary" key="actions">
 						<string key="NS.key.0">:</string>
 						<string key="NS.object.0">id</string>
@@ -7828,6 +7961,7 @@
 				</object>
 				<object class="IBPartialClassDescription">
 					<string key="className">NSView</string>
+					<string key="superclassName">NSResponder</string>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBUserSource</string>
 						<string key="minorKey"/>
@@ -7854,6 +7988,8 @@
 						<object class="NSMutableArray" key="dict.sortedKeys">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>advancedView</string>
+							<string>closeSessionMenuItem</string>
+							<string>closeWindowMenuItem</string>
 							<string>connectionView</string>
 							<string>defaultsController</string>
 							<string>devicesBox</string>
@@ -7866,6 +8002,8 @@
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<string>NSView</string>
+							<string>NSMenuItem</string>
+							<string>NSMenuItem</string>
 							<string>NSView</string>
 							<string>NSUserDefaultsController</string>
 							<string>NSBox</string>

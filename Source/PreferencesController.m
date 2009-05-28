@@ -210,17 +210,18 @@
 
 #pragma mark -
 #pragma mark NSWindow Delegate Methods
-- (void)windowWillClose:(NSNotification *)notification
-{
-	//Set Cmd-W to close the current session and not the current window
-}
-
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
-	//Set Cmd-W to close the current window and not hte current session
-	
-	
+	[closeWindowMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
+	[closeSessionMenuItem setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];
 }
+
+- (void)windowDidResignKey:(NSNotification *)notification
+{
+	[closeWindowMenuItem setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];
+	[closeSessionMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
+}
+
 
 
 
