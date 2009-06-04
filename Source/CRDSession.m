@@ -262,7 +262,7 @@
 		logonFlags |= RDP_LOGON_LEAVE_AUDIO;
 	
 	// Other various settings
-	conn->serverBpp = (screenDepth==8 || screenDepth==15 || screenDepth==32) ? screenDepth : 16;
+	conn->serverBpp = (screenDepth==8 || screenDepth==16 || screenDepth==32) ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
