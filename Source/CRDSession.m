@@ -262,7 +262,7 @@
 		logonFlags |= RDP_LOGON_LEAVE_AUDIO;
 	
 	// Other various settings
-	conn->serverBpp = (screenDepth==8 || screenDepth==15 || screenDepth==24) ? screenDepth : 16;
+	conn->serverBpp = (screenDepth==8 || screenDepth==15 || screenDepth==32) ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
 	conn->screenWidth = screenWidth ? screenWidth : 1024;
 	conn->screenHeight = screenHeight ? screenHeight : 768;
@@ -399,7 +399,7 @@
 
 - (void)runConnectionRunLoop
 {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	NSAutoreleasePool *pool = nil;
 	
 	connectionRunLoopFinished = NO;
 	
@@ -410,6 +410,8 @@
 		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
 		[pool release];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
+	
+	pool = [[NSAutoreleasePool alloc] init];
 	
 	//rdp_disconnect(conn);
 	[self discardConnectionThread];
