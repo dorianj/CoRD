@@ -492,9 +492,9 @@ sec_parse_x509_key(RDConnectionRef conn, X509 * cert)
 	/* By some reason, Microsoft sets the OID of the Public RSA key to
 	   the oid for "MD5 with RSA Encryption" instead of "RSA Encryption"
 
-	   Kudos to Richard Levitte for the following (. intiutive .) 
+	   Kudos to Richard Levitte for the following (. intiutive .)
 	   lines of code that resets the OID and let's us extract the key. */
-	if (OBJ_obj2nid(cert->cert_info->key->algor->algorithm) == NID_md5WithRSAEncryption)
+	if (OBJ_obj2nid(cert->cert_info->key->algor->algorithm) == NID_md5WithRSAEncryption || OBJ_obj2nid(cert->cert_info->key->algor->algorithm) == NID_shaWithRSAEncryption)
 	{
 		DEBUG_RDP5(("Re-setting algorithm type to RSA in server certificate\n"));
 		ASN1_OBJECT_free(cert->cert_info->key->algor->algorithm);
@@ -508,7 +508,7 @@ sec_parse_x509_key(RDConnectionRef conn, X509 * cert)
 	}
 
 	conn->serverPublicKey = RSAPublicKey_dup((RSA *) epk->pkey.ptr);
-	
+
 	conn->serverPublicKeyLen = RSA_size(conn->serverPublicKey);
 	if ((conn->serverPublicKeyLen < 64) || (conn->serverPublicKeyLen > SEC_MAX_MODULUS_SIZE))
 	{
