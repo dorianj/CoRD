@@ -83,6 +83,13 @@
 	if (connectionStatus == CRDConnectionConnected)
 		[self disconnect];
 	
+	/* must be a name resolution error or something
+	 * that kept it in state connecting, clean it up.
+	 */
+	if (connectionStatus == CRDConnectionConnecting) {
+		[self setStatus:CRDConnectionClosed];
+	}
+		
 	while (connectionStatus != CRDConnectionClosed)
 		usleep(1000);
 	
