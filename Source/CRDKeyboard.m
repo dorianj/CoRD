@@ -283,6 +283,7 @@ static NSDictionary *windowsKeymapTable = nil;
 // This method isn't fully re-entrant but shouldn't be a problem in practice
 + (unsigned)windowsKeymapForMacKeymap:(NSString *)keymapName
 {
+	//ZNLog(@"%@", keymapName);
 	// Load 'OSX keymap name' --> 'Windows keymap number' lookup table if it isn't already loaded
 	if (windowsKeymapTable == nil)
 	{
@@ -304,7 +305,10 @@ static NSDictionary *windowsKeymapTable = nil;
 			[scanner scanHexInt:&i];
 			
 			if (i != 0 && n != nil)
+			{
 				[dict setObject:[NSNumber numberWithUnsignedInt:i] forKey:n];
+			}
+			//ZNLog(n);
 		}
 		windowsKeymapTable = dict;
 	}
@@ -346,12 +350,9 @@ static NSDictionary *windowsKeymapTable = nil;
 
 + (NSString *) currentKeymapName
 {
-	CFStringRef *name;
 	TISInputSourceRef keyLayout;
-	keyLayout = TISCopyCurrentKeyboardLayoutInputSource();
-	name= TISGetInputSourceProperty(keyLayout, kTISPropertyLocalizedName);
-	//ZNLog((NSString *)name);
-	return (NSString *)name;
+	keyLayout = TISCopyCurrentKeyboardInputSource();
+	return (NSString*)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID);
 }
 
 + (uint16)modifiersForEvent:(NSEvent *)ev

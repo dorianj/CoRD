@@ -58,8 +58,6 @@
 	[toolbarItems removeAllObjects];
 	[toolbarItems setObject:@"General" forKey:@"General"];
 	[toolbarItems setObject:@"Connections" forKey:@"Connections"];
-	
-	// Future Advanced Pane
 	[toolbarItems setObject:@"Advanced" forKey:@"Advanced"];
 	
     // Get the Existing Toolbar (if there is one) 
