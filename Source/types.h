@@ -80,12 +80,21 @@ typedef struct _RDPen
 	uint32 colour;
 } RDPen;
 
+/* this is whats in the brush cache */
+typedef struct _RDBrushData
+{
+	uint32 colour_code;
+	uint32 data_size;
+	uint8 *data;
+} RDBrushData;
+
 typedef struct _RDBrush
 {
 	uint8 xorigin;
 	uint8 yorigin;
 	uint8 style;
 	uint8 pattern[8];
+	RDBrushData *bd;
 } RDBrush;
 
 typedef struct _RDFontGlyph
@@ -290,6 +299,7 @@ struct _RDConnection
 	unsigned char deskCache[DESKTOP_CACHE_SIZE * 4];
 	RDBitmapRef volatileBc[BITMAP_CACHE_SIZE];
 	RDCursorRef cursorCache[CURSOR_CACHE_SIZE];
+	RDBrushData brushCache[BRUSH_CACHE_ENTRIES][BRUSH_CACHE_SIZE];
 	RDDataBlob textCache[TEXT_CACHE_SIZE];
 	RDFontGlyph fontCache[FONT_CACHE_SIZE][FONT_CACHE_ENTRIES];
 	struct bmpcache_entry bmpcache[BITMAP_CACHE_SIZE][BITMAP_CACHE_ENTRIES];

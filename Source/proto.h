@@ -34,6 +34,8 @@ uint8 *cache_get_desktop(RDConnectionRef conn, uint32 offset, int cx, int cy, in
 void cache_put_desktop(RDConnectionRef conn, uint32 offset, int cx, int cy, int scanline, int bytes_per_pixel, uint8 * data);
 RDCursorRef cache_get_cursor(RDConnectionRef conn, uint16 cache_idx);
 void cache_put_cursor(RDConnectionRef conn, uint16 cache_idx, RDCursorRef cursor);
+RDBrushData *cache_get_brush_data(RDConnectionRef conn, uint8 colour_code, uint8 idx);
+void cache_put_brush_data(RDConnectionRef conn, uint8 colour_code, uint8 idx, RDBrushData * brush_data);
 
 #pragma mark -
 #pragma mark channels.c

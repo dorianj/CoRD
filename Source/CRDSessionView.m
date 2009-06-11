@@ -381,13 +381,24 @@
 
 - (void)ellipse:(NSRect)r color:(NSColor *)c
 {
+	[self ellipse:r color:c patternOrigin:NSZeroPoint];
+}
+
+- (void)ellipse:(NSRect)r color:(NSColor *)c patternOrigin:(NSPoint)origin
+{
 	[self focusBackingStore];
 	[c set];
+	[[NSGraphicsContext currentContext] setPatternPhase:origin];
 	[[NSBezierPath bezierPathWithOvalInRect:r] fill];
 	[self releaseBackingStore];
 }
 
 - (void)polygon:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c winding:(NSWindingRule)winding
+{
+	[self polygon:points npoints:nPoints color:c winding:winding patternOrigin:NSZeroPoint];
+}
+
+- (void)polygon:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c winding:(NSWindingRule)winding patternOrigin:(NSPoint)origin
 {
 	NSBezierPath *bp = [NSBezierPath bezierPath];
 	int i;
@@ -395,11 +406,12 @@
 	[bp moveToPoint:NSMakePoint(points[0].x + 0.5, points[0].y + 0.5)];
 	for (i = 1; i < nPoints; i++)
 		[bp relativeLineToPoint:NSMakePoint(points[i].x, points[i].y)];
-
+	
 	[bp closePath];
 	
 	[self focusBackingStore];
 	[c set];
+	[[NSGraphicsContext currentContext] setPatternPhase:origin];
 	[bp fill];
 	[self releaseBackingStore];
 }

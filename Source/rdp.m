@@ -647,6 +647,15 @@ rdp_out_colcache_caps(RDStreamRef s)
 	out_uint16(s, 0);	/* pad */
 }
 
+/* Output brush cache capability set */
+static void
+rdp_out_brushcache_caps(RDStreamRef s)
+{
+	out_uint16_le(s, RDP_CAPSET_BRUSHCACHE);
+	out_uint16_le(s, RDP_CAPLEN_BRUSHCACHE);
+	out_uint32_le(s, 1);	/* cache type */
+}
+
 static const uint8 caps_0x0d[] = {
 	0x01, 0x00, 0x00, 0x00, 0x09, 0x04, 0x00, 0x00,
 	0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -696,7 +705,7 @@ rdp_send_confirm_active(RDConnectionRef conn)
 		RDP_CAPLEN_BMPCACHE + RDP_CAPLEN_COLCACHE +
 		RDP_CAPLEN_ACTIVATE + RDP_CAPLEN_CONTROL +
 		RDP_CAPLEN_POINTER + RDP_CAPLEN_SHARE +
-		0x58 + 0x08 + 0x08 + 0x34 /* unknown caps */  +
+		RDP_CAPLEN_BRUSHCACHE + 0x58 + 0x08 + 0x08 + 0x34 /* unknown caps */  +
 		4 /* w2k fix, why? */ ;
 
 	s = sec_init(conn, sec_flags, 6 + 14 + caplen + sizeof(RDP_SOURCE));
@@ -723,6 +732,7 @@ rdp_send_confirm_active(RDConnectionRef conn)
 	rdp_out_control_caps(s);
 	rdp_out_pointer_caps(s);
 	rdp_out_share_caps(s);
+	rdp_out_brushcache_caps(s);
 
 	rdp_out_unknown_caps(s, 0x0d, 0x58, caps_0x0d);	/* international? */
 	rdp_out_unknown_caps(s, 0x0c, 0x08, caps_0x0c);

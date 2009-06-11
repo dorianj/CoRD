@@ -307,6 +307,17 @@ static void schedule_display_in_rect(RDConnectionRef conn, NSRect r)
 #pragma mark -
 #pragma mark General Drawing
 
+/* hatch patterns used by ui_patblt() ui_polygon() ui_ellipse() */
+static const uint8 hatch_patterns[] =
+{
+0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00, /* 0 - bsHorizontal */
+0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, /* 1 - bsVertical */
+0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01, /* 2 - bsFDiagonal */
+0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, /* 3 - bsBDiagonal */
+0x08, 0x08, 0x08, 0xff, 0x08, 0x08, 0x08, 0x08, /* 4 - bsCross */
+0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81  /* 5 - bsDiagCross */
+};
+
 void ui_rect(RDConnectionRef conn, int x, int y, int cx, int cy, int colour)
 {
 	LOCALS_FROM_CONN;
@@ -380,7 +391,11 @@ void ui_polygon(RDConnectionRef conn, uint8 opcode, uint8 fillmode, RDPoint* poi
 	LOCALS_FROM_CONN;
 	
 	NSWindingRule r;
-	int style;
+	NSRect glyphSize;
+	CRDBitmap *bitmap;
+	NSImage *fill;
+	NSColor *fillColor;
+	uint8 style, i, ipattern[8];
 	CHECKOPCODE(opcode);
 	
 	switch (fillmode)
@@ -396,32 +411,103 @@ void ui_polygon(RDConnectionRef conn, uint8 opcode, uint8 fillmode, RDPoint* poi
 			return;
 	}
 	
-	style = brush != NULL ? brush->style : 0;
+	if (brush)
+		style = brush->style;
+	else
+		style = 0;
 	
 	switch (style)
 	{
-		case 0:
+		case 0: /* Solid */
 			[v polygon:point npoints:npoints color:[v nscolorForRDCColor:fgcolour] winding:r];
 			break;
+			
+		case 2: /* Hatch */
+			
+			glyphSize = NSMakeRect(0, 0, 8, 8);
+            bitmap = ui_create_glyph(conn, 8, 8, hatch_patterns + brush->pattern[0] * 8);
+			fill = [bitmap image];
+			[fill lockFocus];
+			
+			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+			[[v nscolorForRDCColor:fgcolour] set];
+			[NSBezierPath fillRect:glyphSize];
+			
+			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+			[[v nscolorForRDCColor:bgcolour] set];
+			[NSBezierPath fillRect:glyphSize];
+			
+			[fill unlockFocus];
+			
+			fillColor = [NSColor colorWithPatternImage:fill];
+			[v polygon:point npoints:npoints color:fillColor winding:r patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+            ui_destroy_glyph(bitmap);
+            break;
+			
+		case 3: /* Pattern */
+			if (brush->bd == 0)	/* rdp4 brush */
+			{
+				for (i = 0; i != 8; i++)
+					ipattern[7 - i] = brush->pattern[i];
+				
+				glyphSize = NSMakeRect(0, 0, 8, 8);
+				bitmap = ui_create_glyph(conn, 8, 8, ipattern);
+				fill = [bitmap image];
+				[fill lockFocus];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+				[[v nscolorForRDCColor:bgcolour] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+				[[v nscolorForRDCColor:fgcolour] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[fill unlockFocus];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v polygon:point npoints:npoints color:fillColor winding:r patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
+			else if (brush->bd->colour_code > 1)	/* > 1 bpp */
+			{
+				bitmap = ui_create_glyph(conn, 8, 8, brush->bd->data);
+				fill = [bitmap image];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v polygon:point npoints:npoints color:fillColor winding:r patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
+			else
+			{
+				glyphSize = NSMakeRect(0, 0, 8, 8);
+				bitmap = ui_create_glyph(conn, 8, 8, brush->bd->data);
+				fill = [bitmap image];
+				[fill lockFocus];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+				[[v nscolorForRDCColor:bgcolour] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+				[[v nscolorForRDCColor:fgcolour] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[fill unlockFocus];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v polygon:point npoints:npoints color:fillColor winding:r patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
+			break;
+			
 		default:
-			UNIMPL;
+			unimpl("brush %d\n", brush->style);
 			break;
 	}
 	
 	schedule_display(conn);
 }
-
-
-
-static const uint8 hatch_patterns[] =
-{
-    0x00, 0x00, 0x00, 0xff, 0x00, 0x00, 0x00, 0x00, /* 0 - bsHorizontal */
-    0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, 0x08, /* 1 - bsVertical */
-    0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01, /* 2 - bsFDiagonal */
-    0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, /* 3 - bsBDiagonal */
-    0x08, 0x08, 0x08, 0xff, 0x08, 0x08, 0x08, 0x08, /* 4 - bsCross */
-    0x81, 0x42, 0x24, 0x18, 0x18, 0x24, 0x42, 0x81  /* 5 - bsDiagCross */
-};
 
 /* XXX Still needs origins */
 void ui_patblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy, RDBrush * brush, int bgcolor, int fgcolor)
@@ -449,6 +535,7 @@ void ui_patblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy,
 			[v fillRect:dest withColor:[v nscolorForRDCColor:fgcolor]];
 			schedule_display_in_rect(conn, dest);
 			break;
+			
 		case 2: /* Hatch */
 
 			glyphSize = NSMakeRect(0, 0, 8, 8);
@@ -470,29 +557,64 @@ void ui_patblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy,
 			[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
             ui_destroy_glyph(bitmap);
             break;
+			
 		case 3: /* Pattern */
-			for (i = 0; i != 8; i++)
-				ipattern[7 - i] = brush->pattern[i];
-			
-			glyphSize = NSMakeRect(0, 0, 8, 8);
-            bitmap = ui_create_glyph(conn, 8, 8, ipattern);
-			fill = [bitmap image];
-			[fill lockFocus];
-			
-			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
-			[[v nscolorForRDCColor:fgcolor] set];
-			[NSBezierPath fillRect:glyphSize];
-			
-			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
-			[[v nscolorForRDCColor:bgcolor] set];
-			[NSBezierPath fillRect:glyphSize];
-			
-			[fill unlockFocus];
-			
-			fillColor = [NSColor colorWithPatternImage:fill];
-			[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
-            ui_destroy_glyph(bitmap);
+			if (brush->bd == 0)	/* rdp4 brush */
+			{
+				for (i = 0; i != 8; i++)
+					ipattern[7 - i] = brush->pattern[i];
+				
+				glyphSize = NSMakeRect(0, 0, 8, 8);
+				bitmap = ui_create_glyph(conn, 8, 8, ipattern);
+				fill = [bitmap image];
+				[fill lockFocus];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+				[[v nscolorForRDCColor:bgcolor] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+				[[v nscolorForRDCColor:fgcolor] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[fill unlockFocus];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
+			else if (brush->bd->colour_code > 1)	/* > 1 bpp */
+			{
+				bitmap = ui_create_glyph(conn, 8, 8, brush->bd->data);
+				fill = [bitmap image];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
+			else
+			{
+				glyphSize = NSMakeRect(0, 0, 8, 8);
+				bitmap = ui_create_glyph(conn, 8, 8, brush->bd->data);
+				fill = [bitmap image];
+				[fill lockFocus];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+				[[v nscolorForRDCColor:bgcolor] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+				[[v nscolorForRDCColor:fgcolor] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[fill unlockFocus];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v fillRect:dest withColor:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
 			break;
+			
 		default:
 			unimpl("brush %d\n", brush->style);
 			break;
@@ -514,18 +636,105 @@ void ui_ellipse(RDConnectionRef conn, uint8 opcode, uint8 fillmode, int x, int y
 {
 	LOCALS_FROM_CONN;
 	NSRect r = NSMakeRect(x + 0.5, y + 0.5, cx, cy);
-	int style;
+	NSRect glyphSize;
+	CRDBitmap *bitmap;
+	NSImage *fill;
+	NSColor *fillColor;
+	uint8 style, i, ipattern[8];
 	CHECKOPCODE(opcode);
 	
-	style = brush != NULL ? brush->style : 0;
+	if (brush)
+		style = brush->style;
+	else
+		style = 0;
 	
 	switch (style)
 	{
-		case 0:
+		case 0: /* Solid */
 			[v ellipse:r color:[v nscolorForRDCColor:fgcolour]];
 			break;
+
+		case 2: /* Hatch */
+			
+			glyphSize = NSMakeRect(0, 0, 8, 8);
+            bitmap = ui_create_glyph(conn, 8, 8, hatch_patterns + brush->pattern[0] * 8);
+			fill = [bitmap image];
+			[fill lockFocus];
+			
+			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+			[[v nscolorForRDCColor:fgcolour] set];
+			[NSBezierPath fillRect:glyphSize];
+			
+			[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+			[[v nscolorForRDCColor:bgcolour] set];
+			[NSBezierPath fillRect:glyphSize];
+			
+			[fill unlockFocus];
+			
+			fillColor = [NSColor colorWithPatternImage:fill];
+			[v ellipse:r color:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+            ui_destroy_glyph(bitmap);
+            break;
+			
+		case 3: /* Pattern */
+			if (brush->bd == 0)	/* rdp4 brush */
+			{
+				for (i = 0; i != 8; i++)
+					ipattern[7 - i] = brush->pattern[i];
+				
+				glyphSize = NSMakeRect(0, 0, 8, 8);
+				bitmap = ui_create_glyph(conn, 8, 8, ipattern);
+				fill = [bitmap image];
+				[fill lockFocus];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+				[[v nscolorForRDCColor:bgcolour] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+				[[v nscolorForRDCColor:fgcolour] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[fill unlockFocus];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v ellipse:r color:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
+			else if (brush->bd->colour_code > 1)	/* > 1 bpp */
+			{
+				bitmap = ui_create_glyph(conn, 8, 8, brush->bd->data);
+				fill = [bitmap image];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v ellipse:r color:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
+			else
+			{
+				glyphSize = NSMakeRect(0, 0, 8, 8);
+				bitmap = ui_create_glyph(conn, 8, 8, brush->bd->data);
+				fill = [bitmap image];
+				[fill lockFocus];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeSourceAtop];
+				[[v nscolorForRDCColor:bgcolour] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[[NSGraphicsContext currentContext] setCompositingOperation:NSCompositeDestinationAtop];
+				[[v nscolorForRDCColor:fgcolour] set];
+				[NSBezierPath fillRect:glyphSize];
+				
+				[fill unlockFocus];
+				
+				fillColor = [NSColor colorWithPatternImage:fill];
+				[v ellipse:r color:fillColor patternOrigin:NSMakePoint(brush->xorigin, brush->yorigin)];
+				ui_destroy_glyph(bitmap);
+			}
+			break;
+			
 		default:
-			UNIMPL;
+			unimpl("brush %d\n", brush->style);
 			return;
 	}
 	schedule_display_in_rect(conn, r);

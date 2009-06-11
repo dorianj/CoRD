@@ -52,7 +52,9 @@
 
 // Drawing
 - (void)ellipse:(NSRect)r color:(NSColor *)c;
+- (void)ellipse:(NSRect)r color:(NSColor *)c patternOrigin:(NSPoint)origin;
 - (void)polygon:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c winding:(NSWindingRule)winding;
+- (void)polygon:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c winding:(NSWindingRule)winding patternOrigin:(NSPoint)origin;
 - (void)polyline:(RDPoint*)points npoints:(int)nPoints color:(NSColor *)c width:(int)w;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *)color;
 - (void)fillRect:(NSRect)rect withColor:(NSColor *)color patternOrigin:(NSPoint)origin;

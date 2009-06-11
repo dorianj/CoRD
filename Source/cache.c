@@ -399,3 +399,39 @@ cache_put_cursor(RDConnectionRef conn, uint16 cache_idx, RDCursorRef cursor)
 		error("put cursor %d\n", cache_idx);
 	}
 }
+
+/* Retrieve brush from cache */
+RDBrushData *
+cache_get_brush_data(RDConnectionRef conn, uint8 colour_code, uint8 idx)
+{
+	colour_code = colour_code == 1 ? 0 : 1;
+	if (idx < NUM_ELEMENTS(conn->brushCache[0]))
+	{
+		return &conn->brushCache[colour_code][idx];
+	}
+	error("get brush %d %d\n", colour_code, idx);
+	return NULL;
+}
+
+/* Store brush in cache */
+/* this function takes over the data pointer in struct, eg, caller gives it up */
+void
+cache_put_brush_data(RDConnectionRef conn, uint8 colour_code, uint8 idx, RDBrushData * brush_data)
+{
+	RDBrushData *bd;
+	
+	colour_code = colour_code == 1 ? 0 : 1;
+	if (idx < NUM_ELEMENTS(conn->brushCache[0]))
+	{
+		bd = &conn->brushCache[colour_code][idx];
+		if (bd->data != 0)
+		{
+			xfree(bd->data);
+		}
+		memcpy(bd, brush_data, sizeof(RDBrushData));
+	}
+	else
+	{
+		error("put brush %d %d\n", colour_code, idx);
+	}
+}

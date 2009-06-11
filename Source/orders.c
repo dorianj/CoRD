@@ -144,6 +144,33 @@ rdp_parse_pen(RDStreamRef s, RDPen * pen, uint32 present)
 	return s_check(s);
 }
 
+static void
+setup_brush(RDConnectionRef conn, RDBrush * out_brush, RDBrush * in_brush)
+{
+	RDBrushData *brush_data;
+	uint8 cache_idx;
+	uint8 colour_code;
+	
+	memcpy(out_brush, in_brush, sizeof(RDBrush));
+	if (out_brush->style & 0x80)
+	{
+		colour_code = out_brush->style & 0x0f;
+		cache_idx = out_brush->pattern[0];
+		brush_data = cache_get_brush_data(conn, colour_code, cache_idx);
+		if ((brush_data == NULL) || (brush_data->data == NULL))
+		{
+			error("error getting brush data, style %x\n", out_brush->style);
+			out_brush->bd = NULL;
+			memset(out_brush->pattern, 0, 8);
+		}
+		else
+		{
+			out_brush->bd = brush_data;
+		}
+		out_brush->style = 3;
+	}
+}
+
 /* Parse a brush */
 static RD_BOOL
 rdp_parse_brush(RDStreamRef s, RDBrush * brush, uint32 present)
@@ -195,6 +222,8 @@ process_destblt(RDConnectionRef conn, RDStreamRef s, DESTBLT_ORDER * os, uint32 
 static void
 process_patblt(RDConnectionRef conn, RDStreamRef s, PATBLT_ORDER * os, uint32 present, RD_BOOL delta)
 {
+	RDBrush brush;
+	
 	if (present & 0x0001)
 		rdp_in_coord(s, &os->x, delta);
 
@@ -221,8 +250,10 @@ process_patblt(RDConnectionRef conn, RDStreamRef s, PATBLT_ORDER * os, uint32 pr
 	DEBUG(("PATBLT(op=0x%x,x=%d,y=%d,cx=%d,cy=%d,bs=%d,bg=0x%x,fg=0x%x)\n", os->opcode, os->x,
 	       os->y, os->cx, os->cy, os->brush.style, os->bgcolour, os->fgcolour));
 
+	setup_brush(conn, &brush, &os->brush);
+	
 	ui_patblt(conn, ROP2_P(os->opcode), os->x, os->y, os->cx, os->cy,
-		  &os->brush, os->bgcolour, os->fgcolour);
+		  &brush, os->bgcolour, os->fgcolour);
 }
 
 /* Process a screen blt order */
@@ -422,6 +453,7 @@ static void
 process_triblt(RDConnectionRef conn, RDStreamRef s, TRIBLT_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	RDBitmapRef bitmap;
+	RDBrush brush;
 
 	if (present & 0x000001)
 	{
@@ -472,8 +504,10 @@ process_triblt(RDConnectionRef conn, RDStreamRef s, TRIBLT_ORDER * os, uint32 pr
 	if (bitmap == NULL)
 		return;
 
+	setup_brush(conn, &brush, &os->brush);
+	
 	ui_triblt(os->opcode, os->x, os->y, os->cx, os->cy,
-		  bitmap, os->srcx, os->srcy, &os->brush, os->bgcolour, os->fgcolour);
+		  bitmap, os->srcx, os->srcy, &brush, os->bgcolour, os->fgcolour);
 }
 
 /* Process a polygon order */
@@ -562,6 +596,7 @@ process_polygon2(RDConnectionRef conn, RDStreamRef s, POLYGON2_ORDER * os, uint3
 	int index, data, next;
 	uint8 flags = 0;
 	RDPoint*points;
+	RDBrush brush;
 
 	if (present & 0x0001)
 		rdp_in_coord(s, &os->x, delta);
@@ -609,6 +644,8 @@ process_polygon2(RDConnectionRef conn, RDStreamRef s, POLYGON2_ORDER * os, uint3
 		return;
 	}
 
+	setup_brush(conn, &brush, &os->brush);
+	
 	points = (RDPoint*) xmalloc((os->npoints + 1) * sizeof(RDPoint));
 	memset(points, 0, (os->npoints + 1) * sizeof(RDPoint));
 
@@ -633,7 +670,7 @@ process_polygon2(RDConnectionRef conn, RDStreamRef s, POLYGON2_ORDER * os, uint3
 
 	if (next - 1 == os->npoints)
 		ui_polygon(conn, os->opcode - 1, os->fillmode, points, os->npoints + 1,
-			   &os->brush, os->bgcolour, os->fgcolour);
+			   &brush, os->bgcolour, os->fgcolour);
 	else
 		error("polygon2 parse error\n");
 
@@ -754,6 +791,8 @@ process_ellipse(RDConnectionRef conn, RDStreamRef s, ELLIPSE_ORDER * os, uint32 
 static void
 process_ellipse2(RDConnectionRef conn, RDStreamRef s, ELLIPSE2_ORDER * os, uint32 present, RD_BOOL delta)
 {
+	RDBrush brush;
+	
 	if (present & 0x0001)
 		rdp_in_coord(s, &os->left, delta);
 
@@ -784,8 +823,10 @@ process_ellipse2(RDConnectionRef conn, RDStreamRef s, ELLIPSE2_ORDER * os, uint3
 	       os->left, os->top, os->right, os->bottom, os->opcode, os->fillmode, os->brush.style,
 	       os->bgcolour, os->fgcolour));
 
+	setup_brush(conn, &brush, &os->brush);
+	
 	ui_ellipse(conn, os->opcode - 1, os->fillmode, os->left, os->top, os->right - os->left,
-		   os->bottom - os->top, &os->brush, os->bgcolour, os->fgcolour);
+		   os->bottom - os->top, &brush, os->bgcolour, os->fgcolour);
 }
 
 /* Process a text order */
@@ -793,6 +834,7 @@ static void
 process_text2(RDConnectionRef conn, RDStreamRef s, TEXT2_ORDER * os, uint32 present, RD_BOOL delta)
 {
 	int i;
+	RDBrush brush;
 
 	if (present & 0x000001)
 		in_uint8(s, os->font);
@@ -859,11 +901,13 @@ process_text2(RDConnectionRef conn, RDStreamRef s, TEXT2_ORDER * os, uint32 pres
 
 	DEBUG(("\n"));
 
+	setup_brush(conn, &brush, &os->brush);
+	
 	ui_draw_text(conn, os->font, os->flags, os->opcode - 1, os->mixmode, os->x, os->y,
 		     os->clipleft, os->cliptop, os->clipright - os->clipleft,
 		     os->clipbottom - os->cliptop, os->boxleft, os->boxtop,
 		     os->boxright - os->boxleft, os->boxbottom - os->boxtop,
-		     &os->brush, os->bgcolour, os->fgcolour, os->text, os->length);
+		     &brush, os->bgcolour, os->fgcolour, os->text, os->length);
 }
 
 /* Process a raw bitmap cache order */
@@ -1100,6 +1144,109 @@ process_fontcache(RDConnectionRef conn, RDStreamRef s)
 	}
 }
 
+static void
+process_compressed_8x8_brush_data(uint8 * in, uint8 * out, int Bpp)
+{
+	int x, y, pal_index, in_index, shift, do2, i;
+	uint8 *pal;
+	
+	in_index = 0;
+	pal = in + 16;
+	/* read it bottom up */
+	for (y = 7; y >= 0; y--)
+	{
+		/* 2 bytes per row */
+		x = 0;
+		for (do2 = 0; do2 < 2; do2++)
+		{
+			/* 4 pixels per byte */
+			shift = 6;
+			while (shift >= 0)
+			{
+				pal_index = (in[in_index] >> shift) & 3;
+				/* size of palette entries depends on Bpp */
+				for (i = 0; i < Bpp; i++)
+				{
+					out[(y * 8 + x) * Bpp + i] = pal[pal_index * Bpp + i];
+				}
+				x++;
+				shift -= 2;
+			}
+			in_index++;
+		}
+	}
+}
+
+/* Process a brush cache order */
+static void
+process_brushcache(RDConnectionRef conn, RDStreamRef s, uint16 flags)
+{
+	RDBrushData brush_data;
+	uint8 cache_idx, colour_code, width, height, size, type;
+	uint8 *comp_brush;
+	int index;
+	int Bpp;
+	
+	in_uint8(s, cache_idx);
+	in_uint8(s, colour_code);
+	in_uint8(s, width);
+	in_uint8(s, height);
+	in_uint8(s, type);	/* type, 0x8x = cached */
+	in_uint8(s, size);
+	
+	DEBUG(("BRUSHCACHE(idx=%d,dp=%d,wd=%d,ht=%d,sz=%d)\n", cache_idx, depth,
+	       width, height, size));
+	
+	if ((width == 8) && (height == 8))
+	{
+		if (colour_code == 1)
+		{
+			brush_data.colour_code = 1;
+			brush_data.data_size = 8;
+			brush_data.data = xmalloc(8);
+			if (size == 8)
+			{
+				/* read it bottom up */
+				for (index = 7; index >= 0; index--)
+				{
+					in_uint8(s, brush_data.data[index]);
+				}
+			}
+			else
+			{
+				warning("incompatible brush, colour_code %d size %d\n", colour_code,
+						size);
+			}
+			cache_put_brush_data(conn, 1, cache_idx, &brush_data);
+		}
+		else if ((colour_code >= 3) && (colour_code <= 6))
+		{
+			Bpp = colour_code - 2;
+			brush_data.colour_code = colour_code;
+			brush_data.data_size = 8 * 8 * Bpp;
+			brush_data.data = xmalloc(8 * 8 * Bpp);
+			if (size == 16 + 4 * Bpp)
+			{
+				in_uint8p(s, comp_brush, 16 + 4 * Bpp);
+				process_compressed_8x8_brush_data(comp_brush, brush_data.data, Bpp);
+			}
+			else
+			{
+				in_uint8a(s, brush_data.data, 8 * 8 * Bpp);
+			}
+			cache_put_brush_data(conn, colour_code, cache_idx, &brush_data);
+		}
+		else
+		{
+			warning("incompatible brush, colour_code %d size %d\n", colour_code, size);
+		}
+	}
+	else
+	{
+		warning("incompatible brush, width height %d %d\n", width, height);
+ 	}
+}
+
 /* Process a secondary order */
 static void
 process_secondary_order(RDConnectionRef conn, RDStreamRef s)
@@ -1143,6 +1290,10 @@ process_secondary_order(RDConnectionRef conn, RDStreamRef s)
 		case RDP_ORDER_BMPCACHE2:
 			process_bmpcache2(conn, s, flags, True);	/* compressed */
 			break;
+			
+		case RDP_ORDER_BRUSHCACHE:
+			process_brushcache(conn, s, flags);
+ 			break;
 
 		default:
 			unimpl("secondary order %d\n", type);
