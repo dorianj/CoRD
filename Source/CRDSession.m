@@ -141,6 +141,7 @@
 	newSession->windowDrags = windowDrags;
 	newSession->windowAnimation = windowAnimation;
 	newSession->themes = themes;
+	newSession->fontSmoothing = fontSmoothing;
 	newSession->consoleSession = consoleSession;
 	newSession->fullscreen = fullscreen;
 	newSession->screenDepth = screenDepth;
@@ -257,6 +258,9 @@
 	
 	if (!windowAnimation)
 		performanceFlags |= RDP5_NO_MENUANIMATIONS;
+	
+	if (fontSmoothing)
+		performanceFlags |= RDP5_FONT_SMOOTHING;  
 	
 	conn->rdp5PerformanceFlags = performanceFlags;
 	
@@ -540,6 +544,7 @@
 	write_int(@"disable full window drag", !windowDrags);
 	write_int(@"disable menu anims", !windowAnimation);
 	write_int(@"disable themes", !themes);
+	write_int(@"disable font smoothing", !fontSmoothing);
 	write_int(@"audiomode", forwardAudio);
 	write_int(@"desktopwidth", screenWidth);
 	write_int(@"desktopheight", screenHeight);
@@ -1019,6 +1024,8 @@
 			windowAnimation = !numVal;
 		else if ([name isEqualToString:@"disable themes"])
 			themes = !numVal;
+		else if ([name isEqualToString:@"disable font smoothing"])
+			fontSmoothing = !numVal;
 		else if ([name isEqualToString:@"audiomode"])
 			forwardAudio = numVal;
 		else if ([name isEqualToString:@"desktopwidth"]) 

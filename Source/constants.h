@@ -301,6 +301,7 @@ enum RDP_INPUT_DEVICE
 #define RDP5_NO_THEMING        0x08
 #define RDP5_NO_CURSOR_SHADOW  0x20
 #define RDP5_NO_CURSORSETTINGS 0x40	/* disables cursor blinking */
+#define RDP5_FONT_SMOOTHING    0x80 /* enables ClearType */
 
 /* compression types */
 #define RDP_MPPC_BIG        0x01

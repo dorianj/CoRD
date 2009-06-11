@@ -1784,14 +1784,15 @@
 		return;
 		
 	// Checkboxes
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)	forKey:@"windowDrags"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)		forKey:@"drawDesktop"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)	forKey:@"windowAnimation"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)		forKey:@"themes"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)		forKey:@"savePassword"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)		forKey:@"forwardDisks"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)	forKey:@"forwardPrinters"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)	forKey:@"consoleSession"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)		forKey:@"windowDrags"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)			forKey:@"drawDesktop"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)		forKey:@"windowAnimation"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)			forKey:@"themes"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableFontSmoothing)	forKey:@"fontSmoothing"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)			forKey:@"savePassword"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)			forKey:@"forwardDisks"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)		forKey:@"forwardPrinters"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)		forKey:@"consoleSession"];
 	
 	// Text fields
 	[inst setValue:[gui_label stringValue]		forKey:@"label"];
@@ -1855,14 +1856,15 @@
 	}
 		
 	// All checkboxes 
-	[gui_displayDragging    setState:BUTTON_STATE_FOR_KEY(@"windowDrags")];
-	[gui_drawDesktop        setState:BUTTON_STATE_FOR_KEY(@"drawDesktop")];
-	[gui_enableAnimations   setState:BUTTON_STATE_FOR_KEY(@"windowAnimation")];
-	[gui_enableThemes       setState:BUTTON_STATE_FOR_KEY(@"themes")];
-	[gui_savePassword       setState:BUTTON_STATE_FOR_KEY(@"savePassword")];
-	[gui_forwardDisks       setState:BUTTON_STATE_FOR_KEY(@"forwardDisks")];
-	[gui_forwardPrinters    setState:BUTTON_STATE_FOR_KEY(@"forwardPrinters")];
-	[gui_consoleSession     setState:BUTTON_STATE_FOR_KEY(@"consoleSession")];
+	[gui_displayDragging     setState:BUTTON_STATE_FOR_KEY(@"windowDrags")];
+	[gui_drawDesktop         setState:BUTTON_STATE_FOR_KEY(@"drawDesktop")];
+	[gui_enableAnimations    setState:BUTTON_STATE_FOR_KEY(@"windowAnimation")];
+	[gui_enableThemes        setState:BUTTON_STATE_FOR_KEY(@"themes")];
+	[gui_enableFontSmoothing setState:BUTTON_STATE_FOR_KEY(@"fontSmoothing")];
+	[gui_savePassword        setState:BUTTON_STATE_FOR_KEY(@"savePassword")];
+	[gui_forwardDisks        setState:BUTTON_STATE_FOR_KEY(@"forwardDisks")];
+	[gui_forwardPrinters     setState:BUTTON_STATE_FOR_KEY(@"forwardPrinters")];
+	[gui_consoleSession      setState:BUTTON_STATE_FOR_KEY(@"consoleSession")];
 	
 	// Most of the text fields
 	[gui_label    setStringValue:[newSettings valueForKey:@"label"]];

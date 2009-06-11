@@ -30,7 +30,7 @@
 	// Inspector
 	IBOutlet NSWindow *gui_inspector;
 	IBOutlet NSTextField *gui_label, *gui_host, *gui_username, *gui_password, *gui_domain;
-    IBOutlet NSButton *gui_savePassword, *gui_consoleSession, *gui_forwardDisks, *gui_forwardPrinters, *gui_displayDragging, *gui_drawDesktop, *gui_enableAnimations, *gui_enableThemes;
+    IBOutlet NSButton *gui_savePassword, *gui_consoleSession, *gui_forwardDisks, *gui_forwardPrinters, *gui_displayDragging, *gui_drawDesktop, *gui_enableAnimations, *gui_enableThemes, *gui_enableFontSmoothing;
 
     IBOutlet NSPopUpButton *gui_screenResolution, *gui_colorCount, *gui_hotkey;
 	IBOutlet NSBox *gui_performanceOptions;
