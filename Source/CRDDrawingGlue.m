@@ -224,6 +224,21 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 			o += bytespp;
 		}
 	}
+	/* TODO: Check if 32bpp copy is correct.
+	   I couldn't trigger a desksave on 32bpp capable server (Vista). ::atmosfear */
+	else if (conn->serverBpp == 32)
+	{
+		while (i++ < len)
+		{
+			o[3] = p[0];
+			o[2] = p[1];
+			o[1] = p[2];
+			o[0] = p[3];
+			
+			p += 4;
+			o += bytespp;
+		}
+	}
 	else // 24
 	{
 		while (i++ < len)

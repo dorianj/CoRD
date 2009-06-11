@@ -395,7 +395,7 @@ sec_out_mcs_data(RDConnectionRef conn, RDStreamRef s)
 	out_uint32_le(s, 0x61637544);	/* OEM ID: "Duca", as in Ducati. */
 	out_uint16_be(s, ((length - 14) | 0x8000));	/* remaining length */
 
-	/* Client information */
+	/* Client information - MS-RDPBCGR.pdf page 32-37 */
 	out_uint16_le(s, SEC_TAG_CLI_INFO);
 	out_uint16_le(s, 212);	/* length */
 	out_uint16_le(s, conn->useRdp5 ? 4 : 1);	/* RDP version. 1 == RDP4, 4 == RDP5. */
@@ -421,11 +421,11 @@ sec_out_mcs_data(RDConnectionRef conn, RDStreamRef s)
 	out_uint16_le(s, 1);
 
 	out_uint32(s, 0);
-	out_uint8(s, conn->serverBpp);
-	out_uint16_le(s, 0x0700);
-	out_uint8(s, 0);
-	out_uint32_le(s, 1);
-	out_uint8s(s, 64);	/* End of client info */
+	out_uint16_le(s, conn->serverBpp == 32 ? 24 : conn->serverBpp); /* field limited to 24bpp */
+	out_uint16_le(s, 0x000F); /* supported color depths = 24bpp | 16bpp | 15bpp | 32bpp */ 
+	out_uint16_le(s, 0x0000 | ((conn->serverBpp == 24 || conn->serverBpp == 32) ? 0x0002 : 0x0000)); /* early capability flags, signal 32bpp session (0x2) */
+	out_uint8s(s, 64);	/* digital client product id */
+	out_uint8s(s, 2); /* padding - End of client info */
 
 	out_uint16_le(s, SEC_TAG_CLI_4);
 	out_uint16_le(s, 12);
