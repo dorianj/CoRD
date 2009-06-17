@@ -1110,13 +1110,13 @@
 #pragma mark -
 #pragma mark NSTableDataSource methods
 
-- (int)numberOfRowsInTableView:(NSTableView *)aTableView
+- (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
 	return 2 + [connectedServers count] + [savedServers count];
 }
 
 - (id)tableView:(NSTableView *)aTableView
-		objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(int)rowIndex
+		objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	if (rowIndex == 0)
 		return [connectedServersLabel attributedStringValue];
@@ -1127,7 +1127,7 @@
 }
 
 - (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info
-		proposedRow:(int)row proposedDropOperation:(NSTableViewDropOperation)op
+		proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)op
 {	
 	NSPasteboard *pb = [info draggingPasteboard];
 	NSString *pbDataType = [gui_serverList pasteboardDataType:pb];
@@ -1147,7 +1147,7 @@
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id <NSDraggingInfo>)info
-		row:(int)row dropOperation:(NSTableViewDropOperation)operation
+		row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
 {
 	NSPasteboard *pb = [info draggingPasteboard];
 	NSString *pbDataType = [gui_serverList pasteboardDataType:pb];
@@ -1266,12 +1266,12 @@
 	
 }
 
-- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(int)rowIndex
+- (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
 {
 	return (rowIndex >= 1) && (rowIndex != [connectedServers count] + 1);
 }
 
-- (float)tableView:(NSTableView *)tableView heightOfRow:(int)row
+- (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {	
 	if (!row || row == [connectedServers count] + 1)
 		return [connectedServersLabel cellSize].height;

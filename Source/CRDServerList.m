@@ -106,7 +106,7 @@
 	[self unlockFocus];
 }
 
-- (void)drawRow:(int)rowIndex clipRect:(NSRect)clipRect
+- (void)drawRow:(NSInteger)rowIndex clipRect:(NSRect)clipRect
 {
 	// Lightly highlight the visible server if not selected
 	if ([[self delegate] tableView:self objectValueForTableColumn:nil row:rowIndex] == [g_appController viewedServer]
@@ -143,7 +143,7 @@
 		[[NSNotificationCenter defaultCenter] postNotificationName:NSTableViewSelectionDidChangeNotification object:self];	
 }
 
-- (void)deselectRow:(int)rowIndex
+- (void)deselectRow:(NSInteger)rowIndex
 {
 	[self deselectAll:nil];
 }
@@ -153,12 +153,12 @@
 	[self selectRow:-1];
 }
 
-- (BOOL)isRowSelected:(int)rowIndex
+- (BOOL)isRowSelected:(NSInteger)rowIndex
 {
 	return rowIndex == selectedRow;
 }
 
-- (int)selectedRow
+- (NSInteger)selectedRow
 {
 	return selectedRow;
 }
@@ -168,7 +168,7 @@
 	return [NSIndexSet indexSetWithIndex:selectedRow];
 }
 
-- (int)numberOfSelectedRows
+- (NSInteger)numberOfSelectedRows
 {
 	return ([self selectedRow] == -1) ? 0 : 1;
 }
@@ -292,7 +292,7 @@
 	[super rightMouseDown:ev];
 }
 
-- (NSRect)rectOfRow:(int)rowIndex
+- (NSRect)rectOfRow:(NSInteger)rowIndex
 {
 	NSRect realRect = [super rectOfRow:rowIndex];
 	
@@ -409,9 +409,9 @@
 	[super draggedImage:anImage endedAt:aPoint operation:operation];
 }
 
-- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal
+- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)flag;
 {
-	return isLocal ? NSDragOperationMove : NSDragOperationCopy;
+	return flag ? NSDragOperationMove : NSDragOperationCopy;
 }
 
 #pragma mark -

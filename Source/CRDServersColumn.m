@@ -19,7 +19,7 @@
 
 @implementation CRDServersColumn
 
-- (id)dataCellForRow:(int)row
+- (id)dataCellForRow:(NSInteger)row
 {
 	id delegate = [[self tableView] delegate];
 	
