@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NewConnections</key>
+	<dict>
+		<key>colorDepth</key>
+		<string>Thousands</string>
+		<key>consoleConnection</key>
+		<false/>
+		<key>displayWindowContents</key>
+		<false/>
+		<key>drawDesktopBackground</key>
+		<false/>
+		<key>forwardDisks</key>
+		<false/>
+		<key>forwardPrinters</key>
+		<false/>
+		<key>screenDimensions</key>
+		<string>1024x640</string>
+		<key>useWindowsThemes</key>
+		<false/>
+	</dict>
 	<key>show_drawer</key>
 	<true/>
 	<key>preferred_drawer_side</key>
@@ -10,23 +29,36 @@
 	<integer>200</integer>
 	<key>windowed_mode</key>
 	<integer>0</integer>
+	<key>storedResolutions</key>
+	<array>
+		<string>2560x1600</string>
+		<string>2400x1500</string>
+		<string>1920x1200</string>
+		<string>1920x1080</string>
+		<string>1680x1050</string>
+		<string>1600x1200</string>
+		<string>1440x900</string>
+		<string>1280x1024</string>
+		<string>1280x800</string>
+		<string>1154x864</string>
+		<string>1024x768</string>
+		<string>1024x640</string>
+		<string>800x600</string>
+		<string>600x480</string>
+	</array>
 	<key>SendWindowsKey</key>
 	<true/>
-	
 	<key>reconnectFullScreen</key>
 	<true/>
 	<key>ReconnectWhenLeavingFullScreen</key>
 	<false/>
-	
 	<key>resizeViewToFit</key>
 	<true/>
-	
 	<key>MinimalServerList</key>
 	<false/>
 	<key>IgnoreModifierKeyCustomizations</key>
 	<true/>
 	<key>SetServerKeyboardLayout</key>
 	<true/>
-	
 </dict>
 </plist>
