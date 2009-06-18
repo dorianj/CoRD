@@ -37,7 +37,7 @@
 	NSMutableDictionary *toolbarItems;
 }
 
--(void) mapTabsToToolbar;
+-(void) buildToolbar;
 -(IBAction)	changePanes: (id)sender;
 -(IBAction) toggleAdvanced: (id)sender;
 

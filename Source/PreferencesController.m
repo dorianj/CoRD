@@ -48,11 +48,11 @@
 	[advancedView setWantsLayer:YES];
 
 	// Init Toolbar & Set Initial Pane
-	[self mapTabsToToolbar];
+	[self buildToolbar];
 	[self changePanes:nil];
 }
 
--(void) mapTabsToToolbar
+-(void) buildToolbar
 {
 	//Define Toolbar Items
 	[toolbarItems removeAllObjects];
