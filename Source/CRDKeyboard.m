@@ -223,7 +223,7 @@ static NSDictionary *windowsKeymapTable = nil;
 - (BOOL)readKeymap
 {
 	NSString *filePath = [[NSBundle mainBundle] pathForResource:@"keymap" ofType:@"txt"];
-	NSArray *fileLines = [[NSString stringWithContentsOfFile:filePath] componentsSeparatedByString:@"\n"];
+	NSArray *fileLines = [[NSString stringWithContentsOfFile:filePath encoding:NSUTF8StringEncoding error:NULL] componentsSeparatedByString:@"\n"];
 		
 	NSCharacterSet *whiteAndHashSet  = [NSCharacterSet characterSetWithCharactersInString:@" \t#"];
 	NSScanner *scanner;
@@ -289,7 +289,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	{
 		NSMutableDictionary *dict = [[NSMutableDictionary dictionaryWithCapacity:30] retain];
 		NSString *filename = [[NSBundle mainBundle] pathForResource:@"windows_keymap_table" ofType:@"txt"];
-		NSArray *lines = [[NSString stringWithContentsOfFile:filename] componentsSeparatedByString:@"\n"];
+		NSArray *lines = [[NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:NULL] componentsSeparatedByString:@"\n"];
 		NSScanner *scanner;
 		NSString *n;
 		unsigned i;

@@ -9,11 +9,11 @@
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
 			<integer value="81"/>
-			<integer value="2049"/>
-			<integer value="741"/>
-			<integer value="2423"/>
 			<integer value="1926"/>
+			<integer value="741"/>
 			<integer value="795"/>
+			<integer value="2049"/>
+			<integer value="2423"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -852,7 +852,7 @@
 									<object class="NSTableView" id="1012152972">
 										<reference key="NSNextResponder" ref="847650902"/>
 										<int key="NSvFlags">4352</int>
-										<string key="NSFrameSize">{196, 342}</string>
+										<string key="NSFrameSize">{196, 344}</string>
 										<reference key="NSSuperview" ref="847650902"/>
 										<bool key="NSEnabled">YES</bool>
 										<object class="_NSCornerView" key="NSCornerView">
@@ -944,7 +944,7 @@
 										<bool key="NSAllowsTypeSelect">YES</bool>
 									</object>
 								</object>
-								<string key="NSFrame">{{1, 1}, {196, 342}}</string>
+								<string key="NSFrame">{{1, 1}, {196, 344}}</string>
 								<reference key="NSSuperview" ref="859458178"/>
 								<reference key="NSNextKeyView" ref="1012152972"/>
 								<reference key="NSDocView" ref="1012152972"/>
@@ -971,7 +971,7 @@
 								<double key="NSPercent">9.234694e-01</double>
 							</object>
 						</object>
-						<string key="NSFrame">{{0, 34}, {198, 344}}</string>
+						<string key="NSFrame">{{0, 34}, {198, 346}}</string>
 						<reference key="NSSuperview" ref="398528258"/>
 						<reference key="NSNextKeyView" ref="847650902"/>
 						<int key="NSsFlags">530</int>
@@ -1057,7 +1057,7 @@
 					<object class="NSSearchField" id="394904043">
 						<reference key="NSNextResponder" ref="398528258"/>
 						<int key="NSvFlags">266</int>
-						<string key="NSFrame">{{6, 380}, {186, 22}}</string>
+						<string key="NSFrame">{{4, 385}, {189, 22}}</string>
 						<reference key="NSSuperview" ref="398528258"/>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSSearchFieldCell" key="NSCell" id="529917578">
@@ -2253,10 +2253,6 @@
 				<string key="NSMaxSize">{3.40282e+38, 3.40282e+38}</string>
 			</object>
 			<object class="NSUserDefaultsController" id="775100995">
-				<object class="NSMutableArray" key="NSDeclaredKeys">
-					<bool key="EncodedWithXMLCoder">YES</bool>
-					<string>CRDFontSmoothForNewConns</string>
-				</object>
 				<bool key="NSSharedInstance">YES</bool>
 			</object>
 			<object class="NSMenu" id="519276852">
@@ -7719,8 +7715,8 @@
 					<reference ref="5"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
-					<string>{{682, 652}, {356, 320}}</string>
-					<string>{{682, 652}, {356, 320}}</string>
+					<string>{{413, 842}, {356, 320}}</string>
+					<string>{{413, 842}, {356, 320}}</string>
 					<reference ref="5"/>
 					<reference ref="5"/>
 					<reference ref="5"/>
@@ -8245,13 +8241,24 @@
 				<object class="IBPartialClassDescription">
 					<string key="className">SUUpdater</string>
 					<string key="superclassName">NSObject</string>
+					<object class="IBClassDescriptionSource" key="sourceIdentifier">
+						<string key="majorKey">IBUserSource</string>
+						<string key="minorKey"/>
+					</object>
+				</object>
+			</object>
+			<object class="NSMutableArray" key="referencedPartialClassDescriptionsV3.1+">
+				<bool key="EncodedWithXMLCoder">YES</bool>
+				<object class="IBPartialClassDescription">
+					<string key="className">SUUpdater</string>
+					<string key="superclassName">NSObject</string>
 					<object class="NSMutableDictionary" key="actions">
 						<string key="NS.key.0">checkForUpdates:</string>
 						<string key="NS.object.0">id</string>
 					</object>
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBUserSource</string>
-						<string key="minorKey"/>
+						<string key="majorKey">IBDocumentRelativeSource</string>
+						<string key="minorKey">../../Source/Sparkle.framework/Headers/SUUpdater.h</string>
 					</object>
 				</object>
 			</object>

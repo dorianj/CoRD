@@ -29,7 +29,7 @@
   va_start(ap,format);
   file = [[NSString alloc] initWithBytes: sourceFile length: strlen(sourceFile) encoding: NSUTF8StringEncoding];
 
-  function = [NSString stringWithCString: functionName];
+  function = [NSString stringWithCString:functionName encoding:NSUTF8StringEncoding];
   print = [[NSString alloc] initWithFormat: format arguments: ap];
   va_end(ap);
   NSLog(@"%@:%d %@; %@", [file lastPathComponent], lineNumber, function, print);
