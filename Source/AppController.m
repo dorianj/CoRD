@@ -904,7 +904,7 @@
 	if (!selectedServer)
 		return;
 	
-	int serverIndex;
+	NSUInteger serverIndex;
 	
 	if ( (serverIndex = [savedServers indexOfObject:selectedServer]) == NSNotFound)
 		serverIndex = [savedServers count]-1;
@@ -1164,7 +1164,7 @@
 		NSArray *rdpFiles = CRDFilterFilesByType(files, [NSArray arrayWithObject:@"rdp"]);
 		
 		CRDSession *inst;
-		int insertIndex = [savedServers indexOfObject:[self serverInstanceForRow:row]];
+		NSUInteger insertIndex = [savedServers indexOfObject:[self serverInstanceForRow:row]];
 		
 		if (insertIndex == NSNotFound)
 			insertIndex = [savedServers count];
@@ -1229,7 +1229,7 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	int selectedRow = [gui_serverList selectedRow];
+	NSInteger selectedRow = [gui_serverList selectedRow];
 	CRDSession *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
 	
 	[self validateControls];
@@ -1450,9 +1450,9 @@
 - (void)holdSavedServer:(int)row
 {
 	CRDSession *inst = [self serverInstanceForRow:row];
-	int index = [savedServers indexOfObjectIdenticalTo:inst];
+	NSUInteger index = [savedServers indexOfObjectIdenticalTo:inst];
 	
-	if ( (inst == nil) || (index == NSNotFound) )
+	if (!inst || (index == NSNotFound))
 		return;
 	
 	dumpedInstanceWasSelected = [self selectedServer] == inst;
@@ -1513,7 +1513,7 @@
 	int port;
 	
 
-	unsigned int ampersandLocation = [url rangeOfString:@"@"].location;
+	NSUInteger ampersandLocation = [url rangeOfString:@"@"].location;
 	if (ampersandLocation != NSNotFound)
 	{
 		NSScanner *scanner = [NSScanner scannerWithString:[cleanURL substringToIndex:ampersandLocation]];

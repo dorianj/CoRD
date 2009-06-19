@@ -23,6 +23,8 @@
 #import <Cocoa/Cocoa.h>
 #import "rdesktop.h"
 #import "CRDAdditions.h"
+#import "ZNLog.h"
+
 
 @class AppController;
 
@@ -78,7 +80,7 @@ void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
 NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action);
 void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
-NSNumber *CRDGetNumberForColorsText(NSString * colorsText);
+NSNumber *CRDNumberForColorsText(NSString * colorsText);
 
 // Convenience macros
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]

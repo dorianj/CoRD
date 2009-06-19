@@ -16,7 +16,6 @@
 */
 
 #import <Cocoa/Cocoa.h>
-#import "ZNLog.h"
 
 
 @interface PreferencesController : NSObject {

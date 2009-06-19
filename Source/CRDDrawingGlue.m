@@ -276,11 +276,6 @@ void ui_desktop_restore(RDConnectionRef conn, uint32 offset, int x, int y, int w
 	
 	[[b image] setFlipped:NO];
 	[v focusBackingStore];
-	//[[[b image] TIFFRepresentation] writeToFile:@"/users/dorian/desktop/debug.tif" atomically:YES];
-	//[[[NSImage alloc] initByReferencingFile:@"/users/dorian/desktop/debug.tif"] drawInRect:r fromRect:NSMakeRect(0,0,w,h) operation:NSCompositeCopy fraction:1.0];
-	//[[NSColor colorWithDeviceRed:128/255.0 green:128/255.0 blue:128/255.0 alpha:1.0] set];
-	//NSRectFill(r);
-	// xxx debug
 	[b drawInRect:r fromRect:NSMakeRect(0,0,w,h) operation:NSCompositeCopy];
 	[v releaseBackingStore];
 	

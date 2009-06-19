@@ -21,15 +21,16 @@
 
 @implementation PreferencesController
 
--(id) init
+- (id) init
 {
-	if( ( self = [super init] ) )
-	{
-		toolbarItems = [[NSMutableDictionary alloc] init];
-	}
+	if (![super init])
+		return nil;
+		
+	toolbarItems = [[NSMutableDictionary alloc] init];
 	
 	return self;
 }
+
 
 -(void)	dealloc
 {
@@ -40,7 +41,6 @@
 
 - (void)awakeFromNib
 {
-
 	//Turn Core Animation On For All Views
 	[[preferencesWindow contentView] setWantsLayer:YES];
 	[generalView setWantsLayer:YES];
@@ -54,28 +54,21 @@
 
 -(void) buildToolbar
 {
-	//Define Toolbar Items
 	[toolbarItems removeAllObjects];
 	[toolbarItems setObject:@"General" forKey:@"General"];
 	[toolbarItems setObject:@"Connections" forKey:@"Connections"];
 	[toolbarItems setObject:@"Advanced" forKey:@"Advanced"];
 	
-    // Get the Existing Toolbar (if there is one) 
 	prefsToolbar = [preferencesWindow toolbar];
 	
-	// Check for the Existing Toolbar, Create one if it doesn't exist
-	if( prefsToolbar == nil )
-	{
+	if (prefsToolbar == nil)
 		prefsToolbar = [[NSToolbar alloc] initWithIdentifier: @"CoRDPrefsToolbar"];
-	}
 
-	// Set various Toolbar Settings
     [prefsToolbar setAllowsUserCustomization: NO];
     [prefsToolbar setAutosavesConfiguration: NO];
     [prefsToolbar setDisplayMode: NSToolbarDisplayModeIconAndLabel];
     [prefsToolbar setDelegate: self];
 
-    // Attach the toolbar to the document window 
     [preferencesWindow setToolbar: prefsToolbar];
 	[preferencesWindow setShowsToolbarButton:NO];
 }
@@ -88,22 +81,16 @@
 	NSString *paneLabel = [sender label];
 	
 	if ([paneLabel isEqualToString:@"General"])
-	{
 		newPane = generalView;
-	}
 	else if ([paneLabel isEqualToString:@"Connections"])
-	{
 		newPane = connectionView;
-	}
 	else if ([paneLabel isEqualToString:@"Advanced"])
-	{
 		newPane = advancedView;
-	} else {
-		//ZNLog(@"No Sender, Selecting General");
+	else
 		newPane = generalView;
-	}
 	
-	if ( (newPane == nil) || (currentPane == newPane) ) return;
+	if ( (newPane == nil) || (currentPane == newPane) )
+		return;
 	
 	
 	NSView *tempView = [[NSView alloc] initWithFrame:[[preferencesWindow contentView] frame]];
@@ -137,16 +124,15 @@
 
 -(IBAction) toggleAdvanced: (id)sender
 {
-
 }
 
 
 #pragma mark -
 #pragma mark NSToolbar Delegate Methods
--(NSToolbarItem *) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *)itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted
+-(NSToolbarItem*) toolbar: (NSToolbar *)toolbar itemForItemIdentifier: (NSString *)itemIdent willBeInsertedIntoToolbar:(BOOL) willBeInserted
 {
-	NSToolbarItem   *toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
-    NSString*		itemLabel;
+	NSToolbarItem* toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier: itemIdent] autorelease];
+    NSString* itemLabel;
 
     if ( (itemLabel = [toolbarItems objectForKey:itemIdent]) != nil )
 	{
@@ -156,17 +142,11 @@
 		// These aren't localized (yet)
 		[toolbarItem setToolTip: itemLabel];
 		if ([[toolbarItem label] isEqualToString:@"General"])
-		{
 			[toolbarItem setImage: [NSImage imageNamed:NSImageNamePreferencesGeneral]];
-		} 
 		else if ([[toolbarItem label] isEqualToString:@"Connections"])
-		{
 			[toolbarItem setImage:[NSImage imageNamed:@"Windowed.png"]];
-		} 
 		else if ([[toolbarItem label] isEqualToString:@"Advanced"])
-		{
 			[toolbarItem setImage:[NSImage imageNamed:NSImageNameAdvanced]];;
-		}
 		
 		[toolbarItem setTarget: self];
 		[toolbarItem setAction: @selector(changePanes:)];

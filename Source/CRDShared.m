@@ -312,22 +312,15 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 	conn->updateEntireScreen = 0;
 }
 
-NSNumber * CRDGetNumberForColorsText(NSString *colorsText)
+NSNumber * CRDNumberForColorsText(NSString *colorsText)
 {
+	// this should be replaced with a static NSDictionary * if it is to be used often
 	if ([colorsText isEqualToString:@"256 Colors"])
-	{
 		return [NSNumber numberWithInt:8];
-	}
 	else if ([colorsText isEqualToString:@"Thousands"])
-	{
 		return [NSNumber numberWithInt:16];
-	}
 	else if ([colorsText isEqualToString:@"Millions"])
-	{
 		return [NSNumber numberWithInt:32];
-	}
 	else
-	{
 		return [NSNumber numberWithInt:16];
-	}
 }

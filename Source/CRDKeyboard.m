@@ -283,7 +283,7 @@ static NSDictionary *windowsKeymapTable = nil;
 // This method isn't fully re-entrant but shouldn't be a problem in practice
 + (unsigned)windowsKeymapForMacKeymap:(NSString *)keymapName
 {
-	//ZNLog(@"%@", keymapName);
+	DEBUG_KEYBOARD((@"Loading windows keymap for %@", keymapName));
 	// Load 'OSX keymap name' --> 'Windows keymap number' lookup table if it isn't already loaded
 	if (windowsKeymapTable == nil)
 	{
@@ -308,7 +308,6 @@ static NSDictionary *windowsKeymapTable = nil;
 			{
 				[dict setObject:[NSNumber numberWithUnsignedInt:i] forKey:n];
 			}
-			//ZNLog(n);
 		}
 		windowsKeymapTable = dict;
 	}

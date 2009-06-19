@@ -23,7 +23,6 @@
 #import "CRDServerCell.h"
 #import "AppController.h"
 #import "keychain.h"
-#import "ZNLog.h"
 
 @interface CRDSession (Private)
 - (BOOL)readFileAtPath:(NSString *)path;
@@ -283,14 +282,9 @@
 
 	// Set remote keymap to match local OS X input type
 	if (CRDPreferenceIsEnabled(CRDSetServerKeyboardLayout))
-	{
 		conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
-		//ZNLog(@"Keyboard Layout: %@", [CRDKeyboard currentKeymapName]);
-	}
 	else
-	{
 		conn->keyboardLayout = 0;
-	}
 	
 	if (forwardDisks)
 	{
@@ -314,13 +308,10 @@
 	
 
 	if (forwardPrinters)
-	{
 		printer_enum_devices(conn);
-	}
 	
 	if (USE_SOUND_FORWARDING)
 	{
-		
 	}
 	
 	
