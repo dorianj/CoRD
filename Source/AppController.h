@@ -30,8 +30,8 @@
 	// Inspector
 	IBOutlet NSWindow *gui_inspector;
 	IBOutlet NSTextField *gui_label, *gui_host, *gui_username, *gui_password, *gui_domain;
+	IBOutlet NSSearchField *gui_searchField;
     IBOutlet NSButton *gui_savePassword, *gui_consoleSession, *gui_forwardDisks, *gui_forwardPrinters, *gui_displayDragging, *gui_drawDesktop, *gui_enableAnimations, *gui_enableThemes, *gui_enableFontSmoothing;
-
     IBOutlet NSPopUpButton *gui_screenResolution, *gui_colorCount, *gui_hotkey;
 	IBOutlet NSBox *gui_performanceOptions;
     CRDSession *inspectedServer;
@@ -40,8 +40,7 @@
 	IBOutlet NSDrawer *gui_serversDrawer;
 	IBOutlet CRDServerList *gui_serverList;
 	IBOutlet NSButton *gui_connectButton, *gui_inspectorButton, *gui_addNewButton;
-	CRDLabelCell *connectedServersLabel;
-	CRDLabelCell *savedServersLabel;
+	CRDLabelCell *connectedServersLabel, *savedServersLabel, *filteredServersLabel;
 	
 	// Unified window
 	IBOutlet NSWindow *gui_unifiedWindow;
@@ -63,7 +62,7 @@
 	IBOutlet NSMenu *gui_serversMenu;
 	
 	// Active sessions and disconnected saved servers
-	NSMutableArray *connectedServers, *savedServers;
+	NSMutableArray *connectedServers, *savedServers, *filteredServers;
 	
 	// Support for server dragging
 	CRDSession *dumpedInstance;
@@ -104,10 +103,11 @@
 - (IBAction)doNothing:(id)sender;
 - (IBAction)duplicateSelectedServer:(id)sender;
 - (IBAction)jumpToQuickConnect:(id)sender;
+- (IBAction)filterServers:(id)sender;
+- (IBAction)jumpToFilter:(id)sender;
 
 // Other methods are in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;
-
 - (void)connectInstance:(CRDSession *)inst;
 - (void)disconnectInstance:(CRDSession *)inst;
 - (void)cancelConnectingInstance:(CRDSession *)inst;

@@ -56,6 +56,7 @@
 	- (void)sortSavedServersAlphabetically;
 	- (void)storeSavedServerPositions;
 	- (void)validateControls;
+	- (void)loadSavedServers;
 @end
 
 
@@ -79,11 +80,14 @@
 	
 	connectedServers = [[NSMutableArray alloc] init];
 	savedServers = [[NSMutableArray alloc] init];
+	filteredServers = [[NSMutableArray alloc] init];
 	
-	connectedServersLabel = [[CRDLabelCell alloc] 
-			initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
+	filteredServersLabel = [[CRDLabelCell alloc]
+							initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
+	connectedServersLabel = [[CRDLabelCell alloc]
+							initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
 	savedServersLabel = [[CRDLabelCell alloc]
-			initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
+							initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
 
 	return self;
 }
@@ -91,9 +95,11 @@
 {
 	[connectedServers release];
 	[savedServers release];
+	[filteredServers release];
 	
 	[connectedServersLabel release];
 	[savedServersLabel release];
+	[filteredServersLabel release];
 	
 	[userDefaults release];
 	g_appController = nil;
@@ -167,23 +173,7 @@
 	
 	
 	// Load servers from the saved servers directory
-	CRDSession *savedSession;
-	NSArray *files = [[NSFileManager defaultManager] directoryContentsAtPath:[AppController savedServersPath]];
-	NSEnumerator *enumerator = [files objectEnumerator];
-	id filename;
-	while ( (filename = [enumerator nextObject]) )
-	{
-		if ([[filename pathExtension] isEqualToString:@"rdp"])
-		{
-			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
-			if (savedSession != nil)
-				[self addSavedServer:savedSession];
-			else
-				NSLog(@"RDP file '%@' failed to load!", filename);
-				
-			[savedSession release];
-		}
-	}
+	[self loadSavedServers];
 	
 	[gui_serverList deselectAll:nil];
 	[self sortSavedServersByStoredListPosition];
@@ -916,6 +906,45 @@
 	[gui_serverList noteNumberOfRowsChanged];
 }
 
+- (IBAction)filterServers:(id)sender
+{
+	NSString *searchString = [gui_searchField stringValue];
+
+	if ( (searchString == nil ) || ( [searchString isEqualToString:@""] ) )
+	{
+		[filteredServers removeAllObjects];
+		[self listUpdated];
+	}
+	else
+	{
+		[filteredServers removeAllObjects];
+		NSEnumerator *enumerator = [savedServers objectEnumerator];
+		CRDSession *inst;
+		
+		while ( (inst = [enumerator nextObject]) )
+		{
+			if ( [[[inst label] lowercaseString] isLike:[NSString stringWithFormat:@"*%@*", ([searchString lowercaseString])]]  ) 
+			{
+				[filteredServers addObject:inst];
+				[self listUpdated];
+			}
+		}		
+	}
+	
+	// If we only find one server, select it
+	if ( [filteredServers count] == 1 )
+		[gui_serverList selectRow:1];
+	
+}
+
+- (IBAction)jumpToFilter:(id)sender
+{
+	if (![[gui_searchField window] isKeyWindow])
+		[[gui_searchField window] makeKeyAndOrderFront:[gui_searchField window]];
+	
+	if (![gui_searchField currentEditor] && [gui_searchField window])
+		[[gui_searchField window] makeFirstResponder:gui_searchField];
+}
 
 #pragma mark -
 #pragma mark Toolbar methods
@@ -1112,18 +1141,31 @@
 
 - (NSInteger)numberOfRowsInTableView:(NSTableView *)aTableView
 {
-	return 2 + [connectedServers count] + [savedServers count];
+	if ( [filteredServers count] > 0 )
+		return 1 + [filteredServers count];
+	else
+		return 2 + [connectedServers count] + [savedServers count];		
 }
 
 - (id)tableView:(NSTableView *)aTableView
 		objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
-	if (rowIndex == 0)
-		return [connectedServersLabel attributedStringValue];
-	else if (rowIndex == [connectedServers count] + 1)
-		return [savedServersLabel attributedStringValue];
+	if ( [filteredServers count] > 0 )
+	{
+		if (rowIndex == 0)
+			return [filteredServersLabel attributedStringValue];
+		else
+			return [self serverInstanceForRow:rowIndex]; 
+	}
 	else
-		return [self serverInstanceForRow:rowIndex]; 
+	{
+		if (rowIndex == 0)
+			return [connectedServersLabel attributedStringValue];
+		else if (rowIndex == [connectedServers count] + 1)
+			return [savedServersLabel attributedStringValue];
+		else
+			return [self serverInstanceForRow:rowIndex]; 		
+	}
 }
 
 - (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info
@@ -1216,12 +1258,18 @@
 
 - (BOOL)tableView:(NSTableView *)aTableView canDragRow:(unsigned)rowIndex
 {	
-	return [savedServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
+	if ( [filteredServers count] > 0 )
+		return [filteredServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
+	else
+		return [savedServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(unsigned)rowIndex
 {
-	return rowIndex >= 2 + [connectedServers count];
+	if ( [filteredServers count] > 0 )
+		return NO;
+	else
+		return rowIndex >= 2 + [connectedServers count];
 }
 
 
@@ -1268,11 +1316,16 @@
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
 {
-	return (rowIndex >= 1) && (rowIndex != [connectedServers count] + 1);
+	if ( [filteredServers count] > 0 )
+		return (rowIndex >= 1) && (rowIndex != [filteredServers count] + 1);
+	else
+		return (rowIndex >= 1) && (rowIndex != [connectedServers count] + 1);
 }
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {	
+	if ( [filteredServers count] > 0 && ((!row) || (row == [filteredServers count] + 1)) )
+		return [filteredServersLabel cellSize].height;
 	if (!row || row == [connectedServers count] + 1)
 		return [connectedServersLabel cellSize].height;
 	else
@@ -1281,12 +1334,22 @@
 
 - (id) tableColumn:(NSTableColumn *)column inTableView:(NSTableView *)tableView dataCellForRow:(int)row
 {
-	if (row == 0)
-		return connectedServersLabel;
-	else if (row == [connectedServers count] + 1)
-		return savedServersLabel;
-	else 
-		return [[self serverInstanceForRow:row] cellRepresentation];
+	if ( [filteredServers count] > 0 )
+	{
+		if (row == 0)
+			return filteredServersLabel;
+		else
+			return [[self serverInstanceForRow:row] cellRepresentation];
+	}
+	else
+	{
+		if (row == 0)
+			return connectedServersLabel;
+		else if (row == [connectedServers count] + 1)
+			return savedServersLabel;
+		else 
+			return [[self serverInstanceForRow:row] cellRepresentation];
+	}
 }
 
 #pragma mark Other table view related
@@ -1493,12 +1556,26 @@
 {
 	int connectedCount = [connectedServers count];
 	int savedCount = [savedServers count];
-	if ( (row <= 0) || (row == 1+connectedCount) || (row > 1 + connectedCount + savedCount) )
-		return nil;
-	else if (row <= connectedCount)
-		return [connectedServers objectAtIndex:row-1];
-	else 
-		return [savedServers objectAtIndex:row - connectedCount - 2];
+	int filteredCount = [filteredServers count];
+	
+	if ( filteredCount > 0 )
+	{
+		if ( (row <= 0) || (row > 1 + filteredCount) )
+			return nil;
+		else if (row <= filteredCount)
+			return [filteredServers objectAtIndex:(row-1)];
+		else
+			return nil;
+	}
+	else
+	{
+		if ( (row <= 0) || (row == 1+connectedCount) || (row > 1 + connectedCount + savedCount) )
+			return nil;
+		else if (row <= connectedCount)
+			return [connectedServers objectAtIndex:row-1];
+		else 
+			return [savedServers objectAtIndex:row - connectedCount - 2];		
+	}
 }
 
 - (void)openUrl:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
@@ -2164,6 +2241,27 @@
 
 #pragma mark -
 #pragma mark Managing saved servers
+
+- (void)loadSavedServers
+{
+	CRDSession *savedSession;
+	NSArray *files = [[NSFileManager defaultManager] directoryContentsAtPath:[AppController savedServersPath]];
+	NSEnumerator *enumerator = [files objectEnumerator];
+	id filename;
+	while ( (filename = [enumerator nextObject]) )
+	{
+		if ([[filename pathExtension] isEqualToString:@"rdp"])
+		{
+			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
+			if (savedSession != nil)
+				[self addSavedServer:savedSession];
+			else
+				NSLog(@"RDP file '%@' failed to load!", filename);
+			
+			[savedSession release];
+		}
+	}
+}
 
 - (void)addSavedServer:(CRDSession *)inst
 {

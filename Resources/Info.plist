@@ -47,7 +47,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleIconFile</key>
-	<string>CoRD</string>
+	<string>rdesktop</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.sf.cord</string>
 	<key>CFBundlePackageType</key>
@@ -61,7 +61,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.5.0-svn</string>
 	<key>CFBundleVersion</key>
-	<string>284</string>
+	<string>287</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
