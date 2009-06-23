@@ -81,25 +81,25 @@ inline NSString * CRDJoinHostNameAndPort(NSString *host, int port)
 
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port)
 { 
-    if ([address characterAtIndex:0] == '[' && [address characterAtIndex:[address length] - 1] == ']')
-	{
-        address = [address substringWithRange:NSMakeRange( 1, [address length] - 2 )];
-        NSLog(@"%@", address);
-        *host = address;
-        *port = CRDDefaultPort;
-    }
-    else
-    {
-        NSScanner *scan = [NSScanner scannerWithString:address];
-        NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
-        [scan setCharactersToBeSkipped:colonSet];
-        
-        if (![scan scanUpToCharactersFromSet:colonSet intoString:host])
-            *host = @"";
-            
-        if (![scan scanInt:port])
+        if ([address characterAtIndex:[address length] - 1] == ']' && [address characterAtIndex:0] == '[')
+        {
+            address = [address substringWithRange:NSMakeRange( 1, [address length] - 2 )];
+            NSLog(@"%@", address);
+            *host = address;
             *port = CRDDefaultPort;
-    }
+        }
+        else
+        {
+            NSScanner *scan = [NSScanner scannerWithString:address];
+            NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
+            [scan setCharactersToBeSkipped:colonSet];
+            
+            if (![scan scanUpToCharactersFromSet:colonSet intoString:host])
+                *host = @"";
+                
+            if (![scan scanInt:port])
+                *port = CRDDefaultPort;
+        }
 }
 
 NSString * CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn)
