@@ -312,7 +312,8 @@ static void
 tcp_cfhost_lookup_finished(CFHostRef host, CFHostInfoType typeInfo, const CFStreamError *streamError, void *info)
 {
 	RDHostLookupInfo *lookupInfo = info;
-	
+    int err;
+    
 	// if this needs to be absolutely threadsafe, this next line should be moved to the bottom and code adjusted accordingly. This is called via the run loop on the connection thread (from tcp_connect) so it's not an issue
 	lookupInfo->finished = 1;
 	
@@ -324,11 +325,13 @@ tcp_cfhost_lookup_finished(CFHostRef host, CFHostInfoType typeInfo, const CFStre
 	
 	Boolean hasBeenResolved = False;
 	CFArrayRef addresses = CFHostGetAddressing(host, &hasBeenResolved);
-	
+	CFIndex count = CFArrayGetCount(addresses);
+    
 	if (!hasBeenResolved || !addresses)
 		return;
-		
-	char *ipaddr = calloc(1, 32);
+	
+	char *ipaddr = calloc(1, INET6_ADDRSTRLEN);
+    
 	for (int i = 0, len = CFArrayGetCount(addresses); i < len; i++)
 	{
 		struct sockaddr *addressInfo = (struct sockaddr *)CFDataGetBytePtr(CFArrayGetValueAtIndex(addresses, i));
@@ -338,8 +341,10 @@ tcp_cfhost_lookup_finished(CFHostRef host, CFHostInfoType typeInfo, const CFStre
 			
 		void *src_data = addressInfo->sa_data + ((addressInfo->sa_family == AF_INET6) ? 6 : 2);
 		
-		if (!inet_ntop(addressInfo->sa_family, src_data, ipaddr, 32))
-			continue;
+		err = getnameinfo(addressInfo, addressInfo->sa_len, ipaddr, INET6_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
+        if (err == 0) {
+            printf("%s\n", ipaddr);
+        }
 	}
 	
 	if (!strlen(ipaddr))
