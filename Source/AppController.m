@@ -1324,12 +1324,21 @@
 
 - (CGFloat)tableView:(NSTableView *)tableView heightOfRow:(NSInteger)row
 {	
-	if ( [filteredServers count] > 0 && ((!row) || (row == [filteredServers count] + 1)) )
-		return [filteredServersLabel cellSize].height;
-	if (!row || row == [connectedServers count] + 1)
-		return [connectedServersLabel cellSize].height;
+	if ( [filteredServers count] > 0 )
+	{
+		if ( ( !row ) || ( row == [filteredServers count] + 1 ) )
+			return [filteredServersLabel cellSize].height;
+		else
+			return [[[self serverInstanceForRow:row] cellRepresentation] cellSize].height;			
+	}
 	else
-		return [[[self serverInstanceForRow:row] cellRepresentation] cellSize].height;
+	{
+		if (!row || row == [connectedServers count] + 1)
+			return [connectedServersLabel cellSize].height;
+		else
+			return [[[self serverInstanceForRow:row] cellRepresentation] cellSize].height;
+
+	}
 }
 
 - (id) tableColumn:(NSTableColumn *)column inTableView:(NSTableView *)tableView dataCellForRow:(int)row
