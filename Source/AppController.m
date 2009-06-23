@@ -179,6 +179,43 @@
 	[self sortSavedServersByStoredListPosition];
 	[self storeSavedServerPositions];
 	
+	if ([gui_searchField respondsToSelector: @selector(setRecentSearches:)])
+	{
+		NSMenu* searchMenu = [[[NSMenu alloc] initWithTitle:@"CoRD Servers Search Menu"] autorelease];
+		[searchMenu setAutoenablesItems:YES];
+		
+		NSMenuItem* recentsTitleItem = [[NSMenuItem alloc] initWithTitle:@"Recent Searches" action:nil keyEquivalent:@""];
+		// tag this menu item so NSSearchField can use it and respond to it appropriately
+		[recentsTitleItem setTag:NSSearchFieldRecentsTitleMenuItemTag];
+		[searchMenu addItem:recentsTitleItem];
+		[recentsTitleItem release];
+		
+		NSMenuItem* norecentsTitleItem = [[NSMenuItem alloc] initWithTitle:@"No recent searches" action:nil keyEquivalent:@""];
+		// tag this menu item so NSSearchField can use it and respond to it appropriately
+		[norecentsTitleItem setTag:NSSearchFieldNoRecentsMenuItemTag];
+		[searchMenu addItem:norecentsTitleItem];
+		[norecentsTitleItem release];
+		
+		NSMenuItem* recentsItem = [[NSMenuItem alloc] initWithTitle:@"Recents" action:nil keyEquivalent:@""];
+		// tag this menu item so NSSearchField can use it and respond to it appropriately
+		[recentsItem setTag:NSSearchFieldRecentsMenuItemTag];	
+		[searchMenu addItem:recentsItem];
+		[recentsItem release];
+		
+		NSMenuItem* separatorItem = (NSMenuItem*)[NSMenuItem separatorItem];
+		// tag this menu item so NSSearchField can use it, by hiding/show it appropriately:
+		[separatorItem setTag:NSSearchFieldRecentsTitleMenuItemTag];
+		[searchMenu addItem:separatorItem];
+		
+		NSMenuItem* clearItem = [[NSMenuItem alloc] initWithTitle:@"Clear" action:nil keyEquivalent:@""];
+		[clearItem setTag:NSSearchFieldClearRecentsMenuItemTag];	// tag this menu item so NSSearchField can use it
+		[searchMenu addItem:clearItem];
+		[clearItem release];
+		
+		id searchCell = [gui_searchField cell];
+		[searchCell setMaximumRecents:20];
+		[searchCell setSearchMenuTemplate:searchMenu];
+	}
 	
 	// Register for drag operations
 	NSArray *types = [NSArray arrayWithObjects:CRDRowIndexPboardType, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
