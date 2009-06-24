@@ -342,9 +342,7 @@ tcp_cfhost_lookup_finished(CFHostRef host, CFHostInfoType typeInfo, const CFStre
 		void *src_data = addressInfo->sa_data + ((addressInfo->sa_family == AF_INET6) ? 6 : 2);
 		
 		err = getnameinfo(addressInfo, addressInfo->sa_len, ipaddr, INET6_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
-        if (err == 0) {
-            printf("%s\n", ipaddr);
-        }
+        //Handle error?
 	}
 	
 	if (!strlen(ipaddr))
