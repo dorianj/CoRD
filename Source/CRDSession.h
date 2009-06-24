@@ -32,7 +32,8 @@
 	// User configurable RDP settings
 	NSString *label, *hostName, *username, *password, *domain;	
 	BOOL savePassword, forwardDisks, forwardPrinters, drawDesktop, windowDrags, windowAnimation, themes, fontSmoothing, consoleSession, fullscreen;
-	int startDisplay, forwardAudio, screenDepth, screenWidth, screenHeight, port, hotkey;
+	int startDisplay, forwardAudio, port;
+	NSInteger hotkey, screenDepth, screenWidth, screenHeight;
 	NSMutableDictionary *otherAttributes;
 	
 	// Working between main thread and connection thread
@@ -44,7 +45,7 @@
 
 	// General information about instance
 	BOOL temporary, modified, temporarilyFullscreen, _usesScrollers;
-	int preferredRowIndex;
+	NSInteger preferredRowIndex;
 	volatile CRDConnectionStatus connectionStatus;
 	
 	// Represented file
@@ -54,7 +55,7 @@
 	// Clipboard
 	BOOL isClipboardOwner;
 	NSString *remoteClipboard;
-	int clipboardChangeCount;
+	NSInteger clipboardChangeCount;
 
 	// UI elements
 	CRDSessionView *view;
@@ -62,6 +63,18 @@
 	CRDServerCell *cellRepresentation;
 	NSWindow *window;
 }
+
+@property (copy) NSString *hostName, *label;
+@property (readonly) RDConnectionRef conn;
+@property (readonly) CRDSessionView *view;
+@property (assign) BOOL temporary;
+@property (readonly) BOOL modified;
+@property (readonly) CRDServerCell *cellRepresentation;
+@property (readonly) volatile CRDConnectionStatus status;
+@property (readonly) NSWindow *window;
+@property (assign) NSInteger hotkey;
+
+
 
 - (id)initWithPath:(NSString *)path;
 
@@ -99,20 +112,10 @@
 
 
 // Accessors
-- (RDConnectionRef)conn;
-- (NSString *)label;
-- (CRDSessionView *)view;
 - (NSView *)tabItemView;
 - (NSString *)filename;
 - (void)setFilename:(NSString *)path;
-- (BOOL)temporary;
 - (void)setTemporary:(BOOL)temp;
-- (CRDServerCell *)cellRepresentation;
-- (BOOL)modified;
-- (CRDConnectionStatus)status;
-- (NSWindow *)window;
-- (int)hotkey;
-
 - (void)setHostName:(NSString *)newHost;
 - (void)setUsername:(NSString *)s;
 - (void)setPassword:(NSString *)pass;

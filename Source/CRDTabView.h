@@ -37,15 +37,15 @@
 - (IBAction)selectNextItem:(id)sender;
 - (IBAction)selectPreviousItem:(id)sender;
 - (IBAction)selectItem:(id)item;
-- (IBAction)selectItemAtIndex:(unsigned)index;
+- (IBAction)selectItemAtIndex:(NSUInteger)index;
 
-- (id)itemAtIndex:(unsigned)index;
+- (id)itemAtIndex:(NSUInteger)index;
 - (id)selectedItem;
 
-- (unsigned)indexOfItem:(id)item;
-- (unsigned)indexOfSelectedItem;
+- (NSUInteger)indexOfItem:(id)item;
+- (NSUInteger)indexOfSelectedItem;
 
-- (unsigned)numberOfItems;
+- (NSUInteger)numberOfItems;
 
 - (void)addItem:(id)item;
 - (void)removeItem:(id)item;

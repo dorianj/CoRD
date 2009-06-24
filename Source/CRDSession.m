@@ -809,20 +809,7 @@
 #pragma mark -
 #pragma mark Accessors
 
-- (RDConnectionRef)conn
-{
-	return conn;
-}
-
-- (NSString *)label
-{
-	return label;
-}
-
-- (CRDSessionView *)view
-{
-	return view;
-}
+@synthesize hostName, label, conn, view, temporary, modified, cellRepresentation, status=connectionStatus, window, hotkey;
 
 - (NSView *)tabItemView
 {
@@ -845,11 +832,6 @@
 	[self didChangeValueForKey:@"rdpFilename"];
 }
 
-- (BOOL)temporary
-{
-	return temporary;
-}
-
 - (void)setTemporary:(BOOL)temp
 {
 	if (temp == temporary)
@@ -861,30 +843,7 @@
 	[self updateCellData];
 }
 
-- (CRDServerCell *)cellRepresentation
-{
-	return cellRepresentation;
-}
 
-- (BOOL)modified
-{
-	return modified;
-}
-
-- (CRDConnectionStatus)status
-{
-	return connectionStatus;
-}
-
-- (NSWindow *)window
-{
-	return window;
-}
-
-- (int)hotkey
-{
-	return hotkey;
-}
 // KVC/KVO compliant setters that are used to propagate changes to the keychain item
 
 - (void)setLabel:(NSString *)newLabel
@@ -999,7 +958,7 @@
 			
 		
 		if ([type isEqualToString:@"i"])
-			numVal = [value intValue];
+			numVal = [value integerValue];
 		
 		if ([name isEqualToString:@"connect to console"])
 			consoleSession = numVal;
@@ -1090,16 +1049,16 @@
 #pragma mark -
 #pragma mark Connection status
 
-- (void)setStatus:(CRDConnectionStatus)status
+- (void)setStatus:(CRDConnectionStatus)newStatus
 {
-	[cellRepresentation setStatus:status];
-	connectionStatus = status;
+	[cellRepresentation setStatus:newStatus];
+	connectionStatus = newStatus;
 }
 
 // Status needs to be set on the main thread when setting it to Connecting so the the CRDServerCell will create its progress indicator timer in the main run loop
-- (void)setStatusAsNumber:(NSNumber *)status
+- (void)setStatusAsNumber:(NSNumber *)newStatus
 {
-	[self setStatus:[status intValue]];
+	[self setStatus:[newStatus intValue]];
 }
 
 

@@ -61,8 +61,10 @@
 	// Menu
 	IBOutlet NSMenu *gui_serversMenu;
 	
-	// Active sessions and disconnected saved servers
+	// Active sessions, disconnected saved servers, and current search results
 	NSMutableArray *connectedServers, *savedServers, *filteredServers;
+	
+	BOOL _isFilteringSavedServers;
 	
 	// Support for server dragging
 	CRDSession *dumpedInstance;
@@ -123,8 +125,8 @@
 - (NSWindow *)unifiedWindow;
 - (CRDFullScreenWindow *)fullScreenWindow;
 
-- (void)holdSavedServer:(int)row;
-- (void)reinsertHeldSavedServer:(int)intoRow;
+- (void)holdSavedServer:(NSInteger)row;
+- (void)reinsertHeldSavedServer:(NSInteger)intoRow;
 
 
 @end

@@ -140,12 +140,12 @@
 	[self selectItemAtIndex:([self indexOfSelectedItem]-1)];
 }
 
-- (IBAction)selectItemAtIndex:(unsigned)index
+- (IBAction)selectItemAtIndex:(NSUInteger)index
 {
 	[self selectItem:[self itemAtIndex:index]];
 }
 
-- (id)itemAtIndex:(unsigned)index
+- (id)itemAtIndex:(NSUInteger)index
 {
 	if (index >= [self numberOfItems])
 		return nil;
@@ -158,17 +158,17 @@
 	return _selectedItem;
 }
 
-- (unsigned)indexOfItem:(id)item
+- (NSUInteger)indexOfItem:(id)item
 {
 	return [_items indexOfObject:item];
 }
 
-- (unsigned)indexOfSelectedItem
+- (NSUInteger)indexOfSelectedItem
 {
 	return [self indexOfItem:_selectedItem];
 }
 
-- (unsigned)numberOfItems
+- (NSUInteger)numberOfItems
 {
 	return [_items count];
 }

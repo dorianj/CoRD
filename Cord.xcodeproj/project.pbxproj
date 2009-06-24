@@ -9,9 +9,9 @@
 /* Begin PBXBuildFile section */
 		37344C210FB141D200DFD6E6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37344C200FB141D200DFD6E6 /* Security.framework */; };
 		37344CBB0FB1743200DFD6E6 /* rdpsnd_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 37344CBA0FB1743200DFD6E6 /* rdpsnd_dsp.c */; };
-		379156CE0FF20F7600AA8CC4 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 379156CD0FF20F7600AA8CC4 /* Sparkle.framework */; };
-		379156DA0FF20F9600AA8CC4 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 379156CD0FF20F7600AA8CC4 /* Sparkle.framework */; };
 		37D191820FCE69E8008797FD /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37D191810FCE69E8008797FD /* Carbon.framework */; };
+		9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
+		9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
 		9816F5320BEE938600E439BE /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 9816F5220BEE938600E439BE /* CoRD Help */; };
 		98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98369D370C050B3D009BF52F /* OpenGL.framework */; };
@@ -74,6 +74,7 @@
 		98E972DC0BD9DA820041110D /* Windowed.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CD0BD9DA820041110D /* Windowed.png */; };
 		98E972DD0BD9DA820041110D /* windows_keymap_table.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CE0BD9DA820041110D /* windows_keymap_table.txt */; };
 		98E972E70BD9DA9F0041110D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98E972E30BD9DA9F0041110D /* InfoPlist.strings */; };
+		98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		999A05360FAAF42C00FA512C /* ZNLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A05350FAAF42C00FA512C /* ZNLog.m */; };
@@ -86,7 +87,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				379156DA0FF20F9600AA8CC4 /* Sparkle.framework in CopyFiles */,
+				9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,7 +101,6 @@
 		37344CB90FB1743200DFD6E6 /* rdpsnd_dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rdpsnd_dsp.h; path = Source/rdpsnd_dsp.h; sourceTree = "<group>"; };
 		37344CBA0FB1743200DFD6E6 /* rdpsnd_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rdpsnd_dsp.c; path = Source/rdpsnd_dsp.c; sourceTree = "<group>"; };
 		37344CD30FB177AB00DFD6E6 /* rdpsnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rdpsnd.h; path = Source/rdpsnd.h; sourceTree = "<group>"; };
-		379156CD0FF20F7600AA8CC4 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Source/Sparkle.framework; sourceTree = "<group>"; };
 		37D191810FCE69E8008797FD /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
@@ -180,6 +180,7 @@
 		98E9725B0BD9D9DF0041110D /* serial.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = serial.c; path = Source/serial.c; sourceTree = "<group>"; };
 		98E9725C0BD9D9DF0041110D /* tcp.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = tcp.m; path = Source/tcp.m; sourceTree = "<group>"; };
 		98E9725D0BD9D9DF0041110D /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = types.h; path = Source/types.h; sourceTree = "<group>"; };
+		98E972B90BD9DA720041110D /* Sparkle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Sparkle.framework; path = Source/Sparkle.framework; sourceTree = "<group>"; };
 		98E972BD0BD9DA820041110D /* Arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Arrow.png; path = Resources/Arrow.png; sourceTree = "<group>"; };
 		98E972BE0BD9DA820041110D /* Clock icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Clock icon.png"; path = "Resources/Clock icon.png"; sourceTree = "<group>"; };
 		98E972BF0BD9DA820041110D /* Disconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Disconnect.png; path = Resources/Disconnect.png; sourceTree = "<group>"; };
@@ -207,11 +208,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */,
 				9881A4290BE9439D0073D189 /* Cocoa.framework in Frameworks */,
+				9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */,
 				98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */,
 				37344C210FB141D200DFD6E6 /* Security.framework in Frameworks */,
 				37D191820FCE69E8008797FD /* Carbon.framework in Frameworks */,
-				379156CE0FF20F7600AA8CC4 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -260,7 +262,7 @@
 		1058C7A2FEA54F0111CA2CBB /* Included Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				379156CD0FF20F7600AA8CC4 /* Sparkle.framework */,
+				98E972B90BD9DA720041110D /* Sparkle.framework */,
 			);
 			name = "Included Frameworks";
 			sourceTree = "<group>";
@@ -616,13 +618,11 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_4)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/Source\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				GCC_ALTIVEC_EXTENSIONS = NO;
 				GCC_CW_ASM_SYNTAX = NO;
 				GCC_C_LANGUAGE_STANDARD = c99;
@@ -664,6 +664,7 @@
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = Cord;
 				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				VALID_ARCHS = "i386 ppc ppc64 x86_64";
 				VERSIONING_SYSTEM = "";
 				WRAPPER_EXTENSION = app;
 				ZERO_LINK = NO;
@@ -673,10 +674,8 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1)";
+				ARCHS_STANDARD_32_64_BIT_PRE_XCODE_3_1 = "ppc i386 ppc64 x86_64";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEPLOYMENT_LOCATION = NO;
@@ -687,13 +686,11 @@
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_2)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_3)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_4)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_1 = "\"$(SRCROOT)\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_2 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_3 = "\"$(SRCROOT)/Source\"";
 				FRAMEWORK_SEARCH_PATHS_QUOTED_4 = "\"$(SRCROOT)/Source\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
 				GCC_ALTIVEC_EXTENSIONS = NO;
 				GCC_AUTO_VECTORIZATION = NO;
 				GCC_CW_ASM_SYNTAX = NO;
@@ -734,6 +731,7 @@
 				INSTALL_OWNER = "$(USER)";
 				INSTALL_PATH = "$(SYMROOT)/Deployment";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-fnested-functions";
 				OTHER_LDFLAGS = "-lcrypto";
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
