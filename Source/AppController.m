@@ -1,19 +1,19 @@
 /*	Copyright (c) 2007-2008 Dorian Johnson <info-2008@dorianjohnson.com>
-	
-	This file is part of CoRD.
-	CoRD is free software; you can redistribute it and/or modify it under the
-	terms of the GNU General Public License as published by the Free Software
-	Foundation; either version 2 of the License, or (at your option) any later
-	version.
-
-	CoRD is distributed in the hope that it will be useful, but WITHOUT ANY
-	WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-	FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-
-	You should have received a copy of the GNU General Public License along with
-	CoRD; if not, write to the Free Software Foundation, Inc., 51 Franklin St,
-	Fifth Floor, Boston, MA 02110-1301 USA
-*/
+ 
+ This file is part of CoRD.
+ CoRD is free software; you can redistribute it and/or modify it under the
+ terms of the GNU General Public License as published by the Free Software
+ Foundation; either version 2 of the License, or (at your option) any later
+ version.
+ 
+ CoRD is distributed in the hope that it will be useful, but WITHOUT ANY
+ WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License along with
+ CoRD; if not, write to the Free Software Foundation, Inc., 51 Franklin St,
+ Fifth Floor, Boston, MA 02110-1301 USA
+ */
 
 #import <Carbon/Carbon.h>
 
@@ -36,27 +36,27 @@
 #pragma mark -
 
 @interface AppController (Private)
-	- (void)listUpdated;
-	- (void)saveInspectedServer;
-	- (void)updateInstToMatchInspector:(CRDSession *)inst;
-	- (void)setInspectorSettings:(CRDSession *)newSettings;
-	- (void)completeConnection:(CRDSession *)inst;
-	- (void)connectAsync:(CRDSession *)inst;
-	- (void)autosizeUnifiedWindow;
-	- (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate;
-	- (void)setInspectorEnabled:(BOOL)enabled;
-	- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled;
-	- (void)createWindowForInstance:(CRDSession *)inst;
-	- (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
-	- (void)addSavedServer:(CRDSession *)inst;
-	- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index;
-	- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index select:(BOOL)select;
-	- (void)removeSavedServer:(CRDSession *)inst deleteFile:(BOOL)deleteFile;
-	- (void)sortSavedServersByStoredListPosition;
-	- (void)sortSavedServersAlphabetically;
-	- (void)storeSavedServerPositions;
-	- (void)validateControls;
-	- (void)loadSavedServers;
+- (void)listUpdated;
+- (void)saveInspectedServer;
+- (void)updateInstToMatchInspector:(CRDSession *)inst;
+- (void)setInspectorSettings:(CRDSession *)newSettings;
+- (void)completeConnection:(CRDSession *)inst;
+- (void)connectAsync:(CRDSession *)inst;
+- (void)autosizeUnifiedWindow;
+- (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate;
+- (void)setInspectorEnabled:(BOOL)enabled;
+- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled;
+- (void)createWindowForInstance:(CRDSession *)inst;
+- (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
+- (void)addSavedServer:(CRDSession *)inst;
+- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index;
+- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index select:(BOOL)select;
+- (void)removeSavedServer:(CRDSession *)inst deleteFile:(BOOL)deleteFile;
+- (void)sortSavedServersByStoredListPosition;
+- (void)sortSavedServersAlphabetically;
+- (void)storeSavedServerPositions;
+- (void)validateControls;
+- (void)loadSavedServers;
 @end
 
 
@@ -65,9 +65,10 @@
 
 + (void)initialize
 {
+    
 	[[NSUserDefaults standardUserDefaults] registerDefaults: [NSDictionary dictionaryWithContentsOfFile:
-		[[NSBundle mainBundle] pathForResource: @"Defaults" ofType: @"plist"]]];
-		
+                                                              [[NSBundle mainBundle] pathForResource: @"Defaults" ofType: @"plist"]]];
+    
 	//LSSetDefaultHandlerForURLScheme(@"rdp", 
 }
 
@@ -75,7 +76,7 @@
 {
 	if (![super init])
 		return nil;
-		
+    
 	userDefaults = [NSUserDefaults standardUserDefaults];
 	
 	connectedServers = [[NSMutableArray alloc] init];
@@ -85,12 +86,13 @@
 	filteredServersLabel = [[CRDLabelCell alloc]
 							initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
 	connectedServersLabel = [[CRDLabelCell alloc]
-							initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
+                             initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
 	savedServersLabel = [[CRDLabelCell alloc]
-							initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
-
+                         initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
+    
 	return self;
 }
+
 - (void) dealloc
 {
 	[connectedServers release];
@@ -109,13 +111,13 @@
 - (void)awakeFromNib
 {
 	g_appController = self;
-
+    
 	displayMode = CRDDisplayUnified;
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
 	windowCascadePoint = CRDWindowCascadeStart;
 	
-	
+    
 	// Create the toolbar 
 	NSToolbarItem *quickConnectItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECT] autorelease];
 	[quickConnectItem setView:gui_quickConnect];
@@ -126,33 +128,33 @@
 	[quickConnectItem setValue:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label") forKey:@"label"];
 	[quickConnectItem setToolTip:NSLocalizedString(@"Quick Connect Tooltip", @"Quick Connect toolbar item -> tooltip")];
 	
-
+    
 	toolbarItems = [[NSMutableDictionary alloc] init];
 	
 	[toolbarItems 
-		setObject:CRDMakeToolbarItem(TOOLBAR_DRAWER, 
-			NSLocalizedString(@"Servers", @"Hide/show drawer toolbar item -> label"),
-			NSLocalizedString(@"Toggle Servers Drawer", @"Hide/show drawer toolbar item -> tooltip"),
-			@selector(toggleDrawer:))
-		forKey:TOOLBAR_DRAWER];
+     setObject:CRDMakeToolbarItem(TOOLBAR_DRAWER, 
+                                  NSLocalizedString(@"Servers", @"Hide/show drawer toolbar item -> label"),
+                                  NSLocalizedString(@"Toggle Servers Drawer", @"Hide/show drawer toolbar item -> tooltip"),
+                                  @selector(toggleDrawer:))
+     forKey:TOOLBAR_DRAWER];
 	[toolbarItems 
-		setObject:CRDMakeToolbarItem(TOOLBAR_DISCONNECT,
-			NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> label"), 
-			NSLocalizedString(@"Close selected connection", @"Disconnect toolbar item -> tooltip"),
-			@selector(performStop:))
-		forKey:TOOLBAR_DISCONNECT];	
+     setObject:CRDMakeToolbarItem(TOOLBAR_DISCONNECT,
+                                  NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> label"), 
+                                  NSLocalizedString(@"Close selected connection", @"Disconnect toolbar item -> tooltip"),
+                                  @selector(performStop:))
+     forKey:TOOLBAR_DISCONNECT];	
 	[toolbarItems
-		setObject:CRDMakeToolbarItem(TOOLBAR_FULLSCREEN,
-			NSLocalizedString(@"Full Screen", @"Full Screen toolbar item -> label"),
-			NSLocalizedString(@"Enter fullscreen mode", @"Disconnect toolbar item -> tool tip"),
-			@selector(startFullscreen:))
-		forKey:TOOLBAR_FULLSCREEN];
+     setObject:CRDMakeToolbarItem(TOOLBAR_FULLSCREEN,
+                                  NSLocalizedString(@"Full Screen", @"Full Screen toolbar item -> label"),
+                                  NSLocalizedString(@"Enter fullscreen mode", @"Disconnect toolbar item -> tool tip"),
+                                  @selector(startFullscreen:))
+     forKey:TOOLBAR_FULLSCREEN];
 	[toolbarItems
-		setObject:CRDMakeToolbarItem(TOOLBAR_UNIFIED,
-			NSLocalizedString(@"Windowed", @"Display Mode toolbar item -> label"),
-			NSLocalizedString(@"Switch between unified and windowed mode", @"Display Mode toolbar item -> tool tip"),
-			@selector(performUnified:))
-		forKey:TOOLBAR_UNIFIED];
+     setObject:CRDMakeToolbarItem(TOOLBAR_UNIFIED,
+                                  NSLocalizedString(@"Windowed", @"Display Mode toolbar item -> label"),
+                                  NSLocalizedString(@"Switch between unified and windowed mode", @"Display Mode toolbar item -> tool tip"),
+                                  @selector(performUnified:))
+     forKey:TOOLBAR_UNIFIED];
 	
 	[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
 	
@@ -163,7 +165,7 @@
 	[gui_toolbar setAutosavesConfiguration:YES];
 	
 	[gui_unifiedWindow setToolbar:gui_toolbar];
-
+    
 	
 	// Assure that the app support directory exists
 	NSString *appSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
@@ -220,16 +222,16 @@
 	// Register for drag operations
 	NSArray *types = [NSArray arrayWithObjects:CRDRowIndexPboardType, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
 	[gui_serverList registerForDraggedTypes:types];
-
+    
 	// Custom interface settings not accessable from IB
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 	[gui_unifiedWindow setExcludedFromWindowsMenu:YES];
 	[gui_tabView setAnimatesWhenSwitchingItems:NO];
-
+    
 	// Load a few user defaults that need to be loaded before anything is displayed
 	displayMode = [[userDefaults objectForKey:CRDDefaultsDisplayMode] intValue];
-
+    
 	// Register for preferences KVO notification
 	[[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"MinimalServerList" options:NSKeyValueObservingOptionNew context:NULL];
 	
@@ -238,6 +240,11 @@
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
 	[self listUpdated];
+    
+    if([[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"])
+    {
+        [self parseCommandLine];
+    }
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
@@ -265,16 +272,16 @@
 	else if (action == @selector(toggleInspector:))
 	{
 		NSString *hideOrShow = [gui_inspector isVisible]
-				? NSLocalizedString(@"Hide Inspector", @"View menu -> Show Inspector")
-				: NSLocalizedString(@"Show Inspector", @"View menu -> Hide Inspector");
+        ? NSLocalizedString(@"Hide Inspector", @"View menu -> Show Inspector")
+        : NSLocalizedString(@"Show Inspector", @"View menu -> Hide Inspector");
 		[item setTitle:hideOrShow];
 		return inst != nil;
 	}
 	else if (action == @selector(toggleDrawer:))
 	{
 		NSString *hideOrShow = CRDDrawerIsVisible(gui_serversDrawer)
-				? NSLocalizedString(@"Hide Servers Drawer", @"View menu -> Show Servers Drawer")
-				: NSLocalizedString(@"Show Servers Drawer", @"View menu -> Hide Servers Drawer");
+        ? NSLocalizedString(@"Hide Servers Drawer", @"View menu -> Show Servers Drawer")
+        : NSLocalizedString(@"Show Servers Drawer", @"View menu -> Hide Servers Drawer");
 		[item setTitle:hideOrShow];
 	}
 	else if (action == @selector(keepSelectedServer:))
@@ -301,7 +308,7 @@
 	{
 		NSString *localizedDisconnect = NSLocalizedString(@"Disconnect", @"Servers menu -> Disconnect/connect item");
 		NSString *localizedConnect = NSLocalizedString(@"Connect", @"Servers menu -> Disconnect/connect item");
-	
+        
 		if (viewedInst != nil)
 			[item setTitle:localizedDisconnect];
 		else if (inst == nil)
@@ -331,15 +338,15 @@
 {
 	if (![gui_unifiedWindow isVisible])
 		[gui_unifiedWindow makeKeyAndOrderFront:nil];
-
+    
 	if (!CRDDrawerIsVisible(gui_serversDrawer))
 		[self toggleDrawer:nil visible:YES];
-		
+    
 	CRDSession *inst = [[[CRDSession alloc] init] autorelease];
 	
 	NSString *path = CRDFindAvailableFileName([AppController savedServersPath],
-			NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
-		
+                                              NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
+    
 	[inst setTemporary:NO];
 	[inst setFilename:path];
 	[inst setValue:[[path lastPathComponent] stringByDeletingPathExtension] forKey:@"label"];
@@ -363,12 +370,12 @@
 		return;
 	
 	NSAlert *alert = [NSAlert alertWithMessageText:
-				NSLocalizedString(@"Delete saved server", @"Delete server confirm alert -> Title")
-			defaultButton:NSLocalizedString(@"Delete", @"Delete server confirm alert -> Yes button") 
-			alternateButton:NSLocalizedString(@"Cancel", @"Delete server confirm alert -> Cancel button")
-			otherButton:nil
-			informativeTextWithFormat:NSLocalizedString(@"Really delete", @"Delete server confirm alert -> Detail text"),
-			[inst label]];
+                      NSLocalizedString(@"Delete saved server", @"Delete server confirm alert -> Title")
+                                     defaultButton:NSLocalizedString(@"Delete", @"Delete server confirm alert -> Yes button") 
+                                   alternateButton:NSLocalizedString(@"Cancel", @"Delete server confirm alert -> Cancel button")
+                                       otherButton:nil
+                         informativeTextWithFormat:NSLocalizedString(@"Really delete", @"Delete server confirm alert -> Detail text"),
+                      [inst label]];
 	[alert setAlertStyle:NSCriticalAlertStyle];
 	
 	if ([alert runModal] == NSAlertAlternateReturn)
@@ -376,7 +383,7 @@
 	
 	if ([inst status] != CRDConnectionClosed)
 		[self performStop:nil];
-		
+    
 	[gui_serverList deselectAll:self];
 	
 	[self removeSavedServer:inst deleteFile:YES];
@@ -392,7 +399,7 @@
 	
 	if (inst == nil)
 		return;
-		
+    
 	if ( ([inst status] == CRDConnectionConnected) && (displayMode == CRDDisplayWindowed) )
 	{
 		[[inst window] makeKeyAndOrderFront:self];
@@ -458,7 +465,7 @@
 		[gui_inspector makeKeyAndOrderFront:sender];
 	else
 		[gui_inspector close];	
-		
+    
 	[self validateControls];
 }
 
@@ -503,7 +510,7 @@
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
 		return;
-		
+    
 	[gui_serverList selectRow:(1 + [connectedServers indexOfObjectIdenticalTo:inst])];
 	[self autosizeUnifiedWindow];
 }
@@ -518,7 +525,7 @@
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
 		return;
-		
+    
 	[gui_serverList selectRow:(1 + [connectedServers indexOfObjectIdenticalTo:inst])];
 	[self autosizeUnifiedWindow];
 }
@@ -554,7 +561,7 @@
 	CRDSessionView *serverView = [inst view];
 	NSSize serverSize = [serverView bounds].size;	
 	NSRect winRect = [[NSScreen mainScreen] frame];
-
+    
 	// If needed, reconnect the instance so that it can fill the screen
 	if (CRDPreferenceIsEnabled(CRDPrefsReconnectIntoFullScreen) && ( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
 	{
@@ -577,7 +584,7 @@
 	
 	[[gui_tabView retain] autorelease];
 	
-
+    
 	// Force the unified window to maintain content by copying currently viewed server into an NSImageView and display it. see endFullscreen for details on why. xxx: doesn't do the right thing when scrollers are on (needs to copy full tabview, but cacheDisplayInRectAsImage'ing gui_tabView doesn't work since CRDSessionView is opengl
 	NSImageView *visibleSessionCacheImageView = nil;
 	if (![[inst valueForKey:@"usesScrollers"] boolValue])
@@ -597,12 +604,12 @@
 			float yScrollerAdjust = NSWidth([serverView bounds]) > NSWidth(visibleSessionRect) ? [NSScroller scrollerWidth] : 0.0f; 
 			[[serverView cacheDisplayInRectAsImage:(NSRect){NSZeroPoint, [serverView screenSize]}] drawInRect:(NSRect){{0, yScrollerAdjust}, drawnRect.size} fromRect:drawnRect operation:NSCompositeSourceOver fraction:1.0];
 		} [fullCapture unlockFocus];
-				
+        
 		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [[gui_unifiedWindow contentView] frame].size}] autorelease];
 		[visibleSessionCacheImageView setImage:fullCapture];
 		[visibleSessionCacheImageView setImageScaling:NSScaleNone];
 	}
-		
+    
 	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
 	[visibleSessionCacheImageView setFrame:CRDRectFromSize([[gui_unifiedWindow contentView] frame].size)];
 	
@@ -614,7 +621,7 @@
 	} NSEnableScreenUpdates();
 	
 	[gui_tabView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
-
+    
 	if (CRDPreferenceIsEnabled(CRDPrefsScaleSessions))
 	{
 		NSSize fullScreenWindowSize = [gui_fullScreenWindow frame].size, sessionSize = [serverView screenSize];
@@ -630,7 +637,7 @@
 	
 	NSEnableScreenUpdates(); // Disable may have been used for slightly deferred fullscreen (see completeConnection:)
 	[gui_fullScreenWindow startFullScreen];
-
+    
 	[gui_fullScreenWindow makeFirstResponder:serverView];
 	
 	[visibleSessionCacheImageView removeFromSuperview];
@@ -649,13 +656,13 @@
 	CRDSessionView *sessionView = [inst view];
 	
 	[gui_fullScreenWindow prepareForExit];
-
+    
 	// Misc preparation
 	[gui_tabView setAnimatesWhenSwitchingItems:NO];
 	displayMode = CRDDisplayUnified;
 	[self autosizeUnifiedWindowWithAnimation:NO];
 	
-
+    
 	// Force the full screen window to maintain content by copying currently viewed server into an NSImageView and display it. The OpenGL-drawing CRDSession doesn't play nicely with being moved between windows (it clears the fullscreen window as soon as it's removed by removeFromSuperviewWithoutNeedingDisplay). xxx: same scroller problem as startFullscreen
 	
 	NSImageView *visibleSessionCacheImageView = nil;
@@ -681,7 +688,7 @@
 		[visibleSessionCacheImageView setImage:fullCapture];
 		[visibleSessionCacheImageView setImageScaling:NSScaleNone];
 	}
-		
+    
 	
 	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
 	[visibleSessionCacheImageView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
@@ -704,7 +711,7 @@
 	
 	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
 		[self startWindowed:self];
-		
+    
 	// Animate the fullscreen window fading away, dispose of window
 	[gui_fullScreenWindow exitFullScreenWithAnimation:animate];
 	gui_fullScreenWindow = nil;
@@ -755,7 +762,7 @@
 		[gui_tabView removeItem:inst];
 		[self createWindowForInstance:inst];
 	}	
-		
+    
 	[self autosizeUnifiedWindow];
 }
 
@@ -763,7 +770,7 @@
 {
 	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
 		return;
-		
+    
 	displayMode = CRDDisplayUnified;
 	
 	if (![connectedServers count])
@@ -796,6 +803,39 @@
 	NSString *path = CRDFindAvailableFileName(desktopFolder, [[inst label] stringByAppendingString:NSLocalizedString(@" Screen Capture", @"File name for screen captures")], @".png");
 	
 	[[inst view] writeScreenCaptureToFile:path];
+}
+
+- (void)parseCommandLine
+{
+    NSString *hostname;
+    NSInteger port;
+    
+    hostname = [[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"]; 
+    port = [[NSUserDefaults standardUserDefaults] integerForKey:@"port"];
+    
+    [self performCommandLineConnect:[NSString stringWithFormat:@"%@:%d", hostname, port]];
+}
+
+- (void)performCommandLineConnect:(NSString *)host
+{
+	NSString *address = host, *hostname;
+	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] && NSShiftKeyMask;
+	int port;
+	
+	CRDSplitHostNameAndPort(address, &hostname, &port);
+	
+	CRDSession *newInst = [[[CRDSession alloc] init] autorelease];
+	
+	[newInst setValue:[NSNumber numberWithInt:16] forKey:@"screenDepth"];
+	[newInst setValue:hostname forKey:@"label"];
+	[newInst setValue:hostname forKey:@"hostName"];
+	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
+	[newInst setValue:[NSNumber numberWithBool:isConsoleSession] forKey:@"consoleSession"];
+	
+	[connectedServers addObject:newInst];
+	[gui_serverList deselectAll:self];
+	[self listUpdated];
+	[self connectInstance:newInst];
 }
 
 - (IBAction)performQuickConnect:(id)sender
@@ -839,7 +879,7 @@
 {
 	if (![[gui_quickConnect window] isKeyWindow])
 		[[gui_quickConnect window] makeKeyAndOrderFront:[gui_quickConnect window]];
-
+    
 	if (![gui_quickConnect currentEditor] && [gui_quickConnect window])
 		[[gui_quickConnect window] makeFirstResponder:gui_quickConnect];
 }
@@ -859,7 +899,7 @@
 	
 	// Select the Activated Server in the Server List...
 	[gui_serverList selectRow:([savedServers indexOfObject:inst] + 2 + [connectedServers count])];
-		
+    
 	if ([connectedServers indexOfObject:inst] != NSNotFound)
 	{
 		// connected server, switch to it
@@ -900,7 +940,7 @@
 	
 	if (inst == nil)
 		return;
-		
+    
 	NSSavePanel *savePanel = [NSSavePanel savePanel];
 	[savePanel setTitle:[NSLocalizedString(@"Save Server As", @"Save server dialog -> Title") stringByAppendingFormat:@" '%@'"]];
 	
@@ -908,7 +948,7 @@
 	[savePanel setCanSelectHiddenExtension:YES];
 	[savePanel setExtensionHidden:NO];
 	
-
+    
 	[savePanel beginSheetForDirectory:nil file:[[inst label] stringByAppendingPathExtension:@"rdp"] modalForWindow:gui_unifiedWindow modalDelegate:self didEndSelector:@selector(savePanelDidEnd:returnCode:contextInfo:) contextInfo:inst];
 }
 
@@ -921,7 +961,7 @@
 
 - (IBAction)doNothing:(id)sender
 {
-
+    
 }
 
 - (IBAction)duplicateSelectedServer:(id)sender
@@ -946,7 +986,7 @@
 - (IBAction)filterServers:(id)sender
 {
 	NSString *searchString = [gui_searchField stringValue];
-
+    
 	if ( (searchString == nil ) || ( [searchString isEqualToString:@""] ) )
 	{
 		[filteredServers removeAllObjects];
@@ -993,29 +1033,29 @@
 
 - (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)tb
 {
-		NSMutableArray *extras = [NSArray arrayWithObjects:
-				NSToolbarSeparatorItemIdentifier,
-				NSToolbarSpaceItemIdentifier,
-				NSToolbarFlexibleSpaceItemIdentifier, nil];
-		
-		NSArray *allowedItems = [toolbarItems allKeys];
-			
-		return [extras arrayByAddingObjectsFromArray:allowedItems];
+    NSMutableArray *extras = [NSArray arrayWithObjects:
+                              NSToolbarSeparatorItemIdentifier,
+                              NSToolbarSpaceItemIdentifier,
+                              NSToolbarFlexibleSpaceItemIdentifier, nil];
+    
+    NSArray *allowedItems = [toolbarItems allKeys];
+    
+    return [extras arrayByAddingObjectsFromArray:allowedItems];
 }
 
 - (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)tb
 {
 	NSMutableArray *defaultUnifiedItems = [NSArray arrayWithObjects:
-				TOOLBAR_DRAWER,
-				NSToolbarSeparatorItemIdentifier,
-				TOOLBAR_QUICKCONNECT,
-				NSToolbarFlexibleSpaceItemIdentifier,
-				TOOLBAR_FULLSCREEN,
-				TOOLBAR_UNIFIED, 
-				NSToolbarFlexibleSpaceItemIdentifier,
-				TOOLBAR_DISCONNECT,
-				nil];
-				
+                                           TOOLBAR_DRAWER,
+                                           NSToolbarSeparatorItemIdentifier,
+                                           TOOLBAR_QUICKCONNECT,
+                                           NSToolbarFlexibleSpaceItemIdentifier,
+                                           TOOLBAR_FULLSCREEN,
+                                           TOOLBAR_UNIFIED, 
+                                           NSToolbarFlexibleSpaceItemIdentifier,
+                                           TOOLBAR_DISCONNECT,
+                                           nil];
+    
 	if ( displayMode == CRDDisplayWindowed)
 		return defaultUnifiedItems;
 	else
@@ -1035,9 +1075,9 @@
 	{
 		NSString *label = (displayMode == CRDDisplayUnified) ? @"Windowed" : @"Unified";
 		NSString *localizedLabel = (displayMode == CRDDisplayUnified) 
-				? NSLocalizedString(@"Windowed", @"Display Mode toolbar item -> Windowed label")
-				: NSLocalizedString(@"Unified", @"Display Mode toolbar item -> Unified label");
-				
+        ? NSLocalizedString(@"Windowed", @"Display Mode toolbar item -> Windowed label")
+        : NSLocalizedString(@"Unified", @"Display Mode toolbar item -> Unified label");
+        
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
 		[toolbarItem setValue:localizedLabel forKey:@"label"];	
 	}
@@ -1045,13 +1085,13 @@
 	{
 		NSString *label = ([inst status] == CRDConnectionConnecting) ? @"Stop" : @"Disconnect";
 		NSString *localizedLabel = ([inst status] == CRDConnectionConnecting)
-				? NSLocalizedString(@"Stop", @"Disconnect toolbar item -> Stop label")
-				: NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> Disconnect label");
-				
+        ? NSLocalizedString(@"Stop", @"Disconnect toolbar item -> Stop label")
+        : NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> Disconnect label");
+        
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
 		[toolbarItem setValue:localizedLabel forKey:@"label"];
 		return ([inst status] == CRDConnectionConnecting) || 
-				( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
+        ( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
 	}
 	return YES;
 }
@@ -1138,12 +1178,12 @@
 {	
 	// Make sure the drawer is in the user-saved position. Do it here (not awakeFromNib) so that it displays nicely
 	[gui_serversDrawer setPreferredEdge:[userDefaults integerForKey:CRDDefaultsUnifiedDrawerSide]];
-
+    
 	float width = [userDefaults floatForKey:CRDDefaultsUnifiedDrawerWidth];
 	float height = [gui_serversDrawer contentSize].height;
 	if (width > 0)
 		[gui_serversDrawer setContentSize:NSMakeSize(width, height)];
-		
+    
 	if ([userDefaults boolForKey:CRDDefaultsUnifiedDrawerShown])
 		[gui_serversDrawer openOnEdge:[userDefaults integerForKey:CRDDefaultsUnifiedDrawerSide]];
 	
@@ -1166,11 +1206,11 @@
 	BOOL shouldForward = YES;
 	
 	shouldForward &= ([ev type] == NSKeyDown) || ([ev type] == NSKeyUp) || ([ev type] == NSFlagsChanged);
-			
+    
 	shouldForward &= ([viewedSessionWindow firstResponder] == viewedSessionView) && [viewedSessionWindow isKeyWindow] && ([viewedSessionWindow isMainWindow] || ([self displayMode] == CRDDisplayFullscreen));
 	
 	return shouldForward ? viewedSessionView : nil;
-
+    
 }
 
 #pragma mark -
@@ -1185,7 +1225,7 @@
 }
 
 - (id)tableView:(NSTableView *)aTableView
-		objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
+objectValueForTableColumn:(NSTableColumn *)aTableColumn row:(NSInteger)rowIndex
 {
 	if ( [filteredServers count] > 0 )
 	{
@@ -1206,7 +1246,7 @@
 }
 
 - (NSDragOperation)tableView:(NSTableView*)tv validateDrop:(id <NSDraggingInfo>)info
-		proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)op
+                 proposedRow:(NSInteger)row proposedDropOperation:(NSTableViewDropOperation)op
 {	
 	NSPasteboard *pb = [info draggingPasteboard];
 	NSString *pbDataType = [gui_serverList pasteboardDataType:pb];
@@ -1226,7 +1266,7 @@
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView acceptDrop:(id <NSDraggingInfo>)info
-		row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
+              row:(NSInteger)row dropOperation:(NSTableViewDropOperation)operation
 {
 	NSPasteboard *pb = [info draggingPasteboard];
 	NSString *pbDataType = [gui_serverList pasteboardDataType:pb];
@@ -1272,12 +1312,12 @@
 		[self reinsertHeldSavedServer:newRow];
 		return YES;
 	}
-
+    
 	return NO;
 }
 
 - (BOOL)tableView:(NSTableView *)aTableView writeRowsWithIndexes:(NSIndexSet *)rowIndexes
-		toPasteboard:(NSPasteboard*)pboard
+     toPasteboard:(NSPasteboard*)pboard
 {
 	CRDSession *inst = [self serverInstanceForRow:[rowIndexes firstIndex]];
 	
@@ -1289,7 +1329,7 @@
 	[pboard declareTypes:[NSArray arrayWithObjects:CRDRowIndexPboardType, NSFilenamesPboardType, nil] owner:nil];
 	[pboard setPropertyList:[NSArray arrayWithObject:[inst filename]] forType:NSFilenamesPboardType];
 	[pboard setString:[NSString stringWithFormat:@"%d", row] forType:CRDRowIndexPboardType];
-
+    
 	return YES;
 }
 
@@ -1326,15 +1366,15 @@
 		[self setInspectorSettings:nil];	
 		inspectedServer = nil;
 		[self setInspectorEnabled:NO];
-
+        
 		return;
 	} else {
 		if ([inspectedServer modified] && ![inspectedServer temporary] )
 			[inspectedServer flushChangesToFile];	
 	}
-
+    
 	[self setInspectorEnabled:YES];
-
+    
 	inspectedServer = inst;
 	[self setInspectorSettings:inst];
 	
@@ -1374,7 +1414,7 @@
 			return [connectedServersLabel cellSize].height;
 		else
 			return [[[self serverInstanceForRow:row] cellRepresentation] cellSize].height;
-
+        
 	}
 }
 
@@ -1414,7 +1454,7 @@
 	{
 		[self fieldEdited:nil];
 		[self saveInspectedServer];
-
+        
 		[self validateControls];
 		
 		if ( ([self viewedServer] == nil) && CRDDrawerIsVisible(gui_serversDrawer))
@@ -1467,7 +1507,7 @@
 	
 	if ([inst status] == CRDConnectionConnected)
 		[self disconnectInstance:inst];
-		
+    
 	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self withObject:inst];
 }
 
@@ -1476,20 +1516,20 @@
 {
 	if (!inst || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
 		return;
-		
+    
 	if (displayMode != CRDDisplayWindowed)
 		[gui_tabView removeItem:inst];
 	
 	if ([inst status] == CRDConnectionConnected)
 		[inst disconnect];
-		
+    
 	if ([[inst valueForKey:@"temporarilyFullscreen"] boolValue])
 	{
 		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"fullscreen"];
 		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"temporarilyFullscreen"];
 	}
 	
-
+    
 	[[inst retain] autorelease];
 	[connectedServers removeObject:inst];
 	
@@ -1510,7 +1550,7 @@
 		if (![inst filename])
 		{
 			NSString *path = CRDFindAvailableFileName([AppController savedServersPath], [inst label], @".rdp");
-
+            
 			[inst writeToFile:path atomically:YES updateFilenames:YES];
 		}
 		
@@ -1518,9 +1558,9 @@
 		int preferredRow = MIN([savedServers count], [[inst valueForKey:@"preferredRowIndex"] intValue]);
 		[self addSavedServer:inst atIndex:preferredRow select:YES];
 	}
-
+    
 	[self listUpdated];
-		
+    
 	if ((displayMode == CRDDisplayFullscreen) && ![gui_tabView numberOfItems])
 	{
 		[self autosizeUnifiedWindowWithAnimation:NO];
@@ -1635,7 +1675,7 @@
 	NSString *username = @"", *password = @"", *host;
 	int port;
 	
-
+    
 	NSUInteger ampersandLocation = [url rangeOfString:@"@"].location;
 	if (ampersandLocation != NSNotFound)
 	{
@@ -1664,7 +1704,7 @@
 	
 	
 	CRDSession *session = [[[CRDSession alloc] init] autorelease];
-
+    
 	[session setValue:host forKey:@"label"];
 	[session setValue:host forKey:@"hostName"];
 	[session setValue:username forKey:@"username"];
@@ -1703,10 +1743,10 @@
 	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
 	{
 		id selectedItem = [gui_tabView selectedItem];
-
+        
 		if (selectedItem == nil)
 			return nil;
-			
+        
 		NSEnumerator *enumerator = [connectedServers objectEnumerator];
 		id item;
 		
@@ -1758,13 +1798,13 @@
 	}
 	else if ([keyPath isEqualToString:CRDPrefsScaleSessions])
 	{
-	
-	
+        
+        
 	}
 	else if ([keyPath isEqualToString:CRDPrefsMinimalisticServerList])
 	{
 		[[NSNotificationCenter defaultCenter] postNotificationName:CRDMinimalViewDidChangeNotification object:nil];
-	
+        
 		[gui_serverList noteHeightOfRowsWithIndexesChanged:[NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [gui_serverList numberOfRows])]];
 	}
 }
@@ -1790,7 +1830,7 @@
 	NSEnumerator *hotkeyEnumerator;
 	NSArray *hotkeyList = [[gui_hotkey menu] itemArray];
 	NSMenuItem *hotkeyMenuItem;
-
+    
 	hotkeyEnumerator = [hotkeyList objectEnumerator];
 	
 	
@@ -1834,7 +1874,7 @@
 		[menuItem autorelease];
 		if ([inst hotkey] != (-1))
 			[[[gui_hotkey menu] itemAtIndex:[inst hotkey]] setEnabled:NO];
-
+        
 	}
 }
 
@@ -1881,7 +1921,7 @@
 				[(NSTextField *)view setTextColor:[NSColor blackColor]];
 			else
 				[(NSTextField *)view setTextColor:[NSColor whiteColor]];
-
+            
 		}
 		[(NSControl *)view setEnabled:enabled];
 	}
@@ -1905,7 +1945,7 @@
 {
 	if (!inst)
 		return;
-		
+    
 	// Checkboxes
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)		forKey:@"windowDrags"];
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)			forKey:@"drawDesktop"];
@@ -1943,7 +1983,7 @@
 	
 	// Screen depth
 	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8] forKey:@"screenDepth"];
-			
+    
 	// Screen resolution
 	int width, height;
 	if ([gui_screenResolution indexOfSelectedItem] == 0)
@@ -1966,7 +2006,7 @@
 // Sets the inspector options to match an CRDSession
 - (void)setInspectorSettings:(CRDSession *)newSettings
 {
-	#define BUTTON_STATE_FOR_KEY(k) CRDButtonState([[newSettings valueForKey:(k)] boolValue])
+#define BUTTON_STATE_FOR_KEY(k) CRDButtonState([[newSettings valueForKey:(k)] boolValue])
 	
 	if (newSettings == nil)
 	{
@@ -1977,7 +2017,7 @@
 	{
 		[gui_inspector setTitle:[NSLocalizedString(@"Inspector: ", @"Inspector -> Enabled title") stringByAppendingString:[newSettings label]]];
 	}
-		
+    
 	// All checkboxes 
 	[gui_displayDragging     setState:BUTTON_STATE_FOR_KEY(@"windowDrags")];
 	[gui_drawDesktop         setState:BUTTON_STATE_FOR_KEY(@"drawDesktop")];
@@ -2032,7 +2072,7 @@
 		[gui_screenResolution selectItemWithTitle:resolutionLabel];
 	}
 	
-	#undef BUTTON_STATE_FOR_KEY
+#undef BUTTON_STATE_FOR_KEY
 }
 
 - (void)toggleDrawer:(id)sender visible:(BOOL)visible
@@ -2064,10 +2104,10 @@
 	BOOL connected = [inst connect];
 	
 	[self performSelectorOnMainThread:@selector(completeConnection:) withObject:inst waitUntilDone:NO];
-					
+    
 	if (connected)	
 		[inst runConnectionRunLoop]; // this will block until the connection is finished
-		
+    
 	if ([inst status] == CRDConnectionConnected)
 		[self disconnectInstance:inst];
 	
@@ -2118,26 +2158,26 @@
 	}
 	else
 	{
-
+        
 		[self cellNeedsDisplay:(NSCell *)[inst cellRepresentation]];
 		RDConnectionError errorCode = [inst conn]->errorCode;
 		
 		if (errorCode != ConnectionErrorNone && errorCode != ConnectionErrorCanceled)
 		{			
 			NSString *localizedErrorDescriptions[] = {
-					@"No error", /* shouldn't ever occur */
-					NSLocalizedString(@"The connection timed out.", @"Connection errors -> Timeout"),
-					NSLocalizedString(@"The host name could not be resolved.", @"Connection errors -> Host not found"), 
-					NSLocalizedString(@"There was an error connecting.", @"Connection errors -> Couldn't connect"),
-					NSLocalizedString(@"You canceled the connection.", @"Connection errors -> User canceled")
-					};
+                @"No error", /* shouldn't ever occur */
+                NSLocalizedString(@"The connection timed out.", @"Connection errors -> Timeout"),
+                NSLocalizedString(@"The host name could not be resolved.", @"Connection errors -> Host not found"), 
+                NSLocalizedString(@"There was an error connecting.", @"Connection errors -> Couldn't connect"),
+                NSLocalizedString(@"You canceled the connection.", @"Connection errors -> User canceled")
+            };
 			NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Couldn't connect to %@",
-					@"Connection error alert -> Title"), [inst label]];
+                                                                           @"Connection error alert -> Title"), [inst label]];
 			
 			NSAlert *alert = [NSAlert alertWithMessageText:title defaultButton:nil
-						alternateButton:NSLocalizedString(@"Retry", @"Connection errors -> Retry button")
-						otherButton:nil
-						informativeTextWithFormat:localizedErrorDescriptions[errorCode]];
+                                           alternateButton:NSLocalizedString(@"Retry", @"Connection errors -> Retry button")
+                                               otherButton:nil
+                                 informativeTextWithFormat:localizedErrorDescriptions[errorCode]];
 			[alert setAlertStyle:NSCriticalAlertStyle];
 			
 			// Retry if requested
@@ -2178,7 +2218,7 @@
 		newContentSize = NSMakeSize(600, 400);
 		[gui_unifiedWindow setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
 	}
-
+    
 	NSRect windowFrame = [gui_unifiedWindow frame];
 	NSRect screenRect = [[gui_unifiedWindow screen] visibleFrame];
 	
@@ -2191,11 +2231,11 @@
 	float toolbarHeight = windowFrame.size.height - [[gui_unifiedWindow contentView] frame].size.height;
 	
 	NSRect newWindowFrame = NSMakeRect( windowFrame.origin.x, windowFrame.origin.y +
-										windowFrame.size.height-newContentSize.height-toolbarHeight, 
-										newContentSize.width, newContentSize.height + toolbarHeight);
+                                       windowFrame.size.height-newContentSize.height-toolbarHeight, 
+                                       newContentSize.width, newContentSize.height + toolbarHeight);
 	
 	float drawerWidth = [gui_serversDrawer contentSize].width + 
-			([[[gui_serversDrawer contentView] window] frame].size.width-[gui_serversDrawer contentSize].width) / 2.0 + 1.0;
+    ([[[gui_serversDrawer contentView] window] frame].size.width-[gui_serversDrawer contentSize].width) / 2.0 + 1.0;
 	
 	// For our adjustments, add the drawer width
 	if ([gui_serversDrawer state] == NSDrawerOpenState)
@@ -2219,7 +2259,7 @@
 			newWindowFrame.origin.y = screenRect.origin.y;
 			newWindowFrame.size.height = screenRect.size.height;
 			newWindowFrame.size.width += scrollerWidth;
-
+            
 		}
 		if (newWindowFrame.size.width > screenRect.size.width && newWindowFrame.size.height+scrollerWidth <= screenRect.size.height)
 		{
@@ -2241,7 +2281,7 @@
 		newWindowFrame.origin.x = MAX(newWindowFrame.origin.x, screenRect.origin.x);
 	}
 	
-		
+    
 	// Reset window rect to exclude drawer
 	if ([gui_serversDrawer state] == NSDrawerOpenState)
 	{
@@ -2249,7 +2289,7 @@
 		drawerWidth += ([[[gui_serversDrawer contentView] window] frame].size.width - drawerWidth) / 2.0 + 1;
 		if ([gui_serversDrawer edge] == NSMinXEdge) // left side
 			newWindowFrame.origin.x += drawerWidth;
-
+        
 		newWindowFrame.size.width -= drawerWidth;
 	}
 	
@@ -2327,13 +2367,13 @@
 	[inst setTemporary:NO];
 	
 	index = MIN(MAX(index, 0), [savedServers count]);
-		
+    
 	[savedServers insertObject:inst atIndex:index];
 	[gui_serverList noteNumberOfRowsChanged];
 	
 	if (select)
 		[gui_serverList selectRow:(2 + [connectedServers count] + [savedServers indexOfObjectIdenticalTo:inst])];
-		
+    
 	[inst addObserver:self forKeyPath:@"label" options:(NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld) context:NULL];
 }
 
@@ -2363,10 +2403,10 @@
 - (void)sortSavedServersAlphabetically
 {
 	NSArray *sortDescriptors = [NSArray arrayWithObjects:
-			[[[NSSortDescriptor alloc] initWithKey:@"label" ascending:YES] autorelease],
-			[[[NSSortDescriptor alloc] initWithKey:@"hostName" ascending:YES] autorelease],
-			[[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES] autorelease],
-			nil];
+                                [[[NSSortDescriptor alloc] initWithKey:@"label" ascending:YES] autorelease],
+                                [[[NSSortDescriptor alloc] initWithKey:@"hostName" ascending:YES] autorelease],
+                                [[[NSSortDescriptor alloc] initWithKey:@"username" ascending:YES] autorelease],
+                                nil];
 	[savedServers sortUsingDescriptors:sortDescriptors];
 }
 
@@ -2412,7 +2452,7 @@
 	{
 		s_savedServersPath = [[[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoRD/Servers"] retain];
 	}
-
+    
 	return s_savedServersPath;
 }
 
