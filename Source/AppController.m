@@ -238,6 +238,44 @@
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
 	[self listUpdated];
+    
+    if([[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"])
+    {
+        [self parseCommandLine];
+    }
+}
+
+- (void)parseCommandLine
+{
+    NSString *hostname;
+    NSInteger port;
+    
+    hostname = [[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"]; 
+    port = [[NSUserDefaults standardUserDefaults] integerForKey:@"port"];
+    
+    [self performCommandLineConnect:[NSString stringWithFormat:@"%@:%d", hostname, port]];
+}
+
+- (void)performCommandLineConnect:(NSString *)host
+{
+	NSString *address = host, *hostname;
+	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] && NSShiftKeyMask;
+	int port;
+	
+	CRDSplitHostNameAndPort(address, &hostname, &port);
+	
+	CRDSession *newInst = [[[CRDSession alloc] init] autorelease];
+	
+	[newInst setValue:[NSNumber numberWithInt:16] forKey:@"screenDepth"];
+	[newInst setValue:hostname forKey:@"label"];
+	[newInst setValue:hostname forKey:@"hostName"];
+	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
+	[newInst setValue:[NSNumber numberWithBool:isConsoleSession] forKey:@"consoleSession"];
+	
+	[connectedServers addObject:newInst];
+	[gui_serverList deselectAll:self];
+	[self listUpdated];
+	[self connectInstance:newInst];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
