@@ -1330,7 +1330,7 @@
 - (BOOL)tableView:(NSTableView *)aTableView canDragRow:(unsigned)rowIndex
 {	
 	if (_isFilteringSavedServers)
-		return NO;
+		return [filteredServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
 	else
 		return [savedServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
 }
