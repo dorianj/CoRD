@@ -32,6 +32,7 @@
 		98C342310C2CEFBD005F2925 /* CRDTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C3422F0C2CEFBC005F2925 /* CRDTabView.m */; };
 		98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */; };
 		98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */; };
+		98E66D250FF2FF8300736CFA /* CoRD.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98E66D240FF2FF8300736CFA /* CoRD.icns */; };
 		98E972600BD9D9DF0041110D /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972250BD9D9DF0041110D /* AppController.m */; };
 		98E972610BD9D9DF0041110D /* bitmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972260BD9D9DF0041110D /* bitmap.c */; };
 		98E972620BD9D9DF0041110D /* cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972270BD9D9DF0041110D /* cache.c */; };
@@ -67,7 +68,6 @@
 		98E972D40BD9DA820041110D /* i Button Face.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C50BD9DA820041110D /* i Button Face.png */; };
 		98E972D60BD9DA820041110D /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C70BD9DA820041110D /* keymap.txt */; };
 		98E972D70BD9DA820041110D /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C80BD9DA820041110D /* plus.png */; };
-		98E972D80BD9DA820041110D /* rdesktop.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C90BD9DA820041110D /* rdesktop.icns */; };
 		98E972D90BD9DA820041110D /* rdp document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CA0BD9DA820041110D /* rdp document.icns */; };
 		98E972DA0BD9DA820041110D /* Servers.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CB0BD9DA820041110D /* Servers.png */; };
 		98E972DB0BD9DA820041110D /* Unified.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CC0BD9DA820041110D /* Unified.png */; };
@@ -102,7 +102,7 @@
 		37344CBA0FB1743200DFD6E6 /* rdpsnd_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rdpsnd_dsp.c; path = Source/rdpsnd_dsp.c; sourceTree = "<group>"; };
 		37344CD30FB177AB00DFD6E6 /* rdpsnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rdpsnd.h; path = Source/rdpsnd.h; sourceTree = "<group>"; };
 		37D191810FCE69E8008797FD /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		9816F5220BEE938600E439BE /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
 		98369D370C050B3D009BF52F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -132,6 +132,7 @@
 		98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = Credits.rtf; path = resources/Credits.rtf; sourceTree = "<group>"; };
 		98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSwappedModifiersUtility.m; path = Source/CRDSwappedModifiersUtility.m; sourceTree = "<group>"; };
 		98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSwappedModifiersUtility.h; path = Source/CRDSwappedModifiersUtility.h; sourceTree = "<group>"; };
+		98E66D240FF2FF8300736CFA /* CoRD.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CoRD.icns; path = Resources/CoRD.icns; sourceTree = "<group>"; };
 		98E972240BD9D9DF0041110D /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = Source/AppController.h; sourceTree = "<group>"; };
 		98E972250BD9D9DF0041110D /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = AppController.m; path = Source/AppController.m; sourceTree = "<group>"; };
 		98E972260BD9D9DF0041110D /* bitmap.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = bitmap.c; path = Source/bitmap.c; sourceTree = "<group>"; };
@@ -189,7 +190,6 @@
 		98E972C60BD9DA820041110D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
 		98E972C70BD9DA820041110D /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = keymap.txt; path = Resources/keymap.txt; sourceTree = "<group>"; };
 		98E972C80BD9DA820041110D /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = plus.png; path = Resources/plus.png; sourceTree = "<group>"; };
-		98E972C90BD9DA820041110D /* rdesktop.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = rdesktop.icns; path = Resources/rdesktop.icns; sourceTree = "<group>"; };
 		98E972CA0BD9DA820041110D /* rdp document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "rdp document.icns"; path = "Resources/rdp document.icns"; sourceTree = "<group>"; };
 		98E972CB0BD9DA820041110D /* Servers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Servers.png; path = Resources/Servers.png; sourceTree = "<group>"; };
 		98E972CC0BD9DA820041110D /* Unified.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Unified.png; path = Resources/Unified.png; sourceTree = "<group>"; };
@@ -270,7 +270,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* CoRD.app */,
+				8D1107320486CEB800E47090 /* Cord.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -401,6 +401,7 @@
 		98E70F110D3EC591009731C7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				98E66D240FF2FF8300736CFA /* CoRD.icns */,
 				9816F0BF0BEE506000E439BE /* Stop.png */,
 				98E972BD0BD9DA820041110D /* Arrow.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
@@ -408,7 +409,6 @@
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
 				98E972C50BD9DA820041110D /* i Button Face.png */,
 				98E972C80BD9DA820041110D /* plus.png */,
-				98E972C90BD9DA820041110D /* rdesktop.icns */,
 				98E972CA0BD9DA820041110D /* rdp document.icns */,
 				98E972CB0BD9DA820041110D /* Servers.png */,
 				98E972CC0BD9DA820041110D /* Unified.png */,
@@ -447,7 +447,7 @@
 			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
-			productReference = 8D1107320486CEB800E47090 /* CoRD.app */;
+			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -487,7 +487,6 @@
 				98E972D40BD9DA820041110D /* i Button Face.png in Resources */,
 				98E972D60BD9DA820041110D /* keymap.txt in Resources */,
 				98E972D70BD9DA820041110D /* plus.png in Resources */,
-				98E972D80BD9DA820041110D /* rdesktop.icns in Resources */,
 				98E972D90BD9DA820041110D /* rdp document.icns in Resources */,
 				98E972DA0BD9DA820041110D /* Servers.png in Resources */,
 				98E972DB0BD9DA820041110D /* Unified.png in Resources */,
@@ -501,6 +500,7 @@
 				9860D7120BFFA565007FA463 /* Localizable.strings in Resources */,
 				98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */,
 				993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */,
+				98E66D250FF2FF8300736CFA /* CoRD.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
