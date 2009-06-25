@@ -340,9 +340,7 @@
 		NSString *localizedDisconnect = NSLocalizedString(@"Disconnect", @"Servers menu -> Disconnect/connect item");
 		NSString *localizedConnect = NSLocalizedString(@"Connect", @"Servers menu -> Disconnect/connect item");
 	
-		if (viewedInst != nil)
-			[item setTitle:localizedDisconnect];
-		else if (inst == nil)
+		if (inst == nil)
 			return NO;
 		else
 			[item setTitle:([inst status] == CRDConnectionClosed) ? localizedConnect : localizedDisconnect];
