@@ -783,10 +783,7 @@
 	if ([connectedServers count] == 0)
 		return;
 	
-	NSEnumerator *enumerator = [connectedServers objectEnumerator];
-	CRDSession *inst;
-	
-	while ( (inst = [enumerator nextObject]) )
+	for ( CRDSession *inst in connectedServers )
 	{
 		[gui_tabView removeItem:inst];
 		[self createWindowForInstance:inst];
@@ -805,10 +802,8 @@
 	if (![connectedServers count])
 		return;
 	
-	NSEnumerator *enumerator = [connectedServers objectEnumerator];
-	CRDSession *inst;
 	
-	while ( (inst = [enumerator nextObject]) )
+	for ( CRDSession *inst in connectedServers )
 	{
 		[inst destroyWindow];
 		[inst createUnified:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions) enclosure:[gui_tabView frame]];
@@ -1106,9 +1101,7 @@
 
 - (void)application:(NSApplication *)sender openFiles:(NSArray *)filenames
 {
-	NSEnumerator *enumerator = [filenames objectEnumerator];
-	id file;
-	while ( (file = [enumerator nextObject]) )
+	for ( id file in filenames )
 	{
 		CRDSession *inst = [[CRDSession alloc] initWithPath:file];
 		
@@ -1152,11 +1145,7 @@
 	[userDefaults setInteger:displayMode forKey:CRDDefaultsDisplayMode];
 	
 	// Disconnect all connected servers
-	NSEnumerator *enumerator;
-	CRDSession *inst;
-	enumerator = [connectedServers objectEnumerator];
-	
-	while ( (inst = [enumerator nextObject]) )
+	for ( CRDSession *inst in connectedServers )
 		[self disconnectInstance:inst];
 	
 	[gui_unifiedWindow orderOut:nil];
@@ -1166,9 +1155,8 @@
 	
 	// Flush each saved server to file (so that the perferred row will be saved)
 	[self storeSavedServerPositions];
-	enumerator = [savedServers objectEnumerator];
 	
-	while ( (inst = [enumerator nextObject]) )
+	for ( CRDSession *inst in savedServers )
 		[inst flushChangesToFile];
 }
 
@@ -1730,10 +1718,8 @@
 		if (selectedItem == nil)
 			return nil;
 			
-		NSEnumerator *enumerator = [connectedServers objectEnumerator];
-		id item;
 		
-		while ( (item = [enumerator nextObject]) )
+		for ( id item in connectedServers )
 		{
 			if (item == selectedItem)
 				return item;
@@ -1741,10 +1727,7 @@
 	}
 	else // windowed mode
 	{
-		NSEnumerator *enumerator = [connectedServers objectEnumerator];
-		CRDSession *inst;
-		
-		while ( (inst = [enumerator nextObject]) )
+		for ( CRDSession *inst in connectedServers )
 		{
 			if ([[inst window] isMainWindow])
 				return inst;
@@ -2302,9 +2285,7 @@
 {
 	CRDSession *savedSession;
 	NSArray *files = [[NSFileManager defaultManager] directoryContentsAtPath:[AppController savedServersPath]];
-	NSEnumerator *enumerator = [files objectEnumerator];
-	id filename;
-	while ( (filename = [enumerator nextObject]) )
+	for ( id filename in files )
 	{
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
