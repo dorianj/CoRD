@@ -1016,6 +1016,16 @@
 		[[gui_searchField window] makeFirstResponder:gui_searchField];
 }
 
+- (IBAction)showServerInFinder:(id)sender
+{
+	NSString * path    = [NSString stringWithFormat:@"%@/%@.rdp", [AppController savedServersPath], [[self selectedServer] label]];
+	NSLog(path);
+	NSURL    * fileURL = [NSURL fileURLWithPath: path];
+	
+	NSWorkspace * ws = [NSWorkspace sharedWorkspace];
+	[ws selectFile:[fileURL path] inFileViewerRootedAtPath:nil];
+}
+
 #pragma mark -
 #pragma mark Toolbar methods
 

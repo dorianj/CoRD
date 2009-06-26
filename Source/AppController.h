@@ -107,6 +107,7 @@
 - (IBAction)jumpToQuickConnect:(id)sender;
 - (IBAction)filterServers:(id)sender;
 - (IBAction)jumpToFilter:(id)sender;
+- (IBAction)showServerInFinder:(id)sender;
 
 // Other methods are in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;
