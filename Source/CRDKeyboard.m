@@ -233,9 +233,8 @@ static NSDictionary *windowsKeymapTable = nil;
 	signed lineNumber = -1;
 	BOOL b = YES;
 	id line;
-	NSEnumerator *enumerator = [fileLines objectEnumerator];
 		
-	while ( (line = [enumerator nextObject]) )
+	for ( line in fileLines )
 	{
 		lineNumber++;
 		
@@ -295,8 +294,7 @@ static NSDictionary *windowsKeymapTable = nil;
 		unsigned i;
 		
 		id line;
-		NSEnumerator *enumerator = [lines objectEnumerator];
-		while ( (line = [enumerator nextObject]) )
+		for ( line in lines )
 		{
 			line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 			scanner = [NSScanner scannerWithString:line];

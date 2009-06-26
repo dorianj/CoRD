@@ -663,10 +663,9 @@
 
 - (void)setNeedsDisplayInRects:(NSArray *)rects
 {
-	NSEnumerator *enumerator = [rects objectEnumerator];
 	id dirtyRect;
 	
-	while ( (dirtyRect = [enumerator nextObject]) )
+	for ( dirtyRect in rects )
 		[self setNeedsDisplayInRectAsValue:dirtyRect];
 	
 	[rects release];

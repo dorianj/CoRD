@@ -145,16 +145,13 @@ NSString * CRDFindAvailableFileName(NSString *path, NSString *base, NSString *ex
 NSArray * CRDFilterFilesByType(NSArray *unfilteredFiles, NSArray *types)
 {
 	NSMutableArray *returnFiles = [NSMutableArray arrayWithCapacity:4];
-	NSEnumerator *fileEnumerator = [unfilteredFiles objectEnumerator];
-	int i, typeCount = [types count];
 	NSString *filename, *type, *extension, *hfsFileType;	
-	while ((filename = [fileEnumerator nextObject]))
+	for (filename in unfilteredFiles)
 	{
 		hfsFileType = [NSHFSTypeOfFile(filename) stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@" '"]];
 		extension = [filename pathExtension];
-		for (i = 0; i < typeCount; i++)
+		for (type in types)
 		{
-			type = [types objectAtIndex:i];
 			if ([type caseInsensitiveCompare:extension] == NSOrderedSame ||
 				[type caseInsensitiveCompare:hfsFileType] == NSOrderedSame)
 			{
@@ -177,10 +174,9 @@ char ** CRDMakeCStringArray(NSArray *stringArray)
 	NSMutableData *data = [NSMutableData dataWithLength:(sizeof(char *) * [stringArray count])];
 	char **cStringPtrArray = (char **)[data mutableBytes];
 	
-	NSEnumerator *enumerator = [stringArray objectEnumerator];
 	id o;
 	
-	while ( (o = [enumerator nextObject]) )
+	for ( o in stringArray )
 		cStringPtrArray[i++] = (char *)[[o description] UTF8String];
 	
 	

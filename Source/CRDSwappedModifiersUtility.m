@@ -109,9 +109,8 @@ static NSArray *rawDefaultTable;
 		[rawDefaultTable release];
 		rawDefaultTable = [userDefaultTable retain];
 		
-		NSEnumerator *enumerator = [rawDefaultTable objectEnumerator];
 		id item;
-		while ( (item = [enumerator nextObject]) )
+		for ( item in rawDefaultTable )
 		{
 			[modifiersBuilder setObject:[item objectForKey:SwappedModifiersDestinationKey] forKey:[item objectForKey:SwappedModifiersSourceKey]];	
 		}

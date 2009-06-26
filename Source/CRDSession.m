@@ -292,9 +292,8 @@
 		NSMutableArray *validDrives = [NSMutableArray array], *validNames = [NSMutableArray array];
 		
 		NSFileManager *fm = [NSFileManager defaultManager];
-		NSEnumerator *volumeEnumerator = [localDrives objectEnumerator];
 		id anObject;
-		while ( (anObject = [volumeEnumerator nextObject]) )
+		for ( anObject in localDrives )
 		{
 			if ([anObject characterAtIndex:0] != '.')
 			{
@@ -937,9 +936,8 @@
 	BOOL b;
 	
 	// Extract the name, type, and value from each line and load into ivars
-	NSEnumerator *enumerator = [fileLines objectEnumerator];
 	id line;
-	while ( (line = [enumerator nextObject]) )
+	for ( line in fileLines )
 	{
 		scan = [NSScanner scannerWithString:line];
 		[scan setCharactersToBeSkipped:colonSet];
