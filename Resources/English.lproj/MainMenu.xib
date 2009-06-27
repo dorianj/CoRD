@@ -8,10 +8,10 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<integer value="795"/>
+			<integer value="2049"/>
 			<integer value="1104"/>
 			<integer value="29"/>
-			<integer value="2049"/>
-			<integer value="795"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -2259,12 +2259,6 @@
 				<string key="NSMaxSize">{3.40282e+38, 3.40282e+38}</string>
 			</object>
 			<object class="NSUserDefaultsController" id="775100995">
-				<object class="NSMutableArray" key="NSDeclaredKeys">
-					<bool key="EncodedWithXMLCoder">YES</bool>
-					<string>SUCheckAtStartup</string>
-					<string>SUEnableAutomaticChecks</string>
-					<string>SULastCheckTime</string>
-				</object>
 				<bool key="NSSharedInstance">YES</bool>
 			</object>
 			<object class="NSMenu" id="519276852">
@@ -2833,7 +2827,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 					<object class="NSButton" id="105647380">
 						<reference key="NSNextResponder" ref="487461404"/>
-						<int key="NSvFlags">268</int>
+						<int key="NSvFlags">256</int>
 						<string key="NSFrame">{{128, 112}, {203, 18}}</string>
 						<reference key="NSSuperview" ref="487461404"/>
 						<bool key="NSEnabled">YES</bool>
@@ -2855,7 +2849,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 					<object class="NSButton" id="21582276">
 						<reference key="NSNextResponder" ref="487461404"/>
-						<int key="NSvFlags">268</int>
+						<int key="NSvFlags">256</int>
 						<string key="NSFrame">{{128, 132}, {203, 18}}</string>
 						<reference key="NSSuperview" ref="487461404"/>
 						<bool key="NSEnabled">YES</bool>
