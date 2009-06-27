@@ -36,8 +36,11 @@
 	NSMutableDictionary *toolbarItems;
 }
 
--(void) buildToolbar;
--(IBAction)	changePanes: (id)sender;
--(IBAction) toggleAdvanced: (id)sender;
+- (void) buildToolbar;
+- (IBAction)	changePanes: (id)sender;
+- (IBAction) toggleAdvanced: (id)sender;
+
+- (IBAction)helpForGeneralPreferences:(id)sender;
+- (IBAction)helpForConnectionPreferences:(id)sender;
 
 @end

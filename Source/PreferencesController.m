@@ -126,6 +126,18 @@
 {
 }
 
+#pragma mark -
+#pragma mark Calling For Help
+
+- (IBAction)helpForGeneralPreferences:(id)sender
+{
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"GeneralPreferences" inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
+}
+
+- (IBAction)helpForConnectionPreferences:(id)sender
+{
+    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ConnectionPreferences" inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
+}
 
 #pragma mark -
 #pragma mark NSToolbar Delegate Methods

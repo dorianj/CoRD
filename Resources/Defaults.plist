@@ -60,5 +60,7 @@
 	<true/>
 	<key>SetServerKeyboardLayout</key>
 	<true/>
+	<key>SUUpdateType</key>
+	<string>Stable Releases</string>
 </dict>
 </plist>
