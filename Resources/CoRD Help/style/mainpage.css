@@ -11,6 +11,11 @@ h2 {	font-size: 11pt;
 		font-weight: 300;
 		margin: 12px auto 0 auto; }
 
+h3 {	font-size: 10pt;
+		font-family: "Lucida Grande", Arial, sans-serif; 
+		font-weight: 100;
+		margin: 3px auto 0 auto; }
+
 h4 {	font-size: 9pt;
 		font-family: "Lucida Grande", Arial, sans-serif; 
 		font-weight: 300;
