@@ -30,6 +30,7 @@
 	IBOutlet NSButton *showAdvancedCheckbox;
 	IBOutlet NSMenuItem *closeWindowMenuItem;
 	IBOutlet NSMenuItem *closeSessionMenuItem;
+	IBOutlet NSMatrix *updateTypeMatrix;
 
 	NSUserDefaults *userDefaults;
 	NSToolbar *prefsToolbar;
@@ -39,6 +40,7 @@
 - (void) buildToolbar;
 - (IBAction)	changePanes: (id)sender;
 - (IBAction) toggleAdvanced: (id)sender;
+- (IBAction) updateTypeChange: (id)sender;
 
 - (IBAction)helpForGeneralPreferences:(id)sender;
 - (IBAction)helpForConnectionPreferences:(id)sender;

@@ -16,6 +16,7 @@
 */
 
 #import "PreferencesController.h"
+#import "ZNLog.h"
 
 #pragma mark -
 
@@ -32,7 +33,7 @@
 }
 
 
--(void)	dealloc
+- (void)	dealloc
 {
 	[prefsToolbar release];
 	[toolbarItems release];
@@ -52,7 +53,7 @@
 	[self changePanes:nil];
 }
 
--(void) buildToolbar
+- (void) buildToolbar
 {
 	[toolbarItems removeAllObjects];
 	[toolbarItems setObject:@"General" forKey:@"General"];
@@ -73,7 +74,7 @@
 	[preferencesWindow setShowsToolbarButton:NO];
 }
 
--(IBAction)changePanes:(id)sender
+- (IBAction)changePanes: (id)sender
 {
 	NSView *currentPane = [preferencesWindow contentView];
 	NSView* newPane = nil;
@@ -122,8 +123,24 @@
 	[preferencesWindow setMinSize:theSize];
 }
 
--(IBAction) toggleAdvanced: (id)sender
+- (IBAction) toggleAdvanced: (id)sender
 {
+}
+
+#pragma mark -
+#pragma mark Managing Update Feeds
+- (IBAction) updateTypeChange: (id)sender
+{
+	NSString *newUpdateType = [[NSUserDefaults standardUserDefaults] valueForKey:@"SUUpdateType"];
+
+	if ([newUpdateType isEqual:@"Beta Releases"])
+		[[NSUserDefaults standardUserDefaults] setValue:@"http://cord.sourceforge.net/appcast-beta.xml" forKey:@"SUFeedURL"];
+	else if ([newUpdateType isEqual:@"Nightly Releases"])
+		[[NSUserDefaults standardUserDefaults] setValue:@"http://cord.sourceforge.net/appcast-nightly.xml" forKey:@"SUFeedURL"];
+	else 
+		[[NSUserDefaults standardUserDefaults] setValue:@"http://cord.sourceforge.net/sparkle.xml" forKey:@"SUFeedURL"];
+	
+	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 #pragma mark -
