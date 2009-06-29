@@ -534,28 +534,55 @@
 
 - (IBAction)selectNext:(id)sender
 {
-	[gui_tabView selectNextItem:sender];
+	if ([connectedServers count] == 0)
+		return;
 	
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
+	{
+		[gui_tabView selectFirstItem:sender];
+		[gui_serverList selectRow:1];
+		[self autosizeUnifiedWindow];
 		return;
-		
-	[gui_serverList selectRow:(1 + [connectedServers indexOfObjectIdenticalTo:inst])];
+	}
+	
+	if ([gui_tabView indexOfSelectedItem] == ([connectedServers count] - 1))
+	{
+		[gui_tabView selectFirstItem:sender];
+		[gui_serverList selectRow:1];
+		[self autosizeUnifiedWindow];
+		return;
+	}
+	
+	// There is a Selected Server and we don't need to loop, select the next.
+	[gui_serverList selectRow:(2 + [connectedServers indexOfObjectIdenticalTo:inst])];
 	[self autosizeUnifiedWindow];
+	
 }
 
 - (IBAction)selectPrevious:(id)sender
 {
-	if ([gui_tabView indexOfSelectedItem] == 1)
+	if ([connectedServers count] == 0)
 		return;
-	
-	[gui_tabView selectPreviousItem:sender];
 	
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
+	{
+		[gui_tabView selectLastItem:sender];
+		[gui_serverList selectRow:[connectedServers count]];
+		[self autosizeUnifiedWindow];
 		return;
-		
-	[gui_serverList selectRow:(1 + [connectedServers indexOfObjectIdenticalTo:inst])];
+	}
+	
+	if ( [gui_tabView indexOfSelectedItem] == 0 )
+	{
+		[gui_tabView selectLastItem:sender];
+		[gui_serverList selectRow:([connectedServers count])];
+		[self autosizeUnifiedWindow];
+		return;
+	}
+	// There is a Selected Server and we don't need to loop, select the prev.
+	[gui_serverList selectRow:( [connectedServers indexOfObjectIdenticalTo:inst] ) ];
 	[self autosizeUnifiedWindow];
 }
 
@@ -995,7 +1022,6 @@
 		{
 			if ([[inst.label lowercaseString] isLike:searchCompareString] || [[inst.hostName lowercaseString] isLike:searchCompareString])
 			{
-				NSLog(@"%@ is like %@", searchString, inst.label),
 				[filteredServers addObject:inst];
 			}			
 		}
