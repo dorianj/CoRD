@@ -540,7 +540,6 @@
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
 	{
-		[gui_tabView selectFirstItem:sender];
 		[gui_serverList selectRow:1];
 		[self autosizeUnifiedWindow];
 		return;
@@ -548,7 +547,6 @@
 	
 	if ([gui_tabView indexOfSelectedItem] == ([connectedServers count] - 1))
 	{
-		[gui_tabView selectFirstItem:sender];
 		[gui_serverList selectRow:1];
 		[self autosizeUnifiedWindow];
 		return;
@@ -568,7 +566,6 @@
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
 	{
-		[gui_tabView selectLastItem:sender];
 		[gui_serverList selectRow:[connectedServers count]];
 		[self autosizeUnifiedWindow];
 		return;
@@ -576,7 +573,6 @@
 	
 	if ( [gui_tabView indexOfSelectedItem] == 0 )
 	{
-		[gui_tabView selectLastItem:sender];
 		[gui_serverList selectRow:([connectedServers count])];
 		[self autosizeUnifiedWindow];
 		return;
