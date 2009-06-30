@@ -576,6 +576,8 @@
 	unsigned int byteOrder;
 
 	rdBufferContext = CGBitmapContextCreate(rdBufferBitmapData, rdBufferWidth, rdBufferHeight, 8, rdBufferWidth*4, cs, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little); 		
+
+    CFRelease(cs);
 }
 
 - (void)destroyBackingStore

@@ -193,7 +193,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	if (!abbreviatedSize)
 	{
 		[user drawWithRect:NSMakeRect(textX, textY += [label size].height + PADDING_TEXT, textWidth, 0.0) options:NSStringDrawingUsesLineFragmentOrigin];
-		[host drawWithRect:NSMakeRect(textX, textY += [user size].height + PADDING_TEXT, textWidth, 0.0) options:NSStringDrawingUsesLineFragmentOrigin];
+		[host drawWithRect:NSMakeRect(textX, textY + [user size].height + PADDING_TEXT, textWidth, 0.0) options:NSStringDrawingUsesLineFragmentOrigin];
 	}
 }
 

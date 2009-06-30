@@ -257,7 +257,7 @@ tcp_get_address(RDConnectionRef conn)
 	stream = (CFWriteStreamRef) os;
 	data = CFWriteStreamCopyProperty(stream, kCFStreamPropertySocketNativeHandle);
 	socket = *(CFSocketNativeHandle *) CFDataGetBytePtr(data);
-
+    
 	char *ipaddr = malloc(32);
     struct sockaddr_in sockaddr;
     socklen_t len = sizeof(sockaddr);
@@ -268,6 +268,9 @@ tcp_get_address(RDConnectionRef conn)
     }
     else
         strcpy(ipaddr, "127.0.0.1");
+
+    CFRelease(data);
+    
     return ipaddr;
 }
 

@@ -488,6 +488,8 @@
 	[remoteClipboard release];
 	remoteClipboard = [CRDConvertLineEndings(temp, NO) retain];
 	[[NSPasteboard generalPasteboard] setString:remoteClipboard forType:NSStringPboardType];
+    
+    [temp release];
 }
 
 // Informs the receiver that the server has new clipboard data and is about to send it
