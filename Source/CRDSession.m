@@ -332,15 +332,15 @@
 	{
 		[self setStatus:CRDConnectionConnected];
 		[self setUpConnectionThread];
-		
+
 		NSStream *is = conn->inputStream;
 		[is setDelegate:self];
 		[is scheduleInRunLoop:connectionRunLoop forMode:NSDefaultRunLoopMode];
-		
+
 		[self performSelectorOnMainThread:@selector(createViewWithFrameValue:) withObject:[NSValue valueWithRect:NSMakeRect(0.0, 0.0, conn->screenWidth, conn->screenHeight)] waitUntilDone:YES];
 	}
 	else
-	{	
+	{
 		[self setStatus:CRDConnectionClosed];
 	}
 	
