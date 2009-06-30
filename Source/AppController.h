@@ -115,6 +115,7 @@
 - (void)disconnectInstance:(CRDSession *)inst;
 - (void)cancelConnectingInstance:(CRDSession *)inst;
 - (void)parseCommandLine;
+- (void)printUsage;
 - (void)performCommandLineConnect:(NSString *)host;
 
 - (CRDSession *)serverInstanceForRow:(int)row;

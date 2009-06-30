@@ -65,7 +65,7 @@
 
 + (void)initialize
 {
-	[[NSUserDefaults standardUserDefaults] registerDefaults: [NSDictionary dictionaryWithContentsOfFile:
+    [[NSUserDefaults standardUserDefaults] registerDefaults: [NSDictionary dictionaryWithContentsOfFile:
 		[[NSBundle mainBundle] pathForResource: @"Defaults" ofType: @"plist"]]];
 		
 	//LSSetDefaultHandlerForURLScheme(@"rdp", 
@@ -239,10 +239,8 @@
 	[self validateControls];
 	[self listUpdated];
     
-    if([[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"])
-    {
+    if([[[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] mutableCopy] != nil)
         [self parseCommandLine];
-    }
 }
 
 - (void)parseCommandLine
@@ -250,10 +248,18 @@
     NSString *hostname;
     NSInteger port;
     
-    hostname = [[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"]; 
+    hostname = [[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"];
     port = [[NSUserDefaults standardUserDefaults] integerForKey:@"port"];
     
-    [self performCommandLineConnect:[NSString stringWithFormat:@"%@:%d", hostname, port]];
+    if(hostname == nil)
+        [self printUsage];
+    else
+        [self performCommandLineConnect:[NSString stringWithFormat:@"%@:%d", hostname, port]];
+}
+
+- (void)printUsage
+{
+    NSLog(@"usage: CoRD -hostname host_name -port port_number");
 }
 
 - (void)performCommandLineConnect:(NSString *)host
