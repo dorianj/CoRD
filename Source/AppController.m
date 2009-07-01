@@ -1000,7 +1000,6 @@
 	[duplicate setFilename:CRDFindAvailableFileName([AppController savedServersPath], [duplicate label], @".rdp")];
 	[duplicate flushChangesToFile];
 	[self addSavedServer:duplicate atIndex:serverIndex+1 select:YES];
-	[gui_serverList noteNumberOfRowsChanged];
 }
 
 - (IBAction)filterServers:(id)sender
@@ -2359,7 +2358,7 @@
 	index = MIN(MAX(index, 0), [savedServers count]);
 		
 	[savedServers insertObject:inst atIndex:index];
-	[gui_serverList noteNumberOfRowsChanged];
+	[self listUpdated];
 	
 	if (select)
 		[gui_serverList selectRow:(2 + [connectedServers count] + [savedServers indexOfObjectIdenticalTo:inst])];
