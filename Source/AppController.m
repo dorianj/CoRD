@@ -239,7 +239,7 @@
 	[self validateControls];
 	[self listUpdated];
     
-    if([[[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] mutableCopy] != nil)
+    if([[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] != nil)
         [self parseCommandLine];
 }
 
@@ -259,7 +259,7 @@
 
 - (void)printUsage
 {
-    NSLog(@"usage: CoRD -hostname host_name -port port_number");
+    printf("usage: CoRD -hostname host_name -port port_number");
 }
 
 - (void)performCommandLineConnect:(NSString *)host
