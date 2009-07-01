@@ -1824,6 +1824,9 @@
 
 - (void)listUpdated
 {	
+	if ([userDefaults boolForKey:@"keepServersSortedAlphabetically"]) 
+		[self sortSavedServersAlphabetically];
+	
 	[gui_serverList noteNumberOfRowsChanged];
 	
 	if ([self serverInstanceForRow:[gui_serverList selectedRow]] == nil)
