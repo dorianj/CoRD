@@ -65,6 +65,8 @@ NSString *CRDJoinHostNameAndPort(NSString *host, int port);
 NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);
 BOOL CRDDrawerIsVisible(NSDrawer *drawer);
 const char *CRDMakeWindowsString(NSString *src);
+const char *CRDMakeUTF16LEString(NSString *src);
+int CRDGetUTF16LEStringLength(NSString *src);
 void CRDCreateDirectory(NSString *directory);
 NSString *CRDFindAvailableFileName(NSString *path, NSString *base, NSString *extension);
 NSArray *CRDFilterFilesByType(NSArray *unfilteredFiles, NSArray *types);

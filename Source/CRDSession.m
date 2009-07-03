@@ -321,8 +321,8 @@
 	BOOL connected = rdp_connect(conn,
 							[hostName UTF8String], 
 							logonFlags, 
-							CRDMakeWindowsString(domain), 
-							CRDMakeWindowsString(password), 
+							domain,
+							password,
 							"",  /* xxx: command on logon */
 							"" /* xxx: session directory */
 							);

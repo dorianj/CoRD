@@ -123,6 +123,16 @@ inline const char * CRDMakeWindowsString(NSString *str)
 	return str ? [str cStringUsingEncoding:NSWindowsCP1250StringEncoding] : "";
 }
 
+inline const char * CRDMakeUTF16LEString(NSString *str)
+{
+	return str ? [str cStringUsingEncoding:NSUTF16LittleEndianStringEncoding] : "";
+}
+
+inline int CRDGetUTF16LEStringLength(NSString *str)
+{
+	return str ? [str lengthOfBytesUsingEncoding:NSUTF16LittleEndianStringEncoding] : 0;
+}
+
 inline void CRDCreateDirectory(NSString *path)
 {
 	if (![[NSFileManager defaultManager] fileExistsAtPath:path])

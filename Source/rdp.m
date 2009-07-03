@@ -24,6 +24,7 @@
 #import "rdesktop.h"
 
 #import "CRDSessionView.h"
+#import "CRDShared.h"
 
 #ifdef HAVE_ICONV
 #ifdef HAVE_ICONV_H
@@ -163,14 +164,17 @@ rdp_in_unistr(RDStreamRef s, char *string, int uni_len)
 
 /* Parse a logon info packet */
 static void
-rdp_send_logon_info(RDConnectionRef conn, uint32 flags, const char *domain, char *user,
-		    const char *password, const char *program, const char *directory)
+rdp_send_logon_info(RDConnectionRef conn, uint32 flags, NSString *nsdomain, const char *user,
+		    NSString *nspassword, const char *program, const char *directory)
 {
 	char *ipaddr = tcp_get_address(conn);
-	int len_domain = 2 * strlen(domain);
-	int len_user = 2 * strlen(user);
-	int len_password = 2 * strlen(password);
 	int len_program = 2 * strlen(program);
+	int len_user = 2 * strlen(user);
+	/* We now pass in strings as NSString instead of ASCII */
+	const char *domain = (const char *)CRDMakeUTF16LEString(nsdomain);
+	const char *password = (const char *)CRDMakeUTF16LEString(nspassword);
+	int len_domain = CRDGetUTF16LEStringLength(nsdomain);
+	int len_password = CRDGetUTF16LEStringLength(nspassword);
 	int len_directory = 2 * strlen(directory);
 	int len_ip = 2 * strlen(ipaddr);
 	int len_dll = 2 * strlen("C:\\WINNT\\System32\\mstscax.dll");
@@ -194,9 +198,11 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, const char *domain, char
 		out_uint16_le(s, len_password);
 		out_uint16_le(s, len_program);
 		out_uint16_le(s, len_directory);
-		rdp_out_unistr(s, domain, len_domain);
+		out_uint8p(s, domain, len_domain);
+		out_uint16_le(s,0);
 		rdp_out_unistr(s, user, len_user);
-		rdp_out_unistr(s, password, len_password);
+		out_uint8p(s, password, len_password);
+		out_uint16_le(s,0);
 		rdp_out_unistr(s, program, len_program);
 		rdp_out_unistr(s, directory, len_directory);
 	}
@@ -247,13 +253,13 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, const char *domain, char
 		out_uint16_le(s, len_program);
 		out_uint16_le(s, len_directory);
 		if (0 < len_domain)
-			rdp_out_unistr(s, domain, len_domain);
-		else
-			out_uint16_le(s, 0);
+			out_uint8a(s, domain, len_domain);
+		out_uint16_le(s, 0);
 		rdp_out_unistr(s, user, len_user);
 		if (flags & RDP_LOGON_AUTO)
 		{
-			rdp_out_unistr(s, password, len_password);
+			out_uint8a(s, password, len_password);
+			out_uint16_le(s,0);
 		}
 		if (flags & RDP_LOGON_BLOB && !(flags & RDP_LOGON_AUTO))
 		{
@@ -1238,7 +1244,7 @@ process_redirect_pdu(RDConnectionRef conn, RDStreamRef s /*, uint32 * ext_disc_r
 
 /* Establish a connection up to the RDP layer */
 RD_BOOL
-rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, const char *domain, const char *password,
+rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, NSString *domain, NSString *password,
 	    const char *command, const char *directory)
 {
 	if (!sec_connect(conn, server, conn->username))
@@ -1250,7 +1256,7 @@ rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, const char *
 
 /* Establish a reconnection up to the RDP layer */
 RD_BOOL
-rdp_reconnect(RDConnectionRef conn, const char *server, uint32 flags, const char *domain, const char *password, const char *command, const char *directory, char *cookie)
+rdp_reconnect(RDConnectionRef conn, const char *server, uint32 flags, NSString *domain, NSString *password, const char *command, const char *directory, char *cookie)
 {
 	if (!sec_reconnect(conn, (char *)server))
 		return False;
