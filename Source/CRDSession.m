@@ -322,6 +322,7 @@
 							[hostName UTF8String], 
 							logonFlags, 
 							domain,
+							username,
 							password,
 							"",  /* xxx: command on logon */
 							"" /* xxx: session directory */
