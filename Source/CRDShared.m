@@ -120,16 +120,19 @@ inline BOOL CRDDrawerIsVisible(NSDrawer *drawer)
 
 inline const char * CRDMakeWindowsString(NSString *str)
 {
-	return str ? [str cStringUsingEncoding:NSWindowsCP1250StringEncoding] : "";
+	/* returns a best effort conversion to Windows CP1250 */
+	return str ? (const char *)[[str dataUsingEncoding:NSWindowsCP1250StringEncoding allowLossyConversion:YES] bytes] : "";
 }
 
 inline const char * CRDMakeUTF16LEString(NSString *str)
 {
-	return str ? [str cStringUsingEncoding:NSUTF16LittleEndianStringEncoding] : "";
+	/* returns a best effort conversion to UTF-16 Little Endian */
+	return str ? (const char *)[[str dataUsingEncoding:NSUTF16LittleEndianStringEncoding allowLossyConversion:YES] bytes] : "";
 }
 
 inline int CRDGetUTF16LEStringLength(NSString *str)
 {
+	/* TODO: what happens on lossy conversion in CRDMakeUTF16LEString? */
 	return str ? [str lengthOfBytesUsingEncoding:NSUTF16LittleEndianStringEncoding] : 0;
 }
 

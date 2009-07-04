@@ -211,7 +211,7 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, NSString *nsdomain, cons
 
 		flags |= RDP_LOGON_BLOB;
 		DEBUG_RDP5(("Sending RDP5-style Logon packet\n"));
-		packetlen = 4 +	/* Unknown uint32 */
+		packetlen = 4 +	/* codepage uint32 */
 			4 +	/* flags */
 			2 +	/* len_domain */
 			2 +	/* len_user */
@@ -237,7 +237,7 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, NSString *nsdomain, cons
 		s = sec_init(conn, sec_flags, packetlen);
 		DEBUG_RDP5(("Called sec_init with packetlen %d\n", packetlen));
 
-		out_uint32(s, 0);	/* Unknown */
+		out_uint32(s, 0);	/* codepage uint32, TODO: for unicode set to windows input locale in low word */
 		out_uint32_le(s, flags);
 		out_uint16_le(s, len_domain);
 		out_uint16_le(s, len_user);
