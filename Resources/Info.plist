@@ -59,9 +59,9 @@
 	<key>CFBundleName</key>
 	<string>CoRD</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.5.0 Beta 2</string>
+	<string>0.5.0-svn</string>
 	<key>CFBundleVersion</key>
-	<string>326</string>
+	<string>327</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
