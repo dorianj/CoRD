@@ -61,7 +61,8 @@
 	[viewAnim release];
 	
 	if (hideMenu)
-        [NSMenu setMenuBarVisible:NO];
+		SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
+		//[NSMenu setMenuBarVisible:NO];
 	
 	[self setLevel:NSNormalWindowLevel];
 	
@@ -78,7 +79,8 @@
 	[self setLevel:NSPopUpMenuWindowLevel];
 	
 	if (hideMenu)
-        [NSMenu setMenuBarVisible:YES];
+		SetSystemUIMode(kUIModeNormal, 0);
+		//[NSMenu setMenuBarVisible:YES];
 }
 
 - (void)exitFullScreenWithAnimation:(BOOL)animate
