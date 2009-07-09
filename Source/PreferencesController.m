@@ -16,7 +16,6 @@
 */
 
 #import "PreferencesController.h"
-#import "ZNLog.h"
 
 #pragma mark -
 
@@ -65,13 +64,13 @@
 	if (prefsToolbar == nil)
 		prefsToolbar = [[NSToolbar alloc] initWithIdentifier: @"CoRDPrefsToolbar"];
 
-    [prefsToolbar setAllowsUserCustomization: NO];
+    [prefsToolbar setAllowsUserCustomization: YES];
     [prefsToolbar setAutosavesConfiguration: NO];
     [prefsToolbar setDisplayMode: NSToolbarDisplayModeIconAndLabel];
     [prefsToolbar setDelegate: self];
 
     [preferencesWindow setToolbar: prefsToolbar];
-	[preferencesWindow setShowsToolbarButton:NO];
+	[preferencesWindow setShowsToolbarButton:YES];
 }
 
 - (IBAction)changePanes: (id)sender
@@ -79,13 +78,11 @@
 	NSView *currentPane = [preferencesWindow contentView];
 	NSView* newPane = nil;
 	
-	NSString *paneLabel = [sender label];
+	NSString *toolbarButtonLabel = [sender label];
 	
-	if ([paneLabel isEqualToString:@"General"])
-		newPane = generalView;
-	else if ([paneLabel isEqualToString:@"Connections"])
+	if ([toolbarButtonLabel isEqualToString:@"Connections"])
 		newPane = connectionView;
-	else if ([paneLabel isEqualToString:@"Advanced"])
+	else if ([toolbarButtonLabel isEqualToString:@"Advanced"])
 		newPane = advancedView;
 	else
 		newPane = generalView;
@@ -99,7 +96,7 @@
 	[tempView release]; 
 	
 	[preferencesWindow makeFirstResponder:nil];
-	[prefsToolbar setSelectedItemIdentifier:(paneLabel) ? paneLabel : @"General"];
+	[prefsToolbar setSelectedItemIdentifier:(toolbarButtonLabel) ? toolbarButtonLabel : @"General"];
 
 	
 	//ZNLog(@"newPane: %@", newPane);
@@ -165,17 +162,27 @@
 
     if ( (itemLabel = [toolbarItems objectForKey:itemIdent]) != nil )
 	{
-		[toolbarItem setLabel: itemLabel];
-		[toolbarItem setPaletteLabel: itemLabel];
-
-		// These aren't localized (yet)
-		[toolbarItem setToolTip: itemLabel];
-		if ([[toolbarItem label] isEqualToString:@"General"])
+		if ([itemLabel isEqualToString:@"General"])
+		{
 			[toolbarItem setImage: [NSImage imageNamed:NSImageNamePreferencesGeneral]];
-		else if ([[toolbarItem label] isEqualToString:@"Connections"])
+			[toolbarItem setLabel:			NSLocalizedString(itemLabel, @"Preferences General toolbar item -> label")];
+			[toolbarItem setPaletteLabel:	NSLocalizedString(itemLabel, @"Preferences General toolbar item -> label")];
+			[toolbarItem setToolTip:		NSLocalizedString([itemLabel stringByAppendingString:@" Preferences"], @"Preferences General toolbar item -> tooltip")];
+		}
+		else if ([itemLabel isEqualToString:@"Connections"])
+		{
 			[toolbarItem setImage:[NSImage imageNamed:@"Windowed.png"]];
-		else if ([[toolbarItem label] isEqualToString:@"Advanced"])
+			[toolbarItem setLabel:			NSLocalizedString(itemLabel, @"Preferences Connections toolbar item -> label")];
+			[toolbarItem setPaletteLabel:	NSLocalizedString(itemLabel, @"Preferences Connections toolbar item -> label")];
+			[toolbarItem setToolTip:		NSLocalizedString([itemLabel stringByAppendingString:@" Preferences"], @"Preferences Connections toolbar item -> tooltip")];			
+		}
+		else if ([itemLabel isEqualToString:@"Advanced"])
+		{
 			[toolbarItem setImage:[NSImage imageNamed:NSImageNameAdvanced]];;
+			[toolbarItem setLabel:			NSLocalizedString(itemLabel, @"Preferences Advanced toolbar item -> label")];
+			[toolbarItem setPaletteLabel:	NSLocalizedString(itemLabel, @"Preferences Advanced toolbar item -> label")];
+			[toolbarItem setToolTip:		NSLocalizedString([itemLabel stringByAppendingString:@" Preferences"], @"Preferences Advanced toolbar item -> tooltip")];
+		}
 		
 		[toolbarItem setTarget: self];
 		[toolbarItem setAction: @selector(changePanes:)];
