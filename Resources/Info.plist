@@ -61,15 +61,11 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.5.0-svn</string>
 	<key>CFBundleVersion</key>
-	<string>328</string>
+	<string>330</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>CRDApplication</string>
-	<key>NSAppleScriptEnabled</key>
-	<string>NO</string>
-	<key>OSAScriptingDefinition</key>
-	<string>CoRD.sdef</string>
 	<key>SUFeedURL</key>
 	<string>http://cord.sourceforge.net/sparkle.xml</string>
 	<key>SmartCrashReports_CompanyName</key>

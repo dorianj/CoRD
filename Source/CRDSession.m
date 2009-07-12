@@ -81,14 +81,7 @@
 {
 	if (connectionStatus == CRDConnectionConnected)
 		[self disconnect];
-	
-	/* must be a name resolution error or something
-	 * that kept it in state connecting, clean it up.
-	 */
-	if (connectionStatus == CRDConnectionConnecting) {
-		[self setStatus:CRDConnectionClosed];
-	}
-		
+			
 	while (connectionStatus != CRDConnectionClosed)
 		usleep(1000);
 	
@@ -340,7 +333,7 @@
 
 		[self performSelectorOnMainThread:@selector(createViewWithFrameValue:) withObject:[NSValue valueWithRect:NSMakeRect(0.0, 0.0, conn->screenWidth, conn->screenHeight)] waitUntilDone:YES];
 	}
-	else
+	else if (connectionStatus == CRDConnectionConnecting)
 	{
 		[self setStatus:CRDConnectionClosed];
 	}
@@ -355,8 +348,10 @@
 
 - (void)disconnectAsync:(NSNumber *)block
 {
-	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	if (connectionStatus == CRDConnectionConnecting)
+		conn->errorCode = ConnectionErrorCanceled;
 	
 	[self setStatus:CRDConnectionDisconnecting];
 	if (connectionRunLoopFinished || [block boolValue])
@@ -364,7 +359,7 @@
 		// Try to forcefully break the connection thread out of its run loop
 		@synchronized(self)
 		{
-			[inputEventPort sendBeforeDate:[NSDate date] components:nil from:nil reserved:0];
+			[inputEventPort sendBeforeDate:[NSDate distantFuture] components:nil from:nil reserved:0];
 		}
 		
 		while (!connectionRunLoopFinished)
@@ -396,7 +391,7 @@
 	}
 	else
 	{
-		[NSThread detachNewThreadSelector:@selector(disconnectAsync:) toTarget:self withObject:[NSNumber numberWithBool:YES]];	
+		[self performSelectorInBackground:@selector(disconnectAsync:) withObject:[NSNumber numberWithBool:YES]];
 	}
 	
 	[pool release];
@@ -415,7 +410,7 @@
 	do
 	{
 		pool = [[NSAutoreleasePool alloc] init];
-		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.5]];
+		gotInput = [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.25]];
 		[pool release];
 	} while (connectionStatus == CRDConnectionConnected && gotInput);
 	

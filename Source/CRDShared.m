@@ -24,7 +24,7 @@
 
 // Constants
 const int CRDDefaultPort = 3389;
-const int CRDMouseEventLimit = 15;
+const int CRDMouseEventLimit = 20;
 const NSPoint CRDWindowCascadeStart = {50.0, 20.0};
 const float CRDWindowSnapSize = 30.0;
 NSString * const CRDRowIndexPboardType = @"CRDRowIndexPboardType";

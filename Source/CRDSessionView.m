@@ -321,28 +321,32 @@
 {
 	if (![self checkMouseInBounds:ev])
 		return;
+
+	@synchronized(lastMouseEventSentAt)
+	{
+		if ([mouseInputScheduler isValid])
+			[mouseInputScheduler invalidate];
 		
-	if ([mouseInputScheduler isValid])
-		[mouseInputScheduler invalidate];
-	
-	[mouseInputScheduler release];
-	mouseInputScheduler = nil;
-	
-	if ([[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0f/CRDMouseEventLimit))
-	{
-		// It's been longer than the threshold, send event immediately
-		[lastMouseEventSentAt release];
-		lastMouseEventSentAt = [[NSDate date] retain];
-		[self sendMouseInput:MOUSE_FLAG_MOVE];
+		[mouseInputScheduler release];
+		mouseInputScheduler = nil;
+		
+
+		if ([[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0f/CRDMouseEventLimit))
+		{
+			// It's been longer than the threshold, send event immediately
+			[lastMouseEventSentAt release];
+			lastMouseEventSentAt = [[NSDate date] retain];
+			[self sendMouseInput:MOUSE_FLAG_MOVE];
+		}
+		else
+		{
+			// It's been less than the threshold since the last event, schedule it to be sent later
+			[deferredMouseEvent release];
+			deferredMouseEvent = nil;
+			deferredMouseEvent = [ev copy];
+			mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:((1.0/CRDMouseEventLimit)-[[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt]) target:self selector:@selector(recheckScheduledMouseInput:) userInfo:nil repeats:NO] retain];
+		}
 	}
-	else
-	{
-		// It's been less than the threshold since the last event, schedule it to be sent later
-		[deferredMouseEvent release];
-		deferredMouseEvent = nil;
-		deferredMouseEvent = [ev copy];
-		mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:((1.0/CRDMouseEventLimit)-[[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt]) target:self selector:@selector(recheckScheduledMouseInput:) userInfo:nil repeats:NO] retain];
-	}		
 
 }
 
@@ -369,9 +373,16 @@
 	
 	DEBUG_MOUSE((@"Sending deferred mouse event %@", deferredMouseEvent));
 	
-	[self mouseMoved:deferredMouseEvent];
-	[deferredMouseEvent release];
-	deferredMouseEvent = nil;
+	@synchronized(lastMouseEventSentAt)
+	{
+		[self mouseMoved:deferredMouseEvent];
+	
+		if (mouseInputScheduler == nil)
+		{
+			[deferredMouseEvent release];
+			deferredMouseEvent = nil;
+		}
+	}
 }
 
 

@@ -962,7 +962,7 @@
 		return;
 		
 	NSSavePanel *savePanel = [NSSavePanel savePanel];
-	[savePanel setTitle:[NSLocalizedString(@"Save Server As", @"Save server dialog -> Title") stringByAppendingFormat:@" '%@'"]];
+	[savePanel setTitle:NSLocalizedString(@"Save Server As", @"Save server dialog -> Title")];
 	
 	[savePanel setAllowedFileTypes:[NSArray arrayWithObject:@"rdp"]];
 	[savePanel setCanSelectHiddenExtension:YES];

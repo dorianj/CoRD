@@ -252,7 +252,7 @@
 
 - (void)mouseDown:(NSEvent *)ev
 {
-	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+	NSInteger row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
 	mouseDragStart = [ev locationInWindow];
 	if ([ev clickCount] == 2 && row == [self selectedRow])
 	{
@@ -265,7 +265,7 @@
 
 - (void)mouseUp:(NSEvent *)ev
 {
-	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+	NSInteger row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
 
 	if ([self selectedRow] != row)
 	{
@@ -285,7 +285,7 @@
 // Assure that the row the right click is over is selected so that the context menu is correct
 - (void)rightMouseDown:(NSEvent *)ev
 {
-	int row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
+	NSInteger row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
 	if (row != -1)
 		[self selectRow:row];
 		
@@ -320,7 +320,7 @@
 
 - (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender
 {
-	int row = [super rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
+	NSInteger row = [super rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
 		
 	NSDragOperation retOperation;
 	BOOL innerListDrag = [sender draggingSource] == self;
@@ -367,7 +367,7 @@
 {
 	if ([self pasteboardHasValidData:[sender draggingPasteboard]])
 	{		
-		int row = [self rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
+		NSInteger row = [self rowAtPoint:[self convertPoint:[sender draggingLocation] fromView:nil]];
 		
 		if (row == -1)
 			row = [self numberOfRows];
@@ -560,7 +560,7 @@
 
 - (void)startDragForEvent:(NSEvent *)ev
 {	
-	int row = [self rowAtPoint:[self convertPoint:mouseDragStart fromView:nil]];
+	NSInteger row = [self rowAtPoint:[self convertPoint:mouseDragStart fromView:nil]];
 	
 	if (![[self delegate] tableView:self canDragRow:row])
 		return;
