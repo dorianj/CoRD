@@ -578,7 +578,7 @@
 	NSImage *dragImage = [self dragImageForRowsWithIndexes:index tableColumns:nil event:ev offset:&offset];
 	
 	[g_appController holdSavedServer:row];
-	selectedRow = -1;
+	[self deselectAll:self];
 	[self noteNumberOfRowsChanged];
 	draggedRow = row;
 	
