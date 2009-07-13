@@ -1348,7 +1348,7 @@
 	return YES;
 }
 
-- (BOOL)tableView:(NSTableView *)aTableView canDragRow:(unsigned)rowIndex
+- (BOOL)tableView:(NSTableView *)aTableView canDragRow:(NSUInteger)rowIndex
 {	
 	if (_isFilteringSavedServers)
 		return [filteredServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
@@ -1356,7 +1356,7 @@
 		return [savedServers indexOfObject:[self serverInstanceForRow:rowIndex]] != NSNotFound;
 }
 
-- (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(unsigned)rowIndex
+- (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(NSUInteger)rowIndex
 {
 	if (_isFilteringSavedServers)
 		return NO;

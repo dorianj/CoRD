@@ -44,11 +44,11 @@
 
 @interface CRDServerList (Private)
 	- (BOOL)pasteboardHasValidData:(NSPasteboard *)draggingPasteboard;
-	- (void)createNewRowOriginsAboveRow:(int)rowIndex;
+	- (void)createNewRowOriginsAboveRow:(NSInteger)rowIndex;
 	- (void)startAnimation;
 	- (void)concludeDrag;
 	- (void)createConvolvedRowRects:(float)fraction;
-	- (CRDServerCell *)cellForRow:(int)row;
+	- (CRDServerCell *)cellForRow:(NSInteger)row;
 	- (NSDragOperation)dragOperationForSource:(id <NSDraggingInfo>)info;
 	- (void)startDragForEvent:(NSEvent *)ev;
 @end
@@ -128,14 +128,14 @@
 	[self selectRow:[indexes firstIndex]];
 }
 
-- (void)selectRow:(int)index
+- (void)selectRow:(NSInteger)index
 {
 	int oldSelection = selectedRow;
 	selectedRow = [[self delegate] tableView:self shouldSelectRow:index] ? index : -1;
 	
-	// Bit hacky, but works better than calling super (this way, we control the notification)
+	// Very hacky, but works better than calling super (this way, we control the notification)
 	[_selectedRows autorelease];
-	_selectedRows = [[NSIndexSet indexSetWithIndex:selectedRow] mutableCopy];
+	_selectedRows = [[NSMutableIndexSet indexSetWithIndex:selectedRow] mutableCopy];
 	
 	[self setNeedsDisplay:YES];
 	
@@ -176,7 +176,7 @@
 - (NSImage *)dragImageForRowsWithIndexes:(NSIndexSet *)dragRows tableColumns:(NSArray *)tableColumns
 		event:(NSEvent*)dragEvent offset:(NSPointPointer)dragImageOffset
 {
-	int row = [dragRows firstIndex];
+	NSInteger row = [dragRows firstIndex];
 	
 	if ( (row < 0) || (row >= [self numberOfRows]))
 		return nil;
@@ -288,8 +288,9 @@
 	NSInteger row = [self rowAtPoint:[self convertPoint:[ev locationInWindow] fromView:nil]];
 	if (row != -1)
 		[self selectRow:row];
-		
-	[super rightMouseDown:ev];
+	
+	if (([self selectedRow] != -1) && [[self menu] numberOfItems])
+		[NSMenu popUpContextMenu:[self menu] withEvent:ev forView:self];
 }
 
 - (NSRect)rectOfRow:(NSInteger)rowIndex
@@ -460,13 +461,13 @@
 	[autoexpansionAnimation setDelegate:self];
 	
 	// Make sure animation:didReachProgressMark: gets called on each frame	
-	for (int i = 0; i < (int)frameRate; i++)
+	for (NSInteger i = 0; i < (int)frameRate; i++)
 		[autoexpansionAnimation addProgressMark:(i / frameRate)];
 		
 	[autoexpansionAnimation startAnimation];
 }
 
-- (void)createNewRowOriginsAboveRow:(int)rowIndex
+- (void)createNewRowOriginsAboveRow:(NSInteger)rowIndex
 {
 	if (emptyRowIndex == rowIndex || rowIndex == -1) 
 		return;
@@ -480,7 +481,7 @@
 	oldEmptyRowIndex = (emptyRowIndex == -1) ? [self numberOfRows] : emptyRowIndex;
 	emptyRowIndex = rowIndex;
 	
-	int numRows = [self numberOfRows], i;
+	NSInteger numRows = [self numberOfRows], i;
 	float delta = [super rectOfRow:rowIndex].size.height;
 
 	NSPoint startRowOrigin, endRowOrigin;
@@ -614,7 +615,7 @@
 
 #pragma mark -
 #pragma mark Internal use
-- (CRDServerCell *)cellForRow:(int)row
+- (CRDServerCell *)cellForRow:(NSInteger)row
 {
 	return [[[self tableColumns] objectAtIndex:0] dataCellForRow:row];
 

@@ -133,11 +133,26 @@ rdp_out_unistr(RDStreamRef s, const char *string, int len)
 
 		while (i < len)
 		{
-			s->p[i++] = string[j++];
-			s->p[i++] = 0;
-		}
+			uint16_t word;
+			uint16_t first;
 
-		s->p += len;
+			/* calculate UTF-8 to UTF-16 */
+			first = (uint16_t)string[j++];
+			if ((first & 0x80) == 0)
+				word = first;
+			else if ((first & 0xe0) == 0xc0)
+				word = ((first & 0x1f) << 6) | ((uint16_t)string[j++] & 0x3f);
+			else if ((first & 0xf0) == 0xe0)
+			{
+				uint16_t second = ((uint16_t)string[j++] & 0x3f) << 6;
+				uint16_t third = (uint16_t)string[j++] & 0x3f;
+				word = ((first & 0x0f) << 12) | second | third;
+			}
+
+			/* store as UTF-16LE */
+			out_uint16_le(s, word);
+			i += 2;
+		}
 	}
 }
 

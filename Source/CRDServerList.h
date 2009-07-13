@@ -23,22 +23,22 @@
 	// Animated dragging
 	NSAnimation *autoexpansionAnimation;
 	BOOL inLiveDrag;
-	int emptyRowIndex, oldEmptyRowIndex, draggedRow;
+	NSInteger emptyRowIndex, oldEmptyRowIndex, draggedRow;
 	
-	int selectedRow;
+	NSInteger selectedRow;
 	
 	NSPoint mouseDragStart;
 	
 	// Arrays of NSValues encapsulating NSPoints
 	NSArray *autoexpansionStartRowOrigins, *autoexpansionEndRowOrigins, *autoexpansionCurrentRowOrigins;
 }
-- (void)selectRow:(int)index;
+- (void)selectRow:(NSInteger)index;
 - (NSString *)pasteboardDataType:(NSPasteboard *)draggingPasteboard;
 
 @end
 
 
 @interface NSObject (CRDServerListDataSource)
-	- (BOOL)tableView:(NSTableView *)aTableView canDragRow:(unsigned)rowIndex;
-	- (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(unsigned)rowIndex;
+	- (BOOL)tableView:(NSTableView *)aTableView canDragRow:(NSUInteger)rowIndex;
+	- (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(NSUInteger)rowIndex;
 @end
