@@ -84,6 +84,15 @@ void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
 NSNumber *CRDNumberForColorsText(NSString * colorsText);
 
+
+#pragma mark -
+#pragma mark Cocoa Categories
+
+@interface NSString (CRDAdditions)
+	- (NSString *)stringByDeletingCharactersInSet:(NSCharacterSet *)characterSet;
+	- (NSString *)stringByDeletingFileSystemCharacters;
+@end
+
 // Convenience macros
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]
 #define CRDRectFromSize(s) ((NSRect){NSZeroPoint, (s)})

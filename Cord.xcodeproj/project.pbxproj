@@ -60,13 +60,11 @@
 		98E972950BD9D9DF0041110D /* secure.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725A0BD9D9DF0041110D /* secure.c */; };
 		98E972960BD9D9DF0041110D /* serial.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725B0BD9D9DF0041110D /* serial.c */; };
 		98E972970BD9D9DF0041110D /* tcp.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9725C0BD9D9DF0041110D /* tcp.m */; };
-		98E972CF0BD9DA820041110D /* Arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972BD0BD9DA820041110D /* Arrow.png */; };
 		98E972D00BD9DA820041110D /* Clock icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972BE0BD9DA820041110D /* Clock icon.png */; };
 		98E972D10BD9DA820041110D /* Disconnect.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972BF0BD9DA820041110D /* Disconnect.png */; };
 		98E972D30BD9DA820041110D /* Fullscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C40BD9DA820041110D /* Fullscreen.png */; };
 		98E972D40BD9DA820041110D /* i Button Face.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C50BD9DA820041110D /* i Button Face.png */; };
 		98E972D60BD9DA820041110D /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C70BD9DA820041110D /* keymap.txt */; };
-		98E972D70BD9DA820041110D /* plus.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C80BD9DA820041110D /* plus.png */; };
 		98E972D90BD9DA820041110D /* rdp document.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CA0BD9DA820041110D /* rdp document.icns */; };
 		98E972DA0BD9DA820041110D /* Servers.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CB0BD9DA820041110D /* Servers.png */; };
 		98E972DB0BD9DA820041110D /* Unified.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CC0BD9DA820041110D /* Unified.png */; };
@@ -180,14 +178,12 @@
 		98E9725C0BD9D9DF0041110D /* tcp.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = tcp.m; path = Source/tcp.m; sourceTree = "<group>"; };
 		98E9725D0BD9D9DF0041110D /* types.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = types.h; path = Source/types.h; sourceTree = "<group>"; };
 		98E972B90BD9DA720041110D /* Sparkle.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Sparkle.framework; path = Source/Sparkle.framework; sourceTree = "<group>"; };
-		98E972BD0BD9DA820041110D /* Arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Arrow.png; path = Resources/Arrow.png; sourceTree = "<group>"; };
 		98E972BE0BD9DA820041110D /* Clock icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Clock icon.png"; path = "Resources/Clock icon.png"; sourceTree = "<group>"; };
 		98E972BF0BD9DA820041110D /* Disconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Disconnect.png; path = Resources/Disconnect.png; sourceTree = "<group>"; };
 		98E972C40BD9DA820041110D /* Fullscreen.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Fullscreen.png; path = Resources/Fullscreen.png; sourceTree = "<group>"; };
 		98E972C50BD9DA820041110D /* i Button Face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "i Button Face.png"; path = "Resources/i Button Face.png"; sourceTree = "<group>"; };
 		98E972C60BD9DA820041110D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
 		98E972C70BD9DA820041110D /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = keymap.txt; path = Resources/keymap.txt; sourceTree = "<group>"; };
-		98E972C80BD9DA820041110D /* plus.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = plus.png; path = Resources/plus.png; sourceTree = "<group>"; };
 		98E972CA0BD9DA820041110D /* rdp document.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "rdp document.icns"; path = "Resources/rdp document.icns"; sourceTree = "<group>"; };
 		98E972CB0BD9DA820041110D /* Servers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Servers.png; path = Resources/Servers.png; sourceTree = "<group>"; };
 		98E972CC0BD9DA820041110D /* Unified.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Unified.png; path = Resources/Unified.png; sourceTree = "<group>"; };
@@ -400,12 +396,10 @@
 			children = (
 				98E66D240FF2FF8300736CFA /* CoRD.icns */,
 				9816F0BF0BEE506000E439BE /* Stop.png */,
-				98E972BD0BD9DA820041110D /* Arrow.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
 				98E972BF0BD9DA820041110D /* Disconnect.png */,
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
 				98E972C50BD9DA820041110D /* i Button Face.png */,
-				98E972C80BD9DA820041110D /* plus.png */,
 				98E972CA0BD9DA820041110D /* rdp document.icns */,
 				98E972CB0BD9DA820041110D /* Servers.png */,
 				98E972CC0BD9DA820041110D /* Unified.png */,
@@ -477,13 +471,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				98E972CF0BD9DA820041110D /* Arrow.png in Resources */,
 				98E972D00BD9DA820041110D /* Clock icon.png in Resources */,
 				98E972D10BD9DA820041110D /* Disconnect.png in Resources */,
 				98E972D30BD9DA820041110D /* Fullscreen.png in Resources */,
 				98E972D40BD9DA820041110D /* i Button Face.png in Resources */,
 				98E972D60BD9DA820041110D /* keymap.txt in Resources */,
-				98E972D70BD9DA820041110D /* plus.png in Resources */,
 				98E972D90BD9DA820041110D /* rdp document.icns in Resources */,
 				98E972DA0BD9DA820041110D /* Servers.png in Resources */,
 				98E972DB0BD9DA820041110D /* Unified.png in Resources */,

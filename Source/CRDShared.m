@@ -342,3 +342,28 @@ NSNumber * CRDNumberForColorsText(NSString *colorsText)
 	else
 		return [NSNumber numberWithInt:16];
 }
+
+
+#pragma mark -
+#pragma mark Cocoa categories
+@implementation NSString (CRDAdditions)
+
+- (NSString *)stringByDeletingCharactersInSet:(NSCharacterSet *)characterSet
+{
+	NSMutableString *cleanedString = [[self mutableCopy] autorelease];
+	for (int i = 0; i < [cleanedString length]; )
+	{
+		if ([characterSet characterIsMember:[cleanedString characterAtIndex:i]])
+			[cleanedString deleteCharactersInRange:NSMakeRange(i, 1)];
+		else
+			i++;
+	}
+
+	return cleanedString;
+}
+
+- (NSString *)stringByDeletingFileSystemCharacters
+{
+	return [self stringByDeletingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/~:"]];
+}
+@end

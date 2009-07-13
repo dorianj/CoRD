@@ -997,7 +997,7 @@
 		serverIndex = [savedServers count]-1;
 	
 	CRDSession *duplicate = [selectedServer copy];
-	[duplicate setFilename:CRDFindAvailableFileName([AppController savedServersPath], [duplicate label], @".rdp")];
+	[duplicate setFilename:CRDFindAvailableFileName([AppController savedServersPath], [[duplicate label] stringByDeletingFileSystemCharacters], @".rdp")];
 	[duplicate flushChangesToFile];
 	[self addSavedServer:duplicate atIndex:serverIndex+1 select:YES];
 }
@@ -1579,7 +1579,7 @@
 		// Move to saved servers if not already there
 		if (![inst filename])
 		{
-			NSString *path = CRDFindAvailableFileName([AppController savedServersPath], [inst label], @".rdp");
+			NSString *path = CRDFindAvailableFileName([AppController savedServersPath], [[inst label] stringByDeletingFileSystemCharacters], @".rdp");
 
 			[inst writeToFile:path atomically:YES updateFilenames:YES];
 		}
@@ -1810,7 +1810,7 @@
 		NSString *newLabel = [change objectForKey:NSKeyValueChangeNewKey];
 		if ( ([newLabel length] > 0) && ![newLabel isEqual:[change objectForKey:NSKeyValueChangeOldKey]] && ![object temporary])
 		{
-			NSString *newPath = CRDFindAvailableFileName([AppController savedServersPath], newLabel, @".rdp");
+			NSString *newPath = CRDFindAvailableFileName([AppController savedServersPath], [newLabel stringByDeletingFileSystemCharacters], @".rdp");
 			
 			[[NSFileManager defaultManager] movePath:[object filename] toPath:newPath handler:nil];
 			
