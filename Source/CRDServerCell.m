@@ -130,19 +130,9 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	{
 		[self createProgressIndicator];
 		if ([progressIndicator superview] != controlView)
-		{
 			[controlView addSubview:progressIndicator];
-		}
-		
-		if (abbreviatedSize)
-		{
-			[progressIndicator setControlSize:NSSmallControlSize];
-		} 
-		else
-		{
-			[progressIndicator setControlSize:NSRegularControlSize];
-		}
 
+		[progressIndicator setControlSize:(abbreviatedSize ? NSSmallControlSize : NSRegularControlSize)];
 		[progressIndicator setFrame:imgRect];
 		[progressIndicator sizeToFit];
 		[progressIndicator startAnimation:self];
@@ -238,7 +228,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 
 - (void)setObjectValue:(id)obj
 {
-	// CRDSession doesn't conform to NSCopying, thus, make sure super doesn't try to copy it here.
+	// CRDSessionCell doesn't conform to NSCopying, thus, make sure super doesn't try to copy it here.
 }
 
 
@@ -276,6 +266,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	progressIndicator = [[NSProgressIndicator alloc] initWithFrame:CRDRectFromSize([self cellSize])];
 	[progressIndicator setStyle:NSProgressIndicatorSpinningStyle];
 }
+
 
 
 #pragma mark -

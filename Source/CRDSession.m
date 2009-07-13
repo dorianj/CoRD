@@ -49,7 +49,7 @@
 	preferredRowIndex = -1;
 	screenDepth = 16;
 	temporary = themes = YES;
-	hotkey = (-1);
+	hotkey = -1;
 	fileEncoding = NSUTF8StringEncoding;
 	
 	// Other initialization
@@ -124,7 +124,7 @@
 	newSession->username = [username copy];
 	newSession->password = [password copy];
 	newSession->domain = [domain copy];
-	newSession->startDisplay = startDisplay;
+	newSession->otherAttributes = [otherAttributes copy];
 	newSession->forwardDisks = forwardDisks; 
 	newSession->forwardAudio = forwardAudio;
 	newSession->forwardPrinters = forwardPrinters;
@@ -538,7 +538,6 @@
 	write_int(@"desktopheight", screenHeight);
 	write_int(@"session bpp", screenDepth);
 	write_int(@"cord save password", savePassword);
-	write_int(@"startdisplay", startDisplay);
 	write_int(@"cord fullscreen", fullscreen);
 	write_int(@"cord row index", preferredRowIndex);
 	write_int(@"cord hotkey", hotkey);
@@ -986,8 +985,6 @@
 			savePassword = numVal;
 		else if ([name isEqualToString:@"domain"])
 			domain = [value retain];
-		else if ([name isEqualToString:@"startdisplay"])
-			startDisplay = numVal;
 		else if ([name isEqualToString:@"cord label"])
 			label = [value retain];			
 		else if ([name isEqualToString:@"cord row index"])

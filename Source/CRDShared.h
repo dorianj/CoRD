@@ -100,8 +100,8 @@ NSNumber *CRDNumberForColorsText(NSString * colorsText);
 #pragma mark Constants
 
 // Constants
-extern const int CRDDefaultPort;
-extern const int CRDMouseEventLimit;
+extern const NSInteger CRDDefaultPort;
+extern const NSInteger CRDMouseEventLimit;
 extern const NSPoint CRDWindowCascadeStart;
 extern const float CRDWindowSnapSize;
 extern NSString * const CRDRowIndexPboardType;

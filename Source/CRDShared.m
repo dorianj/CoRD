@@ -23,8 +23,8 @@
 #pragma mark Storage for externs
 
 // Constants
-const int CRDDefaultPort = 3389;
-const int CRDMouseEventLimit = 20;
+const NSInteger CRDDefaultPort = 3389;
+const NSInteger CRDMouseEventLimit = 20;
 const NSPoint CRDWindowCascadeStart = {50.0, 20.0};
 const float CRDWindowSnapSize = 30.0;
 NSString * const CRDRowIndexPboardType = @"CRDRowIndexPboardType";
@@ -79,12 +79,11 @@ inline NSString * CRDJoinHostNameAndPort(NSString *host, int port)
 	return (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", host, port] : [[host copy] autorelease];
 }
 
-void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port)
+void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port)
 { 
         if ([address characterAtIndex:[address length] - 1] == ']' && [address characterAtIndex:0] == '[')
         {
-            address = [address substringWithRange:NSMakeRange( 1, [address length] - 2 )];
-            NSLog(@"%@", address);
+            address = [address substringWithRange:NSMakeRange(1, [address length] - 2)];
             *host = address;
             *port = CRDDefaultPort;
         }
@@ -97,7 +96,7 @@ void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port)
             if (![scan scanUpToCharactersFromSet:colonSet intoString:host])
                 *host = @"";
                 
-            if (![scan scanInt:port])
+            if (![scan scanInteger:port])
                 *port = CRDDefaultPort;
         }
 }

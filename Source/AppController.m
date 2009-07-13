@@ -266,7 +266,7 @@
 {
 	NSString *address = host, *hostname;
 	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] && NSShiftKeyMask;
-	int port;
+	NSInteger port;
 	
 	CRDSplitHostNameAndPort(address, &hostname, &port);
 	
@@ -440,7 +440,7 @@
 		[[inst window] makeKeyAndOrderFront:self];
 		[[inst window] makeFirstResponder:[inst view]];
 	}
-	else if ([inst status] != CRDConnectionConnected)
+	else if ([inst status] == CRDConnectionClosed)
 	{
 		[self connectInstance:inst];
 	}	
@@ -862,7 +862,7 @@
 {
 	NSString *address = [gui_quickConnect stringValue], *hostname;
 	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] && NSShiftKeyMask;
-	int port;
+	NSInteger port;
 	
 	CRDSplitHostNameAndPort(address, &hostname, &port);
 	
@@ -1004,13 +1004,26 @@
 
 - (IBAction)filterServers:(id)sender
 {
+	if ( (sender == gui_searchField) && [filteredServers count])
+	{
+		// If return was pressed, connect to the first server and clear search results
+		NSEvent *ev = [[gui_searchField window] currentEvent];
+		if ( ([ev type] == NSKeyDown) && [[ev charactersIgnoringModifiers] isEqualToString:@"\r"] )
+		{
+			[self connect:nil];
+			[gui_searchField setStringValue:@""];
+		}
+	}
+	
+	
 	NSString *searchString = [gui_searchField stringValue];
 
 	if (![searchString length])
 	{
 		_isFilteringSavedServers = NO;
 		[filteredServers removeAllObjects];
-		[self listUpdated];
+		
+
 	}
 	else
 	{
@@ -1019,19 +1032,23 @@
 		
 		NSString *searchCompareString = [NSString stringWithFormat:@"*%@*", [[searchString lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
 		
-		for (CRDSession *inst in savedServers)
+		for (CRDSession *inst in [savedServers arrayByAddingObjectsFromArray:connectedServers])
 		{
 			if ([[inst.label lowercaseString] isLike:searchCompareString] || [[inst.hostName lowercaseString] isLike:searchCompareString])
-			{
 				[filteredServers addObject:inst];
-			}			
 		}
-		[self listUpdated];	
+		
+		if (sender != nil)
+			[self listUpdated];
 	}
 	
-	// If we only find one server, select it
-	if ([filteredServers count] == 1)
-		[gui_serverList selectRow:1];
+	if (sender == gui_searchField)
+	{	
+		[self listUpdated];
+				
+		if ([filteredServers count])
+			[gui_serverList selectRow:1];
+	}
 }
 
 - (IBAction)jumpToFilter:(id)sender
@@ -1515,6 +1532,9 @@
 	if (!inst)
 		return;
 	
+	if ([inst status] == CRDConnectionConnecting || [inst status] == CRDConnectionDisconnecting)
+		return;
+	
 	if ([inst status] == CRDConnectionConnected)
 		[self disconnectInstance:inst];
 		
@@ -1679,7 +1699,7 @@
 	NSLog(@"Parsing URL '%@'", cleanURL);
 	
 	NSString *username = @"", *password = @"", *host;
-	int port;
+	NSInteger port;
 	
 
 	NSUInteger ampersandLocation = [url rangeOfString:@"@"].location;
@@ -1826,6 +1846,10 @@
 	if ([userDefaults boolForKey:@"keepServersSortedAlphabetically"]) 
 		[self sortSavedServersAlphabetically];
 	
+	// Remove all subvies of gui_serverList, to make sure that no progess indicators are out-of-place
+	for (NSView *subview in [[[gui_serverList subviews] copy] autorelease])
+		[subview removeFromSuperviewWithoutNeedingDisplay];
+	
 	[gui_serverList noteNumberOfRowsChanged];
 	
 	if ([self serverInstanceForRow:[gui_serverList selectedRow]] == nil)
@@ -1833,6 +1857,8 @@
 		
 	for (NSMenuItem *hotkeyMenuItem in [[gui_hotkey menu] itemArray])
 		[hotkeyMenuItem setEnabled:YES];
+	
+	
 	
 	// Update servers menu items
 	int separatorIndex = [gui_serversMenu indexOfItemWithTag:SERVERS_SEPARATOR_TAG], i; 
@@ -1954,7 +1980,7 @@
 	[inst setValue:[gui_password stringValue]	forKey:@"password"];
 	
 	// Host
-	int port;
+	NSInteger port;
 	NSString *s;
 	CRDSplitHostNameAndPort([gui_host stringValue], &s, &port);
 	[inst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
@@ -2358,6 +2384,10 @@
 	index = MIN(MAX(index, 0), [savedServers count]);
 		
 	[savedServers insertObject:inst atIndex:index];
+	
+	if (_isFilteringSavedServers)
+		[self filterServers:nil];
+		
 	[self listUpdated];
 	
 	if (select)
@@ -2380,7 +2410,10 @@
 	
 	if (inspectedServer == inst)
 		inspectedServer = nil;
-	
+		
+	if (_isFilteringSavedServers)
+		[self filterServers:nil];
+
 	[self listUpdated];
 }
 
