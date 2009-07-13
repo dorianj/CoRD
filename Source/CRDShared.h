@@ -60,7 +60,7 @@ typedef struct _CRDInputEvent
 void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rect);
 void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width);
 NSString *CRDJoinHostNameAndPort(NSString *host, int port);
-void CRDSplitHostNameAndPort(NSString *address, NSString **host, int *port);
+void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port);
 NSString *CRDJoinHostNameAndPort(NSString *host, int port);
 NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);
 BOOL CRDDrawerIsVisible(NSDrawer *drawer);
