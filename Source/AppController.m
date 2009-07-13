@@ -2447,25 +2447,6 @@
 
 @implementation AppController (SharedResources)
 
-+ (NSImage *)sharedDocumentIcon
-{
-	static NSImage *s_documentIcon = nil;
-	
-	if (s_documentIcon == nil)
-	{
-		// The stored icon is loaded flipped for whatever reason, so flip it back
-		NSImage *icon = [NSImage imageNamed:@"rdp document.icns"];
-		s_documentIcon = [[NSImage alloc] initWithSize:[icon size]];
-		[icon setFlipped:YES];
-		[s_documentIcon lockFocus];
-		{
-			[icon drawInRect:CRDRectFromSize([icon size]) fromRect:CRDRectFromSize([icon size]) operation:NSCompositeSourceOver fraction:1.0];
-		} [s_documentIcon unlockFocus];
-	}
-	
-	return s_documentIcon;
-}
-
 + (NSString *)savedServersPath
 {
 	static NSString *s_savedServersPath = nil;

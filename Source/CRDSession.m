@@ -54,8 +54,8 @@
 	
 	// Other initialization
 	otherAttributes = [[NSMutableDictionary alloc] init];
+	
 	cellRepresentation = [[CRDServerCell alloc] init];
-	[cellRepresentation setImage:[AppController sharedDocumentIcon]];
 	inputEventStack = [[NSMutableArray alloc] init];
 	
 	[self setStatus:CRDConnectionClosed];
@@ -603,7 +603,14 @@
 	// Update the image
 	if (connectionStatus != CRDConnectionConnecting)
 	{
-		NSImage *base = [AppController sharedDocumentIcon];
+		NSString *iconBaseName = @"RDP Document File";
+		
+		if (connectionStatus == CRDConnectionClosed)
+			iconBaseName = @"RDP Document Gray";
+			
+		NSImage *base = [NSImage imageNamed:iconBaseName];	
+		[base setFlipped:YES];
+		
 		NSImage *cellImage = [[[NSImage alloc] initWithSize:NSMakeSize(SERVER_CELL_FULL_IMAGE_SIZE, SERVER_CELL_FULL_IMAGE_SIZE)] autorelease];
 		
 		[cellImage lockFocus]; {
@@ -1046,6 +1053,7 @@
 {
 	[cellRepresentation setStatus:newStatus];
 	connectionStatus = newStatus;
+	[self updateCellData];
 }
 
 // Status needs to be set on the main thread when setting it to Connecting so the the CRDServerCell will create its progress indicator timer in the main run loop

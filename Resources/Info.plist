@@ -12,7 +12,7 @@
 				<string>rdp</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string>rdp document</string>
+			<string>RDP Document File</string>
 			<key>CFBundleTypeName</key>
 			<string>Remote Desktop Connection</string>
 			<key>CFBundleTypeOSTypes</key>
