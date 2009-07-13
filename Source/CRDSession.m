@@ -596,6 +596,9 @@
 // Updates the CRDServerCell this instance manages to match the current details.
 - (void)updateCellData
 {
+	if (![[NSThread currentThread] isEqual:[NSThread mainThread]])
+		return [self performSelectorOnMainThread:@selector(updateCellData) withObject:nil waitUntilDone:NO];
+	
 	// Update the text
 	NSString *fullHost = (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", hostName, port] : hostName;
 	[cellRepresentation setDisplayedText:label username:username address:fullHost];
@@ -622,7 +625,6 @@
 		{
 			// Copy the document image into a new image and badge it with the clock
 			[cellImage lockFocus]; {
-
 				[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
 
 				[base drawInRect:CRDRectFromSize([cellImage size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];	
