@@ -322,7 +322,7 @@
 	if (![self checkMouseInBounds:ev])
 		return;
 
-	@synchronized(lastMouseEventSentAt)
+	@synchronized(self)
 	{
 		if ([mouseInputScheduler isValid])
 			[mouseInputScheduler invalidate];
@@ -373,7 +373,7 @@
 	
 	DEBUG_MOUSE((@"Sending deferred mouse event %@", deferredMouseEvent));
 	
-	@synchronized(lastMouseEventSentAt)
+	@synchronized(self)
 	{
 		[self mouseMoved:deferredMouseEvent];
 	
