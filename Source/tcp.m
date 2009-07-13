@@ -238,12 +238,13 @@ Cleanup:
 void
 tcp_disconnect(RDConnectionRef conn)
 {
-	[conn->inputStream release];
-	[conn->outputStream release];
-	conn->inputStream = NULL;
-	conn->outputStream = NULL;
 	[conn->inputStream close];
+	[conn->inputStream release];
+	conn->inputStream = NULL;
+	
 	[conn->outputStream close];
+	[conn->outputStream release];	
+	conn->outputStream = NULL;
 }
 
 char *

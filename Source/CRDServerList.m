@@ -135,7 +135,7 @@
 	
 	// Very hacky, but works better than calling super (this way, we control the notification)
 	[_selectedRows autorelease];
-	_selectedRows = [[NSMutableIndexSet indexSetWithIndex:selectedRow] mutableCopy];
+	_selectedRows = [[NSMutableIndexSet indexSetWithIndex:selectedRow] retain];
 	
 	[self setNeedsDisplay:YES];
 	

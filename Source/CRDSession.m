@@ -416,7 +416,7 @@
 	
 	pool = [[NSAutoreleasePool alloc] init];
 	
-	//rdp_disconnect(conn);
+	rdp_disconnect(conn);
 	[self discardConnectionThread];
 	connectionRunLoopFinished = YES;
 
