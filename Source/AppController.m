@@ -239,7 +239,7 @@
 	[self validateControls];
 	[self listUpdated];
     
-    if([[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] != nil)
+    if ([[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] != nil)
         [self parseCommandLine];
 }
 
@@ -251,32 +251,31 @@
     hostname = [[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"];
     port = [[NSUserDefaults standardUserDefaults] integerForKey:@"port"];
     
-    if(hostname == nil)
+    if (![hostname length])
         [self printUsage];
-    else
+    else if (port)
         [self performCommandLineConnect:[NSString stringWithFormat:@"%@:%d", hostname, port]];
+	else
+		[self performCommandLineConnect:hostname];
 }
 
 - (void)printUsage
 {
-    printf("usage: CoRD -hostname host_name -port port_number");
+    printf("usage: CoRD -hostname example.com -port port_number");
 }
 
 - (void)performCommandLineConnect:(NSString *)host
 {
 	NSString *address = host, *hostname;
-	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] && NSShiftKeyMask;
 	NSInteger port;
 	
 	CRDSplitHostNameAndPort(address, &hostname, &port);
 	
-	CRDSession *newInst = [[[CRDSession alloc] init] autorelease];
+	CRDSession *newInst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 	
-	[newInst setValue:[NSNumber numberWithInt:16] forKey:@"screenDepth"];
 	[newInst setValue:hostname forKey:@"label"];
 	[newInst setValue:hostname forKey:@"hostName"];
 	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
-	[newInst setValue:[NSNumber numberWithBool:isConsoleSession] forKey:@"consoleSession"];
 	
 	[connectedServers addObject:newInst];
 	[gui_serverList deselectAll:self];
@@ -377,10 +376,9 @@
 	if (!CRDDrawerIsVisible(gui_serversDrawer))
 		[self toggleDrawer:nil visible:YES];
 		
-	CRDSession *inst = [[[CRDSession alloc] init] autorelease];
+	CRDSession *inst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 	
-	NSString *path = CRDFindAvailableFileName([AppController savedServersPath],
-			NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
+	NSString *path = CRDFindAvailableFileName([AppController savedServersPath], NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
 		
 	[inst setTemporary:NO];
 	[inst setFilename:path];
@@ -861,15 +859,13 @@
 - (IBAction)performQuickConnect:(id)sender
 {
 	NSString *address = [gui_quickConnect stringValue], *hostname;
-	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] && NSShiftKeyMask;
+	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] & NSShiftKeyMask;
 	NSInteger port;
 	
 	CRDSplitHostNameAndPort(address, &hostname, &port);
 	
+	CRDSession *newInst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 	
-	CRDSession *newInst = [[[CRDSession alloc] init] autorelease];
-	
-	[newInst setValue:[NSNumber numberWithInt:16] forKey:@"screenDepth"];
 	[newInst setValue:hostname forKey:@"label"];
 	[newInst setValue:hostname forKey:@"hostName"];
 	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
@@ -886,7 +882,7 @@
 	if ([recent containsObject:address])
 		[recent removeObject:address];
 	
-	if ([recent count] > 10)
+	if ([recent count] > 15)
 		[recent removeLastObject];
 	
 	[recent insertObject:address atIndex:0];
@@ -2077,9 +2073,9 @@
 	{
 		int screenWidth = [[newSettings valueForKey:@"screenWidth"] intValue];
 		int screenHeight = [[newSettings valueForKey:@"screenHeight"] intValue]; 
-		if (screenWidth == 0 || screenHeight == 0) {
-			screenWidth = 1024;
-			screenHeight = 768;
+		if (!screenWidth || !screenHeight) {
+			screenWidth = CRDDefaultScreenWidth;
+			screenHeight = CRDDefaultScreenHeight;
 		}
 		
 		NSString *resolutionLabel = [NSString stringWithFormat:@"%dx%d", screenWidth, screenHeight];

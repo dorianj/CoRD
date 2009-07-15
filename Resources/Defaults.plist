@@ -2,31 +2,32 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NewConnections</key>
-	<dict>
-		<key>colorDepth</key>
-		<string>Thousands</string>
-		<key>consoleConnection</key>
-		<false/>
-		<key>displayWindowContents</key>
-		<false/>
-		<key>drawDesktopBackground</key>
-		<false/>
-		<key>forwardDisks</key>
-		<false/>
-		<key>forwardPrinters</key>
-		<false/>
-		<key>screenDimensions</key>
-		<string>1024x640</string>
-		<key>useWindowsThemes</key>
-		<false/>
-	</dict>
 	<key>show_drawer</key>
 	<true/>
 	<key>preferred_drawer_side</key>
 	<integer>0</integer>
 	<key>drawer_width</key>
 	<integer>200</integer>
+	<key>CRDBaseConnectionColors</key>
+	<string>Thousands</string>
+	<key>CRDBaseConnectionScreenSize</key>
+	<string>1024x640</string>
+	<key>CRDBaseConnectionForwardDisks</key>
+	<false/>
+	<key>CRDBaseConnectionForwardPrinters</key>
+	<false/>
+	<key>CRDBaseConnectionDrawDesktop</key>
+	<false/>
+	<key>CRDBaseConnectionWindowDrags</key>
+	<false/>
+	<key>CRDBaseConnectionWindowAnimation</key>
+	<false/>
+	<key>CRDBaseConnectionThemes</key>
+	<true/>
+	<key>CRDBaseConnectionWindowAnimation - 2</key>
+	<false/>
+	<key>CRDBaseConnectionFontSmoothing</key>
+	<true/>
 	<key>windowed_mode</key>
 	<integer>0</integer>
 	<key>storedResolutions</key>

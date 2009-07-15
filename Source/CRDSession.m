@@ -77,6 +77,27 @@
 	return self;
 }
 
+// Initializes using user's 'base connection' settings
+- (id)initWithBaseConnection
+{
+	if (![self init])
+		return nil;
+	
+	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+	
+	for (NSString *k in [NSArray arrayWithObjects:@"ConsoleSession", @"ForwardDisks", @"ForwardPrinters", @"DrawDesktop", @"WindowDrags", @"WindowAnimation", @"Themes", @"FontSmoothing", nil])
+	{
+		NSNumber *isChecked = [NSNumber numberWithBool:[[defaults valueForKey:[@"CRDBaseConnection" stringByAppendingString:k]] boolValue]];
+		
+		[self setValue:isChecked forKey:[k lowercaseFirst]];
+	}
+	
+	[self setValue:CRDNumberForColorsText([defaults valueForKey:@"CRDBaseConnectionColors"]) forKey:@"screenDepth"];
+	CRDSplitResolutionString([defaults valueForKey:@"CRDBaseConnectionScreenSize"], &screenWidth, &screenHeight);
+	
+	return self;
+}
+
 - (void)dealloc
 {
 	if (connectionStatus == CRDConnectionConnected)
@@ -268,8 +289,8 @@
 	// Other various settings
 	conn->serverBpp = (screenDepth==8 || screenDepth==16 || screenDepth==24) ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
-	conn->screenWidth = screenWidth ? screenWidth : 1024;
-	conn->screenHeight = screenHeight ? screenHeight : 768;
+	conn->screenWidth = screenWidth ? screenWidth : CRDDefaultScreenWidth;
+	conn->screenHeight = screenHeight ? screenHeight : CRDDefaultScreenHeight;
 	conn->tcpPort = (!port || port>=65536) ? CRDDefaultPort : port;
 	strncpy(conn->username, CRDMakeWindowsString(username), sizeof(conn->username));
 

@@ -24,10 +24,13 @@
 
 // Constants
 const NSInteger CRDDefaultPort = 3389;
+const NSInteger CRDDefaultScreenWidth = 1024;
+const NSInteger CRDDefaultScreenHeight = 640;
 const NSInteger CRDMouseEventLimit = 20;
 const NSPoint CRDWindowCascadeStart = {50.0, 20.0};
 const float CRDWindowSnapSize = 30.0;
 NSString * const CRDRowIndexPboardType = @"CRDRowIndexPboardType";
+
 
 // Globals
 AppController *g_appController;
@@ -74,32 +77,53 @@ inline void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width)
 	NSRectFillUsingOperation(NSMakeRect(start.x, start.y, width, 1.0), NSCompositeSourceOver);
 }
 
-inline NSString * CRDJoinHostNameAndPort(NSString *host, int port)
+inline NSString * CRDJoinHostNameAndPort(NSString *host, NSInteger port)
 {
 	return (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", host, port] : [[host copy] autorelease];
 }
 
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port)
 { 
-        if ([address characterAtIndex:[address length] - 1] == ']' && [address characterAtIndex:0] == '[')
-        {
-            address = [address substringWithRange:NSMakeRange(1, [address length] - 2)];
-            *host = address;
-            *port = CRDDefaultPort;
-        }
-        else
-        {
-            NSScanner *scan = [NSScanner scannerWithString:address];
-            NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
-            [scan setCharactersToBeSkipped:colonSet];
-            
-            if (![scan scanUpToCharactersFromSet:colonSet intoString:host])
-                *host = @"";
-                
-            if (![scan scanInteger:port])
-                *port = CRDDefaultPort;
-        }
+	if ([address characterAtIndex:[address length] - 1] == ']' && [address characterAtIndex:0] == '[')
+	{
+		address = [address substringWithRange:NSMakeRange(1, [address length] - 2)];
+		*host = address;
+		*port = CRDDefaultPort;
+	}
+	else
+	{
+		NSScanner *scan = [NSScanner scannerWithString:address];
+		NSCharacterSet *colonSet = [NSCharacterSet characterSetWithCharactersInString:@":"];
+		[scan setCharactersToBeSkipped:colonSet];
+		
+		if (![scan scanUpToCharactersFromSet:colonSet intoString:host])
+			*host = @"";
+			
+		if (![scan scanInteger:port])
+			*port = CRDDefaultPort;
+	}
 }
+
+void CRDSplitResolutionString(NSString *screenResolution, NSInteger *width, NSInteger *height)
+{
+	if (![screenResolution length])
+	{
+		*width = CRDDefaultScreenWidth;
+		*height = CRDDefaultScreenHeight;
+
+		return;
+	}
+	NSScanner *scan = [NSScanner scannerWithString:screenResolution];
+	NSCharacterSet *separatorSet = [NSCharacterSet characterSetWithCharactersInString:@"x:*"];
+	[scan setCharactersToBeSkipped:separatorSet];
+	
+	if (![scan scanInteger:width])
+		*width = CRDDefaultScreenWidth;
+	
+	if (![scan scanInteger:height])
+		*height = CRDDefaultScreenHeight;
+}
+
 
 NSString * CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn)
 {
@@ -289,14 +313,15 @@ NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *to
 #pragma mark -
 #pragma mark CRDSession specific
 
+// This is simply the bare defaults for RDConnectionRef, used for *all* new connections to a server. It doesn't have anything to do with user-set defaults.
 void CRDFillDefaultConnection(RDConnectionRef conn)
 {
 	char hostString[_POSIX_HOST_NAME_MAX+1];
 	gethostname(hostString, _POSIX_HOST_NAME_MAX);
 	
 	conn->tcpPort = CRDDefaultPort;
-	conn->screenWidth = 1024;
-	conn->screenHeight = 768;
+	conn->screenWidth = CRDDefaultScreenWidth;
+	conn->screenHeight = CRDDefaultScreenHeight;
 	conn->isConnected = 0;
 	conn->useEncryption = 1;
 	conn->useBitmapCompression = 1;
@@ -310,7 +335,7 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 	conn->polygonEllipseOrders = 1;
 	conn->desktopSave = 1;
 	conn->serverRdpVersion = 1;
-	conn->keyboardLayout = 0x409;
+	conn->keyboardLayout = 0x409; // en-us keyboard
 	conn->keyboardType = 4;
 	conn->keyboardSubtype = 0;
 	conn->keyboardFunctionkeys = 12;
@@ -332,15 +357,20 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 
 NSNumber * CRDNumberForColorsText(NSString *colorsText)
 {
-	// this should be replaced with a static NSDictionary * if it is to be used often
-	if ([colorsText isEqualToString:@"256 Colors"])
+	// This should be localized. It's being used to translate displayed values.
+	
+	colorsText = [colorsText lowercaseString];
+	
+	if ([colorsText isLike:@"*256*"])
 		return [NSNumber numberWithInt:8];
-	else if ([colorsText isEqualToString:@"Thousands"])
+	
+	if ([colorsText isLike:@"*thousand*"])
 		return [NSNumber numberWithInt:16];
-	else if ([colorsText isEqualToString:@"Millions"])
-		return [NSNumber numberWithInt:32];
-	else
-		return [NSNumber numberWithInt:16];
+	
+	if ([colorsText isLike:@"*million*"])
+		return [NSNumber numberWithInt:24];
+	
+	return [NSNumber numberWithInt:16];
 }
 
 
@@ -366,4 +396,15 @@ NSNumber * CRDNumberForColorsText(NSString *colorsText)
 {
 	return [self stringByDeletingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/~:"]];
 }
+
+- (NSString *)lowercaseFirst
+{
+	if (![self length])
+		return @"";
+
+	NSMutableString *resultantString = [[self mutableCopy] autorelease];
+	[resultantString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[self substringToIndex:1] lowercaseString]];
+	return resultantString;
+}
+
 @end

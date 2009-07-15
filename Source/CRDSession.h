@@ -77,6 +77,7 @@
 
 
 - (id)initWithPath:(NSString *)path;
+- (id)initWithBaseConnection;
 
 // Working with rdesktop
 - (BOOL)connect;

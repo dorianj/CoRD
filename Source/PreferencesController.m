@@ -17,101 +17,53 @@
 
 #import "PreferencesController.h"
 
+#define CRDPreferencesBasicTabTag 0
+#define CRDPreferencesConnectionTabTag 1
+#define CRDPreferencesAdvancedTabTag 2
+
+
 #pragma mark -
 
 @implementation PreferencesController
 
-- (id)init
-{
-	if (![super init])
-		return nil;
-		
-	toolbarItems = [[NSMutableDictionary alloc] init];
-	
-	return self;
-}
-
-
-- (void)dealloc
-{
-	[prefsToolbar release];
-	[toolbarItems release];
-	[super dealloc];
-}
-
 - (void)awakeFromNib
 {
-	[self buildToolbar];
-	[self changePanes:nil];
+	[self changePanes:[[toolbar items] objectAtIndex:0]];
 }
 
-- (void)buildToolbar
-{
-	[toolbarItems removeAllObjects];
-	[toolbarItems setObject:@"General" forKey:@"General"];
-	[toolbarItems setObject:@"Connections" forKey:@"Connections"];
-	[toolbarItems setObject:@"Advanced" forKey:@"Advanced"];
-	
-	prefsToolbar = [preferencesWindow toolbar];
-	
-	if (prefsToolbar == nil)
-		prefsToolbar = [[NSToolbar alloc] initWithIdentifier: @"CoRDPrefsToolbar"];
-
-    [prefsToolbar setAllowsUserCustomization:YES];
-    [prefsToolbar setAutosavesConfiguration:NO];
-    [prefsToolbar setDisplayMode:NSToolbarDisplayModeIconAndLabel];
-    [prefsToolbar setDelegate:self];
-
-    [preferencesWindow setToolbar:prefsToolbar];
-	[preferencesWindow setShowsToolbarButton:YES];
-}
 
 - (IBAction)changePanes:(id)sender
 {
 	NSView *currentPane = [preferencesWindow contentView], *newPane = nil;
-	NSString *toolbarButtonLabel = [sender label];
 	
-	if ([toolbarButtonLabel isEqualToString:@"Connections"])
-		newPane = connectionView;
-	else if ([toolbarButtonLabel isEqualToString:@"Advanced"])
-		newPane = advancedView;
-	else
+	if ([sender tag] == CRDPreferencesBasicTabTag)
 		newPane = generalView;
+	else if ([sender tag] == CRDPreferencesConnectionTabTag)
+		newPane = connectionView;
+	else if ([sender tag] == CRDPreferencesAdvancedTabTag)
+		newPane = advancedView;
 	
 	if ( (newPane == nil) || (currentPane == newPane) )
 		return;
-	
-	[preferencesWindow setContentView:[[[NSView alloc] initWithFrame:[[preferencesWindow contentView] frame]] autorelease]];
+		
 	[preferencesWindow makeFirstResponder:nil];
-	[prefsToolbar setSelectedItemIdentifier:(toolbarButtonLabel ? toolbarButtonLabel : @"General")];
-
+	[preferencesWindow setContentView:[[[NSView alloc] initWithFrame:[[preferencesWindow contentView] frame]] autorelease]];
+	[toolbar setSelectedItemIdentifier:[sender itemIdentifier]];
 	
 	NSRect newFrame = [preferencesWindow frame];
 	newFrame.size.height = [newPane frame].size.height + ([preferencesWindow frame].size.height - [[preferencesWindow contentView] frame].size.height);
 	newFrame.size.width = [newPane frame].size.width; 
 	newFrame.origin.y += ([[preferencesWindow contentView] frame].size.height - [newPane frame].size.height);
 	
-
-	[NSAnimationContext beginGrouping];
-	[[preferencesWindow animator] setFrame:newFrame display:YES];
+	
+	[preferencesWindow setFrame:newFrame display:YES animate:YES];
 	[[preferencesWindow animator] setContentView:newPane];
-	[NSAnimationContext endGrouping];
-	
-	NSSize newMinimumSize = [preferencesWindow frame].size;
-	newMinimumSize.height -= 100;
-	
-	[preferencesWindow setMinSize:newMinimumSize];
 }
-
-- (IBAction) toggleAdvanced:(id)sender
-{
-}
-
 
 #pragma mark -
 #pragma mark Managing Update Feeds
 
-- (IBAction)updateTypeChange:(id)sender
+- (IBAction)sparkleTypeChanged:(id)sender
 {
 	NSString *newUpdateType = [[NSUserDefaults standardUserDefaults] valueForKey:@"SUUpdateType"];
 
@@ -121,94 +73,45 @@
 		[[NSUserDefaults standardUserDefaults] setValue:@"http://cord.sourceforge.net/appcast-nightly.xml" forKey:@"SUFeedURL"];
 	else 
 		[[NSUserDefaults standardUserDefaults] setValue:@"http://cord.sourceforge.net/sparkle.xml" forKey:@"SUFeedURL"];
-	
-	[[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 #pragma mark -
-#pragma mark Calling For Help
+#pragma mark Calling for help
 
-- (IBAction)helpForGeneralPreferences:(id)sender
+- (IBAction)showPreferencesHelp:(id)sender
 {
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"GeneralPreferences" inBook:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
+	NSString *helpAnchor = @"";
+	
+	if ([sender tag] == CRDPreferencesBasicTabTag)
+		helpAnchor = @"GeneralPreferences";
+	else if ([sender tag] == CRDPreferencesConnectionTabTag)
+		helpAnchor = @"ConnectionPreferences";
+	else if ([sender tag] == CRDPreferencesAdvancedTabTag)
+		helpAnchor = @"";
+
+	if ([helpAnchor length])
+		[[NSHelpManager sharedHelpManager] openHelpAnchor:helpAnchor inBook:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
 }
 
-- (IBAction)helpForConnectionPreferences:(id)sender
-{
-    [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ConnectionPreferences" inBook:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
-}
 
 #pragma mark -
-#pragma mark NSToolbar Delegate Methods
--(NSToolbarItem*)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdent willBeInsertedIntoToolbar:(BOOL)willBeInserted
-{
-	NSToolbarItem* toolbarItem = [[[NSToolbarItem alloc] initWithItemIdentifier:itemIdent] autorelease];
-    NSString* itemLabel;
+#pragma mark NSToolbarDelegate
 
-    if ( (itemLabel = [toolbarItems objectForKey:itemIdent]) != nil )
-	{
-		if ([itemLabel isEqualToString:@"General"])
-		{
-			[toolbarItem setImage:[NSImage imageNamed:NSImageNamePreferencesGeneral]];
-			[toolbarItem setLabel:         NSLocalizedString(itemLabel, @"Preferences General toolbar item -> label")];
-			[toolbarItem setPaletteLabel:  NSLocalizedString(itemLabel, @"Preferences General toolbar item -> label")];
-			[toolbarItem setToolTip:       NSLocalizedString([itemLabel stringByAppendingString:@" Preferences"], @"Preferences General toolbar item -> tooltip")];
-		}
-		else if ([itemLabel isEqualToString:@"Connections"])
-		{
-			[toolbarItem setImage:[NSImage imageNamed:@"Windowed.png"]];
-			[toolbarItem setLabel:          NSLocalizedString(itemLabel, @"Preferences Connections toolbar item -> label")];
-			[toolbarItem setPaletteLabel:   NSLocalizedString(itemLabel, @"Preferences Connections toolbar item -> label")];
-			[toolbarItem setToolTip:        NSLocalizedString([itemLabel stringByAppendingString:@" Preferences"], @"Preferences Connections toolbar item -> tooltip")];			
-		}
-		else if ([itemLabel isEqualToString:@"Advanced"])
-		{
-			[toolbarItem setImage:[NSImage imageNamed:NSImageNameAdvanced]];;
-			[toolbarItem setLabel:          NSLocalizedString(itemLabel, @"Preferences Advanced toolbar item -> label")];
-			[toolbarItem setPaletteLabel:   NSLocalizedString(itemLabel, @"Preferences Advanced toolbar item -> label")];
-			[toolbarItem setToolTip:        NSLocalizedString([itemLabel stringByAppendingString:@" Preferences"], @"Preferences Advanced toolbar item -> tooltip")];
-		}
-		
-		[toolbarItem setTarget:self];
-		[toolbarItem setAction:@selector(changePanes:)];
-    }
-	else
-	{
-		toolbarItem = nil;
-    }
+- (NSArray *)toolbarSelectableItemIdentifiers:(NSToolbar *)toolbar_
+{
+	NSMutableArray *selectableItemsBuilder = [NSMutableArray array];
+	for (NSToolbarItem *toolbarItem in [toolbar_ items])
+		[selectableItemsBuilder addObject:[toolbarItem itemIdentifier]];
 	
-    return toolbarItem;
+	return selectableItemsBuilder;
 }
-
-
--(NSArray*)toolbarAllowedItemIdentifiers:(NSToolbar *)toolbar
-{
-    NSMutableArray*	allowedItems = [[[toolbarItems allKeys] mutableCopy] autorelease];
-
-	[allowedItems addObjectsFromArray: [NSArray arrayWithObjects: NSToolbarSeparatorItemIdentifier,
-	                                    NSToolbarSpaceItemIdentifier, NSToolbarFlexibleSpaceItemIdentifier,
-	                                    NSToolbarCustomizeToolbarItemIdentifier, nil] ];
-	return allowedItems;
-}
-
--(NSArray*)toolbarDefaultItemIdentifiers:(NSToolbar *) toolbar
-{
-	NSMutableArray* defaultItems = [NSMutableArray arrayWithArray:[NSArray arrayWithObjects:@"General",@"Connections",@"Advanced",nil]];
-	return defaultItems;
-}
-
--(NSArray*)toolbarSelectableItemIdentifiers:(NSToolbar*)toolbar
-{
-	return [toolbarItems allKeys];
-}
-
 
 #pragma mark -
 #pragma mark NSWindow Delegate Methods
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
 	[closeWindowMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
-	[closeSessionMenuItem setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];
+	[closeSessionMenuItem setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];	
 }
 
 - (void)windowDidResignKey:(NSNotification *)notification
@@ -216,8 +119,5 @@
 	[closeWindowMenuItem setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];
 	[closeSessionMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 }
-
-
-
 
 @end

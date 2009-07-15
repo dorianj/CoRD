@@ -59,27 +59,38 @@ typedef struct _CRDInputEvent
 
 void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rect);
 void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width);
-NSString *CRDJoinHostNameAndPort(NSString *host, int port);
+
+
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port);
-NSString *CRDJoinHostNameAndPort(NSString *host, int port);
-NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);
+void CRDSplitResolutionString(NSString *resolution, NSInteger *width, NSInteger *height);
+NSString *CRDJoinHostNameAndPort(NSString *host, NSInteger port);
+
 BOOL CRDDrawerIsVisible(NSDrawer *drawer);
+
+NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);
 const char *CRDMakeWindowsString(NSString *src);
 const char *CRDMakeUTF16LEString(NSString *src);
 int CRDGetUTF16LEStringLength(NSString *src);
+
 void CRDCreateDirectory(NSString *directory);
 NSString *CRDFindAvailableFileName(NSString *path, NSString *base, NSString *extension);
 NSArray *CRDFilterFilesByType(NSArray *unfilteredFiles, NSArray *types);
-char ** CRDMakeCStringArray(NSArray *conv);
-void CRDSetAttributedStringColor(NSMutableAttributedString *as, NSColor *color);
-void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *font);
-CRDInputEvent CRDMakeInputEvent(unsigned int time, unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
 NSString *CRDTemporaryFile(void);
 BOOL CRDPathIsHidden(NSString *path);
+
+char ** CRDMakeCStringArray(NSArray *conv);
+
+void CRDSetAttributedStringColor(NSMutableAttributedString *as, NSColor *color);
+void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *font);
+
+CRDInputEvent CRDMakeInputEvent(unsigned int time, unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
+NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action);
+
+
 NSCellStateValue CRDButtonState(BOOL enabled);
 BOOL CRDPreferenceIsEnabled(NSString *prefName);
 void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
-NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action);
+
 void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
 NSNumber *CRDNumberForColorsText(NSString * colorsText);
@@ -91,6 +102,7 @@ NSNumber *CRDNumberForColorsText(NSString * colorsText);
 @interface NSString (CRDAdditions)
 	- (NSString *)stringByDeletingCharactersInSet:(NSCharacterSet *)characterSet;
 	- (NSString *)stringByDeletingFileSystemCharacters;
+	- (NSString *)lowercaseFirst;
 @end
 
 // Convenience macros
@@ -110,6 +122,7 @@ NSNumber *CRDNumberForColorsText(NSString * colorsText);
 
 // Constants
 extern const NSInteger CRDDefaultPort;
+extern const NSInteger CRDDefaultScreenWidth, CRDDefaultScreenHeight;
 extern const NSInteger CRDMouseEventLimit;
 extern const NSPoint CRDWindowCascadeStart;
 extern const float CRDWindowSnapSize;

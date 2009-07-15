@@ -20,25 +20,17 @@
 
 @interface PreferencesController : NSObject {
     IBOutlet NSView *connectionView, *generalView, *advancedView;
-    IBOutlet NSWindow *preferencesWindow;
-	IBOutlet NSBox *sessionBox, *devicesBox, *performanceBox;
-	IBOutlet NSUserDefaultsController *defaultsController;
-	IBOutlet NSButton *showAdvancedCheckbox;
 	IBOutlet NSMenuItem *closeWindowMenuItem, *closeSessionMenuItem;
-	IBOutlet NSMatrix *updateTypeMatrix;
-
+	IBOutlet NSWindow *preferencesWindow;
+	IBOutlet NSToolbar *toolbar;
+	
 	NSUserDefaults *userDefaults;
-	NSToolbar *prefsToolbar;
-	NSMutableDictionary *toolbarItems;
 }
 
 
-- (void)buildToolbar;
 - (IBAction)changePanes:(id)sender;
-- (IBAction)toggleAdvanced:(id)sender;
-- (IBAction)updateTypeChange:(id)sender;
+- (IBAction)sparkleTypeChanged:(id)sender;
 
-- (IBAction)helpForGeneralPreferences:(id)sender;
-- (IBAction)helpForConnectionPreferences:(id)sender;
+- (IBAction)showPreferencesHelp:(id)sender;
 
 @end
