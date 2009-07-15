@@ -27,6 +27,7 @@ const NSInteger CRDDefaultPort = 3389;
 const NSInteger CRDDefaultScreenWidth = 1024;
 const NSInteger CRDDefaultScreenHeight = 640;
 const NSInteger CRDMouseEventLimit = 20;
+const NSInteger CRDInspectorMaxWidth = 500;
 const NSPoint CRDWindowCascadeStart = {50.0, 20.0};
 const float CRDWindowSnapSize = 30.0;
 NSString * const CRDRowIndexPboardType = @"CRDRowIndexPboardType";

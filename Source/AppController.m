@@ -522,7 +522,7 @@
 	
 	NSSize minSize = [gui_inspector minSize];
 	[gui_inspector setMinSize:NSMakeSize(minSize.width, windowFrame.size.height)];
-	[gui_inspector setMaxSize:NSMakeSize(FLT_MAX, windowFrame.size.height)];
+	[gui_inspector setMaxSize:NSMakeSize(CRDInspectorMaxWidth, windowFrame.size.height)];
 	[[gui_inspector animator] setFrame:windowFrame display:YES];
 }
 

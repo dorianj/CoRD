@@ -124,6 +124,7 @@ NSNumber *CRDNumberForColorsText(NSString * colorsText);
 extern const NSInteger CRDDefaultPort;
 extern const NSInteger CRDDefaultScreenWidth, CRDDefaultScreenHeight;
 extern const NSInteger CRDMouseEventLimit;
+extern const NSInteger CRDInspectorMaxWidth;
 extern const NSPoint CRDWindowCascadeStart;
 extern const float CRDWindowSnapSize;
 extern NSString * const CRDRowIndexPboardType;
