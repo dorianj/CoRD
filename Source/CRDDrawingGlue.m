@@ -166,6 +166,7 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 	} CGContextRestoreGState(screenDumpContext);
 	
 	
+	//[[NSData dataWithBytesNoCopy:screenDumpBytes length:w*h*4] writeToFile:[NSString stringWithFormat:@"/users/dorian/desktop/crd/desktop_save%d.dat", time(NULL)] atomically:NO];
 		
 	// Translate the 32-bit RGBA screen dump into RDP colors
 	uint8 *output, *o, *p;
@@ -275,12 +276,15 @@ void ui_desktop_restore(RDConnectionRef conn, uint32 offset, int x, int y, int w
 	CRDBitmap *b = [[CRDBitmap alloc] initWithBitmapData:(const unsigned char *)data size:NSMakeSize(w, h) view:v];
 	
 	[[b image] setFlipped:NO];
-	[v focusBackingStore];
-	[b drawInRect:r fromRect:NSMakeRect(0,0,w,h) operation:NSCompositeCopy];
-	[v releaseBackingStore];
+	[v focusBackingStore]; {
+		[[[[b image] representations] objectAtIndex:0] setProperty:NSImageColorSyncProfileData withValue:[[NSColorSpace genericRGBColorSpace] ICCProfileData]];
+		[b drawInRect:r fromRect:NSMakeRect(0,0,w,h) operation:NSCompositeCopy];
+	} [v releaseBackingStore];
+	
+	[b release]; b = nil;
 	
 	schedule_display_in_rect(conn, r);
-	[b release];
+	
 }
 
 

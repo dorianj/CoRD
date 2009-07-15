@@ -17,7 +17,7 @@
 
 #import "PreferencesController.h"
 
-#define CRDPreferencesBasicTabTag 0
+#define CRDPreferencesGeneralTabTag 0
 #define CRDPreferencesConnectionTabTag 1
 #define CRDPreferencesAdvancedTabTag 2
 
@@ -36,7 +36,7 @@
 {
 	NSView *currentPane = [preferencesWindow contentView], *newPane = nil;
 	
-	if ([sender tag] == CRDPreferencesBasicTabTag)
+	if ([sender tag] == CRDPreferencesGeneralTabTag)
 		newPane = generalView;
 	else if ([sender tag] == CRDPreferencesConnectionTabTag)
 		newPane = connectionView;
@@ -82,7 +82,7 @@
 {
 	NSString *helpAnchor = @"";
 	
-	if ([sender tag] == CRDPreferencesBasicTabTag)
+	if ([sender tag] == CRDPreferencesGeneralTabTag)
 		helpAnchor = @"GeneralPreferences";
 	else if ([sender tag] == CRDPreferencesConnectionTabTag)
 		helpAnchor = @"ConnectionPreferences";
