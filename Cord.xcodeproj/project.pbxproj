@@ -18,6 +18,7 @@
 		98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98520EEB0BFEB77700DD732F /* Defaults.plist */; };
 		98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */; };
 		9860D7120BFFA565007FA463 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9860D7100BFFA565007FA463 /* Localizable.strings */; };
+		986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 986A8BF9100EAE54006AFE36 /* dsa_pub.pem */; };
 		9872FCD90C08FD8E00078CB2 /* CRDBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */; };
 		9872FCDB0C08FD8E00078CB2 /* CRDKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD30C08FD8E00078CB2 /* CRDKeyboard.m */; };
 		9872FCDD0C08FD8E00078CB2 /* CRDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD50C08FD8E00078CB2 /* CRDSession.m */; };
@@ -109,6 +110,7 @@
 		9860D7110BFFA565007FA463 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = Resources/English.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9860D7150BFFA56C007FA463 /* French */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = French; path = Resources/French.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9860D7180BFFA575007FA463 /* German */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = German; path = Resources/German.lproj/Localizable.strings; sourceTree = "<group>"; };
+		986A8BF9100EAE54006AFE36 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dsa_pub.pem; path = Resources/dsa_pub.pem; sourceTree = "<group>"; };
 		986BA55A0C00F2B1002782F1 /* zh */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = zh; path = Resources/zh.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9872FCD00C08FD8E00078CB2 /* CRDBitmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDBitmap.h; path = Source/CRDBitmap.h; sourceTree = "<group>"; };
 		9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDBitmap.m; path = Source/CRDBitmap.m; sourceTree = "<group>"; };
@@ -300,6 +302,7 @@
 			children = (
 				98E70F110D3EC591009731C7 /* Images */,
 				98520EEB0BFEB77700DD732F /* Defaults.plist */,
+				986A8BF9100EAE54006AFE36 /* dsa_pub.pem */,
 				9816F5220BEE938600E439BE /* CoRD Help */,
 				98E972E30BD9DA9F0041110D /* InfoPlist.strings */,
 				993AEC340FB136AB0031B013 /* MainMenu.xib */,
@@ -493,6 +496,7 @@
 				993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */,
 				98E66D250FF2FF8300736CFA /* CoRD.icns in Resources */,
 				98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */,
+				986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

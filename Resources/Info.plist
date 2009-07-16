@@ -61,13 +61,15 @@
 	<key>CFBundleShortVersionString</key>
 	<string>0.5.0-svn</string>
 	<key>CFBundleVersion</key>
-	<string>345</string>
+	<string>5000</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>CRDApplication</string>
 	<key>SUFeedURL</key>
 	<string>http://cord.sourceforge.net/sparkle.xml</string>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
 	<key>SmartCrashReports_CompanyName</key>
 	<string>CoRD Project</string>
 	<key>SmartCrashReports_EmailTicket</key>

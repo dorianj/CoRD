@@ -165,9 +165,6 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 		CGImageRelease(backingStoreImage);
 	} CGContextRestoreGState(screenDumpContext);
 	
-	
-	//[[NSData dataWithBytesNoCopy:screenDumpBytes length:w*h*4] writeToFile:[NSString stringWithFormat:@"/users/dorian/desktop/crd/desktop_save%d.dat", time(NULL)] atomically:NO];
-		
 	// Translate the 32-bit RGBA screen dump into RDP colors
 	uint8 *output, *o, *p;
 	int i=0, len=w*h, bytespp = (conn->serverBpp+7)/8;
