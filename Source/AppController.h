@@ -96,6 +96,8 @@
 - (IBAction)startUnified:(id)sender;
 - (IBAction)takeScreenCapture:(id)sender;
 - (IBAction)performQuickConnect:(id)sender;
+- (IBAction)clearQuickConnectHistory:(id)sender;
+- (IBAction)jumpToQuickConnect:(id)sender;
 - (IBAction)helpForConnectionOptions:(id)sender;
 - (IBAction)performServerMenuItem:(id)sender;
 - (IBAction)performDisconnect:(id)sender;
@@ -103,7 +105,6 @@
 - (IBAction)sortSavedServersAlphabetically:(id)sender;
 - (IBAction)doNothing:(id)sender;
 - (IBAction)duplicateSelectedServer:(id)sender;
-- (IBAction)jumpToQuickConnect:(id)sender;
 - (IBAction)filterServers:(id)sender;
 - (IBAction)jumpToFilter:(id)sender;
 - (IBAction)showServerInFinder:(id)sender;

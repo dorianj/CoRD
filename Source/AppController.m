@@ -900,6 +900,11 @@
 		[[gui_quickConnect window] makeFirstResponder:gui_quickConnect];
 }
 
+- (IBAction)clearQuickConnectHistory:(id)sender
+{
+	[userDefaults setObject:[NSArray array] forKey:CRDDefaultsQuickConnectServers];
+}
+
 - (IBAction)helpForConnectionOptions:(id)sender
 {
     [[NSHelpManager sharedHelpManager] openHelpAnchor:@"ConnectionOptions" inBook: [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
@@ -1058,11 +1063,15 @@
 
 - (IBAction)showServerInFinder:(id)sender
 {
-	NSString * path    = [NSString stringWithFormat:@"%@/%@.rdp", [AppController savedServersPath], [[self selectedServer] label]];
-	NSURL    * fileURL = [NSURL fileURLWithPath: path];
-	NSWorkspace * ws = [NSWorkspace sharedWorkspace];
-	[ws selectFile:[fileURL path] inFileViewerRootedAtPath:nil];
+	CRDSession *selectedServer = [self selectedServer];
+	
+	if (selectedServer == nil)
+		return;
+		
+	[[NSWorkspace sharedWorkspace] selectFile:[selectedServer filename] inFileViewerRootedAtPath:nil];
 }
+
+
 
 #pragma mark -
 #pragma mark Toolbar methods
