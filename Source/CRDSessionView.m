@@ -47,7 +47,6 @@
 	
 	if (![super initWithFrame:frame pixelFormat:pf])
 		return nil;
-		
 	
 
 	[self setBounds:NSMakeRect(0.0, 0.0, frame.size.width, frame.size.height)];
@@ -72,10 +71,15 @@
 
 - (void)dealloc
 {
+	[lastMouseEventSentAt release];
+	[deferredMouseEvent release];
+	[mouseInputScheduler invalidate];
+	[mouseInputScheduler release];
+	
 	[keyTranslator release];
 	[cursor release];
 	[self destroyBackingStore];
-
+	
 	free(colorMap);
 	colorMap = NULL;
 	
@@ -584,8 +588,6 @@
 
 	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 	
-	unsigned int byteOrder;
-
 	rdBufferContext = CGBitmapContextCreate(rdBufferBitmapData, rdBufferWidth, rdBufferHeight, 8, rdBufferWidth*4, cs, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little); 		
 
     CFRelease(cs);
@@ -593,6 +595,7 @@
 
 - (void)destroyBackingStore
 {
+	glDeleteTextures(1, &rdBufferTexture);
 	CGContextRelease(rdBufferContext);
 	free(rdBufferBitmapData);
 	

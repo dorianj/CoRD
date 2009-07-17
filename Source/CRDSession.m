@@ -404,6 +404,10 @@
 			}
 		}
 		
+		for (i = 0; i < CURSOR_CACHE_SIZE; i++)
+			ui_destroy_cursor(conn->cursorCache[i]);
+		
+		
 		free(conn->rdpdrClientname);
 		
 		
