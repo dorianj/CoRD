@@ -810,7 +810,7 @@
 	if ([connectedServers count] == 0)
 		return;
 	
-	for ( CRDSession *inst in connectedServers )
+	for (CRDSession *inst in connectedServers)
 	{
 		[gui_tabView removeItem:inst];
 		[self createWindowForInstance:inst];

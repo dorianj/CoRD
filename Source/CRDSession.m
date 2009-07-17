@@ -404,6 +404,9 @@
 			}
 		}
 		
+		free(conn->rdpdrClientname);
+		
+		
 		memset(conn, 0, sizeof(RDConnection));
 		free(conn);
 		conn = NULL;
@@ -717,6 +720,7 @@
 {
 	[window setDelegate:nil]; // avoid the last windowWillClose delegate message
 	[window close];
+	[window release];
 	window = nil;
 }
 
