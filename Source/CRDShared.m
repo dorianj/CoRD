@@ -32,6 +32,10 @@ const NSPoint CRDWindowCascadeStart = {50.0, 20.0};
 const float CRDWindowSnapSize = 30.0;
 NSString * const CRDRowIndexPboardType = @"CRDRowIndexPboardType";
 
+// URLs for Support & Logistics
+NSString * const CRDTracURL = @"http://sf.net/apps/trac/cord/";
+NSString * const CRDHomePageURL = @"http://cord.sf.net";
+NSString * const CRDSupportForumsURL = @"http://sourceforge.net/forum/forum.php?forum_id=610247";
 
 // Globals
 AppController *g_appController;
@@ -374,6 +378,10 @@ NSNumber * CRDNumberForColorsText(NSString *colorsText)
 	return [NSNumber numberWithInt:16];
 }
 
+inline NSString *CRDBugReportURL(void)
+{
+	return [NSString stringWithFormat:@"%@newticket?type=defect&version=%@&keywords=MenuBarSubmission,%@", CRDTracURL, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];	
+}
 
 #pragma mark -
 #pragma mark Cocoa categories

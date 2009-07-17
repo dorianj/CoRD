@@ -94,7 +94,7 @@ void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
 void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
 NSNumber *CRDNumberForColorsText(NSString * colorsText);
-
+NSString *CRDBugReportURL(void);
 
 #pragma mark -
 #pragma mark Cocoa Categories
@@ -128,6 +128,11 @@ extern const NSInteger CRDInspectorMaxWidth;
 extern const NSPoint CRDWindowCascadeStart;
 extern const float CRDWindowSnapSize;
 extern NSString * const CRDRowIndexPboardType;
+
+// URLs for Support & Logistics
+extern NSString * const CRDTracURL;
+extern NSString * const CRDHomePageURL;
+extern NSString * const CRDSupportForumsURL;
 
 // Globals (used for readability in rdesktop code)
 extern AppController *g_appController;

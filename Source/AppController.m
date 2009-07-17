@@ -1071,6 +1071,19 @@
 	[[NSWorkspace sharedWorkspace] selectFile:[selectedServer filename] inFileViewerRootedAtPath:nil];
 }
 
+- (IBAction)visitDevelopment:(id)sender{
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDTracURL]];
+}
+- (IBAction)reportABug:(id)sender{
+	NSLog(@"%@", CRDBugReportURL());
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDBugReportURL()]];
+}
+- (IBAction)visitHomepage:(id)sender{
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDHomePageURL]];
+}
+- (IBAction)visitSupportForums:(id)sender{
+    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDSupportForumsURL]];
+}
 
 
 #pragma mark -
@@ -1652,7 +1665,6 @@
 	[self addSavedServer:dumpedInstance atIndex:index select:dumpedInstanceWasSelected];
 	[dumpedInstance setValue:[NSNumber numberWithInt:index] forKey:@"preferredRowIndex"];
 }
-
 
 #pragma mark -
 #pragma mark Other
