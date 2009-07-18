@@ -85,3 +85,13 @@ strong {
 	font-size: 8pt;
 	margin: -9px 0 -6px; 
 }
+
+
+table th,td {
+	padding-left:15px;
+	padding-right:15px;
+}
+table tbody td.hotkey {
+	font-family: "Courier New";
+	text-align:right;
+}
