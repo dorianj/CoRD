@@ -400,8 +400,8 @@
 			isa = PBXGroup;
 			children = (
 				98E66D240FF2FF8300736CFA /* CoRD.icns */,
-				9816F0BF0BEE506000E439BE /* Stop.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
+				9816F0BF0BEE506000E439BE /* Stop.png */,
 				98E972BF0BD9DA820041110D /* Disconnect.png */,
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
 				98E972C50BD9DA820041110D /* i Button Face.png */,
