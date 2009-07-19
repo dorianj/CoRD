@@ -238,21 +238,34 @@
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
 	[self listUpdated];
-    
+        
     if ([[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] != nil)
         [self parseCommandLine];
 }
 
 - (void)parseCommandLine
 {
-    NSString *hostname;
+    NSString *hostname = nil;
     NSInteger port;
-    
-    hostname = [[NSUserDefaults standardUserDefaults] stringForKey:@"hostname"];
-    port = [[NSUserDefaults standardUserDefaults] integerForKey:@"port"];
-    
-    if (![hostname length])
+    NSDictionary *commands = [[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain];
+    id com;
+
+    for(id com in commands)
+    {
+        if([com isEqualToString:@"hostname"] || [com isEqualToString:@"h"])
+        {
+            hostname = [commands objectForKey:com];            
+        }
+        else if([com isEqualToString:@"port"] || [com isEqualToString:@"p"])
+        {
+            port = [[commands objectForKey:com] intValue];
+        }
+    }
+            
+    if(hostname == nil)
+    {
         [self printUsage];
+    }
     else if (port)
         [self performCommandLineConnect:[NSString stringWithFormat:@"%@:%d", hostname, port]];
 	else
@@ -261,7 +274,7 @@
 
 - (void)printUsage
 {
-    printf("usage: CoRD -hostname example.com -port port_number");
+    printf("usage: CoRD -hostname example.com -port port_number\n");
 }
 
 - (void)performCommandLineConnect:(NSString *)host
