@@ -18,7 +18,7 @@
 #define CRDFullScreenTransitionDuration 0.4
 
 #import "CRDFullScreenWindow.h"
-
+#import "Carbon/Carbon.h"
 #import "CRDShared.h"
 
 #pragma mark -
@@ -61,11 +61,9 @@
 	[viewAnim release];
 	
 	if (hideMenu)
-		SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar);
-		//[NSMenu setMenuBarVisible:NO];
+		SetSystemUIMode(kUIModeAllHidden, kUIOptionAutoShowMenuBar); // gives auto-show/hide behavior
 	
 	[self setLevel:NSNormalWindowLevel];
-	
 	[self display];
 }
 
@@ -80,7 +78,6 @@
 	
 	if (hideMenu)
 		SetSystemUIMode(kUIModeNormal, 0);
-		//[NSMenu setMenuBarVisible:YES];
 }
 
 - (void)exitFullScreenWithAnimation:(BOOL)animate
@@ -99,8 +96,6 @@
 		[viewAnim startAnimation];
 		[viewAnim release];	
 	}
-/*	else
-	NSLog(@"not animating the close");*/
 	
 	[self close];
 }
