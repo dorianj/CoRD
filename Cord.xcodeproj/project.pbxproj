@@ -13,7 +13,6 @@
 		9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
-		9816F5320BEE938600E439BE /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 9816F5220BEE938600E439BE /* CoRD Help */; };
 		98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98369D370C050B3D009BF52F /* OpenGL.framework */; };
 		9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */; };
 		98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98520EEB0BFEB77700DD732F /* Defaults.plist */; };
@@ -76,6 +75,7 @@
 		98E972E70BD9DA9F0041110D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98E972E30BD9DA9F0041110D /* InfoPlist.strings */; };
 		98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */; };
+		98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 98F2A7C310152DA800E1D5B5 /* CoRD Help */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		999A05360FAAF42C00FA512C /* ZNLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A05350FAAF42C00FA512C /* ZNLog.m */; };
@@ -105,7 +105,6 @@
 		37D191810FCE69E8008797FD /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
-		9816F5220BEE938600E439BE /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
 		98369D370C050B3D009BF52F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ConnectionDefaultsIcon.png; path = Resources/ConnectionDefaultsIcon.png; sourceTree = "<group>"; };
 		98520EEB0BFEB77700DD732F /* Defaults.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; fileEncoding = 4; name = Defaults.plist; path = Resources/Defaults.plist; sourceTree = "<group>"; };
@@ -199,6 +198,7 @@
 		98E972E40BD9DA9F0041110D /* English */ = {isa = PBXFileReference; explicitFileType = text.plist.strings; fileEncoding = 10; name = English; path = Resources/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDScreenResFormatter.m; path = Source/CRDScreenResFormatter.m; sourceTree = "<group>"; };
 		98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDScreenResFormatter.h; path = Source/CRDScreenResFormatter.h; sourceTree = "<group>"; };
+		98F2A7C310152DA800E1D5B5 /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
 		993AEC350FB136AB0031B013 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		999A01E10FAA1DC300FA512C /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Source/PreferencesController.h; sourceTree = "<group>"; };
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
@@ -306,9 +306,9 @@
 			isa = PBXGroup;
 			children = (
 				98E70F110D3EC591009731C7 /* Images */,
+				98F2A7C310152DA800E1D5B5 /* CoRD Help */,
 				98520EEB0BFEB77700DD732F /* Defaults.plist */,
 				986A8BF9100EAE54006AFE36 /* dsa_pub.pem */,
-				9816F5220BEE938600E439BE /* CoRD Help */,
 				98E972E30BD9DA9F0041110D /* InfoPlist.strings */,
 				993AEC340FB136AB0031B013 /* MainMenu.xib */,
 				98E972C60BD9DA820041110D /* Info.plist */,
@@ -504,7 +504,6 @@
 				98E972DD0BD9DA820041110D /* windows_keymap_table.txt in Resources */,
 				98E972E70BD9DA9F0041110D /* InfoPlist.strings in Resources */,
 				9816F0C00BEE506000E439BE /* Stop.png in Resources */,
-				9816F5320BEE938600E439BE /* CoRD Help in Resources */,
 				98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */,
 				9860D7120BFFA565007FA463 /* Localizable.strings in Resources */,
 				98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */,
@@ -513,6 +512,7 @@
 				98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */,
 				986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */,
 				9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */,
+				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
