@@ -58,6 +58,7 @@
 	
 	[preferencesWindow setFrame:newFrame display:YES animate:YES];
 	[[preferencesWindow animator] setContentView:newPane];
+	[preferencesWindow makeFirstResponder:newPane];
 }
 
 #pragma mark -
