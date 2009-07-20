@@ -3698,9 +3698,11 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 								</object>
 								<object class="NSSegmentItem">
 									<double key="NSSegmentItemWidth">6.800000e+01</double>
+									<bool key="NSSegmentItemDisabled">YES</bool>
 									<int key="NSSegmentItemImageScaling">0</int>
 								</object>
 							</object>
+							<int key="NSSelectedSegment">2</int>
 							<int key="NSTrackingMode">2</int>
 							<int key="NSSegmentStyle">6</int>
 						</object>
