@@ -38,15 +38,15 @@
 		</dict>
 		<dict>
 			<key>resolution</key>
-			<string>1024x640</string>
-		</dict>
-		<dict>
-			<key>resolution</key>
 			<string>600x480</string>
 		</dict>
 		<dict>
 			<key>resolution</key>
 			<string>800x600</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1024x640</string>
 		</dict>
 		<dict>
 			<key>resolution</key>
