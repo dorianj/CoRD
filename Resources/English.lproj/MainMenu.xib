@@ -8,8 +8,8 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="2423"/>
 			<integer value="2051"/>
+			<integer value="2423"/>
 			<integer value="741"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -2262,6 +2262,7 @@
 								<reference key="NSSuperview" ref="859458178"/>
 								<reference key="NSTarget" ref="859458178"/>
 								<string key="NSAction">_doScroller:</string>
+								<double key="NSCurValue">3.184713e-03</double>
 								<double key="NSPercent">9.544073e-01</double>
 							</object>
 							<object class="NSScroller" id="869812126">
@@ -2348,6 +2349,10 @@
 							<reference key="NSControlView" ref="726978479"/>
 							<int key="NSButtonFlags">-2030812929</int>
 							<int key="NSButtonFlags2">34</int>
+							<object class="NSCustomResource" key="NSNormalImage">
+								<string key="NSClassName">NSImage</string>
+								<string key="NSResourceName">NSRightFacingTriangleTemplate</string>
+							</object>
 							<string key="NSAlternateContents">Connect to the selected saved computer</string>
 							<string key="NSKeyEquivalent"/>
 							<int key="NSPeriodicDelay">200</int>
