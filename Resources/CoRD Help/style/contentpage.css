@@ -86,6 +86,10 @@ strong {
 	margin: -9px 0 -6px; 
 }
 
+.redText {
+	font-weight:bold;
+	color:#ee3333;
+}
 
 table th,td {
 	padding-left:15px;
