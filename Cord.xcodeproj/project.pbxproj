@@ -434,8 +434,8 @@
 		98F2A708101527CA00E1D5B5 /* Formatters */ = {
 			isa = PBXGroup;
 			children = (
-				98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */,
 				98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */,
+				98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */,
 			);
 			name = Formatters;
 			sourceTree = "<group>";

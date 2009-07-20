@@ -16,6 +16,7 @@
  */
 
 #import "CRDScreenResFormatter.h"
+#import "CRDShared.h"
 
 @implementation CRDScreenResFormatter
 
@@ -26,26 +27,28 @@
 
 - (BOOL)getObjectValue:(id *)obj forString:(NSString *)string errorDescription:(NSString  **)error
 {
-	if ([string isEqualToString:@"Full Screen"])
+	if (CRDResolutionStringIsFullscreen(string))
 	{
 		if (obj)
 			*obj = string;
+			
 		return YES;
 	}
 	
-	NSCharacterSet* validCharacters = [NSCharacterSet characterSetWithCharactersInString:@"1234567890"];
+	BOOL separatorIsValid = [[NSSet setWithObjects:@"x", @"*", nil] containsObject:[string stringByTrimmingCharactersInSet:[NSCharacterSet decimalDigitCharacterSet]]];
 	
-	BOOL allValid = [[string stringByTrimmingCharactersInSet:validCharacters] length] == 1;
-	BOOL validSeperator = [[string stringByTrimmingCharactersInSet:validCharacters] isEqualToString:@"x"];
-
-	if ( allValid &&  validSeperator && [string length] > 6 && [string length] <= 9) {
+	if (separatorIsValid && ([string length] > 6 && [string length] <= 9) )
+	{
 		if (obj)
 			*obj = string;
+			
 		return YES;
-	} else {
-		if (error)
-			*error = NSLocalizedString(@"Invalid Resolution", @"Invalid Resolution");
+	}
+	else if (error)
+	{
+		*error = NSLocalizedString(@"Invalid resolution: please enter a valid screen resolution, like '1024x768'.", @"Invalid Resolution");
     }
+	
 	return NO;
 	
 }
