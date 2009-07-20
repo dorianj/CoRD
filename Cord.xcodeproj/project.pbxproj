@@ -75,6 +75,7 @@
 		98E972DD0BD9DA820041110D /* windows_keymap_table.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CE0BD9DA820041110D /* windows_keymap_table.txt */; };
 		98E972E70BD9DA9F0041110D /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98E972E30BD9DA9F0041110D /* InfoPlist.strings */; };
 		98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
+		98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		999A05360FAAF42C00FA512C /* ZNLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A05350FAAF42C00FA512C /* ZNLog.m */; };
@@ -196,6 +197,8 @@
 		98E972CD0BD9DA820041110D /* Windowed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Windowed.png; path = Resources/Windowed.png; sourceTree = "<group>"; };
 		98E972CE0BD9DA820041110D /* windows_keymap_table.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = windows_keymap_table.txt; path = Resources/windows_keymap_table.txt; sourceTree = "<group>"; };
 		98E972E40BD9DA9F0041110D /* English */ = {isa = PBXFileReference; explicitFileType = text.plist.strings; fileEncoding = 10; name = English; path = Resources/English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDScreenResFormatter.m; path = Source/CRDScreenResFormatter.m; sourceTree = "<group>"; };
+		98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDScreenResFormatter.h; path = Source/CRDScreenResFormatter.h; sourceTree = "<group>"; };
 		993AEC350FB136AB0031B013 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		999A01E10FAA1DC300FA512C /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Source/PreferencesController.h; sourceTree = "<group>"; };
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
@@ -369,6 +372,7 @@
 		983E4BAE0BB8900D009F833D /* Cocoa UI Classes */ = {
 			isa = PBXGroup;
 			children = (
+				98F2A708101527CA00E1D5B5 /* Formatters */,
 				987BE5270D4EC3DE00664843 /* CRDAdditions.h */,
 				987BE5280D4EC3DE00664843 /* CRDAdditions.m */,
 				98E9722E0BD9D9DF0041110D /* CRDFullScreenWindow.h */,
@@ -425,6 +429,15 @@
 				9872FD620C0903C000078CB2 /* CRDVestigialGlue.m */,
 			);
 			name = "rdesktop Replacements";
+			sourceTree = "<group>";
+		};
+		98F2A708101527CA00E1D5B5 /* Formatters */ = {
+			isa = PBXGroup;
+			children = (
+				98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */,
+				98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */,
+			);
+			name = Formatters;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -553,6 +566,7 @@
 				999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */,
 				999A05360FAAF42C00FA512C /* ZNLog.m in Sources */,
 				37344CBB0FB1743200DFD6E6 /* rdpsnd_dsp.c in Sources */,
+				98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
