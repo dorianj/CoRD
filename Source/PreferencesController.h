@@ -33,4 +33,7 @@
 
 - (IBAction)showPreferencesHelp:(id)sender;
 
+- (void)restoreDefaultScreenResolutions:(id)sender;
+- (void)restoreAllSettingsToDefault:(id)sender;
+
 @end

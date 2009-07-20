@@ -121,4 +121,35 @@
 	[closeSessionMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 }
 
+
+#pragma mark -
+#pragma mark Advanced pane
+
+- (void)restoreDefaultScreenResolutions:(id)sender
+{
+
+	NSInteger buttonPressed = NSRunAlertPanel(@"Restore default resolutions", @"Are you sure you want to restore the default screen resolutions? Any additions you have made will be lost.", @"Restore Defaults", @"Cancel", nil);	
+	if (buttonPressed != 1)
+		return;
+
+	NSDictionary *builtInDefaults = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]];
+	[[NSUserDefaults standardUserDefaults] setObject:[builtInDefaults objectForKey:@"CRDScreenResolutions"] forKey:@"CRDScreenResolutions"];
+}
+
+
+- (void)restoreAllSettingsToDefault:(id)sender
+{
+	NSInteger buttonPressed = NSRunAlertPanel(@"Restore default settings", @"Are you sure you want to restore your CoRD settings to the built-in defaults? Saved servers will not be affected.", @"Restore Defaults", @"Cancel", nil);
+
+	if (buttonPressed != 1)
+		return;
+		
+	NSDictionary *builtInDefaults = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]];
+	NSSet *excludedKeys = [NSSet setWithObjects:@"CRDScreenResolutions", nil];
+	for (NSString *defaultKey in builtInDefaults)
+		if (![excludedKeys containsObject:defaultKey])
+			[[NSUserDefaults standardUserDefaults] setObject:[builtInDefaults objectForKey:defaultKey] forKey:defaultKey];
+}
+
+
 @end
