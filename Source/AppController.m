@@ -65,10 +65,7 @@
 
 + (void)initialize
 {
-    [[NSUserDefaults standardUserDefaults] registerDefaults: [NSDictionary dictionaryWithContentsOfFile:
-		[[NSBundle mainBundle] pathForResource: @"Defaults" ofType: @"plist"]]];
-		
-	//LSSetDefaultHandlerForURLScheme(@"rdp", 
+    [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]]];
 }
 
 - (id)init
@@ -2018,8 +2015,8 @@
 	
 	//Hotkey
 	NSInteger hotkey;
-	if ( ( [gui_hotkey indexOfSelectedItem] > 9 ) || ( [gui_hotkey indexOfSelectedItem] == 0 ) )
-		hotkey = (-1);
+	if ( ([gui_hotkey indexOfSelectedItem] > 9) || ([gui_hotkey indexOfSelectedItem] == 0) )
+		hotkey = -1;
 	else
 	{
 		hotkey = [gui_hotkey indexOfSelectedItem];
@@ -2032,19 +2029,15 @@
 	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8] forKey:@"screenDepth"];
 			
 	// Screen resolution
-	NSInteger width, height;
-	if ([gui_screenResolution indexOfSelectedItem] == 0)
-	{
-		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
-		width = height = 0;
-	}
-	else
-	{
-		NSScanner *scanner = [NSScanner scannerWithString:[gui_screenResolution titleOfSelectedItem]];
-		[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"x"]];
-		[scanner scanInteger:&width]; [scanner scanInteger:&height];
-		[inst setValue:[NSNumber numberWithBool:NO] forKey:@"fullscreen"];
-	}
+	NSInteger width = 0, height = 0;
+	NSString *resolutionString = [[gui_screenResolution selectedItem] title];
+	BOOL isFullscreen = CRDResolutionStringIsFullscreen(resolutionString);
+	
+	[inst setValue:[NSNumber numberWithBool:isFullscreen] forKey:@"fullscreen"];
+
+	if (!isFullscreen)
+		CRDSplitResolutionString(resolutionString, &width, &height);
+	
 	[inst setValue:[NSNumber numberWithInt:width]  forKey:@"screenWidth"];
 	[inst setValue:[NSNumber numberWithInt:height] forKey:@"screenHeight"];
 	
@@ -2101,21 +2094,25 @@
 	// Screen resolution
 	if ([[newSettings valueForKey:@"fullscreen"] boolValue])
 	{
-		[gui_screenResolution selectItemAtIndex:0];
+		[gui_screenResolution selectItemAtIndex:-1];
+		
+		for (NSMenuItem *menuItem in [gui_screenResolution itemArray])
+			if (CRDResolutionStringIsFullscreen([menuItem title]))
+			{
+				[gui_screenResolution selectItem:menuItem];
+				break;
+			}
 	}
 	else 
 	{
-		int screenWidth = [[newSettings valueForKey:@"screenWidth"] intValue];
-		int screenHeight = [[newSettings valueForKey:@"screenHeight"] intValue]; 
+		NSInteger screenWidth = [[newSettings valueForKey:@"screenWidth"] integerValue];
+		NSInteger screenHeight = [[newSettings valueForKey:@"screenHeight"] integerValue]; 
 		if (!screenWidth || !screenHeight) {
 			screenWidth = CRDDefaultScreenWidth;
 			screenHeight = CRDDefaultScreenHeight;
 		}
 		
 		NSString *resolutionLabel = [NSString stringWithFormat:@"%dx%d", screenWidth, screenHeight];
-		// If this resolution doesn't exist in the pop-up box, create it. Either way, select it.
-		if ([gui_screenResolution itemWithTitle:resolutionLabel] == nil)
-			[gui_screenResolution addItemWithTitle:resolutionLabel];
 		[gui_screenResolution selectItemWithTitle:resolutionLabel];
 	}
 	

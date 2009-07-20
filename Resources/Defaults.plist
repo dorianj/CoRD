@@ -30,22 +30,64 @@
 	<true/>
 	<key>windowed_mode</key>
 	<integer>0</integer>
-	<key>storedResolutions</key>
+	<key>CRDScreenResolutions</key>
 	<array>
-		<string>2560x1600</string>
-		<string>2400x1500</string>
-		<string>1920x1200</string>
-		<string>1920x1080</string>
-		<string>1680x1050</string>
-		<string>1600x1200</string>
-		<string>1440x900</string>
-		<string>1280x1024</string>
-		<string>1280x800</string>
-		<string>1154x864</string>
-		<string>1024x768</string>
-		<string>1024x640</string>
-		<string>800x600</string>
-		<string>600x480</string>
+		<dict>
+			<key>resolution</key>
+			<string>Full Screen</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1024x640</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>600x480</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>800x600</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1024x768</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1280x800</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1280x1024</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1440x900</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1920x1080</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1920x1200</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1680x1050</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>1600x1200</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>2400x1500</string>
+		</dict>
+		<dict>
+			<key>resolution</key>
+			<string>2560x1600</string>
+		</dict>
 	</array>
 	<key>SendWindowsKey</key>
 	<true/>

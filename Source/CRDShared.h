@@ -62,8 +62,11 @@ void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width);
 
 
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port);
-void CRDSplitResolutionString(NSString *resolution, NSInteger *width, NSInteger *height);
 NSString *CRDJoinHostNameAndPort(NSString *host, NSInteger port);
+
+BOOL CRDResolutionStringIsFullscreen(NSString *screenResolution);
+void CRDSplitResolutionString(NSString *resolution, NSInteger *width, NSInteger *height);
+NSNumber *CRDNumberForColorsText(NSString * colorsText);
 
 BOOL CRDDrawerIsVisible(NSDrawer *drawer);
 
@@ -93,7 +96,6 @@ void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
 
 void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
-NSNumber *CRDNumberForColorsText(NSString * colorsText);
 NSString *CRDBugReportURL(void);
 
 #pragma mark -

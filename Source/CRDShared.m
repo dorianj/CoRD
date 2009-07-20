@@ -109,6 +109,17 @@ void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port
 	}
 }
 
+BOOL CRDResolutionStringIsFullscreen(NSString *screenResolution)
+{
+	screenResolution = [[screenResolution stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
+		
+	for (NSString *match in [NSArray arrayWithObjects:@"full screen", @"fullscreen", nil])
+		if ([screenResolution isEqualToString:match])
+			return YES;
+		
+	return NO;
+}
+
 void CRDSplitResolutionString(NSString *screenResolution, NSInteger *width, NSInteger *height)
 {
 	if (![screenResolution length])
@@ -128,6 +139,25 @@ void CRDSplitResolutionString(NSString *screenResolution, NSInteger *width, NSIn
 	if (![scan scanInteger:height])
 		*height = CRDDefaultScreenHeight;
 }
+
+NSNumber * CRDNumberForColorsText(NSString *colorsText)
+{
+	// This should be localized. It's being used to translate displayed values.
+	
+	colorsText = [colorsText lowercaseString];
+	
+	if ([colorsText isLike:@"*256*"])
+		return [NSNumber numberWithInt:8];
+	
+	if ([colorsText isLike:@"*thousand*"])
+		return [NSNumber numberWithInt:16];
+	
+	if ([colorsText isLike:@"*million*"])
+		return [NSNumber numberWithInt:24];
+	
+	return [NSNumber numberWithInt:16];
+}
+
 
 
 NSString * CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn)
@@ -360,23 +390,6 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 	conn->updateEntireScreen = 0;
 }
 
-NSNumber * CRDNumberForColorsText(NSString *colorsText)
-{
-	// This should be localized. It's being used to translate displayed values.
-	
-	colorsText = [colorsText lowercaseString];
-	
-	if ([colorsText isLike:@"*256*"])
-		return [NSNumber numberWithInt:8];
-	
-	if ([colorsText isLike:@"*thousand*"])
-		return [NSNumber numberWithInt:16];
-	
-	if ([colorsText isLike:@"*million*"])
-		return [NSNumber numberWithInt:24];
-	
-	return [NSNumber numberWithInt:16];
-}
 
 inline NSString *CRDBugReportURL(void)
 {

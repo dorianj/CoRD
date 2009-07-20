@@ -93,8 +93,14 @@
 	}
 	
 	[self setValue:CRDNumberForColorsText([defaults valueForKey:@"CRDBaseConnectionColors"]) forKey:@"screenDepth"];
-	CRDSplitResolutionString([defaults valueForKey:@"CRDBaseConnectionScreenSize"], &screenWidth, &screenHeight);
 	
+	
+	NSString *resolutionString = [defaults valueForKey:@"CRDBaseConnectionScreenSize"];
+	fullscreen = CRDResolutionStringIsFullscreen(resolutionString);
+
+	if (!fullscreen)
+		CRDSplitResolutionString(resolutionString, &screenWidth, &screenHeight);
+			
 	return self;
 }
 
