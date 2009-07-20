@@ -35,7 +35,7 @@ NSString * const CRDRowIndexPboardType = @"CRDRowIndexPboardType";
 // URLs for Support & Logistics
 NSString * const CRDTracURL = @"http://sf.net/apps/trac/cord/";
 NSString * const CRDHomePageURL = @"http://cord.sf.net";
-NSString * const CRDSupportForumsURL = @"http://sourceforge.net/forum/forum.php?forum_id=610247";
+NSString * const CRDSupportForumsURL = @"http://sf.net/apps/phpbb/cord/";
 
 // Globals
 AppController *g_appController;
