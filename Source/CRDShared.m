@@ -33,9 +33,9 @@ const float CRDWindowSnapSize = 30.0;
 NSString * const CRDRowIndexPboardType = @"CRDRowIndexPboardType";
 
 // URLs for Support & Logistics
-NSString * const CRDTracURL = @"http://sf.net/apps/trac/cord/";
-NSString * const CRDHomePageURL = @"http://cord.sf.net";
-NSString * const CRDSupportForumsURL = @"http://sf.net/apps/phpbb/cord/";
+NSString * const CRDTracURL = @"http://sourceforge.net/apps/trac/cord/";
+NSString * const CRDHomePageURL = @"http://cord.sourceforge.net";
+NSString * const CRDSupportForumsURL = @"http://sourceforge.net/apps/phpbb/cord/";
 
 // Globals
 AppController *g_appController;
