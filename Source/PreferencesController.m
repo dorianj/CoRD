@@ -25,15 +25,13 @@
 
 #pragma mark -
 
-
-
 @implementation PreferencesController
 
 - (void)awakeFromNib
 {
+	[screenResolutionsController setSortDescriptors:[NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"resolution" ascending:YES selector:@selector(compareScreenResolution:)] autorelease]]];
 	[self changePanes:[[toolbar items] objectAtIndex:0]];
 }
-
 
 - (IBAction)changePanes:(id)sender
 {

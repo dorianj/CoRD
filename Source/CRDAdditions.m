@@ -16,6 +16,7 @@
 */
 
 #import "CRDAdditions.h"
+#import "CRDShared.h"
 
 @implementation NSView (CRDAdditions)
 
@@ -65,6 +66,38 @@
 	[resultantString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[self substringToIndex:1] lowercaseString]];
 	return resultantString;
 }
+
+- (NSComparisonResult)compareScreenResolution:(NSString*)otherResolution
+{
+	NSString *resolution1 = self, *resolution2 = otherResolution;
+	NSInteger w1, h1, w2, h2;
+	BOOL fullscreen1, fullscreen2;
+
+	fullscreen1 = CRDResolutionStringIsFullscreen(resolution1);
+	fullscreen2 = CRDResolutionStringIsFullscreen(resolution2);
+	
+	if (fullscreen1 && fullscreen2)
+		return NSOrderedSame;
+	if (fullscreen1 && !fullscreen2)
+		return NSOrderedAscending;
+	if (!fullscreen1 && fullscreen2)
+		return NSOrderedDescending;
+	
+	CRDSplitResolutionString(resolution1, &w1, &h1);
+	CRDSplitResolutionString(resolution2, &w2, &h2);
+	
+	if (w1 == w2 && h1 == h2)
+		return NSOrderedSame;
+	
+	if (w1 > w2)
+		return NSOrderedDescending;
+	
+	if (w1 < w2)
+		return NSOrderedAscending;
+	
+	return (h1 > h2) ? NSOrderedDescending : NSOrderedAscending;
+}
+
 
 @end
 
