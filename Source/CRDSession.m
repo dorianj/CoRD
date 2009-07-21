@@ -302,7 +302,7 @@
 
 	// Set remote keymap to match local OS X input type
 	if (CRDPreferenceIsEnabled(CRDSetServerKeyboardLayout))
-		conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapName]];
+		conn->keyboardLayout = [CRDKeyboard windowsKeymapForMacKeymap:[CRDKeyboard currentKeymapIdentifier]];
 	else
 		conn->keyboardLayout = 0;
 	

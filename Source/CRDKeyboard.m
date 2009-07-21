@@ -127,21 +127,18 @@ static NSDictionary *windowsKeymapTable = nil;
 
 - (void)sendScancode:(uint8)scancode flags:(uint16)flags
 {
-	if ( ((scancode == SCANCODE_CHAR_LWIN) || (scancode == SCANCODE_CHAR_RWIN)) &&
-		!CRDPreferenceIsEnabled(CRDDefaultsSendWindowsKey))
-	{
+	if ( ((scancode == SCANCODE_CHAR_LWIN) || (scancode == SCANCODE_CHAR_RWIN)) && !CRDPreferenceIsEnabled(CRDDefaultsSendWindowsKey))
 		return;
-	}
 	
 	if (scancode & SCANCODE_EXTENDED)
 	{
 		DEBUG_KEYBOARD((@"Sending extended scancode=0x%x, flags=0x%x\n", scancode & ~SCANCODE_EXTENDED, flags));
-		[controller sendInputOnConnectionThread:time(NULL) type:RDP_INPUT_SCANCODE flags:(flags | KBD_FLAG_EXT) param1:(scancode & ~SCANCODE_EXTENDED) param2:0];
+		[self.controller sendInputOnConnectionThread:time(NULL) type:RDP_INPUT_SCANCODE flags:(flags | KBD_FLAG_EXT) param1:(scancode & ~SCANCODE_EXTENDED) param2:0];
 	}
 	else
 	{
 		DEBUG_KEYBOARD( (@"Sending scancode=0x%x flags=0x%x", scancode, flags) );
-		[controller sendInputOnConnectionThread:time(NULL) type:RDP_INPUT_SCANCODE flags:flags param1:scancode param2:0];
+		[self.controller sendInputOnConnectionThread:time(NULL) type:RDP_INPUT_SCANCODE flags:flags param1:scancode param2:0];
 	}
 }
 
@@ -207,15 +204,8 @@ static NSDictionary *windowsKeymapTable = nil;
 
 #pragma mark -
 #pragma mark Accessors
-- (CRDSession *)controller
-{
-	return controller;
-}
 
-- (void)setController:(CRDSession *)cont
-{
-	controller = cont;
-}
+@synthesize controller;
 
 
 #pragma mark -
@@ -280,21 +270,21 @@ static NSDictionary *windowsKeymapTable = nil;
 #pragma mark Class methods
 
 // This method isn't fully re-entrant but shouldn't be a problem in practice
-+ (unsigned)windowsKeymapForMacKeymap:(NSString *)keymapName
++ (unsigned)windowsKeymapForMacKeymap:(NSString *)keymapIdentifier
 {
-	DEBUG_KEYBOARD((@"Loading windows keymap for %@", keymapName));
+	DEBUG_KEYBOARD((@"Loading windows keymap for Mac keymap identifier %@", keymapIdentifier));
+
 	// Load 'OSX keymap name' --> 'Windows keymap number' lookup table if it isn't already loaded
 	if (windowsKeymapTable == nil)
 	{
-		NSMutableDictionary *dict = [[NSMutableDictionary dictionaryWithCapacity:30] retain];
+		NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:50];
 		NSString *filename = [[NSBundle mainBundle] pathForResource:@"windows_keymap_table" ofType:@"txt"];
 		NSArray *lines = [[NSString stringWithContentsOfFile:filename encoding:NSUTF8StringEncoding error:NULL] componentsSeparatedByString:@"\n"];
 		NSScanner *scanner;
 		NSString *n;
-		unsigned i;
-		
-		id line;
-		for ( line in lines )
+		unsigned int i = 0;
+
+		for (NSString *line in lines)
 		{
 			line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 			scanner = [NSScanner scannerWithString:line];
@@ -303,11 +293,10 @@ static NSDictionary *windowsKeymapTable = nil;
 			[scanner scanHexInt:&i];
 			
 			if (i != 0 && n != nil)
-			{
 				[dict setObject:[NSNumber numberWithUnsignedInt:i] forKey:n];
-			}
 		}
-		windowsKeymapTable = dict;
+		
+		windowsKeymapTable = [dict retain];
 	}
 	
 	
@@ -316,42 +305,42 @@ static NSDictionary *windowsKeymapTable = nil;
 		if an appropriate keymap isn't found either way, use US keymap as default.
 	*/
 	
-	NSNumber *windowsKeymap = [windowsKeymapTable objectForKey:keymapName];
+	NSNumber *windowsKeymap = nil;
+
+	for (NSString *keymapName in windowsKeymapTable)
+		if ([[@"com.apple.keylayout." stringByAppendingString:keymapName] isEqualToString:keymapIdentifier])
+		{
+			windowsKeymap = [windowsKeymapTable objectForKey:keymapName];
+			break;
+		}
+			
 	
 	if (!windowsKeymap)
 	{
-		NSString *prefix;
-		
-		id potentialKeymapName;
-		NSEnumerator *enumerator = [[windowsKeymapTable allKeys] objectEnumerator];
-		
-		while ( (potentialKeymapName = [enumerator nextObject]) )
-		{
-			prefix = [keymapName commonPrefixWithString:potentialKeymapName options:NSLiteralSearch];
-			if ([prefix length] >= 4)
+		NSString *keymapName = [keymapIdentifier substringFromIndex:[keymapIdentifier rangeOfString:@"." options:NSBackwardsSearch].location+1];
+				
+		for (NSString *potentialKeymapName in windowsKeymapTable)
+			if ([[keymapName commonPrefixWithString:potentialKeymapName options:NSLiteralSearch] length] >= 4)
 			{ 
 				windowsKeymap = [windowsKeymapTable objectForKey:potentialKeymapName];
-				DEBUG_KEYBOARD( (@"windowsKeymapForMacKeymap: substituting keymap '%@' for passed '%@', giving Windows keymap '%x'", potentialKeymapName, keymapName, [windowsKeymap intValue]));
+				DEBUG_KEYBOARD( (@"windowsKeymapForMacKeymap: substituting keymap '%@' for passed '%@', giving Windows keymap 0x%x", potentialKeymapName, keymapIdentifier, [windowsKeymap intValue]));
 				break;
 			}
-		}
 	}
 	
 	if (windowsKeymap)
-		DEBUG_KEYBOARD( (@"Setting remote keymap to %@ (int value: %d)", keymapName, [windowsKeymap unsignedIntValue]) );
+		DEBUG_KEYBOARD( (@"Setting remote keymap to %@ (int value: 0x%x)", keymapIdentifier, [windowsKeymap unsignedIntValue]) );
 	else
-		DEBUG_KEYBOARD( (@"Using default American keyboard layout") );
+		DEBUG_KEYBOARD( (@"Using default American English keyboard layout") );
 		
 	return (!windowsKeymap) ? 0x409 : [windowsKeymap unsignedIntValue];
 }
 
-+ (NSString *) currentKeymapName
++ (NSString *)currentKeymapIdentifier
 {
-
-
 	TISInputSourceRef keyLayout;
 	keyLayout = TISCopyCurrentKeyboardInputSource();
-	DEBUG_KEYBOARD((@"Current Keymap Name %@", (NSString *)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID)));
+	DEBUG_KEYBOARD((@"Current keymap identifier: %@", (NSString *)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID)));
 	return (NSString*)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID);
 }
 
@@ -360,7 +349,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	unsigned int eventFlags = [ev modifierFlags];
 	uint16 rdFlags = 0;
 	
-	// Unless if a system to ensure modifiers qre correct before keypresses is added, this is uneeded
+	// Unless if a system is added to ensure modifiers are correct before keypresses, this is uneeded
 	//if (eventFlags & NSAlphaShiftKeyMask)
 	// 	MASK_CHANGE_BIT(rdFlags, MapCapsLockMask, 1);
 	

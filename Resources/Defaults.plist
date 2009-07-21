@@ -24,8 +24,6 @@
 	<false/>
 	<key>CRDBaseConnectionThemes</key>
 	<true/>
-	<key>CRDBaseConnectionWindowAnimation - 2</key>
-	<false/>
 	<key>CRDBaseConnectionFontSmoothing</key>
 	<true/>
 	<key>windowed_mode</key>
