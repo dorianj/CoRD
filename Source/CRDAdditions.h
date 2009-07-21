@@ -19,4 +19,18 @@
 
 @interface NSView (CRDAdditions)
 	- (NSImage *)cacheDisplayInRectAsImage:(NSRect)rect;
-@end	
+@end
+
+#pragma mark -
+
+@interface NSString (CRDAdditions)
+	- (NSString *)stringByDeletingCharactersInSet:(NSCharacterSet *)characterSet;
+	- (NSString *)stringByDeletingFileSystemCharacters;
+	- (NSString *)lowercaseFirst;
+@end
+
+#pragma mark -
+
+@interface NSTableView (CRDAdditions)
+	- (void)editSelectedRow:(NSNumber *)column;
+@end

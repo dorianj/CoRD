@@ -98,14 +98,7 @@ void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
 NSString *CRDBugReportURL(void);
 
-#pragma mark -
-#pragma mark Cocoa Categories
 
-@interface NSString (CRDAdditions)
-	- (NSString *)stringByDeletingCharactersInSet:(NSCharacterSet *)characterSet;
-	- (NSString *)stringByDeletingFileSystemCharacters;
-	- (NSString *)lowercaseFirst;
-@end
 
 // Convenience macros
 #define BUTTON_STATE_AS_NUMBER(b) [NSNumber numberWithInt:([(b) state] == NSOnState ? 1 : 0)]

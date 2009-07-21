@@ -25,6 +25,9 @@
 	IBOutlet NSToolbar *toolbar;
 	
 	NSUserDefaults *userDefaults;
+	
+	IBOutlet NSArrayController *screenResolutionsController;
+	IBOutlet NSTableView *screenResolutionsTableView;
 }
 
 
@@ -33,7 +36,9 @@
 
 - (IBAction)showPreferencesHelp:(id)sender;
 
-- (void)restoreDefaultScreenResolutions:(id)sender;
-- (void)restoreAllSettingsToDefault:(id)sender;
+- (IBAction)restoreDefaultScreenResolutions:(id)sender;
+- (IBAction)restoreAllSettingsToDefault:(id)sender;
+
+- (IBAction)addNewScreenResolution:(id)sender;
 
 @end

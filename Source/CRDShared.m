@@ -395,38 +395,3 @@ inline NSString *CRDBugReportURL(void)
 {
 	return [NSString stringWithFormat:@"%@newticket?type=defect&version=%@&keywords=MenuBarSubmission,%@", CRDTracURL, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];	
 }
-
-#pragma mark -
-#pragma mark Cocoa categories
-@implementation NSString (CRDAdditions)
-
-- (NSString *)stringByDeletingCharactersInSet:(NSCharacterSet *)characterSet
-{
-	NSMutableString *cleanedString = [[self mutableCopy] autorelease];
-	for (int i = 0; i < [cleanedString length]; )
-	{
-		if ([characterSet characterIsMember:[cleanedString characterAtIndex:i]])
-			[cleanedString deleteCharactersInRange:NSMakeRange(i, 1)];
-		else
-			i++;
-	}
-
-	return cleanedString;
-}
-
-- (NSString *)stringByDeletingFileSystemCharacters
-{
-	return [self stringByDeletingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/~:"]];
-}
-
-- (NSString *)lowercaseFirst
-{
-	if (![self length])
-		return @"";
-
-	NSMutableString *resultantString = [[self mutableCopy] autorelease];
-	[resultantString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[self substringToIndex:1] lowercaseString]];
-	return resultantString;
-}
-
-@end

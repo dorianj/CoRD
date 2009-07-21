@@ -32,3 +32,49 @@
 }
 
 @end
+
+#pragma mark -
+
+@implementation NSString (CRDAdditions)
+
+- (NSString *)stringByDeletingCharactersInSet:(NSCharacterSet *)characterSet
+{
+	NSMutableString *cleanedString = [[self mutableCopy] autorelease];
+	for (int i = 0; i < [cleanedString length]; )
+	{
+		if ([characterSet characterIsMember:[cleanedString characterAtIndex:i]])
+			[cleanedString deleteCharactersInRange:NSMakeRange(i, 1)];
+		else
+			i++;
+	}
+
+	return cleanedString;
+}
+
+- (NSString *)stringByDeletingFileSystemCharacters
+{
+	return [self stringByDeletingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/~:"]];
+}
+
+- (NSString *)lowercaseFirst
+{
+	if (![self length])
+		return @"";
+
+	NSMutableString *resultantString = [[self mutableCopy] autorelease];
+	[resultantString replaceCharactersInRange:NSMakeRange(0, 1) withString:[[self substringToIndex:1] lowercaseString]];
+	return resultantString;
+}
+
+@end
+
+#pragma mark -
+
+@implementation NSTableView (CRDAdditions)
+- (void)editSelectedRow:(NSNumber *)column
+{
+	NSInteger columnIndex = (column) ? [column integerValue] : 0;
+	[self editColumn:columnIndex row:[self selectedRow] withEvent:nil select:YES];
+}
+
+@end

@@ -16,6 +16,7 @@
 */
 
 #import "PreferencesController.h"
+#import "CRDShared.h"
 
 #define CRDPreferencesGeneralTabTag 0
 #define CRDPreferencesConnectionTabTag 1
@@ -23,6 +24,8 @@
 
 
 #pragma mark -
+
+
 
 @implementation PreferencesController
 
@@ -121,23 +124,10 @@
 	[closeSessionMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 }
 
-
 #pragma mark -
-#pragma mark Advanced pane
+#pragma mark General pane
 
-- (void)restoreDefaultScreenResolutions:(id)sender
-{
-
-	NSInteger buttonPressed = NSRunAlertPanel(@"Restore default resolutions", @"Are you sure you want to restore the default screen resolutions? Any additions you have made will be lost.", @"Restore Defaults", @"Cancel", nil);	
-	if (buttonPressed != 1)
-		return;
-
-	NSDictionary *builtInDefaults = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]];
-	[[NSUserDefaults standardUserDefaults] setObject:[builtInDefaults objectForKey:@"CRDScreenResolutions"] forKey:@"CRDScreenResolutions"];
-}
-
-
-- (void)restoreAllSettingsToDefault:(id)sender
+- (IBAction)restoreAllSettingsToDefault:(id)sender
 {
 	NSInteger buttonPressed = NSRunAlertPanel(@"Restore default settings", @"Are you sure you want to restore your CoRD settings to the built-in defaults? Saved servers will not be affected.", @"Restore Defaults", @"Cancel", nil);
 
@@ -150,6 +140,45 @@
 		if (![excludedKeys containsObject:defaultKey])
 			[[NSUserDefaults standardUserDefaults] setObject:[builtInDefaults objectForKey:defaultKey] forKey:defaultKey];
 }
+
+
+#pragma mark -
+#pragma mark Advanced pane
+
+- (IBAction)restoreDefaultScreenResolutions:(id)sender
+{
+
+	NSInteger buttonPressed = NSRunAlertPanel(@"Restore default resolutions", @"Are you sure you want to restore the default screen resolutions? Any additions you have made will be lost.", @"Restore Defaults", @"Cancel", nil);	
+	if (buttonPressed != 1)
+		return;
+
+	NSDictionary *builtInDefaults = [NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]];
+	[[NSUserDefaults standardUserDefaults] setObject:[builtInDefaults objectForKey:@"CRDScreenResolutions"] forKey:@"CRDScreenResolutions"];
+}
+
+- (IBAction)addNewScreenResolution:(id)sender
+{
+	// -[NSArrayController insert] performs its action in the next runloop cycle, so wait a bit before starting to edit the new row.
+	// also, the NSArrayController won't select the row for us, due to a bug where "compound object" and selectsInsertedObjects don't work together ( rdar://7079110 ) 
+	
+	BOOL foundExistingEmptyRow = NO;
+	for (NSDictionary *value in [screenResolutionsController arrangedObjects])
+		if (![[value objectForKey:@"resolution"] length])
+		{
+			foundExistingEmptyRow = [screenResolutionsController setSelectedObjects:[NSArray arrayWithObject:value]];
+			break;
+		}
+	
+	if (foundExistingEmptyRow)
+		[screenResolutionsTableView editSelectedRow:[NSNumber numberWithInteger:0]];
+	else
+	{
+		[screenResolutionsController add:nil];
+		[self performSelector:@selector(addNewScreenResolution:) withObject:nil afterDelay:0.05];
+	}
+}
+
+
 
 
 @end
