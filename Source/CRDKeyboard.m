@@ -347,8 +347,11 @@ static NSDictionary *windowsKeymapTable = nil;
 
 + (NSString *) currentKeymapName
 {
+
+
 	TISInputSourceRef keyLayout;
 	keyLayout = TISCopyCurrentKeyboardInputSource();
+	DEBUG_KEYBOARD((@"Current Keymap Name %@", (NSString *)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID)));
 	return (NSString*)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID);
 }
 
