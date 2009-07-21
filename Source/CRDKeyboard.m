@@ -114,15 +114,13 @@ static NSDictionary *windowsKeymapTable = nil;
 
 - (void)sendKeycode:(uint8)keyCode modifiers:(uint16)rdflags pressed:(BOOL)down
 {
-	if ([virtualKeymap objectForKey:[NSNumber numberWithInt:keyCode]] != nil)
-	{
-		if (down)
-			[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYPRESS)];
-		else
-			[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYRELEASE)];
-			
+	if ([virtualKeymap objectForKey:[NSNumber numberWithInt:keyCode]] == nil)
 		return;
-	}
+	
+	if (down)
+		[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYPRESS)];
+	else
+		[self sendScancode:KEYMAP_ENTRY(keyCode) flags:(rdflags | RDP_KEYRELEASE)];
 }
 
 - (void)sendScancode:(uint8)scancode flags:(uint16)flags
