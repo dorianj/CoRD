@@ -1970,9 +1970,7 @@
 	}
 	else
 	{
-		NSEnumerator *enumerator = [[view subviews] objectEnumerator];
-		id subview;
-		while ( (subview = [enumerator nextObject]) )
+		for ( id subview in [view subviews])
 		{
 			[self toggleControlsEnabledInView:subview enabled:enabled];
 		}
@@ -2461,10 +2459,7 @@
 
 - (void)storeSavedServerPositions
 {
-	NSEnumerator *enumerator = [savedServers objectEnumerator];
-	CRDSession *inst;
-	
-	while ( (inst = [enumerator nextObject]) )
+	for (CRDSession *inst in savedServers) 
 		[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObject:inst]] forKey:@"preferredRowIndex"];	
 }
 
