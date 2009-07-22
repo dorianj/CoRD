@@ -1558,38 +1558,42 @@
 	return proposedFrameSize;
 }
 
+
 #pragma mark -
 #pragma mark NSSearchField Delegate
--(BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector {
-    
-	BOOL result = [filteredServers count];
+
+-(BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector
+{	
+	if ( (control != gui_searchField) || ![filteredServers count])
+		return NO;
 	
-    if (commandSelector == @selector(insertNewline:) && result) {
+	if (commandSelector == @selector(insertNewline:))
+	{
 		[self connect:nil];
 		[gui_searchField setStringValue:@""];
-    }
-	else if(commandSelector == @selector(moveUp:) && result) {
-
-		if ( [gui_serverList selectedRow] > 1 ) 
-		{
+		return NO;
+	}
+	
+	if (commandSelector == @selector(moveUp:))
+	{
+		if ([gui_serverList selectedRow] > 1) 
 			[gui_serverList selectRow:([gui_serverList selectedRow] - 1)];
-		} else {
+		else
 			[gui_serverList selectRow:([gui_serverList numberOfRows] - 1)];
-		}
+		
 		return YES;
-
 	}
-	else if(commandSelector == @selector(moveDown:) && result) {
+	
+	if (commandSelector == @selector(moveDown:))
+	{
 		if ( [gui_serverList selectedRow] < ([gui_serverList numberOfRows] - 1) ) 
-		{
 			[gui_serverList selectRow:([gui_serverList selectedRow] + 1)];
-		} else {
+		else
 			[gui_serverList selectRow:1];
-		}
-		return YES;
 
+		return YES;
 	}
-    
+
 	return NO;
 }
 
