@@ -28,8 +28,6 @@
 	
 	id _selectedItem;
 	NSMutableArray *_items;
-	NSLock *itemsLock;
-	BOOL animatesWhenSwitchingItems;
 }
 
 - (IBAction)selectFirstItem:(id)sender;
@@ -37,22 +35,18 @@
 - (IBAction)selectNextItem:(id)sender;
 - (IBAction)selectPreviousItem:(id)sender;
 - (IBAction)selectItem:(id)item;
-- (IBAction)selectItemAtIndex:(NSUInteger)index;
 
-- (id)itemAtIndex:(NSUInteger)index;
+- (void)selectItemAtIndex:(NSInteger)index;
+- (id)itemAtIndex:(NSInteger)index;
 - (id)selectedItem;
 
-- (NSUInteger)indexOfItem:(id)item;
-- (NSUInteger)indexOfSelectedItem;
+- (NSInteger)indexOfItem:(id)item;
+- (NSInteger)indexOfSelectedItem;
 
-- (NSUInteger)numberOfItems;
+- (NSInteger)numberOfItems;
 
 - (void)addItem:(id)item;
 - (void)removeItem:(id)item;
-
-
-- (BOOL)animatesWhenSwitchingItems;
-- (void)setAnimatesWhenSwitchingItems:(BOOL)animate;
 
 @end
 

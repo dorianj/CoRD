@@ -35,7 +35,6 @@
 		return nil;
 		
 	_items = [[NSMutableArray alloc] init];
-	itemsLock = [[NSLock alloc] init];
 		
 	return self;
 }
@@ -60,62 +59,13 @@
 
 - (void)selectItem:(id)item
 {
-	NSView *initialContentView = [[self selectedItem] tabItemView];
-	NSView *finalContentView = [item tabItemView];
+	NSView *currentContentView = [[self selectedItem] tabItemView], *newContentView = [item tabItemView];
 	
-	[finalContentView setFrame:(NSRect){NSZeroPoint, [self bounds].size}];
+	[newContentView setFrame:(NSRect){NSZeroPoint, [self bounds].size}];
 	
-	if ([self animatesWhenSwitchingItems])
-	{
-		NSLog(@"Attempting to animate tab switch");
-			
-		NSMutableArray *viewAnims = [NSMutableArray array];
-		
-		if (initialContentView != nil)
-		{
-			[viewAnims addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-							initialContentView, NSViewAnimationTargetKey,
-							NSViewAnimationFadeOutEffect, NSViewAnimationEffectKey,
-							nil]];
-			NSLog(@"Animating the fade out");
-		}
-		
-		if (finalContentView != nil)
-		{
-			[self addSubview:finalContentView];
-			[viewAnims addObject:[NSDictionary dictionaryWithObjectsAndKeys:
-							finalContentView, NSViewAnimationTargetKey,
-							NSViewAnimationFadeInEffect, NSViewAnimationEffectKey,
-							/*[NSValue valueWithRect:[initialContentView frame]], NSViewAnimationStartFrameKey,
-							[NSValue valueWithRect:CRDRectFromSize([finalContentView frame].size)], NSViewAnimationEndFrameKey, */
-							nil]];
-			
-			NSLog(@"Animating the fade in");
-		}
-
-		if (![viewAnims count])
-		{
-			NSLog(@"Nothing to animate!");
-			_selectedItem = item;
-			return;
-			
-		}
-			
-		NSViewAnimation *viewAnim = [[NSViewAnimation alloc] initWithViewAnimations:viewAnims];
-		[viewAnim setAnimationBlockingMode:NSAnimationBlocking];
-		[viewAnim setDuration:2.0];
-		[viewAnim setAnimationCurve:NSAnimationLinear];
-		[viewAnim startAnimation];
-		[viewAnim release];	
-		
-		[initialContentView removeFromSuperview];		
-	}
-	else
-	{		
-		[initialContentView removeFromSuperviewWithoutNeedingDisplay];
-		[self addSubview:finalContentView];
-		[finalContentView drawRect:[finalContentView bounds]];
-	}
+	[currentContentView removeFromSuperviewWithoutNeedingDisplay];
+	[self addSubview:newContentView];
+	[newContentView drawRect:[newContentView bounds]];
 	
 	_selectedItem = item;
 }
@@ -140,14 +90,19 @@
 	[self selectItemAtIndex:([self indexOfSelectedItem]-1)];
 }
 
-- (IBAction)selectItemAtIndex:(NSUInteger)index
+- (IBAction)selectItemAtIndex:(NSInteger)index
 {
+	if (index >= [_items count])
+		index = 0;
+	else if (index < 0)
+		index = [_items count] - 1;
+		
 	[self selectItem:[self itemAtIndex:index]];
 }
 
-- (id)itemAtIndex:(NSUInteger)index
+- (id)itemAtIndex:(NSInteger)index
 {
-	if (index >= [self numberOfItems])
+	if (index >= (NSInteger)[self numberOfItems])
 		return nil;
 	
 	return [_items objectAtIndex:index];
@@ -158,19 +113,19 @@
 	return _selectedItem;
 }
 
-- (NSUInteger)indexOfItem:(id)item
+- (NSInteger)indexOfItem:(id)item
 {
 	return [_items indexOfObject:item];
 }
 
-- (NSUInteger)indexOfSelectedItem
+- (NSInteger)indexOfSelectedItem
 {
 	return [self indexOfItem:_selectedItem];
 }
 
-- (NSUInteger)numberOfItems
+- (NSInteger)numberOfItems
 {
-	return [_items count];
+	return (NSInteger)[_items count];
 }
 
 - (void)addItem:(id)item
@@ -181,7 +136,7 @@
 	if (![item respondsToSelector:@selector(tabItemView)])
 		[NSException raise:@"InvalidCRDTabViewItem" format:@"CRDTabView items must respond to -[obj tabItemView]!"];
 	
-	@synchronized(itemsLock)
+	@synchronized(_items)
 	{
 		[_items addObject:item];
 	}
@@ -190,43 +145,16 @@
 - (void)removeItem:(id)item
 {
 	if ([self indexOfItem:item] == NSNotFound)
-		[NSException raise:@"ItemDoesn'tExist" format:@"The receiver doesn't have %@ as an item", item];
+		[NSException raise:@"ItemDoesntExist" format:@"The receiver doesn't have %@ as an item", item];
 	
-	@synchronized(itemsLock)
+	@synchronized(_items)
 	{
 		if (_selectedItem == item)
-		{
-			if ([_items lastObject] == item)
-				[self selectPreviousItem:self];
-			else
-				[self selectNextItem:self];		
-		}
+			[self selectNextItem:self];		
 
 		[_items removeObject:item];
 	}
 }
 
-- (BOOL)animatesWhenSwitchingItems
-{
-	return animatesWhenSwitchingItems;
-}
-
-- (void)setAnimatesWhenSwitchingItems:(BOOL)animate
-{
-	animatesWhenSwitchingItems = animate;
-}
-
-
 @end
 
-#pragma mark -
-
-@implementation CRDTabView (Private)
-
-/*- (void)setSelectedTabViewItem:(NSTabViewItem *)newSelection
-{
-	[_selectedItem autorelease];
-	_selectedItem = [newSelection retain];
-}*/
-
-@end

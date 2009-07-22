@@ -222,7 +222,6 @@
 	[[gui_password cell] setSendsActionOnEndEditing:YES];
 	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 	[gui_unifiedWindow setExcludedFromWindowsMenu:YES];
-	[gui_tabView setAnimatesWhenSwitchingItems:NO];
 
 	// Load a few user defaults that need to be loaded before anything is displayed
 	displayMode = [[userDefaults objectForKey:CRDDefaultsDisplayMode] intValue];
@@ -645,7 +644,6 @@
 	
 	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
 	[gui_fullScreenWindow setDelegate:self];
-	[gui_tabView setAnimatesWhenSwitchingItems:YES];
 	
 	[[gui_tabView retain] autorelease];
 	
@@ -723,7 +721,6 @@
 	[gui_fullScreenWindow prepareForExit];
 
 	// Misc preparation
-	[gui_tabView setAnimatesWhenSwitchingItems:NO];
 	displayMode = CRDDisplayUnified;
 	[self autosizeUnifiedWindowWithAnimation:NO];
 	
@@ -1217,7 +1214,6 @@
 	// Clean up the fullscreen window
 	if (displayMode == CRDDisplayFullscreen)
 	{
-		[gui_tabView setAnimatesWhenSwitchingItems:NO];
 		[gui_fullScreenWindow orderOut:nil];
 		displayMode = displayModeBeforeFullscreen;
 	}
