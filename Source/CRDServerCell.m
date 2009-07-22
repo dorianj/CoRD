@@ -172,7 +172,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	float textHeight = [label size].height;
 	
 	if (!abbreviatedSize)
-		textHeight += [user size].height, [host size].height;
+		textHeight += [user size].height;
 	
 	float textX = imgRect.origin.x + imgRect.size.width + PADDING_IMAGE;
 	float textY = frame.origin.y + ((frame.size.height-textHeight) / 4.0);  // center vertically

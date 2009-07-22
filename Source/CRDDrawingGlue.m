@@ -935,7 +935,7 @@ void ui_destroy_cursor(RDCursorRef cursor)
 
 void ui_move_pointer(RDConnectionRef conn, int x, int y)
 {
-	LOCALS_FROM_CONN;
+	//LOCALS_FROM_CONN;
 	//xxx: check if this conn is active
 	/* this is incorrect; not sure why this should be implemented
 	NSPoint windowPoint = [v convertPoint:NSMakePoint(x,y) fromView:nil];

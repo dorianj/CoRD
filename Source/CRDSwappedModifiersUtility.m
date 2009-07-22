@@ -59,7 +59,6 @@ typedef enum _CRDSwappedModifiersKeyCode
 #define GetFlagForKey(keyNum, flag) MakeInt([[keyFlagTable objectForKey:MakeNum(keyNum)] objectForKey:flag])
 
 static CRDSwappedModifiersUtility *sharedInstance;
-static NSLock *keyTranslatorLock;
 static NSDictionary *keyFlagTable, *modifierTranslator, *keyDisplayNames;
 static NSArray *rawDefaultTable;
 

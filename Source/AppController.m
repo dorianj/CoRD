@@ -245,7 +245,6 @@
     NSString *hostname = nil;
     NSInteger port;
     NSDictionary *commands = [[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain];
-    id com;
 
     for(id com in commands)
     {

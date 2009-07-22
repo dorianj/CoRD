@@ -329,7 +329,6 @@ tcp_cfhost_lookup_finished(CFHostRef host, CFHostInfoType typeInfo, const CFStre
 	
 	Boolean hasBeenResolved = False;
 	CFArrayRef addresses = CFHostGetAddressing(host, &hasBeenResolved);
-	CFIndex count = CFArrayGetCount(addresses);
     
 	if (!hasBeenResolved || !addresses)
 		return;
@@ -343,7 +342,7 @@ tcp_cfhost_lookup_finished(CFHostRef host, CFHostInfoType typeInfo, const CFStre
 		if (!addressInfo)
 			continue;
 			
-		void *src_data = addressInfo->sa_data + ((addressInfo->sa_family == AF_INET6) ? 6 : 2);
+		//void *src_data = addressInfo->sa_data + ((addressInfo->sa_family == AF_INET6) ? 6 : 2);
 		
 		err = getnameinfo(addressInfo, addressInfo->sa_len, ipaddr, INET6_ADDRSTRLEN, NULL, 0, NI_NUMERICHOST);
         //Handle error?

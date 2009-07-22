@@ -271,7 +271,7 @@ rdpdr_process_irp(RDConnectionRef conn, RDStreamRef s)
 		bytes_in,
 		bytes_out,
 		error_mode,
-		share_mode, disposition, total_timeout, interval_timeout, flags_and_attributes = 0;
+		share_mode, disposition, flags_and_attributes = 0;
 
 	char filename[PATH_MAX];
 	uint8 *buffer, *pst_buf;
