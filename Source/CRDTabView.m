@@ -16,14 +16,8 @@
 */
 
 
-
-#import "CRDTabView.h"
- 
+#import "CRDTabView.h" 
 #import "CRDShared.h"
-
-@interface CRDTabView (Private)
-//	- (void)setSelectedTabViewItem:(NSTabViewItem *)newSelection;
-@end
 
 #pragma mark -
 
@@ -51,7 +45,6 @@
 {
 //	CRDDrawVerticalGradient([NSColor colorWithDeviceWhite:0.93  alpha:1.0], [NSColor colorWithDeviceWhite:0.875 alpha:1.0], [self bounds]);
 }
-
 
 
 #pragma mark -
@@ -147,13 +140,20 @@
 	if ([self indexOfItem:item] == NSNotFound)
 		[NSException raise:@"ItemDoesntExist" format:@"The receiver doesn't have %@ as an item", item];
 	
+	
+	NSDisableScreenUpdates();
+	
+	if ([_items count] > 1)
+		[self selectNextItem:self];
+	else
+		[[[self selectedItem] tabItemView] removeFromSuperviewWithoutNeedingDisplay];
+	
 	@synchronized(_items)
 	{
-		if (_selectedItem == item)
-			[self selectNextItem:self];		
-
 		[_items removeObject:item];
 	}
+		
+	NSEnableScreenUpdates();
 }
 
 @end

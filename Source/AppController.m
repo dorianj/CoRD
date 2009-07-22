@@ -241,30 +241,50 @@
 
 - (void)parseCommandLine
 {
-    NSString *hostname = nil;
-    NSInteger port;
-    NSDictionary *commands = [[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain];
+    NSDictionary *arguments = [[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain];
+	
+	// Try to emulate rdesktop's CLI args somewhat
+	NSDictionary *argumentToKeyPath = [NSDictionary dictionaryWithObjectsAndKeys:
+		@"hostName",     [NSArray arrayWithObjects:@"host", @"h", nil],
+		@"username",     [NSArray arrayWithObjects:@"username", @"u", nil],
+		@"port",         [NSArray arrayWithObjects:@"port", nil],
+		@"domain",       [NSArray arrayWithObjects:@"domain", @"d", nil],
+		@"password",     [NSArray arrayWithObjects:@"password", @"p", nil],
+		@"screenDepth",  [NSArray arrayWithObjects:@"bpp", @"a", nil],
+		//@"fullscreen",   [NSArray arrayWithObjects:@"fullscreen", @"f", nil], //haven't gotten booleans to work yet
+		@"screenWidth",  [NSArray arrayWithObjects:@"width", nil],
+		@"screenHeight", [NSArray arrayWithObjects:@"height", nil],
+		//@"console",      [NSArray arrayWithObjects:@"console", @"admin", nil],
+		nil];
+	
+	CRDSession *newInst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 
-    for(id com in commands)
+	if ([arguments objectForKey:@"g"])
+	{
+		NSInteger w, h;
+		CRDSplitResolutionString([arguments objectForKey:@"g"], &w, &h);
+		[newInst setValue:[NSNumber numberWithInteger:w] forKey:@"screenWidth"];
+		[newInst setValue:[NSNumber numberWithInteger:h] forKey:@"screenHeight"];
+	}
+	
+	
+    for (NSArray *argumentKeys in argumentToKeyPath)
     {
-        if([com isEqualToString:@"hostname"] || [com isEqualToString:@"h"])
-        {
-            hostname = [commands objectForKey:com];            
-        }
-        else if([com isEqualToString:@"port"] || [com isEqualToString:@"p"])
-        {
-            port = [[commands objectForKey:com] intValue];
-        }
-    }
-            
-    if(hostname == nil)
-    {
-        [self printUsage];
-    }
-    else if (port)
-        [self performCommandLineConnect:[NSString stringWithFormat:@"%@:%d", hostname, port]];
-	else
-		[self performCommandLineConnect:hostname];
+		NSString *instanceKeyPath = [argumentToKeyPath objectForKey:argumentKeys];
+		
+		for (NSString *argumentKey in argumentKeys)
+			if ([arguments objectForKey:argumentKey])
+			{
+				//NSLog(@"CLI: setting %@ to %@, %@", instanceKeyPath, [[arguments objectForKey:argumentKey] className], [arguments objectForKey:argumentKey]);
+
+				[newInst setValue:[arguments objectForKey:argumentKey] forKey:instanceKeyPath];
+			}
+	}
+	
+	[connectedServers addObject:newInst];
+	[gui_serverList deselectAll:self];
+	[self listUpdated];
+	[self connectInstance:newInst];
 }
 
 - (void)printUsage
@@ -285,10 +305,6 @@
 	[newInst setValue:hostname forKey:@"hostName"];
 	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
 	
-	[connectedServers addObject:newInst];
-	[gui_serverList deselectAll:self];
-	[self listUpdated];
-	[self connectInstance:newInst];
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
@@ -2253,7 +2269,7 @@
 	NSSize newContentSize;
 	if ([self displayMode] == CRDDisplayUnified && inst)
 	{
-		// Not Pretty but better than before...
+		// Not pretty but better than before...
 		newContentSize = ([[inst view] bounds].size.width > 100) ? [[inst view] bounds].size : NSMakeSize(600, 400);
 		[gui_unifiedWindow setContentMaxSize:newContentSize];
 	}
