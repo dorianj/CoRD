@@ -8,6 +8,7 @@
 		<string key="IBDocument.HIToolboxVersion">353.00</string>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
+			<integer value="1969"/>
 			<integer value="2794"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
@@ -2895,7 +2896,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="NSClassName">NSView</string>
 			</object>
 			<object class="NSCustomView" id="562207250">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">256</int>
 				<object class="NSMutableArray" key="NSSubviews">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -3356,6 +3357,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 				</object>
 				<string key="NSFrameSize">{443, 357}</string>
+				<reference key="NSSuperview"/>
 				<string key="NSClassName">NSView</string>
 			</object>
 			<object class="NSCustomView" id="96169602">
@@ -3434,7 +3436,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 										<reference key="NSBackgroundColor" ref="96652369"/>
 										<reference key="NSGridColor" ref="487934723"/>
 										<double key="NSRowHeight">1.700000e+01</double>
-										<int key="NSTvFlags">446693376</int>
+										<int key="NSTvFlags">448790528</int>
 										<int key="NSColumnAutoresizingStyle">0</int>
 										<int key="NSDraggingSourceMaskForLocal">15</int>
 										<int key="NSDraggingSourceMaskForNonLocal">0</int>
@@ -5040,22 +5042,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<int key="connectionID">2752</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">selectedValue: values.CRDBaseConnectionScreenSize</string>
-						<reference key="source" ref="777711142"/>
-						<reference key="destination" ref="775100995"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="777711142"/>
-							<reference key="NSDestination" ref="775100995"/>
-							<string key="NSLabel">selectedValue: values.CRDBaseConnectionScreenSize</string>
-							<string key="NSBinding">selectedValue</string>
-							<string key="NSKeyPath">values.CRDBaseConnectionScreenSize</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">2753</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">changePanes:</string>
 						<reference key="source" ref="426746519"/>
@@ -5320,22 +5306,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<int key="connectionID">2888</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBBindingConnection" key="connection">
-						<string key="label">content: arrangedObjects.resolution</string>
-						<reference key="source" ref="159248421"/>
-						<reference key="destination" ref="833809029"/>
-						<object class="NSNibBindingConnector" key="connector">
-							<reference key="NSSource" ref="159248421"/>
-							<reference key="NSDestination" ref="833809029"/>
-							<string key="NSLabel">content: arrangedObjects.resolution</string>
-							<string key="NSBinding">content</string>
-							<string key="NSKeyPath">arrangedObjects.resolution</string>
-							<int key="NSNibBindingConnectorVersion">2</int>
-						</object>
-					</object>
-					<int key="connectionID">2890</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">restoreAllSettingsToDefault:</string>
 						<reference key="source" ref="426746519"/>
@@ -5422,6 +5392,39 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 					</object>
 					<int key="connectionID">2955</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">content: arrangedObjects.resolution</string>
+						<reference key="source" ref="777711142"/>
+						<reference key="destination" ref="833809029"/>
+						<object class="NSNibBindingConnector" key="connector" id="394306123">
+							<reference key="NSSource" ref="777711142"/>
+							<reference key="NSDestination" ref="833809029"/>
+							<string key="NSLabel">content: arrangedObjects.resolution</string>
+							<string key="NSBinding">content</string>
+							<string key="NSKeyPath">arrangedObjects.resolution</string>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">2956</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBBindingConnection" key="connection">
+						<string key="label">selectedValue: values.CRDBaseConnectionScreenSize</string>
+						<reference key="source" ref="777711142"/>
+						<reference key="destination" ref="775100995"/>
+						<object class="NSNibBindingConnector" key="connector">
+							<reference key="NSSource" ref="777711142"/>
+							<reference key="NSDestination" ref="775100995"/>
+							<string key="NSLabel">selectedValue: values.CRDBaseConnectionScreenSize</string>
+							<string key="NSBinding">selectedValue</string>
+							<string key="NSKeyPath">values.CRDBaseConnectionScreenSize</string>
+							<reference key="NSPreviousConnector" ref="394306123"/>
+							<int key="NSNibBindingConnectorVersion">2</int>
+						</object>
+					</object>
+					<int key="connectionID">2957</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -8459,7 +8462,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<string>{{512, 620}, {443, 368}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
-					<string>{{512, 247}, {443, 357}}</string>
+					<string>{{88, 725}, {443, 357}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<reference ref="5"/>
 					<string>{{59, 425}, {600, 400}}</string>
@@ -8928,7 +8931,7 @@ ZW1vdGUgc2VydmVyLiAgV2luLVIsIFdpbi1FLCBldGMuLCB3aWxsIG5vIGxvbmdlciB3b3JrLg</stri
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">2955</int>
+			<int key="maxID">2957</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
