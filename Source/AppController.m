@@ -567,6 +567,9 @@
 
 - (IBAction)selectNext:(id)sender
 {
+	if (_isFilteringSavedServers)
+		return;
+	
 	if ([connectedServers count] == 0)
 		return;
 	
@@ -593,6 +596,9 @@
 
 - (IBAction)selectPrevious:(id)sender
 {
+	if (_isFilteringSavedServers)
+		return;
+	
 	if ([connectedServers count] == 0)
 		return;
 	
@@ -1032,26 +1038,12 @@
 
 - (IBAction)filterServers:(id)sender
 {
-	if ( (sender == gui_searchField) && [filteredServers count])
-	{
-		// If return was pressed, connect to the first server and clear search results
-		NSEvent *ev = [[gui_searchField window] currentEvent];
-		if ( ([ev type] == NSKeyDown) && [[ev charactersIgnoringModifiers] isEqualToString:@"\r"] )
-		{
-			[self connect:nil];
-			[gui_searchField setStringValue:@""];
-		}
-	}
-	
-	
 	NSString *searchString = [gui_searchField stringValue];
 
 	if (![searchString length])
 	{
 		_isFilteringSavedServers = NO;
 		[filteredServers removeAllObjects];
-		
-
 	}
 	else
 	{
@@ -1566,6 +1558,40 @@
 	return proposedFrameSize;
 }
 
+#pragma mark -
+#pragma mark NSSearchField Delegate
+-(BOOL)control:(NSControl*)control textView:(NSTextView*)textView doCommandBySelector:(SEL)commandSelector {
+    
+	BOOL result = [filteredServers count];
+	
+    if (commandSelector == @selector(insertNewline:) && result) {
+		[self connect:nil];
+		[gui_searchField setStringValue:@""];
+    }
+	else if(commandSelector == @selector(moveUp:) && result) {
+
+		if ( [gui_serverList selectedRow] > 1 ) 
+		{
+			[gui_serverList selectRow:([gui_serverList selectedRow] - 1)];
+		} else {
+			[gui_serverList selectRow:([gui_serverList numberOfRows] - 1)];
+		}
+		return YES;
+
+	}
+	else if(commandSelector == @selector(moveDown:) && result) {
+		if ( [gui_serverList selectedRow] < ([gui_serverList numberOfRows] - 1) ) 
+		{
+			[gui_serverList selectRow:([gui_serverList selectedRow] + 1)];
+		} else {
+			[gui_serverList selectRow:1];
+		}
+		return YES;
+
+	}
+    
+	return NO;
+}
 
 #pragma mark -
 #pragma mark Managing connected servers
