@@ -181,13 +181,8 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
 	if (object == screenResolutionsController)
-	{
 		if ([keyPath isEqualToString:@"sortDescriptors"])
-		{
-		
 			[g_appController updateInspectorToMatchSelectedServer];
-		}
-	}
 }
 
 

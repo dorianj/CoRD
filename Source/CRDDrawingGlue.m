@@ -165,13 +165,13 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 		CGImageRelease(backingStoreImage);
 	} CGContextRestoreGState(screenDumpContext);
 	
-	// Translate the 32-bit RGBA screen dump into RDP colors
+	// Translate the 32-bit ARGB screen dump into RDP colors
 	uint8 *output, *o, *p;
-	int i=0, len=w*h, bytespp = (conn->serverBpp+7)/8;
+	uint32 i=0, len=w*h, bytespp = (conn->serverBpp+7)/8;
 	
 	p = screenDumpBytes;
 	output = o = malloc(len*bytespp);
-	unsigned int *colorMap = [v colorMap], j, q;
+	uint32 *colorMap = [v colorMap], q;
 	
 	if (conn->serverBpp == 16)
 	{
@@ -206,18 +206,50 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 	}
 	else if (conn->serverBpp == 8)
 	{
-		// Find color's index on colormap, use it as color
+		// Find closest color in colormap; use memoization table to speed operation up. Use closest match because the above screen dump doesn't always get byte-perfect screen dumps
+		// I'm not entirely sure why this is neccessary, and it seems to produce less-than-perfect matches. 0.4.3 didn't have this issue.
+		NSMutableDictionary *memoizedColors = [NSMutableDictionary dictionaryWithCapacity:32];
+		
 		while (i++ < len)
 		{
-			j = (p[3] << 16) | (p[2] << 8) | p[1];
-			o[0] = 0;
-			for (q = 0; q <= 0xff; q++) {
-				if (colorMap[q] == j) {
-					o[0] = q;
-					break;
+			uint32 searchColor = (p[3] << 16) | (p[2] << 8) | p[1]; // transform ARGB into BGR
+			NSNumber *memoizedIndex = [memoizedColors objectForKey:[NSNumber numberWithUnsignedInt:searchColor]];
+			
+			if (memoizedIndex)
+				o[0] = [memoizedIndex unsignedCharValue];
+			else
+			{
+				o[0] = 0;
+				float bestDelta = FLT_MAX;
+				unsigned int bestIndex = 0;
+				for (unsigned int k = 0; k <= 0xff; k++)
+				{
+					uint32 referenceColor = colorMap[k];
+					
+					if (referenceColor == searchColor)
+					{
+						bestDelta = 0.0f;
+						bestIndex = k;
+						break;
+					}
+					
+					float thisDelta = sqrtf(
+							powf((float)(searchColor & 0xff) - (referenceColor & 0xff), 2.0) + 
+							powf((float)((searchColor >> 8) & 0xff) - ((referenceColor >> 8) & 0xff), 2.0) + 
+							powf((float)((searchColor >> 16) & 0xff) - ((referenceColor >> 16) & 0xff), 2.0)
+						);
+
+					if (thisDelta < bestDelta)
+					{
+						bestDelta = thisDelta;
+						bestIndex = k;
+					}
 				}
-			}
 				
+				o[0] = bestIndex;
+				[memoizedColors setObject:[NSNumber numberWithUnsignedChar:bestIndex] forKey:[NSNumber numberWithUnsignedInt:searchColor]];		
+			}
+
 			p += 4;
 			o += bytespp;
 		}
