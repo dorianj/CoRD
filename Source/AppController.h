@@ -120,7 +120,6 @@
 - (void)cancelConnectingInstance:(CRDSession *)inst;
 - (void)parseCommandLine;
 - (void)printUsage;
-- (void)performCommandLineConnect:(NSString *)host;
 - (void)updateInspectorToMatchSelectedServer;
 
 - (CRDSession *)serverInstanceForRow:(int)row;

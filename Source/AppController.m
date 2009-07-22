@@ -257,31 +257,51 @@
 		//@"console",      [NSArray arrayWithObjects:@"console", @"admin", nil],
 		nil];
 	
-	CRDSession *newInst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
-
-	if ([arguments objectForKey:@"g"])
+	CRDSession *newInst = nil;
+	
+	if ([[arguments objectForKey:@"l"] length])
 	{
-		NSInteger w, h;
-		CRDSplitResolutionString([arguments objectForKey:@"g"], &w, &h);
-		[newInst setValue:[NSNumber numberWithInteger:w] forKey:@"screenWidth"];
-		[newInst setValue:[NSNumber numberWithInteger:h] forKey:@"screenHeight"];
-	}
-	
-	
-    for (NSArray *argumentKeys in argumentToKeyPath)
-    {
-		NSString *instanceKeyPath = [argumentToKeyPath objectForKey:argumentKeys];
+		NSString *labelMatch = [[arguments objectForKey:@"l"] lowercaseString];
 		
-		for (NSString *argumentKey in argumentKeys)
-			if ([arguments objectForKey:argumentKey])
+		for (CRDSession *savedServer in savedServers)
+			if ([[savedServer.label lowercaseString] isLike:labelMatch])
 			{
-				//NSLog(@"CLI: setting %@ to %@, %@", instanceKeyPath, [[arguments objectForKey:argumentKey] className], [arguments objectForKey:argumentKey]);
-
-				[newInst setValue:[arguments objectForKey:argumentKey] forKey:instanceKeyPath];
+				newInst = savedServer;
+				break;
 			}
+
+		if (!newInst)
+			NSRunAlertPanel(@"Server not found", @"No server was found with a label matching '%@'.", nil, nil, nil, labelMatch);
 	}
+	else
+	{
+		newInst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 	
-	[connectedServers addObject:newInst];
+	
+		if ([arguments objectForKey:@"g"])
+		{
+			NSInteger w, h;
+			CRDSplitResolutionString([arguments objectForKey:@"g"], &w, &h);
+			[newInst setValue:[NSNumber numberWithInteger:w] forKey:@"screenWidth"];
+			[newInst setValue:[NSNumber numberWithInteger:h] forKey:@"screenHeight"];
+		}
+		
+		for (NSArray *argumentKeys in argumentToKeyPath)
+		{
+			NSString *instanceKeyPath = [argumentToKeyPath objectForKey:argumentKeys];
+			
+			for (NSString *argumentKey in argumentKeys)
+				if ([arguments objectForKey:argumentKey])
+				{
+					//NSLog(@"CLI: setting %@ to %@, %@", instanceKeyPath, [[arguments objectForKey:argumentKey] className], [arguments objectForKey:argumentKey]);
+
+					[newInst setValue:[arguments objectForKey:argumentKey] forKey:instanceKeyPath];
+				}
+		}
+
+		[connectedServers addObject:newInst];
+	}
+		
 	[gui_serverList deselectAll:self];
 	[self listUpdated];
 	[self connectInstance:newInst];
@@ -290,21 +310,6 @@
 - (void)printUsage
 {
     printf("usage: CoRD -hostname example.com -port port_number\n");
-}
-
-- (void)performCommandLineConnect:(NSString *)host
-{
-	NSString *address = host, *hostname;
-	NSInteger port;
-	
-	CRDSplitHostNameAndPort(address, &hostname, &port);
-	
-	CRDSession *newInst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
-	
-	[newInst setValue:hostname forKey:@"label"];
-	[newInst setValue:hostname forKey:@"hostName"];
-	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
-	
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)item
