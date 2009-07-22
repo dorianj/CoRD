@@ -1772,6 +1772,12 @@
 }
 
 
+- (void)updateInspectorToMatchSelectedServer
+{
+	[self setInspectorSettings:[self selectedServer]];
+}
+
+
 #pragma mark -
 #pragma mark Accessors
 
@@ -1986,6 +1992,7 @@
 {
 	if (!inst)
 		return;
+	
 		
 	// Checkboxes
 	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)		forKey:@"windowDrags"];

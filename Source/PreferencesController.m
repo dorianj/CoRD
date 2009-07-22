@@ -16,6 +16,7 @@
 */
 
 #import "PreferencesController.h"
+#import "AppController.h"
 #import "CRDShared.h"
 
 #define CRDPreferencesGeneralTabTag 0
@@ -30,6 +31,7 @@
 - (void)awakeFromNib
 {
 	[screenResolutionsController setSortDescriptors:[NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"resolution" ascending:YES selector:@selector(compareScreenResolution:)] autorelease]]];
+	[screenResolutionsController addObserver:self forKeyPath:@"sortDescriptors" options:0 context:NULL];
 	[self changePanes:[[toolbar items] objectAtIndex:0]];
 }
 
@@ -141,7 +143,7 @@
 
 
 #pragma mark -
-#pragma mark Advanced pane
+#pragma mark Screen resolution editor
 
 - (IBAction)restoreDefaultScreenResolutions:(id)sender
 {
@@ -176,6 +178,14 @@
 	}
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
+{
+	if (object == screenResolutionsController)
+	{
+		if ([keyPath isEqualToString:@"sortDescriptors"])
+			[g_appController updateInspectorToMatchSelectedServer];
+	}
+}
 
 
 
