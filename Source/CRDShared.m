@@ -112,7 +112,7 @@ void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port
 
 BOOL CRDResolutionStringIsFullscreen(NSString *screenResolution)
 {
-	screenResolution = [[screenResolution stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]] lowercaseString];
+	screenResolution = [[screenResolution strip] lowercaseString];
 		
 	for (NSString *match in [NSArray arrayWithObjects:@"full screen", @"fullscreen", nil])
 		if ([screenResolution isEqualToString:match])

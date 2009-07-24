@@ -116,6 +116,7 @@
 
 #pragma mark -
 #pragma mark NSWindow Delegate Methods
+
 - (void)windowDidBecomeKey:(NSNotification *)notification
 {
 	[closeWindowMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];

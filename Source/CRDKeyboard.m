@@ -284,7 +284,7 @@ static NSDictionary *windowsKeymapTable = nil;
 
 		for (NSString *line in lines)
 		{
-			line = [line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+			line = [line strip];
 			scanner = [NSScanner scannerWithString:line];
 			[scanner setCharactersToBeSkipped:[NSCharacterSet characterSetWithCharactersInString:@"="]];
 			[scanner scanUpToString:@"=" intoString:&n];

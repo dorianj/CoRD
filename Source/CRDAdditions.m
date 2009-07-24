@@ -99,6 +99,11 @@
 }
 
 
+- (NSString *)strip
+{
+	return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+}
+
 @end
 
 #pragma mark -

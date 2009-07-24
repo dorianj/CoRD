@@ -20,17 +20,14 @@
 
 @implementation CRDFilePathFormatter
 
-- (NSString *)stringForObjectValue:(id)anObject
+- (NSString *)stringForObjectValue:(id)obj
 {
-    return anObject;
+    return obj;
 }
 
 - (BOOL)getObjectValue:(id *)obj forString:(NSString *)string errorDescription:(NSString  **)error
 {	
-	
-	NSFileManager *fm = [NSFileManager defaultManager];
-
-	BOOL isValidPath = [fm fileExistsAtPath:[string stringByExpandingTildeInPath]];
+	BOOL isValidPath = [[NSFileManager defaultManager] fileExistsAtPath:[string stringByExpandingTildeInPath]];
 	
 	if (isValidPath)
 	{
@@ -39,10 +36,9 @@
 			
 		return YES;
 	}
-	else if (error)
-	{
+	
+	if (error)
 		*error = NSLocalizedString(@"Invalid file path: please enter a valid file path and ensure it exists.", @"Invalid File Path");
-    }
 	
 	return NO;
 	

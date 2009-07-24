@@ -978,7 +978,7 @@
 // If in unified and with sessions, disconnects active. Otherwise, close the window. Similar to Safari/Camino's 'Close Tab'
 - (IBAction)performDisconnect:(id)sender
 {
-	if ( ( ([self displayMode] == CRDDisplayUnified) || ([self displayMode] == CRDDisplayFullscreen)) && ![self viewedServer])
+	if ( ( ([self displayMode] == CRDDisplayUnified) || ([self displayMode] == CRDDisplayFullscreen)) && ([self selectedServer] != nil))
 		[self disconnect:nil];
 	else
 	{
@@ -1050,7 +1050,7 @@
 		_isFilteringSavedServers = YES;
 		[filteredServers removeAllObjects];
 		
-		NSString *searchCompareString = [NSString stringWithFormat:@"*%@*", [[searchString lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+		NSString *searchCompareString = [NSString stringWithFormat:@"*%@*", [[searchString strip] lowercaseString]];
 		
 		for (CRDSession *inst in [savedServers arrayByAddingObjectsFromArray:connectedServers])
 		{

@@ -22,7 +22,6 @@
 }
 
 - (NSString *)stringForObjectValue:(id)anObject;
-
 - (BOOL)getObjectValue:(id *)obj forString:(NSString *)string errorDescription:(NSString  **)error;
 
 @end

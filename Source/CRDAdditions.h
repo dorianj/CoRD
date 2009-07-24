@@ -28,7 +28,7 @@
 	- (NSString *)stringByDeletingFileSystemCharacters;
 	- (NSString *)lowercaseFirst;
 	- (NSComparisonResult)compareScreenResolution:(NSString*)otherResolution;
-
+	- (NSString *)strip;
 @end
 
 #pragma mark -

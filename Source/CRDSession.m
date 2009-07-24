@@ -308,38 +308,34 @@
 	
 	if (forwardDisks)
 	{
-		NSArray *localDrives = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
 		NSMutableArray *validDrives = [NSMutableArray array], *validNames = [NSMutableArray array];
-		NSFileManager *fm = [NSFileManager defaultManager];
 		
 		if (CRDPreferenceIsEnabled(CRDForwardOnlyDefinedPaths) && [[[NSUserDefaults standardUserDefaults] arrayForKey:@"CRDForwardedPaths"] count] > 0)
 		{	
-			for (id pair in [[NSUserDefaults standardUserDefaults] arrayForKey:@"CRDForwardedPaths"])
+			for (NSDictionary *pair in [[NSUserDefaults standardUserDefaults] arrayForKey:@"CRDForwardedPaths"])
 			{
-				if ([fm fileExistsAtPath:[pair objectForKey:@"path"]] && [pair objectForKey:@"label"] != nil)
+				if (![[NSFileManager defaultManager] fileExistsAtPath:[pair objectForKey:@"path"]] || ![[pair objectForKey:@"label"] length])
 				{
-					[validDrives addObject:[[pair objectForKey:@"path"] stringByExpandingTildeInPath]];
-					[validNames addObject:[pair objectForKey:@"label"]];
-				} 
-				else
-				{	
-					NSLog(@"Empty Forwarded Label or Path, skipping");
+					NSLog(@"Empty custom forward label or path, skipping: %@", pair);
+					continue;
 				}
+				
+				[validDrives addObject:[[pair objectForKey:@"path"] stringByExpandingTildeInPath]];
+				[validNames addObject:[pair objectForKey:@"label"]];
 			}
 		} 
 		else 
 		{
-			id anObject;
-			for ( anObject in localDrives )
-			{
-				if ([anObject characterAtIndex:0] != '.')
+			for (NSString *volumePath in [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths])
+				if ([volumePath characterAtIndex:0] != '.')
 				{
-					[validDrives addObject:anObject];
-					[validNames addObject:[fm displayNameAtPath:anObject]];
+					[validDrives addObject:volumePath];
+					[validNames addObject:[[NSFileManager defaultManager] displayNameAtPath:volumePath]];
 				}
-			}
-		}			
-		disk_enum_devices(conn, CRDMakeCStringArray(validDrives), CRDMakeCStringArray(validNames), [validDrives count]);
+		}
+		
+		if ([validDrives count] && [validNames count])
+			disk_enum_devices(conn, CRDMakeCStringArray(validDrives), CRDMakeCStringArray(validNames), [validDrives count]);
 	}
 	
 
@@ -394,12 +390,15 @@
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
+	
+	
 	if (connectionStatus == CRDConnectionConnecting)
 		conn->errorCode = ConnectionErrorCanceled;
 	
 	[self setStatus:CRDConnectionDisconnecting];
 	if (connectionRunLoopFinished || [block boolValue])
 	{
+		//NSLog(@"disconect async");
 		// Try to forcefully break the connection thread out of its run loop
 		@synchronized(self)
 		{
@@ -442,6 +441,7 @@
 	}
 	else
 	{
+		//NSLog(@"Disconnecting in background");
 		[self performSelectorInBackground:@selector(disconnectAsync:) withObject:[NSNumber numberWithBool:YES]];
 	}
 	

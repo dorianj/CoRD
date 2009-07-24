@@ -20,15 +20,15 @@
 
 @implementation CRDFilePathLabelFormatter
 
-- (NSString *)stringForObjectValue:(id)anObject
+- (NSString *)stringForObjectValue:(id)obj
 {
-    return anObject;
+    return obj;
 }
 
 - (BOOL)getObjectValue:(id *)obj forString:(NSString *)string errorDescription:(NSString  **)error
 {
 	if (string == nil)
-		*obj = [NSString stringWithString:@""];
+		*obj = @"";
 	
 	if ([string length] > 0 && [string length] <= 7)
 	{
@@ -37,13 +37,11 @@
 			
 		return YES;
 	}
-	else if (error)
-	{
-		*error = NSLocalizedString(@"Invalid label: Labels must exist, but are limited to 7 characters.  Thank you letters for this can be addressed to Redmond, Washington.", @"Invalid Label");
-    }
+	
+	if (error)
+		*error = NSLocalizedString(@"Invalid label: Labels must exist, but are limited by Windows to 7 characters.", @"Invalid Label");
 	
 	return NO;
-	
 }
 
 @end
