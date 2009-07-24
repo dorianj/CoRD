@@ -10,6 +10,9 @@
 		37344C210FB141D200DFD6E6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37344C200FB141D200DFD6E6 /* Security.framework */; };
 		37344CBB0FB1743200DFD6E6 /* rdpsnd_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 37344CBA0FB1743200DFD6E6 /* rdpsnd_dsp.c */; };
 		37D191820FCE69E8008797FD /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37D191810FCE69E8008797FD /* Carbon.framework */; };
+		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
+		3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */; };
+		3E4B67811019E30300D3A911 /* ForwardedDisksIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3E4B67801019E30300D3A911 /* ForwardedDisksIcon.icns */; };
 		9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
@@ -40,7 +43,6 @@
 		98E972630BD9D9DF0041110D /* channels.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972280BD9D9DF0041110D /* channels.c */; };
 		98E972640BD9D9DF0041110D /* cliprdr.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972290BD9D9DF0041110D /* cliprdr.c */; };
 		98E972680BD9D9DF0041110D /* CRDApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9722D0BD9D9DF0041110D /* CRDApplication.m */; };
-		98E9726A0BD9D9DF0041110D /* CRDFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9722F0BD9D9DF0041110D /* CRDFullScreenWindow.m */; };
 		98E9726C0BD9D9DF0041110D /* CRDLabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972310BD9D9DF0041110D /* CRDLabelCell.m */; };
 		98E9726E0BD9D9DF0041110D /* CRDServerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972330BD9D9DF0041110D /* CRDServerCell.m */; };
 		98E972700BD9D9DF0041110D /* CRDServerList.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972350BD9D9DF0041110D /* CRDServerList.m */; };
@@ -103,7 +105,12 @@
 		37344CBA0FB1743200DFD6E6 /* rdpsnd_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rdpsnd_dsp.c; path = Source/rdpsnd_dsp.c; sourceTree = "<group>"; };
 		37344CD30FB177AB00DFD6E6 /* rdpsnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rdpsnd.h; path = Source/rdpsnd.h; sourceTree = "<group>"; };
 		37D191810FCE69E8008797FD /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathLabelFormatter.m; path = Source/CRDFilePathLabelFormatter.m; sourceTree = "<group>"; };
+		3E4B676C1019E2D700D3A911 /* CRDFilePathLabelFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathLabelFormatter.h; path = Source/CRDFilePathLabelFormatter.h; sourceTree = "<group>"; };
+		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
+		3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathFormatter.h; path = Source/CRDFilePathFormatter.h; sourceTree = "<group>"; };
+		3E4B67801019E30300D3A911 /* ForwardedDisksIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ForwardedDisksIcon.icns; path = Resources/ForwardedDisksIcon.icns; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		98369D370C050B3D009BF52F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ConnectionDefaultsIcon.png; path = Resources/ConnectionDefaultsIcon.png; sourceTree = "<group>"; };
@@ -273,7 +280,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* Cord.app */,
+				8D1107320486CEB800E47090 /* CoRD.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -305,6 +312,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				3E4B67801019E30300D3A911 /* ForwardedDisksIcon.icns */,
 				98E70F110D3EC591009731C7 /* Images */,
 				98F2A7C310152DA800E1D5B5 /* CoRD Help */,
 				98520EEB0BFEB77700DD732F /* Defaults.plist */,
@@ -434,6 +442,10 @@
 		98F2A708101527CA00E1D5B5 /* Formatters */ = {
 			isa = PBXGroup;
 			children = (
+				3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */,
+				3E4B676C1019E2D700D3A911 /* CRDFilePathLabelFormatter.h */,
+				3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */,
+				3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */,
 				98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */,
 				98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */,
 			);
@@ -459,7 +471,7 @@
 			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
-			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
+			productReference = 8D1107320486CEB800E47090 /* CoRD.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -513,6 +525,7 @@
 				986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */,
 				9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */,
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
+				3E4B67811019E30300D3A911 /* ForwardedDisksIcon.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -529,7 +542,6 @@
 				98E972630BD9D9DF0041110D /* channels.c in Sources */,
 				98E972640BD9D9DF0041110D /* cliprdr.c in Sources */,
 				98E972680BD9D9DF0041110D /* CRDApplication.m in Sources */,
-				98E9726A0BD9D9DF0041110D /* CRDFullScreenWindow.m in Sources */,
 				98E9726C0BD9D9DF0041110D /* CRDLabelCell.m in Sources */,
 				98E9726E0BD9D9DF0041110D /* CRDServerCell.m in Sources */,
 				98E972700BD9D9DF0041110D /* CRDServerList.m in Sources */,
@@ -567,6 +579,8 @@
 				999A05360FAAF42C00FA512C /* ZNLog.m in Sources */,
 				37344CBB0FB1743200DFD6E6 /* rdpsnd_dsp.c in Sources */,
 				98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */,
+				3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */,
+				3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
