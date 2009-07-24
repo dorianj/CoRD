@@ -310,14 +310,15 @@
 	{
 		NSArray *localDrives = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
 		NSMutableArray *validDrives = [NSMutableArray array], *validNames = [NSMutableArray array];
+		NSFileManager *fm = [NSFileManager defaultManager];
 		
-		if (CRDPreferenceIsEnabled(CRDForwardOnlyDefinedPaths) && [[[NSUserDefaults standardUserDefaults] arrayForKey:@"ForwardedPaths"] count] > 0)
+		if (CRDPreferenceIsEnabled(CRDForwardOnlyDefinedPaths) && [[[NSUserDefaults standardUserDefaults] arrayForKey:@"CRDForwardedPaths"] count] > 0)
 		{	
-			for (id pair in [[NSUserDefaults standardUserDefaults] arrayForKey:@"ForwardedPaths"])
+			for (id pair in [[NSUserDefaults standardUserDefaults] arrayForKey:@"CRDForwardedPaths"])
 			{
-				if ([pair objectForKey:@"path"] != nil && [pair objectForKey:@"label"] != nil)
+				if ([fm fileExistsAtPath:[pair objectForKey:@"path"]] && [pair objectForKey:@"label"] != nil)
 				{
-					[validDrives addObject:[pair objectForKey:@"path"]];
+					[validDrives addObject:[[pair objectForKey:@"path"] stringByExpandingTildeInPath]];
 					[validNames addObject:[pair objectForKey:@"label"]];
 				} 
 				else
@@ -328,7 +329,6 @@
 		} 
 		else 
 		{
-			NSFileManager *fm = [NSFileManager defaultManager];
 			id anObject;
 			for ( anObject in localDrives )
 			{
