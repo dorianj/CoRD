@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007-2008 Dorian Johnson <info-2008@dorianjohnson.com>
+/*	Copyright (c) 2007-2009 Dorian Johnson <2009@dorianj.net>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -15,7 +15,7 @@
 	Fifth Floor, Boston, MA 02110-1301 USA
 */
 
-/*	Purpose: Changes modifiers from a flagsChanged event into the physical keyboard modifiers, according to they keys the user has changed in System Preferences
+/*	Purpose: Changes modifiers from a flagsChanged event into the physical keyboard modifiers, according to the keys the user has changed in System Preferences
 	Notes: This class is fully thread-safe because only class methods are used.
 		I'm currently trying to get it to stay in sync with user defaults without calling -[NSUserDefaults synchronize] each time. I can't find a way to use KVO - NSUserDefaultsController refuses to addObserver for com.apple.keyboard.modifiermapping and NSUserDefaults doesn't ever inform us of changes
 	Modifier key codes:
@@ -90,7 +90,7 @@ static NSArray *rawDefaultTable;
 			nil] retain];
 		
 	// xxx: doesn't actually inform us of changes
-	[[NSUserDefaults standardUserDefaults] addObserver:[CRDSwappedModifiersUtility sharedSwappedModifiersUtility] forKeyPath:SwappedModifiersRootKey options:0 context:NULL];	
+	[[NSUserDefaults standardUserDefaults] addObserver:[[CRDSwappedModifiersUtility alloc] init] forKeyPath:SwappedModifiersRootKey options:0 context:NULL];	
 	[CRDSwappedModifiersUtility loadStandardTranslation];
 }
 
@@ -155,13 +155,6 @@ static NSArray *rawDefaultTable;
 	return [[NSUserDefaults standardUserDefaults] objectForKey:SwappedModifiersRootKey] != nil;
 }
 
-+ (id)sharedSwappedModifiersUtility
-{
-	if (sharedInstance == nil)
-		sharedInstance = [[CRDSwappedModifiersUtility alloc] init];	
-	
-	return sharedInstance;
-}
 
 
 

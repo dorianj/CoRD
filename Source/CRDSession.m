@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007-2008 Dorian Johnson <info-2008@dorianjohnson.com>
+/*	Copyright (c) 2007-2009 Dorian Johnson <2009@dorianj.net>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -33,7 +33,6 @@
 - (void)createViewWithFrameValue:(NSValue *)frameRect;
 - (void)setUpConnectionThread;
 - (void)discardConnectionThread;
-	
 @end
 
 #pragma mark -
@@ -593,13 +592,12 @@
 	write_string(@"domain", domain);
 	write_string(@"cord label", label);
 	
-	// Write all entries in otherAttributes
-	NSEnumerator *enumerator = [otherAttributes keyEnumerator];
-	id key, value;
-	while ( (key = [enumerator nextObject]) && (value = [otherAttributes valueForKey:key]) )
+	// Write all entries in otherAttributes	
+	for (NSString *key in otherAttributes)
 	{
+		id value = [otherAttributes objectForKey:key];
 		if ([value isKindOfClass:[NSNumber class]])
-			write_int(key, [value intValue]);
+			write_int(key, [value integerValue]);
 		else
 			write_string(key, value);
 	}
@@ -615,7 +613,7 @@
 	}
 	else
 	{
-		NSLog(@"Error writing to '%@'", path);
+		NSLog(@"Error writing RDP file to '%@'", path);
 	}
 
 	if (writeToFileSucceeded && updateNamesFlag)

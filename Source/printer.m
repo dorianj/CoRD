@@ -1,7 +1,7 @@
 /* -*- c-basic-offset: 8 -*-
    rdesktop: A Remote Desktop Protocol client.
    Copyright (C) Matthew Chapman 1999-2005
-   Rewritten for CoRD by Dorian Johnson.
+   Rewritten for CoRD by Dorian Johnson, 2008
 
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ printer_close(RDConnectionRef conn, NTHandle handle)
 	
 	OSStatus err =  PMPrinterPrintWithFile(printerInfo->printer, printSettings, pageFormat, CFStringCreateWithCString(NULL, "application/postscript", kCFStringEncodingASCII), filePath);
 
-	NSLog(@"Err was %d", err);
+	NSLog(@"printer_close err=%d", err);
 
 	PMRelease(currentSession);
 	PMRelease(printSettings);

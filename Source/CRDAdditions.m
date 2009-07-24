@@ -1,4 +1,4 @@
-/*	Copyright (c) 2008 Dorian Johnson <info-2008@dorianjohnson.com>
+/*	Copyright (c) 2008-2009 Dorian Johnson <2009@dorianj.net>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -26,7 +26,6 @@
 	[self cacheDisplayInRect:rect toBitmapImageRep:imageRep];
 	NSImage *img = [[[NSImage alloc] initWithSize:rect.size] autorelease];
 	[img addRepresentation:imageRep];
-	
 	
 	// code that enumerates through children is in svn revision 210
 	return img;
@@ -101,7 +100,7 @@
 
 - (NSString *)strip
 {
-	return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+	return [self stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
 }
 
 @end

@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007-2008 Dorian Johnson <info-2008@dorianjohnson.com>
+/*	Copyright (c) 2007-2009 Dorian Johnson <2009@dorianj.net>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
@@ -105,6 +105,7 @@
 - (void)createWindow:(BOOL)useScrollView;
 - (void)destroyUnified;
 - (void)destroyWindow;
+- (void)destroyUIElements;
 
 // Working with the represented file
 - (void)setFilename:(NSString *)filename;

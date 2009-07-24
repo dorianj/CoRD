@@ -405,8 +405,8 @@
 			children = (
 				98E9723C0BD9D9DF0041110D /* keychain.h */,
 				98E9723B0BD9D9DF0041110D /* keychain.c */,
-				98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */,
 				98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */,
+				98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */,
 			);
 			name = "General Purpose";
 			sourceTree = "<group>";
@@ -443,10 +443,10 @@
 		98F2A708101527CA00E1D5B5 /* Formatters */ = {
 			isa = PBXGroup;
 			children = (
-				3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */,
 				3E4B676C1019E2D700D3A911 /* CRDFilePathLabelFormatter.h */,
-				3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */,
+				3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */,
 				3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */,
+				3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */,
 				98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */,
 				98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */,
 			);
