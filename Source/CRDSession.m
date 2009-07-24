@@ -389,9 +389,7 @@
 - (void)disconnectAsync:(NSNumber *)block
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	
-	
+		
 	if (connectionStatus == CRDConnectionConnecting)
 		conn->errorCode = ConnectionErrorCanceled;
 	
@@ -409,11 +407,8 @@
 			usleep(1000);
 
 		// UI cleanup
-		[self destroyWindow];
-		[scrollEnclosure release];
-		scrollEnclosure = nil;
-		[view release];
-		view = nil;
+		[self performSelectorOnMainThread:@selector(destroyUIElements) withObject:nil waitUntilDone:YES];
+
 		
 		// Clear out the bitmap cache
 		int i, k;
@@ -749,6 +744,14 @@
 	[window close];
 	[window release];
 	window = nil;
+}
+- (void)destroyUIElements
+{
+	[self destroyWindow];
+	[scrollEnclosure release];
+	scrollEnclosure = nil;
+	[view release];
+	view = nil;
 }
 
 #pragma mark -
