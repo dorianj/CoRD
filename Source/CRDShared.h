@@ -147,6 +147,7 @@ extern NSString * const CRDPrefsScaleSessions;
 extern NSString * const CRDPrefsMinimalisticServerList;
 extern NSString * const CRDPrefsIgnoreCustomModifiers;
 extern NSString * const CRDSetServerKeyboardLayout;
+extern NSString * const CRDForwardOnlyDefinedPaths;
 
 // Notifications
 extern NSString * const CRDMinimalViewDidChangeNotification;

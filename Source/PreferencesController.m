@@ -21,8 +21,8 @@
 
 #define CRDPreferencesGeneralTabTag 0
 #define CRDPreferencesConnectionTabTag 1
-#define CRDPreferencesAdvancedTabTag 2
-
+#define CRDPreferencesForwardingTabTag 2
+#define CRDPreferencesAdvancedTabTag 3
 
 #pragma mark -
 
@@ -43,6 +43,8 @@
 		newPane = generalView;
 	else if ([sender tag] == CRDPreferencesConnectionTabTag)
 		newPane = connectionView;
+	else if ([sender tag] == CRDPreferencesForwardingTabTag)
+		newPane = forwardingView;
 	else if ([sender tag] == CRDPreferencesAdvancedTabTag)
 		newPane = advancedView;
 	
@@ -90,6 +92,8 @@
 		helpAnchor = @"GeneralPreferences";
 	else if ([sender tag] == CRDPreferencesConnectionTabTag)
 		helpAnchor = @"ConnectionPreferences";
+	else if ([sender tag] == CRDPreferencesForwardingTabTag)
+		helpAnchor = @"ForwardingPreferences";
 	else if ([sender tag] == CRDPreferencesAdvancedTabTag)
 		helpAnchor = @"";
 
@@ -186,5 +190,29 @@
 }
 
 
+#pragma mark -
+#pragma mark Forwarded Paths Editor
+
+- (IBAction)addNewForwardedPath:(id)sender
+{
+	// -[NSArrayController insert] performs its action in the next runloop cycle, so wait a bit before starting to edit the new row.
+	// also, the NSArrayController won't select the row for us, due to a bug where "compound object" and selectsInsertedObjects don't work together ( rdar://7079110 ) 
+	
+	BOOL foundExistingEmptyRow = NO;
+	for (NSDictionary *value in [forwardedPathsController arrangedObjects])
+		if (![[value objectForKey:@"label"] length])
+		{
+			foundExistingEmptyRow = [forwardedPathsController setSelectedObjects:[NSArray arrayWithObject:value]];
+			break;
+		}
+	
+	if (foundExistingEmptyRow)
+		[forwardedPathsTableView editSelectedRow:[NSNumber numberWithInteger:0]];
+	else
+	{
+		[forwardedPathsController add:nil];
+		[self performSelector:@selector(addNewForwardedPath:) withObject:nil afterDelay:0.05];
+	}
+}
 
 @end

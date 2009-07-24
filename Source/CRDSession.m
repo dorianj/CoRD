@@ -311,17 +311,34 @@
 		NSArray *localDrives = [[NSWorkspace sharedWorkspace] mountedLocalVolumePaths];
 		NSMutableArray *validDrives = [NSMutableArray array], *validNames = [NSMutableArray array];
 		
-		NSFileManager *fm = [NSFileManager defaultManager];
-		id anObject;
-		for ( anObject in localDrives )
-		{
-			if ([anObject characterAtIndex:0] != '.')
+		if (CRDPreferenceIsEnabled(CRDForwardOnlyDefinedPaths) && [[[NSUserDefaults standardUserDefaults] arrayForKey:@"ForwardedPaths"] count] > 0)
+		{	
+			for (id pair in [[NSUserDefaults standardUserDefaults] arrayForKey:@"ForwardedPaths"])
 			{
-				[validDrives addObject:anObject];
-				[validNames addObject:[fm displayNameAtPath:anObject]];
+				if ([pair objectForKey:@"path"] != nil && [pair objectForKey:@"label"] != nil)
+				{
+					[validDrives addObject:[pair objectForKey:@"path"]];
+					[validNames addObject:[pair objectForKey:@"label"]];
+				} 
+				else
+				{	
+					NSLog(@"Empty Forwarded Label or Path, skipping");
+				}
 			}
-		}
-		
+		} 
+		else 
+		{
+			NSFileManager *fm = [NSFileManager defaultManager];
+			id anObject;
+			for ( anObject in localDrives )
+			{
+				if ([anObject characterAtIndex:0] != '.')
+				{
+					[validDrives addObject:anObject];
+					[validNames addObject:[fm displayNameAtPath:anObject]];
+				}
+			}
+		}			
 		disk_enum_devices(conn, CRDMakeCStringArray(validDrives), CRDMakeCStringArray(validNames), [validDrives count]);
 	}
 	
@@ -509,7 +526,7 @@
 	
 	unsigned char endiannessMarker[] = {0xFF, 0xFE};
 	
-	NSMutableData *rawClipboardData = [[NSMutableData alloc] initWithCapacity:[data length]];	
+	NSMutableData *rawClipboardData = [[NSMutableData alloc] initWithCapacity:[data length]];
 	[rawClipboardData appendBytes:endiannessMarker length:2];
 	[rawClipboardData appendBytes:[data bytes] length:[data length]-2];
 	NSString *temp = [[NSString alloc] initWithData:rawClipboardData encoding:NSUnicodeStringEncoding];
@@ -535,7 +552,7 @@
 		return;
 	
 	if (connectionStatus == CRDConnectionConnected)
-		cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);	
+		cliprdr_send_simple_native_format_announce(conn, CF_UNICODETEXT);
 }
 
 - (void)pasteboardChangedOwner:(NSPasteboard *)sender
@@ -589,7 +606,7 @@
 		if ([value isKindOfClass:[NSNumber class]])
 			write_int(key, [value intValue]);
 		else
-			write_string(key, value);	
+			write_string(key, value);
 	}
 	
 	BOOL writeToFileSucceeded = [outputBuffer writeToFile:path atomically:atomicFlag encoding:fileEncoding error:NULL] | [outputBuffer writeToFile:path atomically:atomicFlag encoding:(fileEncoding = NSUTF8StringEncoding) error:NULL];
@@ -645,7 +662,7 @@
 		if (connectionStatus == CRDConnectionClosed)
 			iconBaseName = @"RDP Document Gray";
 			
-		NSImage *base = [NSImage imageNamed:iconBaseName];	
+		NSImage *base = [NSImage imageNamed:iconBaseName];
 		[base setFlipped:YES];
 		
 		NSImage *cellImage = [[[NSImage alloc] initWithSize:NSMakeSize(SERVER_CELL_FULL_IMAGE_SIZE, SERVER_CELL_FULL_IMAGE_SIZE)] autorelease];
@@ -661,7 +678,7 @@
 			[cellImage lockFocus]; {
 				[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh];
 
-				[base drawInRect:CRDRectFromSize([cellImage size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];	
+				[base drawInRect:CRDRectFromSize([cellImage size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];
 			
 				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon.png"];
 				NSSize clockSize = [clockIcon size], iconSize = [cellImage size];
@@ -703,7 +720,7 @@
 	{
 		[view setFrameSize:[[window contentView] frame].size];
 		[view setAutoresizingMask:(NSViewWidthSizable|NSViewHeightSizable)];
-		[window setContentAspectRatio:sessionScreenSize.size];	
+		[window setContentAspectRatio:sessionScreenSize.size];
 		[[window contentView] addSubview:view];
 		[view setNeedsDisplay:YES];
 	}
@@ -789,7 +806,7 @@
 		
 		@synchronized(inputEventStack)
 		{
-			[inputEventStack addObject:[NSValue valueWithPointer:ie]];	
+			[inputEventStack addObject:[NSValue valueWithPointer:ie]];
 		}
 		
 		// Inform the connection thread it has unprocessed events
@@ -1030,7 +1047,7 @@
 		else if ([name isEqualToString:@"domain"])
 			domain = [value retain];
 		else if ([name isEqualToString:@"cord label"])
-			label = [value retain];			
+			label = [value retain];
 		else if ([name isEqualToString:@"cord row index"])
 			preferredRowIndex = numVal;
 		else if ([name isEqualToString:@"full address"]) {
@@ -1047,7 +1064,7 @@
 			if ([type isEqualToString:@"i"])
 				[otherAttributes setObject:[NSNumber numberWithInt:numVal] forKey:name];
 			else
-				[otherAttributes setObject:value forKey:name];				
+				[otherAttributes setObject:value forKey:name];
 		}
 	}
 		
@@ -1159,7 +1176,7 @@
 			while ([inputEventStack count] != 0)
 			{
 				free([[inputEventStack objectAtIndex:0] pointerValue]);
-				[inputEventStack removeObjectAtIndex:0];				
+				[inputEventStack removeObjectAtIndex:0];
 			}
 		}
 		

@@ -58,6 +58,7 @@ NSString * const CRDPrefsScaleSessions = @"resizeViewToFit";
 NSString * const CRDPrefsMinimalisticServerList = @"MinimalServerList";
 NSString * const CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizations";
 NSString * const CRDSetServerKeyboardLayout = @"SetServerKeyboardLayout";
+NSString * const CRDForwardOnlyDefinedPaths = @"CRDForwardOnlyDefinedPaths";
 
 
 #pragma mark -

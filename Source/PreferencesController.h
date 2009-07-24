@@ -19,7 +19,7 @@
 
 
 @interface PreferencesController : NSObject {
-    IBOutlet NSView *connectionView, *generalView, *advancedView;
+    IBOutlet NSView *connectionView, *generalView, *forwardingView, *advancedView;
 	IBOutlet NSMenuItem *closeWindowMenuItem, *closeSessionMenuItem;
 	IBOutlet NSWindow *preferencesWindow;
 	IBOutlet NSToolbar *toolbar;
@@ -28,6 +28,9 @@
 	
 	IBOutlet NSArrayController *screenResolutionsController;
 	IBOutlet NSTableView *screenResolutionsTableView;
+	
+	IBOutlet NSArrayController *forwardedPathsController;
+	IBOutlet NSTableView *forwardedPathsTableView;
 }
 
 
@@ -40,5 +43,7 @@
 - (IBAction)restoreAllSettingsToDefault:(id)sender;
 
 - (IBAction)addNewScreenResolution:(id)sender;
+
+- (IBAction)addNewForwardedPath:(id)sender;
 
 @end
