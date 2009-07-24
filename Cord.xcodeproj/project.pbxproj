@@ -13,6 +13,7 @@
 		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
 		3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */; };
 		3E4B67811019E30300D3A911 /* ForwardedDisksIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3E4B67801019E30300D3A911 /* ForwardedDisksIcon.icns */; };
+		3E4B67921019E3E600D3A911 /* CRDFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9722F0BD9D9DF0041110D /* CRDFullScreenWindow.m */; };
 		9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
@@ -581,6 +582,7 @@
 				98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */,
 				3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */,
 				3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */,
+				3E4B67921019E3E600D3A911 /* CRDFullScreenWindow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
