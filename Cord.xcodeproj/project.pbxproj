@@ -111,7 +111,7 @@
 		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
 		3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathFormatter.h; path = Source/CRDFilePathFormatter.h; sourceTree = "<group>"; };
 		3E4B67801019E30300D3A911 /* ForwardedDisksIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ForwardedDisksIcon.icns; path = Resources/ForwardedDisksIcon.icns; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		98369D370C050B3D009BF52F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ConnectionDefaultsIcon.png; path = Resources/ConnectionDefaultsIcon.png; sourceTree = "<group>"; };
@@ -121,7 +121,6 @@
 		9860D7150BFFA56C007FA463 /* French */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = French; path = Resources/French.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9860D7180BFFA575007FA463 /* German */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = German; path = Resources/German.lproj/Localizable.strings; sourceTree = "<group>"; };
 		986A8BF9100EAE54006AFE36 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dsa_pub.pem; path = Resources/dsa_pub.pem; sourceTree = "<group>"; };
-		986BA55A0C00F2B1002782F1 /* zh */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = zh; path = Resources/zh.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9872FCD00C08FD8E00078CB2 /* CRDBitmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDBitmap.h; path = Source/CRDBitmap.h; sourceTree = "<group>"; };
 		9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDBitmap.m; path = Source/CRDBitmap.m; sourceTree = "<group>"; };
 		9872FCD20C08FD8E00078CB2 /* CRDKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDKeyboard.h; path = Source/CRDKeyboard.h; sourceTree = "<group>"; };
@@ -281,7 +280,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* Cord.app */,
+				8D1107320486CEB800E47090 /* CoRD.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -313,7 +312,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				3E4B67801019E30300D3A911 /* ForwardedDisksIcon.icns */,
 				98E70F110D3EC591009731C7 /* Images */,
 				98F2A7C310152DA800E1D5B5 /* CoRD Help */,
 				98520EEB0BFEB77700DD732F /* Defaults.plist */,
@@ -414,16 +412,17 @@
 		98E70F110D3EC591009731C7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				98E972BE0BD9DA820041110D /* Clock icon.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
 				98E66D240FF2FF8300736CFA /* CoRD.icns */,
-				98E972BE0BD9DA820041110D /* Clock icon.png */,
-				9816F0BF0BEE506000E439BE /* Stop.png */,
 				98E972BF0BD9DA820041110D /* Disconnect.png */,
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
 				98E972C50BD9DA820041110D /* i Button Face.png */,
+				3E4B67801019E30300D3A911 /* ForwardedDisksIcon.icns */,
 				98E972CA0BD9DA820041110D /* RDP Document File.icns */,
 				98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */,
 				98E972CB0BD9DA820041110D /* Servers.png */,
+				9816F0BF0BEE506000E439BE /* Stop.png */,
 				98E972CC0BD9DA820041110D /* Unified.png */,
 				98E972CD0BD9DA820041110D /* Windowed.png */,
 			);
@@ -472,7 +471,7 @@
 			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
-			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
+			productReference = 8D1107320486CEB800E47090 /* CoRD.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -595,7 +594,6 @@
 				9860D7110BFFA565007FA463 /* English */,
 				9860D7150BFFA56C007FA463 /* French */,
 				9860D7180BFFA575007FA463 /* German */,
-				986BA55A0C00F2B1002782F1 /* zh */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
