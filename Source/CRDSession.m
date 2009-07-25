@@ -44,7 +44,7 @@
 	if (![super init])
 		return nil;
 	
-	label = hostName = username = password = domain = @"";
+	rdpFilename = label = hostName = username = password = domain = @"";
 	preferredRowIndex = -1;
 	screenDepth = 16;
 	temporary = themes = YES;
@@ -141,7 +141,7 @@
 	}
 }
 
-- (void)copyWithZone:(NSZone *)zone
+- (id)copyWithZone:(NSZone *)zone
 {
 	CRDSession *newSession = [[CRDSession alloc] init];
 	
@@ -168,6 +168,8 @@
 	newSession->port = port;
 	newSession->modified = modified;
 	newSession->hotkey = hotkey;
+
+	return newSession;
 }
 
 
