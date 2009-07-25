@@ -20,7 +20,6 @@
 
 @interface PreferencesController : NSObject {
     IBOutlet NSView *connectionView, *generalView, *forwardingView, *advancedView;
-	IBOutlet NSMenuItem *closeWindowMenuItem, *closeSessionMenuItem;
 	IBOutlet NSWindow *preferencesWindow;
 	IBOutlet NSToolbar *toolbar;
 	

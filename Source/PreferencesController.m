@@ -115,21 +115,6 @@
 }
 
 #pragma mark -
-#pragma mark NSWindow Delegate Methods
-
-- (void)windowDidBecomeKey:(NSNotification *)notification
-{
-	[closeWindowMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
-	[closeSessionMenuItem setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];	
-}
-
-- (void)windowDidResignKey:(NSNotification *)notification
-{
-	[closeWindowMenuItem setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];
-	[closeSessionMenuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
-}
-
-#pragma mark -
 #pragma mark General pane
 
 - (IBAction)restoreAllSettingsToDefault:(id)sender

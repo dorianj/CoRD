@@ -330,7 +330,7 @@
 		return [gui_tabView numberOfItems] > 1;
 	else if (action == @selector(takeScreenCapture:))
 		return viewedInst != nil;
-	else if (action == @selector(performDisconnect:))
+	else if (action == @selector(closeSessionOrWindow:))
 		return [NSApp keyWindow] != nil;
 	else if (action == @selector(duplicateSelectedServer:))
 		return [self selectedServer] != nil;
@@ -507,7 +507,7 @@
 // Either disconnects the viewed session, or cancels a pending connection
 - (IBAction)performStop:(id)sender
 {	
-	if ([[self serverInstanceForRow:[gui_serverList selectedRow]] status] == CRDConnectionConnecting)
+	if ([[self selectedServer] status] == CRDConnectionConnecting)
 		[self stopConnection:nil];
 	else if ([[self viewedServer] status]  == CRDConnectionConnected)
 		[self disconnect:nil];
@@ -515,7 +515,7 @@
 
 - (IBAction)stopConnection:(id)sender
 {
-	[self cancelConnectingInstance:[self serverInstanceForRow:[gui_serverList selectedRow]]];
+	[self cancelConnectingInstance:[self selectedServer]];
 }
 
 
@@ -975,18 +975,7 @@
 	}
 }
 
-// If in unified and with sessions, disconnects active. Otherwise, close the window. Similar to Safari/Camino's 'Close Tab'
-- (IBAction)performDisconnect:(id)sender
-{
-	if ( ( ([self displayMode] == CRDDisplayUnified) || ([self displayMode] == CRDDisplayFullscreen)) && ([self selectedServer] != nil))
-		[self disconnect:nil];
-	else
-	{
-		CRDSession *inst = [self viewedServer];
-		if (inst)
-			[[inst window] performClose:nil];
-	}
-}
+
 
 - (IBAction)saveSelectedServer:(id)sender
 {
@@ -1090,20 +1079,40 @@
 	[[NSWorkspace sharedWorkspace] selectFile:[selectedServer filename] inFileViewerRootedAtPath:nil];
 }
 
-- (IBAction)visitDevelopment:(id)sender{
+- (IBAction)visitDevelopment:(id)sender
+{
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDTracURL]];
 }
-- (IBAction)reportABug:(id)sender{
-	NSLog(@"%@", CRDBugReportURL());
+- (IBAction)reportABug:(id)sender
+{
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDBugReportURL()]];
 }
-- (IBAction)visitHomepage:(id)sender{
+- (IBAction)visitHomepage:(id)sender
+{
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDHomePageURL]];
 }
-- (IBAction)visitSupportForums:(id)sender{
+- (IBAction)visitSupportForums:(id)sender
+{
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDSupportForumsURL]];
 }
 
+// If in unified and with sessions, disconnects active. Otherwise, close the window. Similar to Safari 'Close Tab'
+- (IBAction)closeSessionOrWindow:(id)sender
+{
+	NSWindow *visibleWindow = [NSApp mainWindow];
+	
+	if ([NSApp keyWindow] == gui_inspector)
+		visibleWindow = [NSApp keyWindow];
+	
+	if (visibleWindow == gui_fullScreenWindow)
+		[self endFullscreen:sender];
+	else if ( (visibleWindow == gui_preferencesWindow) || (visibleWindow == gui_inspector) )
+		[visibleWindow orderOut:nil];
+	else if ((displayMode == CRDDisplayUnified) && (visibleWindow == gui_unifiedWindow) )
+		[self performStop:nil];
+	else
+		[visibleWindow orderOut:nil];
+}
 
 #pragma mark -
 #pragma mark Toolbar methods
@@ -1423,7 +1432,7 @@
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
 	NSInteger selectedRow = [gui_serverList selectedRow];
-	CRDSession *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	CRDSession *inst = [self selectedServer];
 	
 	[self validateControls];
 	[self fieldEdited:nil];
@@ -1525,7 +1534,6 @@
 	}
 }
 
-
 - (void)windowDidBecomeKey:(NSNotification *)sender
 {
 	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
@@ -1597,6 +1605,7 @@
 	return NO;
 }
 
+
 #pragma mark -
 #pragma mark Managing connected servers
 
@@ -1615,7 +1624,7 @@
 	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self withObject:inst];
 }
 
-// Assures that the passed instance is disconnected and removed from view.
+// Assures that the passed instance is disconnected and removed from view. Main thread only.
 - (void)disconnectInstance:(CRDSession *)inst
 {
 	if (!inst || [connectedServers indexOfObjectIdenticalTo:inst] == NSNotFound)
@@ -1847,25 +1856,20 @@
 {
 	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
 	{
-		id selectedItem = [gui_tabView selectedItem];
+		CRDSession *selectedItem = [gui_tabView selectedItem];
 
 		if (selectedItem == nil)
 			return nil;
-			
-		
-		for ( id item in connectedServers )
-		{
-			if (item == selectedItem)
-				return item;
-		}
+	
+		for (CRDSession *inst in connectedServers)
+			if (inst == selectedItem)
+				return inst;
 	}
 	else // windowed mode
 	{
-		for ( CRDSession *inst in connectedServers )
-		{
+		for (CRDSession *inst in connectedServers)
 			if ([[inst window] isMainWindow])
 				return inst;
-		}
 	}
 	
 	return nil;
@@ -1976,7 +1980,7 @@
 // Validates non-menu and toolbar interface items
 - (void)validateControls
 {
-	CRDSession *inst = [self serverInstanceForRow:[gui_serverList selectedRow]];
+	CRDSession *inst = [self selectedServer];
 	
 	[gui_connectButton setEnabled:(inst != nil && [inst status] == CRDConnectionClosed)];
 	[gui_inspectorButton setEnabled:(inst != nil)];
@@ -2004,30 +2008,21 @@
 		[inspectedServer flushChangesToFile];
 }
 
-// Enables/disables non-inspector gui controls as needed
+// Enables/disables GUI controls recursively
 - (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled
 {
 	if ([view isKindOfClass:[NSControl class]])
 	{
 		if ([view isKindOfClass:[NSTextField class]] && ![(NSTextField *)view drawsBackground])
-		{
-			// setTextColor is buggy in 10.4, thus use white to get the greyed color while disabled.  don't know what 10.5 does.
-			if (enabled)
-				[(NSTextField *)view setTextColor:[NSColor blackColor]];
-			else
-				[(NSTextField *)view setTextColor:[NSColor whiteColor]];
-
-		}
+			[(NSTextField *)view setTextColor:(enabled ? [NSColor blackColor] : [NSColor disabledControlTextColor])];
+		
 		[(NSControl *)view setEnabled:enabled];
 	}
 	else
 	{
-		for ( id subview in [view subviews])
-		{
+		for (id subview in [view subviews])
 			[self toggleControlsEnabledInView:subview enabled:enabled];
-		}
 	}
-	
 }
 
 #pragma mark -
@@ -2039,23 +2034,22 @@
 	if (!inst)
 		return;
 	
-		
 	// Checkboxes
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)		forKey:@"windowDrags"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)			forKey:@"drawDesktop"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)		forKey:@"windowAnimation"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)			forKey:@"themes"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableFontSmoothing)	forKey:@"fontSmoothing"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)			forKey:@"savePassword"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)			forKey:@"forwardDisks"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)		forKey:@"forwardPrinters"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)		forKey:@"consoleSession"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)     forKey:@"windowDrags"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)         forKey:@"drawDesktop"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)    forKey:@"windowAnimation"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)        forKey:@"themes"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableFontSmoothing) forKey:@"fontSmoothing"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)        forKey:@"savePassword"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)        forKey:@"forwardDisks"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)     forKey:@"forwardPrinters"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)      forKey:@"consoleSession"];
 	
 	// Text fields
-	[inst setValue:[gui_label stringValue]		forKey:@"label"];
-	[inst setValue:[gui_username stringValue]	forKey:@"username"];
-	[inst setValue:[gui_domain stringValue]		forKey:@"domain"];	
-	[inst setValue:[gui_password stringValue]	forKey:@"password"];
+	[inst setValue:[gui_label stringValue]    forKey:@"label"];
+	[inst setValue:[gui_username stringValue] forKey:@"username"];
+	[inst setValue:[gui_domain stringValue]   forKey:@"domain"];	
+	[inst setValue:[gui_password stringValue] forKey:@"password"];
 	
 	// Host
 	NSInteger port;
@@ -2089,7 +2083,7 @@
 	if (!isFullscreen)
 		CRDSplitResolutionString(resolutionString, &width, &height);
 	
-	[inst setValue:[NSNumber numberWithInt:width]  forKey:@"screenWidth"];
+	[inst setValue:[NSNumber numberWithInt:width] forKey:@"screenWidth"];
 	[inst setValue:[NSNumber numberWithInt:height] forKey:@"screenHeight"];
 	
 }
@@ -2143,10 +2137,9 @@
 	[gui_colorCount selectItemAtIndex:(colorDepth/8-1)];
 	
 	// Screen resolution
+	[gui_screenResolution selectItemAtIndex:-1];
 	if ([[newSettings valueForKey:@"fullscreen"] boolValue])
 	{
-		[gui_screenResolution selectItemAtIndex:-1];
-		
 		for (NSMenuItem *menuItem in [gui_screenResolution itemArray])
 			if (CRDResolutionStringIsFullscreen([menuItem title]))
 			{
@@ -2162,7 +2155,7 @@
 			screenWidth = CRDDefaultScreenWidth;
 			screenHeight = CRDDefaultScreenHeight;
 		}
-		
+		// If the user opens an .rdc file with a resolution that the user doesn't have, nothing will be selected. We're not adding it to the array controller, because we don't want resolutions from .rdc files to be persistent in CoRD prefs
 		NSString *resolutionLabel = [NSString stringWithFormat:@"%dx%d", screenWidth, screenHeight];
 		[gui_screenResolution selectItemWithTitle:resolutionLabel];
 	}
@@ -2184,7 +2177,7 @@
 #pragma mark -
 #pragma mark Connecting to servers asynchronously
 
-// Should only be called by connectInstance
+// Should only be called by connectInstance in the connection thread
 - (void)connectAsync:(CRDSession *)inst
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -2192,8 +2185,8 @@
 	if ([[inst valueForKey:@"fullscreen"] boolValue])
 	{
 		NSSize screenSize = [[gui_unifiedWindow screen] frame].size;
-		[inst setValue:[NSNumber numberWithInt:(int)screenSize.width] forKey:@"screenWidth"];
-		[inst setValue:[NSNumber numberWithInt:(int)screenSize.height] forKey:@"screenHeight"];
+		[inst setValue:[NSNumber numberWithInteger:(NSInteger)screenSize.width] forKey:@"screenWidth"];
+		[inst setValue:[NSNumber numberWithInteger:(NSInteger)screenSize.height] forKey:@"screenHeight"];
 	}
 	
 	BOOL connected = [inst connect];
@@ -2204,14 +2197,14 @@
 		[inst runConnectionRunLoop]; // this will block until the connection is finished
 		
 	if ([inst status] == CRDConnectionConnected)
-		[self disconnectInstance:inst];
+		[self performSelectorOnMainThread:@selector(disconnectInstance:) withObject:inst waitUntilDone:YES];
 	
 	[pool release];
 }
 
 // Called in main thread by connectAsync
 - (void)completeConnection:(CRDSession *)inst
-{
+{	
 	if ([inst status] == CRDConnectionConnected)
 	{
 		// Move it into the proper list
@@ -2222,7 +2215,9 @@
 			[connectedServers addObject:inst];
 		}
 		
-		[gui_serverList selectRow:(1 + [connectedServers indexOfObject:inst])];
+		if (!_isFilteringSavedServers && ([connectedServers indexOfObject:inst] != NSNotFound) )
+			[gui_serverList selectRow:(1 + [connectedServers indexOfObject:inst])];
+		
 		[self listUpdated];
 		
 		// Create gui
@@ -2241,10 +2236,7 @@
 		
 		if ([[inst valueForKey:@"fullscreen"] boolValue] || [[inst valueForKey:@"temporarilyFullscreen"] boolValue])
 		{
-			// defer the switch to fullscreen so that the server has a chance to set the background color of the screen so that the animation into fullscreen isn't abrupt. Very short time so as not to make interface laggy, but just long enough for the draw command to come in on LAN servers
-			NSDisableScreenUpdates();
-			[NSTimer scheduledTimerWithTimeInterval:0.15 target:self selector:@selector(startFullscreen:) userInfo:nil repeats:NO];
-			
+			[self startFullscreen:nil];
 			return;
 		}
 		
@@ -2253,7 +2245,6 @@
 	}
 	else
 	{
-
 		[self cellNeedsDisplay:(NSCell *)[inst cellRepresentation]];
 		RDConnectionError errorCode = [inst conn]->errorCode;
 		

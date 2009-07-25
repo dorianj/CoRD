@@ -58,7 +58,7 @@
 	
 	[currentContentView removeFromSuperviewWithoutNeedingDisplay];
 	[self addSubview:newContentView];
-	[newContentView drawRect:[newContentView bounds]];
+	[self setNeedsDisplay:YES];
 	
 	_selectedItem = item;
 }

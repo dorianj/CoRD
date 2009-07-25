@@ -57,6 +57,9 @@
 	NSUserDefaults *userDefaults;
 	CRDSession *instanceReconnectingForFullscreen;
 	
+	// Preferences window
+	IBOutlet NSWindow *gui_preferencesWindow;
+	
 	// Menu
 	IBOutlet NSMenu *gui_serversMenu;
 	
@@ -100,7 +103,6 @@
 - (IBAction)jumpToQuickConnect:(id)sender;
 - (IBAction)helpForConnectionOptions:(id)sender;
 - (IBAction)performServerMenuItem:(id)sender;
-- (IBAction)performDisconnect:(id)sender;
 - (IBAction)saveSelectedServer:(id)sender;
 - (IBAction)sortSavedServersAlphabetically:(id)sender;
 - (IBAction)doNothing:(id)sender;
@@ -112,6 +114,7 @@
 - (IBAction)reportABug:(id)sender;
 - (IBAction)visitHomepage:(id)sender;
 - (IBAction)visitSupportForums:(id)sender;
+- (IBAction)closeSessionOrWindow:(id)sender;
 
 // Other methods are in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;
