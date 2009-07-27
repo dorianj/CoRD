@@ -1057,6 +1057,8 @@
 				
 		if ([filteredServers count])
 			[gui_serverList selectRow:1];
+		
+		[self updateInspectorToMatchSelectedServer];
 	}
 }
 
