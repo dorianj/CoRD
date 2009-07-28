@@ -334,6 +334,8 @@
 		return [NSApp keyWindow] != nil;
 	else if (action == @selector(duplicateSelectedServer:))
 		return [self selectedServer] != nil;
+	else if (action == @selector(addNewSavedServer:))
+		return !_isFilteringSavedServers;
 	else if (action == @selector(toggleInspector:))
 	{
 		NSString *hideOrShow = [gui_inspector isVisible]
@@ -392,7 +394,6 @@
 	
 	return YES;
 }
-
 
 #pragma mark -
 #pragma mark Actions
@@ -1031,12 +1032,12 @@
 
 	if (![searchString length])
 	{
-		_isFilteringSavedServers = NO;
+		[self setValue:[NSNumber numberWithBool:NO]  forKey:@"isFilteringSavedServers"];
 		[filteredServers removeAllObjects];
 	}
 	else
 	{
-		_isFilteringSavedServers = YES;
+		[self setValue:[NSNumber numberWithBool:YES] forKey:@"isFilteringSavedServers"];
 		[filteredServers removeAllObjects];
 		
 		NSString *searchCompareString = [NSString stringWithFormat:@"*%@*", [[searchString strip] lowercaseString]];
