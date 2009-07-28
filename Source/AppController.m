@@ -1103,15 +1103,19 @@
 {
 	NSWindow *visibleWindow = [NSApp mainWindow];
 	
-	if ([NSApp keyWindow] == gui_inspector)
-		visibleWindow = [NSApp keyWindow];
-	
 	if (visibleWindow == gui_fullScreenWindow)
 		[self endFullscreen:sender];
 	else if ( (visibleWindow == gui_preferencesWindow) || (visibleWindow == gui_inspector) )
 		[visibleWindow orderOut:nil];
-	else if ((displayMode == CRDDisplayUnified) && (visibleWindow == gui_unifiedWindow) )
-		[self performStop:nil];
+	else if (visibleWindow == gui_unifiedWindow)
+	{
+		if ((displayMode == CRDDisplayUnified) && [connectedServers count])
+			[self performStop:nil];
+		else 
+			[gui_unifiedWindow orderOut:nil];
+	}
+	else if (displayMode == CRDDisplayWindowed)
+		[visibleWindow performClose:nil];
 	else
 		[visibleWindow orderOut:nil];
 }
