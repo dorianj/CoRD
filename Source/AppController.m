@@ -840,6 +840,7 @@
 		return;
 	
 	displayMode = CRDDisplayWindowed;
+	windowCascadePoint = CRDWindowCascadeStart;
 	
 	if ([connectedServers count] == 0)
 		return;
@@ -2004,7 +2005,7 @@
 	[inst createWindow:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions)];
 	
 	NSWindow *window = [inst window];
-	[window cascadeTopLeftFromPoint:windowCascadePoint];
+	windowCascadePoint = [window cascadeTopLeftFromPoint:windowCascadePoint];
 	[window makeFirstResponder:[inst view]];
 	[window makeKeyAndOrderFront:self];
 }
