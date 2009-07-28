@@ -23,6 +23,8 @@
 
 @implementation CRDTabView
 
+@synthesize selectedItem=_selectedItem;
+
 - (id)initWithFrame:(NSRect)frame
 {
 	if (![super initWithFrame:frame])
@@ -101,11 +103,6 @@
 	return [_items objectAtIndex:index];
 }
 
-- (id)selectedItem
-{
-	return _selectedItem;
-}
-
 - (NSInteger)indexOfItem:(id)item
 {
 	return [_items indexOfObject:item];
@@ -146,7 +143,10 @@
 	if ([_items count] > 1)
 		[self selectNextItem:self];
 	else
-		[[[self selectedItem] tabItemView] removeFromSuperviewWithoutNeedingDisplay];
+	{
+		[[self.selectedItem tabItemView] removeFromSuperviewWithoutNeedingDisplay];
+		_selectedItem = nil;
+	}
 	
 	@synchronized(_items)
 	{

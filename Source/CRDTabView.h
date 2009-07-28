@@ -30,6 +30,8 @@
 	NSMutableArray *_items;
 }
 
+@property (readonly) id selectedItem;
+
 - (IBAction)selectFirstItem:(id)sender;
 - (IBAction)selectLastItem:(id)sender;
 - (IBAction)selectNextItem:(id)sender;
@@ -38,7 +40,6 @@
 
 - (void)selectItemAtIndex:(NSInteger)index;
 - (id)itemAtIndex:(NSInteger)index;
-- (id)selectedItem;
 
 - (NSInteger)indexOfItem:(id)item;
 - (NSInteger)indexOfSelectedItem;
