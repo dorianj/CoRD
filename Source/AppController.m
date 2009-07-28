@@ -242,7 +242,10 @@
 			}
 
 		if (!newInst)
+		{
 			NSRunAlertPanel(@"Server not found", @"No server was found with a label matching '%@'.", nil, nil, nil, labelMatch);
+			return;
+		}
 	}
 	else
 	{
@@ -816,11 +819,10 @@
 	if ([connectedServers count] == 0)
 		return;
 	
+	[gui_tabView removeAllItems];
+	
 	for (CRDSession *inst in connectedServers)
-	{
-		[gui_tabView removeItem:inst];
 		[self createWindowForInstance:inst];
-	}	
 		
 	[self autosizeUnifiedWindow];
 }
@@ -836,7 +838,7 @@
 		return;
 	
 	
-	for ( CRDSession *inst in connectedServers )
+	for (CRDSession *inst in connectedServers)
 	{
 		[inst destroyWindow];
 		[inst createUnified:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions) enclosure:[gui_tabView frame]];

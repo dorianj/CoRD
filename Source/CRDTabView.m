@@ -156,5 +156,16 @@
 	NSEnableScreenUpdates();
 }
 
+- (void)removeAllItems
+{
+	[[[self selectedItem] tabItemView] removeFromSuperviewWithoutNeedingDisplay];
+	_selectedItem = nil;
+	
+	@synchronized(_items)
+	{
+		[_items removeAllObjects];
+	}
+}
+
 @end
 

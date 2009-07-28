@@ -47,6 +47,7 @@
 
 - (void)addItem:(id)item;
 - (void)removeItem:(id)item;
+- (void)removeAllItems;
 
 @end
 
