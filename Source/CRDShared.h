@@ -88,6 +88,7 @@ void CRDSetAttributedStringFont(NSMutableAttributedString *as, NSFont *font);
 
 CRDInputEvent CRDMakeInputEvent(unsigned int time, unsigned short type, unsigned short deviceFlags, unsigned short param1, unsigned short param2);
 NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action);
+NSMenuItem * CRDMakeSearchFieldMenuItem(NSString *title, NSInteger tag);
 
 
 NSCellStateValue CRDButtonState(BOOL enabled);

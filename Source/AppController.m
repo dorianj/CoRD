@@ -79,12 +79,9 @@
 	savedServers = [[NSMutableArray alloc] init];
 	filteredServers = [[NSMutableArray alloc] init];
 	
-	filteredServersLabel = [[CRDLabelCell alloc]
-							initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
-	connectedServersLabel = [[CRDLabelCell alloc]
-							initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
-	savedServersLabel = [[CRDLabelCell alloc]
-							initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
+	filteredServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
+	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
+	savedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
 
 	return self;
 }
@@ -176,51 +173,25 @@
 	[self sortSavedServersByStoredListPosition];
 	[self storeSavedServerPositions];
 	
-	if ([gui_searchField respondsToSelector: @selector(setRecentSearches:)])
-	{
-		NSMenu* searchMenu = [[[NSMenu alloc] initWithTitle:@"CoRD Servers Search Menu"] autorelease];
-		[searchMenu setAutoenablesItems:YES];
-		
-		NSMenuItem* recentsTitleItem = [[NSMenuItem alloc] initWithTitle:@"Recent Searches" action:nil keyEquivalent:@""];
-		// tag this menu item so NSSearchField can use it and respond to it appropriately
-		[recentsTitleItem setTag:NSSearchFieldRecentsTitleMenuItemTag];
-		[searchMenu addItem:recentsTitleItem];
-		[recentsTitleItem release];
-		
-		NSMenuItem* norecentsTitleItem = [[NSMenuItem alloc] initWithTitle:@"No recent searches" action:nil keyEquivalent:@""];
-		// tag this menu item so NSSearchField can use it and respond to it appropriately
-		[norecentsTitleItem setTag:NSSearchFieldNoRecentsMenuItemTag];
-		[searchMenu addItem:norecentsTitleItem];
-		[norecentsTitleItem release];
-		
-		NSMenuItem* recentsItem = [[NSMenuItem alloc] initWithTitle:@"Recents" action:nil keyEquivalent:@""];
-		// tag this menu item so NSSearchField can use it and respond to it appropriately
-		[recentsItem setTag:NSSearchFieldRecentsMenuItemTag];	
-		[searchMenu addItem:recentsItem];
-		[recentsItem release];
-		
-		NSMenuItem* separatorItem = (NSMenuItem*)[NSMenuItem separatorItem];
-		// tag this menu item so NSSearchField can use it, by hiding/show it appropriately:
-		[separatorItem setTag:NSSearchFieldRecentsTitleMenuItemTag];
-		[searchMenu addItem:separatorItem];
-		
-		NSMenuItem* clearItem = [[NSMenuItem alloc] initWithTitle:@"Clear" action:nil keyEquivalent:@""];
-		[clearItem setTag:NSSearchFieldClearRecentsMenuItemTag];	// tag this menu item so NSSearchField can use it
-		[searchMenu addItem:clearItem];
-		[clearItem release];
-		
-		id searchCell = [gui_searchField cell];
-		[searchCell setMaximumRecents:20];
-		[searchCell setSearchMenuTemplate:searchMenu];
-	}
+
+	// Set up server filter field
+	NSMenu* searchMenu = [[[NSMenu alloc] initWithTitle:@"CoRD Servers Search Menu"] autorelease];
+	[searchMenu setAutoenablesItems:YES];
+	[searchMenu addItem:CRDMakeSearchFieldMenuItem(@"Recent Searches", NSSearchFieldRecentsTitleMenuItemTag)];
+	[searchMenu addItem:CRDMakeSearchFieldMenuItem(@"No recent searches", NSSearchFieldNoRecentsMenuItemTag)];
+	[searchMenu addItem:CRDMakeSearchFieldMenuItem(@"Recents", NSSearchFieldRecentsMenuItemTag)];
+	[searchMenu addItem:CRDMakeSearchFieldMenuItem(@"-", NSSearchFieldRecentsTitleMenuItemTag)];
+	[searchMenu addItem:CRDMakeSearchFieldMenuItem(@"Clear", NSSearchFieldClearRecentsMenuItemTag)];
+
+	[[gui_searchField cell] setMaximumRecents:15];
+	[[gui_searchField cell] setSearchMenuTemplate:searchMenu];
+
 	
 	// Register for drag operations
 	NSArray *types = [NSArray arrayWithObjects:CRDRowIndexPboardType, NSFilenamesPboardType, NSFilesPromisePboardType, nil];
 	[gui_serverList registerForDraggedTypes:types];
 
 	// Custom interface settings not accessable from IB
-	[[gui_password cell] setSendsActionOnEndEditing:YES];
-	[[gui_password cell] setFont:[NSFont systemFontOfSize:[NSFont systemFontSizeForControlSize:NSSmallControlSize]]];
 	[gui_unifiedWindow setExcludedFromWindowsMenu:YES];
 
 	// Load a few user defaults that need to be loaded before anything is displayed
@@ -1257,11 +1228,10 @@
 	
 	NSEnableScreenUpdates();
 	
-	
 	// Flush each saved server to file (so that the perferred row will be saved)
 	[self storeSavedServerPositions];
 	
-	for ( CRDSession *inst in savedServers )
+	for (CRDSession *inst in savedServers)
 		[inst flushChangesToFile];
 }
 

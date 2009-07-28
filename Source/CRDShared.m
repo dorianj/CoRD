@@ -333,7 +333,7 @@ NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure)
 #pragma mark -
 #pragma mark AppController specific
 
-NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action)
+NSToolbarItem *CRDMakeToolbarItem(NSString *name, NSString *label, NSString *tooltip, SEL action)
 {
 	NSToolbarItem *item = [[[NSToolbarItem alloc] initWithItemIdentifier:name] autorelease];
 	[item setPaletteLabel:name];
@@ -344,6 +344,17 @@ NSToolbarItem * CRDMakeToolbarItem(NSString *name, NSString *label, NSString *to
 		
 	return item;
 }
+
+NSMenuItem * CRDMakeSearchFieldMenuItem(NSString *title, NSInteger tag)
+{
+	NSMenuItem *menuItem = [title isEqualToString:@"-"] ? [NSMenuItem separatorItem] : [[[NSMenuItem alloc] initWithTitle:title action:nil keyEquivalent:@""] autorelease];
+	[menuItem setTag:tag];
+	return menuItem;
+}
+
+
+
+
 
 
 #pragma mark -
