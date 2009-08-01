@@ -29,11 +29,12 @@
 #import "rdesktop.h"
 
 
+#import <SystemConfiguration/SystemConfiguration.h> 
 #import <Foundation/NSStream.h>
 #import <Foundation/NSString.h>
 #import <Foundation/NSHost.h>
-
 #import <CoreFoundation/CoreFoundation.h>
+#import <CRDShared.h>
 
 static void tcp_cfhost_lookup_finished(CFHostRef theHost, CFHostInfoType typeInfo, const CFStreamError *error, void *info);
 
@@ -195,6 +196,17 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	{
 		conn->errorCode = ConnectionErrorGeneral;
 		goto Cleanup;
+	}
+	
+	if (CRDPreferenceIsEnabled(CRDUseSocksProxy))
+	{
+		NSLog(@"Using SOCKS Proxy");
+		NSDictionary *proxyDict = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
+		if (proxyDict != NULL)
+		{
+			[os setProperty:proxyDict forKey:NSStreamSOCKSProxyConfigurationKey];
+			[proxyDict release];
+		}
 	}
 	
 	[is open];

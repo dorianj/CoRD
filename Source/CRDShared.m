@@ -59,7 +59,7 @@ NSString * const CRDPrefsMinimalisticServerList = @"MinimalServerList";
 NSString * const CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizations";
 NSString * const CRDSetServerKeyboardLayout = @"SetServerKeyboardLayout";
 NSString * const CRDForwardOnlyDefinedPaths = @"CRDForwardOnlyDefinedPaths";
-
+NSString * const CRDUseSocksProxy = @"CRDUseSocksProxy";
 
 #pragma mark -
 #pragma mark General purpose routines
