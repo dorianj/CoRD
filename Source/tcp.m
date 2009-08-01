@@ -200,7 +200,6 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	
 	if (CRDPreferenceIsEnabled(CRDUseSocksProxy))
 	{
-		NSLog(@"Using SOCKS Proxy");
 		NSDictionary *proxyDict = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
 		if (proxyDict != NULL)
 		{

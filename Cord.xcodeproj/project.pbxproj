@@ -79,6 +79,7 @@
 		98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */; };
 		98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 98F2A7C310152DA800E1D5B5 /* CoRD Help */; };
+		991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 991FE8B01024C71D00EC603C /* SystemConfiguration.framework */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		999A05360FAAF42C00FA512C /* ZNLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A05350FAAF42C00FA512C /* ZNLog.m */; };
@@ -206,6 +207,7 @@
 		98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDScreenResFormatter.m; path = Source/CRDScreenResFormatter.m; sourceTree = "<group>"; };
 		98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDScreenResFormatter.h; path = Source/CRDScreenResFormatter.h; sourceTree = "<group>"; };
 		98F2A7C310152DA800E1D5B5 /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
+		991FE8B01024C71D00EC603C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		993AEC350FB136AB0031B013 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		999A01E10FAA1DC300FA512C /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Source/PreferencesController.h; sourceTree = "<group>"; };
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
@@ -224,6 +226,7 @@
 				98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */,
 				37344C210FB141D200DFD6E6 /* Security.framework in Frameworks */,
 				37D191820FCE69E8008797FD /* Carbon.framework in Frameworks */,
+				991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -330,6 +333,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				991FE8B01024C71D00EC603C /* SystemConfiguration.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Included Frameworks */,
 			);
