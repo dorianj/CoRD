@@ -220,9 +220,8 @@ static NSDictionary *windowsKeymapTable = nil;
 		
 	signed lineNumber = -1;
 	BOOL b = YES;
-	id line;
 		
-	for ( line in fileLines )
+	for (NSString *line in fileLines)
 	{
 		lineNumber++;
 		
@@ -298,10 +297,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	}
 	
 	
-	/* First, look up directly in the table. If not found, try a fuzzy match
-		so that input types like "Arabic-QWERTY" will match "Arabic". Finally, 
-		if an appropriate keymap isn't found either way, use US keymap as default.
-	*/
+	// First, look up directly in the table. If not found, try a fuzzy match so that input types like "Arabic-QWERTY" will match "Arabic". Finally, if an appropriate keymap isn't found either way, use US keymap as default.
 	
 	NSNumber *windowsKeymap = nil;
 
@@ -315,7 +311,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	
 	if (!windowsKeymap)
 	{
-		NSString *keymapName = [keymapIdentifier substringFromIndex:[keymapIdentifier rangeOfString:@"." options:NSBackwardsSearch].location+1];
+		NSString *keymapName = [[keymapIdentifier componentsSeparatedByString:@"."] objectAtIndex:3];
 				
 		for (NSString *potentialKeymapName in windowsKeymapTable)
 			if ([[keymapName commonPrefixWithString:potentialKeymapName options:NSLiteralSearch] length] >= 4)
