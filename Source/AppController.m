@@ -883,6 +883,9 @@
 	[gui_serverList deselectAll:self];
 	[self listUpdated];
 	[self connectInstance:newInst];
+
+	if (!_isFilteringSavedServers)
+		[gui_serverList selectRow:(1+[connectedServers indexOfObject:newInst])];
 	
 	
 	NSMutableArray *recent = [NSMutableArray arrayWithArray:[userDefaults arrayForKey:CRDDefaultsQuickConnectServers]];
