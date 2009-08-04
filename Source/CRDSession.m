@@ -377,6 +377,7 @@
 	else if (connectionStatus == CRDConnectionConnecting)
 	{
 		[self setStatus:CRDConnectionClosed];
+		[self performSelectorOnMainThread:@selector(setStatusAsNumber:) withObject:[NSNumber numberWithInt:CRDConnectionClosed] waitUntilDone:NO];
 	}
 	
 	return connected;
