@@ -1753,52 +1753,27 @@
 }
 
 - (void)openUrl:(NSAppleEventDescriptor *)event withReplyEvent:(NSAppleEventDescriptor *)replyEvent
-{
-	NSMutableString *url = [[[[event paramDescriptorForKeyword:keyDirectObject] stringValue] mutableCopy] autorelease];	
-	[url deleteCharactersInRange:[url rangeOfString:@"rdp://"]];
-	
-	NSString *cleanURL = [url stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]];
-	NSLog(@"Parsing URL '%@'", cleanURL);
-	
-	NSString *username = @"", *password = @"", *host;
-	NSInteger port;
-	
+{	
+	// rdp://user:password@host:port/Domain
 
-	NSUInteger ampersandLocation = [url rangeOfString:@"@"].location;
-	if (ampersandLocation != NSNotFound)
-	{
-		NSScanner *scanner = [NSScanner scannerWithString:[cleanURL substringToIndex:ampersandLocation]];
-		
-		NSCharacterSet *windowsUsernameCharacters = [NSCharacterSet characterSetWithCharactersInString:@"\\/\"[]:|<>+=;,?*@\n\r"], *emptySet = [NSCharacterSet characterSetWithCharactersInString:@""];
-		
-		[scanner setCharactersToBeSkipped:windowsUsernameCharacters];
-		[scanner scanUpToCharactersFromSet:windowsUsernameCharacters intoString:&username];
-		
-		if (![scanner isAtEnd])
-		{	
-			[scanner setScanLocation:([scanner scanLocation] + 1)];
-			[scanner setCharactersToBeSkipped:emptySet];
-			[scanner scanUpToCharactersFromSet:emptySet intoString:&password];
-		}
-		
-		ampersandLocation++;
-	}
-	else
-	{
-		ampersandLocation = 0;
-	}
-	
-	CRDSplitHostNameAndPort([cleanURL substringFromIndex:ampersandLocation], &host, &port);
-	
-	
-	CRDSession *session = [[[CRDSession alloc] init] autorelease];
+	NSURL *url = [NSURL URLWithString:[[event paramDescriptorForKeyword:keyDirectObject] stringValue]];
 
-	[session setValue:host forKey:@"label"];
-	[session setValue:host forKey:@"hostName"];
-	[session setValue:username forKey:@"username"];
-	[session setValue:password forKey:@"password"];
-	[session setValue:[NSNumber numberWithInt:port] forKey:@"port"];
-	[session setTemporary:YES];
+	CRDSession *session = [[[CRDSession alloc] initWithBaseConnection] autorelease];
+
+	if ([url host] != nil)
+	{
+		[session setValue:[url host] forKey:@"hostName"];
+		[session setValue:[url host] forKey:@"label"];
+	}
+	if ([url port] != nil)
+		[session setValue:[url port] forKey:@"port"];
+	if ([url user] != nil)
+		[session setValue:[url user] forKey:@"username"];
+	if ([url password] != nil)
+		[session setValue:[url password] forKey:@"password"];
+	if ([url path] != nil)
+		[session setValue:[[url path] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]]  forKey:@"domain"];
+	
 	
 	[connectedServers addObject:session];
 	[gui_serverList deselectAll:self];
