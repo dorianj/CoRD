@@ -55,7 +55,6 @@
 	NSPoint windowCascadePoint;
 	IBOutlet NSUserDefaultsController *userDefaultsController;
 	NSUserDefaults *userDefaults;
-	CRDSession *instanceReconnectingForFullscreen;
 	
 	// Preferences window
 	IBOutlet NSWindow *gui_preferencesWindow;

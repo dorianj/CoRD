@@ -634,16 +634,13 @@
 		[self disconnectInstance:inst];
 		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
 		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"temporarilyFullscreen"];
-		instanceReconnectingForFullscreen = inst;
 		[self connectInstance:inst];
 		return;
 	}
 	
 	if ([self displayMode] != CRDDisplayUnified)
 		[self startUnified:self];
-	
-	instanceReconnectingForFullscreen = nil;
-	
+		
 	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
 	[gui_fullScreenWindow setDelegate:self];
 	
