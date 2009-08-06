@@ -631,10 +631,7 @@
 	// If needed, reconnect the instance so that it can fill the screen
 	if (CRDPreferenceIsEnabled(CRDPrefsReconnectIntoFullScreen) && ( fabs(serverSize.width - winRect.size.width) > 0.001 || fabs(serverSize.height - winRect.size.height) > 0.001) )
 	{
-		[self disconnectInstance:inst];
-		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
-		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"temporarilyFullscreen"];
-		[self connectInstance:inst];
+		[self performSelectorInBackground:@selector(reconnectInstanceForEnteringFullscreen:) withObject:inst];
 		return;
 	}
 	
@@ -1684,6 +1681,23 @@
 	[connectedServers removeObject:inst];
 	inspectedServer = nil;
 	[self listUpdated];
+}
+
+- (void)reconnectInstanceForEnteringFullscreen:(CRDSession*)inst
+{
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	
+	[self performSelectorOnMainThread:@selector(disconnectInstance:) withObject:inst waitUntilDone:YES];
+
+	while ([inst status] != CRDConnectionClosed)
+		usleep(1000);
+
+	[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
+	[inst setValue:[NSNumber numberWithBool:YES] forKey:@"temporarilyFullscreen"];
+	
+	[self performSelectorOnMainThread:@selector(connectInstance:) withObject:inst waitUntilDone:YES];
+
+	[pool release];	
 }
 
 #pragma mark -

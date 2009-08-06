@@ -120,6 +120,7 @@
 - (void)connectInstance:(CRDSession *)inst;
 - (void)disconnectInstance:(CRDSession *)inst;
 - (void)cancelConnectingInstance:(CRDSession *)inst;
+- (void)reconnectInstanceForEnteringFullscreen:(CRDSession*)inst;
 - (void)parseCommandLine;
 - (void)printUsage;
 - (void)updateInspectorToMatchSelectedServer;

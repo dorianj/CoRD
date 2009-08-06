@@ -82,7 +82,7 @@
 // Working with rdesktop
 - (BOOL)connect;
 - (void)disconnect;
-- (void)disconnectAsync:(NSNumber *)block;
+- (void)disconnectAsync:(NSNumber *)nonblocking;
 - (void)sendInputOnConnectionThread:(uint32)time type:(uint16)type flags:(uint16)flags param1:(uint16)param1 param2:(uint16)param2;
 - (void)runConnectionRunLoop;
 

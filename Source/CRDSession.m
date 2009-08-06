@@ -106,7 +106,7 @@
 - (void)dealloc
 {
 	if (connectionStatus == CRDConnectionConnected)
-		[self disconnect];
+		[self disconnectAsync:[NSNumber numberWithBool:YES]];
 			
 	while (connectionStatus != CRDConnectionClosed)
 		usleep(1000);
@@ -385,10 +385,10 @@
 
 - (void)disconnect
 {
-	[self disconnectAsync:[NSNumber numberWithBool:NO]];
+	[self disconnectAsync:[NSNumber numberWithBool:YES]];
 }
 
-- (void)disconnectAsync:(NSNumber *)block
+- (void)disconnectAsync:(NSNumber *)nonblocking
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 		
@@ -396,16 +396,16 @@
 		conn->errorCode = ConnectionErrorCanceled;
 	
 	[self setStatus:CRDConnectionDisconnecting];
-	if (connectionRunLoopFinished || [block boolValue])
+	if (connectionRunLoopFinished || ![nonblocking boolValue])
 	{
-		//NSLog(@"disconect async");
 		// Try to forcefully break the connection thread out of its run loop
 		@synchronized(self)
 		{
-			[inputEventPort sendBeforeDate:[NSDate distantFuture] components:nil from:nil reserved:0];
+			[inputEventPort sendBeforeDate:[NSDate dateWithTimeIntervalSinceNow:TIMEOUT_LENGTH] components:nil from:nil reserved:0];
 		}
 		
-		while (!connectionRunLoopFinished)
+		time_t start = time(NULL);
+		while (!connectionRunLoopFinished && (time(NULL) - start < TIMEOUT_LENGTH)) 
 			usleep(1000);
 
 		// UI cleanup
@@ -438,8 +438,7 @@
 	}
 	else
 	{
-		//NSLog(@"Disconnecting in background");
-		[self performSelectorInBackground:@selector(disconnectAsync:) withObject:[NSNumber numberWithBool:YES]];
+		[self performSelectorInBackground:@selector(disconnectAsync:) withObject:[NSNumber numberWithBool:NO]];
 	}
 	
 	[pool release];
