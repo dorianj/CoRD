@@ -33,8 +33,6 @@
 - (void)createViewWithFrameValue:(NSValue *)frameRect;
 - (void)setUpConnectionThread;
 - (void)discardConnectionThread;
-- (void)clearBitmapCache;
-
 @end
 
 #pragma mark -
@@ -398,7 +396,6 @@
 		conn->errorCode = ConnectionErrorCanceled;
 	
 	[self setStatus:CRDConnectionDisconnecting];
-	
 	if (connectionRunLoopFinished || [block boolValue])
 	{
 		//NSLog(@"disconect async");
@@ -414,10 +411,19 @@
 		// UI cleanup
 		[self performSelectorOnMainThread:@selector(destroyUIElements) withObject:nil waitUntilDone:YES];
 
-	
-		[self performSelectorOnMainThread:@selector(clearBitmapCache) withObject:nil waitUntilDone:YES];
 		
-		for (int i = 0; i < CURSOR_CACHE_SIZE; i++)
+		// Clear out the bitmap cache
+		int i, k;
+		for (i = 0; i < BITMAP_CACHE_SIZE; i++)
+		{
+			for (k = 0; k < BITMAP_CACHE_ENTRIES; k++)
+			{	
+				ui_destroy_bitmap(conn->bmpcache[i][k].bitmap);
+				conn->bmpcache[i][k].bitmap = NULL;
+			}
+		}
+		
+		for (i = 0; i < CURSOR_CACHE_SIZE; i++)
 			ui_destroy_cursor(conn->cursorCache[i]);
 		
 		
@@ -433,7 +439,7 @@
 	else
 	{
 		//NSLog(@"Disconnecting in background");
-		[self performSelectorOnMainThread:@selector(disconnectAsync:) withObject:[NSNumber numberWithBool:YES] waitUntilDone:YES];
+		[self performSelectorInBackground:@selector(disconnectAsync:) withObject:[NSNumber numberWithBool:YES]];
 	}
 	
 	[pool release];
@@ -1181,19 +1187,6 @@
 		connectionThread = nil;
 		connectionRunLoop = nil;
 	}
-}
-
-- (void)clearBitmapCache
-{
-	int i, k;
-	for (i = 0; i < BITMAP_CACHE_SIZE; i++)
-	{
-		for (k = 0; k < BITMAP_CACHE_ENTRIES; k++)
-		{	
-			ui_destroy_bitmap(conn->bmpcache[i][k].bitmap);
-			conn->bmpcache[i][k].bitmap = NULL;
-		}
-	}	
 }
 
 @end
