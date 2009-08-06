@@ -634,7 +634,7 @@
 		[self disconnectInstance:inst];
 		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"fullscreen"];
 		[inst setValue:[NSNumber numberWithBool:YES] forKey:@"temporarilyFullscreen"];
-		instanceReconnectingForFullscreen = inst;
+		//instanceReconnectingForFullscreen = inst;
 		[self connectInstance:inst];
 		return;
 	}
@@ -1597,13 +1597,13 @@
 {
 	if (!inst)
 		return;
-	
+
 	if ([inst status] == CRDConnectionConnecting || [inst status] == CRDConnectionDisconnecting)
 		return;
-	
+
 	if ([inst status] == CRDConnectionConnected)
 		[self disconnectInstance:inst];
-		
+	
 	[NSThread detachNewThreadSelector:@selector(connectAsync:) toTarget:self withObject:inst];
 }
 
@@ -2139,7 +2139,7 @@
 - (void)connectAsync:(CRDSession *)inst
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
+
 	if ([[inst valueForKey:@"fullscreen"] boolValue])
 	{
 		NSSize screenSize = [[gui_unifiedWindow screen] frame].size;
