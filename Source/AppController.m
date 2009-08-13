@@ -1632,7 +1632,8 @@
 			[[NSFileManager defaultManager] removeFileAtPath:[inst filename] handler:nil];
 		}
 		
-		[gui_serverList deselectAll:self];
+		if ([inst isEqualTo:[self selectedServer]])
+			[gui_serverList deselectAll:self];
 	}
 	else
 	{
@@ -1656,7 +1657,7 @@
 		[self autosizeUnifiedWindowWithAnimation:NO];
 		[self endFullscreen:self];
 	}
-	else if (displayMode == CRDDisplayUnified)
+	else if (displayMode == CRDDisplayUnified && ![inst isEqualTo:[self selectedServer]])
 	{
 		[self autosizeUnifiedWindowWithAnimation:!_appIsTerminating];
 		
