@@ -44,5 +44,6 @@
 - (IBAction)addNewScreenResolution:(id)sender;
 
 - (IBAction)addNewForwardedPath:(id)sender;
+- (IBAction)addPathPanelOpen:(id)sender;
 
 @end

@@ -193,11 +193,53 @@
 		}
 	
 	if (foundExistingEmptyRow)
+	{	
 		[forwardedPathsTableView editSelectedRow:[NSNumber numberWithInteger:0]];
+		[self addPathPanelOpen:sender];
+	}
 	else
 	{
 		[forwardedPathsController add:nil];
 		[self performSelector:@selector(addNewForwardedPath:) withObject:nil afterDelay:0.05];
+	}
+}
+
+- (IBAction)addPathPanelOpen:(id)sender
+{
+	NSOpenPanel *folderPanel = [NSOpenPanel openPanel];
+	
+	[folderPanel setPrompt: NSLocalizedString(@"Select", "Preferences -> New Forwarded Path Panel Prompt")];
+	[folderPanel setAllowsMultipleSelection: NO];
+	[folderPanel setCanChooseFiles: NO];
+	[folderPanel setCanChooseDirectories: YES];
+	[folderPanel setCanCreateDirectories: YES];
+	
+	[folderPanel beginSheetForDirectory:nil 
+								   file:nil 
+								  types:nil
+						 modalForWindow:preferencesWindow 
+						  modalDelegate:self 
+						 didEndSelector:@selector(addPathPanelClosed: returnCode: contextInfo:) 
+							contextInfo: nil];
+}
+
+- (void)addPathPanelClosed:(NSOpenPanel *)openPanel returnCode:(int)code contextInfo:(void *)info
+{
+	NSString *path = @"~/";
+	if (code == NSOKButton)
+	{		
+		path = [[openPanel filenames] objectAtIndex: 0];
+		[[forwardedPathsController selection] setValue:[path stringByExpandingTildeInPath] forKey:@"path"];
+
+		if (![[forwardedPathsController selection] valueForKey:@"label"])
+		{
+			if ([[path lastPathComponent] length] > 7)
+				[[forwardedPathsController selection] setValue:[[path lastPathComponent] substringToIndex:7] forKey:@"label"];
+			else if (![path lastPathComponent])
+				[[forwardedPathsController selection] setValue:@"Root" forKey:@"label"];
+		}
+			
+		
 	}
 }
 
