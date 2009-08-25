@@ -315,6 +315,9 @@
 		{	
 			for (NSDictionary *pair in [[NSUserDefaults standardUserDefaults] arrayForKey:@"CRDForwardedPaths"])
 			{
+				if (![[pair objectForKey:@"enabled"] boolValue])
+					continue;
+				
 				if (![[NSFileManager defaultManager] fileExistsAtPath:[[pair objectForKey:@"path"] stringByExpandingTildeInPath]] || ![[pair objectForKey:@"label"] length])
 				{
 					NSLog(@"Empty custom forward label or path, skipping: %@", pair);

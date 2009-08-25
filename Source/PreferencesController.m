@@ -194,7 +194,7 @@
 	
 	if (foundExistingEmptyRow)
 	{	
-		[forwardedPathsTableView editSelectedRow:[NSNumber numberWithInteger:0]];
+		[forwardedPathsTableView editSelectedRow:[NSNumber numberWithInteger:1]];
 		[self addPathPanelOpen:sender];
 	}
 	else

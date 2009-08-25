@@ -1669,6 +1669,12 @@
 		if (![connectedServers count] && ![gui_unifiedWindow isVisible])
 			[gui_unifiedWindow makeKeyAndOrderFront:nil];
 	}
+	
+	if (![inst isEqualTo:[self selectedServer]] || ![gui_unifiedWindow isKeyWindow])
+	{
+		[NSApp requestUserAttention:NSInformationalRequest];
+	}
+	
 }
 
 - (void)cancelConnectingInstance:(CRDSession *)inst
