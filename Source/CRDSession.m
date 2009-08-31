@@ -249,6 +249,7 @@
 	
 	free(conn);
 	conn = malloc(sizeof(RDConnection));
+	memset(conn, 0, sizeof(RDConnection));
 	CRDFillDefaultConnection(conn);
 	conn->controller = self;
 	
