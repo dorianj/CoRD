@@ -140,12 +140,17 @@
 	
 	NSDisableScreenUpdates();
 	
-	if ([_items count] > 1)
-		[self selectNextItem:self];
-	else
-	{
-		[[self.selectedItem tabItemView] removeFromSuperviewWithoutNeedingDisplay];
-		_selectedItem = nil;
+	if (item == [self selectedItem]) {
+		if ([_items count] > 1)
+		{
+			// TODO: resizing not implemented (if screen res differs)
+			[self selectNextItem:self];
+		}
+		else
+		{
+			[[self.selectedItem tabItemView] removeFromSuperviewWithoutNeedingDisplay];
+			_selectedItem = nil;
+		}
 	}
 	
 	@synchronized(_items)
