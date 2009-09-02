@@ -1657,7 +1657,7 @@
 		[self autosizeUnifiedWindowWithAnimation:NO];
 		[self endFullscreen:self];
 	}
-	else if (displayMode == CRDDisplayUnified && ![inst isEqualTo:[self selectedServer]])
+	else if (displayMode == CRDDisplayUnified)
 	{
 		[self autosizeUnifiedWindowWithAnimation:!_appIsTerminating];
 		
