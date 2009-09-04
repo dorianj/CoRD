@@ -29,7 +29,14 @@
 {
 	if ( ([ev type] == NSKeyDown) && [[self menu] performKeyEquivalent:ev])
 		return;
+
+	if ( ([ev type] == NSKeyDown) && ( [[ev charactersIgnoringModifiers] isEqualToString:@"`"] ) )
+	{
+		[super sendEvent:ev];
+		return;
+	}
 		
+	
 	NSResponder *forwardEventTo = ([[self delegate] application:self shouldForwardEvent:ev]);
 	
 	if ( (forwardEventTo != nil) && [forwardEventTo tryToPerform:[CRDApplication selectorForEvent:ev] with:ev])
