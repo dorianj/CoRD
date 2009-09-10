@@ -42,6 +42,7 @@
 
 - (id)initWithFrame:(NSRect)frame
 {
+    drawnRect = FALSE;
 	NSOpenGLPixelFormatAttribute pixelAttribs[4] = {NSOpenGLPFADoubleBuffer, NSOpenGLPFAColorSize, 24, 0};
 	NSOpenGLPixelFormat *pf = [[[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttribs] autorelease];
 	
@@ -140,7 +141,7 @@
 - (void)drawRect:(NSRect)rect
 {
 	[self generateTexture];
-	
+
 	glClear(GL_COLOR_BUFFER_BIT);
 	GLfloat textureWidth = rdBufferWidth;
 	GLfloat textureHeight = rdBufferHeight; 
@@ -167,6 +168,7 @@
 	} glEnd();   
 
 	[[self openGLContext] flushBuffer];
+    drawnRect = TRUE;
 }
 
 
@@ -595,13 +597,17 @@
 
 - (void)destroyBackingStore
 {
-	glDeleteTextures(1, &rdBufferTexture);
-	CGContextRelease(rdBufferContext);
+    if(drawnRect)
+    {
+        glDeleteTextures(1, &rdBufferTexture);
+	}
+    CGContextRelease(rdBufferContext);
 	free(rdBufferBitmapData);
 	
 	rdBufferBitmapData = NULL;
 	rdBufferContext = NULL;
 	rdBufferTexture = rdBufferBitmapLength = rdBufferWidth = rdBufferHeight = 0;
+    drawnRect = FALSE;
 }
 
 - (void)generateTexture

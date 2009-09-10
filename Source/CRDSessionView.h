@@ -43,7 +43,8 @@
 	CRDKeyboard *keyTranslator;
 	unsigned int *colorMap;	// always a size of 256
 	NSSize screenSize;
-		
+	BOOL drawnRect;
+	
 	// For mouse event throttling
 	NSDate *lastMouseEventSentAt;
 	NSEvent *deferredMouseEvent;
