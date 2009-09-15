@@ -314,7 +314,7 @@ static NSDictionary *windowsKeymapTable = nil;
 		NSString *keymapName = [[keymapIdentifier componentsSeparatedByString:@"."] objectAtIndex:3];
 				
 		for (NSString *potentialKeymapName in windowsKeymapTable)
-			if ([[[keymapName lowercaseString] commonPrefixWithString:[potentialKeymapName lowercaseString] options:NSLiteralSearch] length] >= 4)
+			if ([[keymapName commonPrefixWithString:potentialKeymapName options:NSCaseInsensitiveSearch] length] >= 4)
 			{ 
 				windowsKeymap = [windowsKeymapTable objectForKey:potentialKeymapName];
 				DEBUG_KEYBOARD( (@"windowsKeymapForMacKeymap: substituting keymap '%@' for passed '%@', giving Windows keymap 0x%x", potentialKeymapName, keymapIdentifier, [windowsKeymap intValue]));
