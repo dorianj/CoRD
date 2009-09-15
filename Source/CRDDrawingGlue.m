@@ -157,7 +157,9 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 	LOCALS_FROM_CONN;
 	
 	unsigned char *screenDumpBytes = malloc(w*h*4);
-	CGContextRef screenDumpContext = CGBitmapContextCreate(screenDumpBytes, w, h, 8, w*4, CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB), kCGImageAlphaPremultipliedFirst); 
+	CGColorSpaceRef genericColorSpace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	CGContextRef screenDumpContext = CGBitmapContextCreate(screenDumpBytes, w, h, 8, w*4, genericColorSpace, kCGImageAlphaPremultipliedFirst); 
+	CGColorSpaceRelease(genericColorSpace);
 	
 	CGContextSaveGState(screenDumpContext); {
 		CGImageRef backingStoreImage = CGBitmapContextCreateImage([v rdBufferContext]);

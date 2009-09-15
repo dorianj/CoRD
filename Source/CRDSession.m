@@ -499,8 +499,11 @@
 		return;
 	
 	NSString *pasteContent = CRDConvertLineEndings([pb stringForType:NSStringPboardType], YES);
-	NSMutableData *unicodePasteContent = [NSMutableData dataWithData:(NSData *)CFStringCreateExternalRepresentation(NULL, (CFStringRef)pasteContent, kCFStringEncodingUTF16LE, 0x20 /* unicode space */)];
-		
+	
+	CFDataRef pasteContentAsData = CFStringCreateExternalRepresentation(NULL, (CFStringRef)pasteContent, kCFStringEncodingUTF16LE, 0x20 /* unicode space */);
+	NSMutableData *unicodePasteContent = [NSMutableData dataWithData:(NSData *)pasteContentAsData];
+	CFRelease(pasteContentAsData);
+	
 	if (![unicodePasteContent length])
 		return;
 

@@ -100,16 +100,16 @@ printer_close(RDConnectionRef conn, NTHandle handle)
 	PMSessionDefaultPageFormat(currentSession, pageFormat);
 	
 	CFURLRef filePath = CFURLCreateFromFileSystemRepresentation(NULL, (void *)device->local_path, strlen(device->local_path), false);
+	CFStringRef mimeType = CFStringCreateWithCString(NULL, "application/postscript", kCFStringEncodingASCII);
+	OSStatus err =  PMPrinterPrintWithFile(printerInfo->printer, printSettings, pageFormat, mimeType, filePath);
 	
-	OSStatus err =  PMPrinterPrintWithFile(printerInfo->printer, printSettings, pageFormat, CFStringCreateWithCString(NULL, "application/postscript", kCFStringEncodingASCII), filePath);
-
 	NSLog(@"printer_close err=%d", err);
 
 	PMRelease(currentSession);
 	PMRelease(printSettings);
 	PMRelease(pageFormat);
 	CFRelease(filePath);
-	
+	CFRelease(mimeType);
 	// Delete the temp file
 	remove(device->local_path);
 	
