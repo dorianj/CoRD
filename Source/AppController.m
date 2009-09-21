@@ -104,6 +104,8 @@
 {
 	g_appController = self;
 
+	[self checkOnDiskPath];
+
 	displayMode = CRDDisplayUnified;
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
@@ -209,6 +211,52 @@
     if ([[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] != nil)
         [self parseCommandLine];
 }
+		
+- (void)checkOnDiskPath
+{
+	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ignoreLocationCheck"])
+		return;
+	
+	if ( [[[NSBundle mainBundle] bundlePath] isLike:@"/Applications/*"] )
+		return;
+
+	NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD is not currently located in your Applications folder!", @"CoRD Disk Location Alert -> Title")
+									 defaultButton:NSLocalizedString(@"Copy", @"CoRD Disk Location Alert -> Copy")
+								   alternateButton:NSLocalizedString(@"Ignore", @"CoRD Disk Location Alert -> Ignore")
+									   otherButton:NSLocalizedString(@"Ignore Forever", @"CoRD Disk Location Alert -> Ignore Forever")
+						 informativeTextWithFormat:NSLocalizedString(@"It appears you're using CoRD outside of your Applications folder.  Would you like to move it there?", @"CoRD Disk Location Alert -> infoText")];
+
+	[alert setAlertStyle:NSInformationalAlertStyle];
+	
+	NSInteger alertReturn = [alert runModal];
+	
+	if (alertReturn == NSAlertAlternateReturn)
+		return;
+	
+	if (alertReturn == NSAlertOtherReturn) {
+		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ignoreLocationCheck"];
+		return;
+	}
+	
+	if (alertReturn == NSAlertDefaultReturn) {
+		NSError *error = nil;
+		
+		[[NSFileManager defaultManager] copyItemAtPath:[[NSBundle mainBundle] bundlePath] toPath:@"/Applications/CoRD.app" error:&error];
+
+		if (error != nil)
+			NSLog(@"%@",error);
+
+		NSArray *shArgs = [NSArray arrayWithObjects:@"-c",
+						   @"sleep 3 && open /Applications/CoRD.app",
+						   nil];
+		
+		NSTask *restartTask = [NSTask launchedTaskWithLaunchPath:@"/bin/sh" arguments:shArgs];
+		[restartTask waitUntilExit];
+
+		[[NSApplication sharedApplication] terminate:self];
+	}
+}
+		
 
 - (void)parseCommandLine
 {
@@ -1231,7 +1279,7 @@
 	[self storeSavedServerPositions];
 	
 	for (CRDSession *inst in savedServers)
-		[inst flushChangesToFile];
+		[inst flushChangesToFile];	
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
