@@ -214,11 +214,17 @@
 		
 - (void)checkOnDiskPath
 {
+	NSFileManager *fm = [NSFileManager defaultManager];
+	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+	
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ignoreLocationCheck"])
 		return;
 	
+	if (![fm isWritableFileAtPath:bundlePath])
+		return;
+	
 	for (NSString *e in NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSAllDomainsMask, YES))
-		if ([[[NSBundle mainBundle] bundlePath] hasPrefix:e])
+		if ([bundlePath hasPrefix:e])
 			return;
 	
 	NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD is not currently located in your Applications folder!", @"CoRD Disk Location Alert -> Title")
@@ -242,7 +248,7 @@
 	if (alertReturn == NSAlertDefaultReturn) {
 		NSError *error = nil;
 		
-		[[NSFileManager defaultManager] copyItemAtPath:[[NSBundle mainBundle] bundlePath] toPath:@"/Applications/CoRD.app" error:&error];
+		[fm copyItemAtPath:bundlePath toPath:@"/Applications/CoRD.app" error:&error];
 
 		if (error != nil)
 			NSLog(@"%@",error);
