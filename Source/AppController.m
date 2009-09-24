@@ -217,9 +217,10 @@
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ignoreLocationCheck"])
 		return;
 	
-	if ( [[[NSBundle mainBundle] bundlePath] isLike:@"/Applications/*"] )
-		return;
-
+	for (NSString *e in NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSAllDomainsMask, YES))
+		if ([[[NSBundle mainBundle] bundlePath] hasPrefix:e])
+			return;
+	
 	NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD is not currently located in your Applications folder!", @"CoRD Disk Location Alert -> Title")
 									 defaultButton:NSLocalizedString(@"Copy", @"CoRD Disk Location Alert -> Copy")
 								   alternateButton:NSLocalizedString(@"Ignore", @"CoRD Disk Location Alert -> Ignore")
