@@ -230,18 +230,19 @@
 	NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD is not currently located in your Applications folder!", @"CoRD Disk Location Alert -> Title")
 									 defaultButton:NSLocalizedString(@"Copy", @"CoRD Disk Location Alert -> Copy")
 								   alternateButton:NSLocalizedString(@"Ignore", @"CoRD Disk Location Alert -> Ignore")
-									   otherButton:NSLocalizedString(@"Ignore Forever", @"CoRD Disk Location Alert -> Ignore Forever")
+									   otherButton:nil
 						 informativeTextWithFormat:NSLocalizedString(@"It appears you're using CoRD outside of your Applications folder.  Would you like to move it there?", @"CoRD Disk Location Alert -> infoText")];
 
 	[alert setAlertStyle:NSInformationalAlertStyle];
+	[alert setShowsSuppressionButton:YES];
+	[[[alert suppressionButton] cell] setControlSize:NSSmallControlSize];
+	[[[alert suppressionButton] cell] setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
 	
 	NSInteger alertReturn = [alert runModal];
-	
-	if (alertReturn == NSAlertAlternateReturn)
-		return;
-	
-	if (alertReturn == NSAlertOtherReturn) {
-		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ignoreLocationCheck"];
+
+	if (alertReturn == NSAlertAlternateReturn) {
+		if ([[alert suppressionButton] state] == NSOnState)
+			[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ignoreLocationCheck"];
 		return;
 	}
 	
