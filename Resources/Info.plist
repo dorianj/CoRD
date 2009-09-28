@@ -9,6 +9,26 @@
 		<dict>
 			<key>CFBundleTypeExtensions</key>
 			<array>
+				<string>msrcincident</string>
+			</array>
+			<key>LSIsAppleDefaultForType</key>
+			<true/>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>msrcincident</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>RDP Document File</string>
+			<key>CFBundleTypeName</key>
+			<string>MS RC Incident File</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
 				<string>rdp</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>

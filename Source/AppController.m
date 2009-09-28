@@ -656,7 +656,7 @@
 {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
 	[panel setAllowsMultipleSelection:YES];
-	[panel runModalForTypes:[NSArray arrayWithObject:@"rdp"]];
+	[panel runModalForTypes:[NSArray arrayWithObjects:@"rdp",@"msrcincident",nil]];
 	NSArray *filenames = [panel filenames];
 	
 	if ([filenames count] <= 0)
@@ -1235,15 +1235,20 @@
 {
 	for ( id file in filenames )
 	{
-		CRDSession *inst = [[CRDSession alloc] initWithPath:file];
-		
-		if (inst != nil)
-		{
-			[inst setTemporary:YES];
-			[connectedServers addObject:inst];
-			[gui_serverList deselectAll:self];
-			[self listUpdated];
-			[self connectInstance:inst];	
+		if ([[[file pathExtension] lowercaseString] isEqualTo:@"rdp"]) {
+			CRDSession *inst = [[CRDSession alloc] initWithPath:file];
+			
+			if (inst != nil)
+			{
+				[inst setTemporary:YES];
+				[connectedServers addObject:inst];
+				[gui_serverList deselectAll:self];
+				[self listUpdated];
+				[self connectInstance:inst];	
+			}
+		}
+		else if ([[[file pathExtension] lowercaseString] isEqualTo:@"msrcincident"]) {
+			[[NSAlert alertWithMessageText:@"Coming Soon!" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Support for MS Incident files coming soon!"] runModal];
 		}
 	}
 }
