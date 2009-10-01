@@ -1069,14 +1069,11 @@
 		
 		NSString *searchCompareString = [NSString stringWithFormat:@"*%@*", [[searchString strip] lowercaseString]];
 		
-		for (CRDSession *inst in [savedServers arrayByAddingObjectsFromArray:connectedServers])
+		for (CRDSession *inst in [connectedServers arrayByAddingObjectsFromArray:savedServers])
 		{
 			if ([[inst.label lowercaseString] isLike:searchCompareString] || [[inst.hostName lowercaseString] isLike:searchCompareString])
 				[filteredServers addObject:inst];
 		}
-		
-		if (sender != nil)
-			[self listUpdated];
 	}
 	
 	if (sender == gui_searchField)
@@ -1084,9 +1081,10 @@
 		[self listUpdated];
 				
 		if ([filteredServers count])
+		{
 			[gui_serverList selectRow:1];
-		
-		[self updateInspectorToMatchSelectedServer];
+			[self updateInspectorToMatchSelectedServer];
+		}
 	}
 }
 
