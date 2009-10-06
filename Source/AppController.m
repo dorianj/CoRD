@@ -111,56 +111,6 @@
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
 	windowCascadePoint = CRDWindowCascadeStart;
 	
-	
-	// Create the toolbar 
-	NSToolbarItem *quickConnectItem = [[[NSToolbarItem alloc] initWithItemIdentifier:TOOLBAR_QUICKCONNECT] autorelease];
-	[quickConnectItem setView:gui_quickConnect];
-	NSSize qcSize = [gui_quickConnect frame].size;
-	[quickConnectItem setMinSize:NSMakeSize(160.0, qcSize.height)];
-	[quickConnectItem setMaxSize:NSMakeSize(160.0, qcSize.height)];
-	[quickConnectItem setPaletteLabel:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label")];
-	[quickConnectItem setValue:NSLocalizedString(@"Quick Connect", @"Quick Connect toolbar item -> label") forKey:@"label"];
-	[quickConnectItem setToolTip:NSLocalizedString(@"Quick Connect Tooltip", @"Quick Connect toolbar item -> tooltip")];
-	
-
-	toolbarItems = [[NSMutableDictionary alloc] init];
-	
-	[toolbarItems 
-		setObject:CRDMakeToolbarItem(TOOLBAR_DRAWER, 
-			NSLocalizedString(@"Servers", @"Hide/show drawer toolbar item -> label"),
-			NSLocalizedString(@"Toggle Servers Drawer", @"Hide/show drawer toolbar item -> tooltip"),
-			@selector(toggleDrawer:))
-		forKey:TOOLBAR_DRAWER];
-	[toolbarItems 
-		setObject:CRDMakeToolbarItem(TOOLBAR_DISCONNECT,
-			NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> label"), 
-			NSLocalizedString(@"Close selected connection", @"Disconnect toolbar item -> tooltip"),
-			@selector(performStop:))
-		forKey:TOOLBAR_DISCONNECT];	
-	[toolbarItems
-		setObject:CRDMakeToolbarItem(TOOLBAR_FULLSCREEN,
-			NSLocalizedString(@"Full Screen", @"Full Screen toolbar item -> label"),
-			NSLocalizedString(@"Enter fullscreen mode", @"Disconnect toolbar item -> tool tip"),
-			@selector(startFullscreen:))
-		forKey:TOOLBAR_FULLSCREEN];
-	[toolbarItems
-		setObject:CRDMakeToolbarItem(TOOLBAR_UNIFIED,
-			NSLocalizedString(@"Windowed", @"Display Mode toolbar item -> label"),
-			NSLocalizedString(@"Switch between unified and windowed mode", @"Display Mode toolbar item -> tool tip"),
-			@selector(performUnified:))
-		forKey:TOOLBAR_UNIFIED];
-	
-	[toolbarItems setObject:quickConnectItem forKey:TOOLBAR_QUICKCONNECT];
-	
-	gui_toolbar = [[NSToolbar alloc] initWithIdentifier:@"CoRDMainToolbar"];
-	[gui_toolbar setDelegate:self];
-	
-	[gui_toolbar setAllowsUserCustomization:YES];
-	[gui_toolbar setAutosavesConfiguration:YES];
-	
-	[gui_unifiedWindow setToolbar:gui_toolbar];
-
-	
 	// Assure that the app support directory exists
 	NSString *appSupport = [NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0];
 	
@@ -1145,54 +1095,17 @@
 }
 
 #pragma mark -
-#pragma mark Toolbar methods
-
-- (NSToolbarItem *)toolbar:(NSToolbar *)toolbar itemForItemIdentifier:(NSString *)itemIdentifier willBeInsertedIntoToolbar:(BOOL)flag
-{	
-	return [toolbarItems objectForKey:itemIdentifier];
-}
-
-- (NSArray *)toolbarAllowedItemIdentifiers:(NSToolbar*)tb
-{
-		NSMutableArray *extras = [NSArray arrayWithObjects:
-				NSToolbarSeparatorItemIdentifier,
-				NSToolbarSpaceItemIdentifier,
-				NSToolbarFlexibleSpaceItemIdentifier, nil];
-		
-		NSArray *allowedItems = [toolbarItems allKeys];
-			
-		return [extras arrayByAddingObjectsFromArray:allowedItems];
-}
-
-- (NSArray *)toolbarDefaultItemIdentifiers:(NSToolbar*)tb
-{
-	NSMutableArray *defaultUnifiedItems = [NSArray arrayWithObjects:
-				TOOLBAR_DRAWER,
-				NSToolbarSeparatorItemIdentifier,
-				TOOLBAR_QUICKCONNECT,
-				NSToolbarFlexibleSpaceItemIdentifier,
-				TOOLBAR_FULLSCREEN,
-				TOOLBAR_UNIFIED, 
-				NSToolbarFlexibleSpaceItemIdentifier,
-				TOOLBAR_DISCONNECT,
-				nil];
-				
-	if ( displayMode == CRDDisplayWindowed)
-		return defaultUnifiedItems;
-	else
-		return defaultUnifiedItems;
-}
+#pragma mark NSToolbar Delegate methods
 
 -(BOOL)validateToolbarItem:(NSToolbarItem *)toolbarItem
 {
-	NSString *itemId = [toolbarItem itemIdentifier];
-	
+	NSInteger itemTag = [toolbarItem tag];
 	CRDSession *inst = [self selectedServer];
 	CRDSession *viewedInst = [self viewedServer];
 	
-	if ([itemId isEqualToString:TOOLBAR_FULLSCREEN])
+	if (itemTag == 3)
 		return ([connectedServers count] > 0);
-	else if ([itemId isEqualToString:TOOLBAR_UNIFIED] && (displayMode != CRDDisplayFullscreen))
+	else if ((itemTag  == 4) && (displayMode != CRDDisplayFullscreen))
 	{
 		NSString *label = (displayMode == CRDDisplayUnified) ? @"Windowed" : @"Unified";
 		NSString *localizedLabel = (displayMode == CRDDisplayUnified) 
@@ -1202,17 +1115,16 @@
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
 		[toolbarItem setValue:localizedLabel forKey:@"label"];	
 	}
-	else if ([itemId isEqualToString:TOOLBAR_DISCONNECT])
+	else if (itemTag == 5)
 	{
 		NSString *label = ([inst status] == CRDConnectionConnecting) ? @"Stop" : @"Disconnect";
 		NSString *localizedLabel = ([inst status] == CRDConnectionConnecting)
 				? NSLocalizedString(@"Stop", @"Disconnect toolbar item -> Stop label")
 				: NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> Disconnect label");
-				
+		
 		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
 		[toolbarItem setValue:localizedLabel forKey:@"label"];
-		return ([inst status] == CRDConnectionConnecting) || 
-				( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
+		return ([inst status] == CRDConnectionConnecting) || ( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
 	}
 	return YES;
 }

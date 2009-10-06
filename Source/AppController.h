@@ -46,8 +46,8 @@
 	IBOutlet NSWindow *gui_unifiedWindow;
 	IBOutlet NSComboBox *gui_quickConnect;
 	IBOutlet CRDTabView *gui_tabView;
-	NSToolbar *gui_toolbar;
-	NSMutableDictionary *toolbarItems;
+	IBOutlet NSToolbar *gui_toolbar;
+	IBOutlet NSToolbarItem *gui_toolbarServers, *gui_toolbarFullscreen, *gui_toolbarWindowed, *gui_toolbarDisconnect;
     
 	// Other display modes
 	CRDFullScreenWindow *gui_fullScreenWindow;
