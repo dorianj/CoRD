@@ -1117,6 +1117,9 @@
 	}
 	else if (itemTag == 5)
 	{
+		if (![gui_unifiedWindow isKeyWindow])
+			return NO;
+		
 		NSString *label = ([inst status] == CRDConnectionConnecting) ? @"Stop" : @"Disconnect";
 		NSString *localizedLabel = ([inst status] == CRDConnectionConnecting)
 				? NSLocalizedString(@"Stop", @"Disconnect toolbar item -> Stop label")
