@@ -1103,7 +1103,9 @@
 	CRDSession *inst = [self selectedServer];
 	CRDSession *viewedInst = [self viewedServer];
 	
-	if (itemTag == 3)
+	if (itemTag == 1 && (![gui_unifiedWindow isKeyWindow]))
+		return NO;
+	else if (itemTag == 3)
 		return ([connectedServers count] > 0);
 	else if ((itemTag  == 4) && (displayMode != CRDDisplayFullscreen))
 	{
