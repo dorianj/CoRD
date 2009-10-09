@@ -23,8 +23,6 @@
 #import <Cocoa/Cocoa.h>
 #import "rdesktop.h"
 #import "CRDAdditions.h"
-#import "ZNLog.h"
-
 
 @class AppController;
 
