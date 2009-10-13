@@ -9,6 +9,8 @@
 	<key>CRDForwardedPaths</key>
 	<array>
 		<dict>
+			<key>enabled</key>
+			<true/>
 			<key>label</key>
 			<string>Root</string>
 			<key>path</key>
