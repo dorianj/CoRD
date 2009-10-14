@@ -185,9 +185,9 @@
 			return;
 	
 	NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD is not currently located in your Applications folder!", @"CoRD Disk Location Alert -> Title")
-									 defaultButton:NSLocalizedString(@"Copy", @"CoRD Disk Location Alert -> Copy")
+									 defaultButton:NSLocalizedString(@"Move", @"CoRD Disk Location Alert -> Copy")
 								   alternateButton:NSLocalizedString(@"Ignore", @"CoRD Disk Location Alert -> Ignore")
-									   otherButton:userHasApplicationsFolder ? NSLocalizedString(@"Copy to ~/Applications",@"CoRD Disk Location Alert -> Copy to ~/Applications") : nil
+									   otherButton:userHasApplicationsFolder ? NSLocalizedString(@"Move to ~/Applications",@"CoRD Disk Location Alert -> Copy to ~/Applications") : nil
 						 informativeTextWithFormat:NSLocalizedString(@"It appears you're using CoRD outside of your Applications folder.  Would you like to move it there?", @"CoRD Disk Location Alert -> infoText")];
 
 	[alert setAlertStyle:NSInformationalAlertStyle];
