@@ -166,7 +166,14 @@
 {
 	NSFileManager *fm = [NSFileManager defaultManager];
 	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+	NSString *destinationPathLocal = [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSLocalDomainMask, NO) objectAtIndex:0];
+	NSString *destinationPathUser = [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+	BOOL userHasApplicationsFolder = NO;
 	
+	if ([fm isWritableFileAtPath:destinationPathUser]) {
+		userHasApplicationsFolder = YES;
+	}
+		
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ignoreLocationCheck"])
 		return;
 	
@@ -180,7 +187,7 @@
 	NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD is not currently located in your Applications folder!", @"CoRD Disk Location Alert -> Title")
 									 defaultButton:NSLocalizedString(@"Copy", @"CoRD Disk Location Alert -> Copy")
 								   alternateButton:NSLocalizedString(@"Ignore", @"CoRD Disk Location Alert -> Ignore")
-									   otherButton:nil
+									   otherButton:userHasApplicationsFolder ? NSLocalizedString(@"Copy to ~/Applications",@"CoRD Disk Location Alert -> Copy to ~/Applications") : nil
 						 informativeTextWithFormat:NSLocalizedString(@"It appears you're using CoRD outside of your Applications folder.  Would you like to move it there?", @"CoRD Disk Location Alert -> infoText")];
 
 	[alert setAlertStyle:NSInformationalAlertStyle];
@@ -188,30 +195,31 @@
 	[[[alert suppressionButton] cell] setControlSize:NSSmallControlSize];
 	[[[alert suppressionButton] cell] setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
 	
-	NSInteger alertReturn = [alert runModal];
+	NSInteger alertResponse = [alert runModal];
 
-	if (alertReturn == NSAlertAlternateReturn) {
+	if (alertResponse == NSAlertAlternateReturn) {
 		if ([[alert suppressionButton] state] == NSOnState)
 			[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ignoreLocationCheck"];
 		return;
 	}
 	
-	if (alertReturn == NSAlertDefaultReturn) {
-		NSError *error = nil;
-		
-		[fm copyItemAtPath:bundlePath toPath:@"/Applications/CoRD.app" error:&error];
-
-		if (error != nil)
-			NSLog(@"%@",error);
-
-		NSArray *shArgs = [NSArray arrayWithObjects:@"-c",
-						   @"sleep 3 && open /Applications/CoRD.app",
-						   nil];
-		
-		NSTask *restartTask = [NSTask launchedTaskWithLaunchPath:@"/bin/sh" arguments:shArgs];
-		[restartTask waitUntilExit];
-
-		[[NSApplication sharedApplication] terminate:self];
+	if (alertResponse == NSAlertDefaultReturn) {
+		[[NSAlert alertWithMessageText:@"Coming Soon!" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Self Installation isn't quite there yet.  We're working on it!"] runModal];
+//		NSError *error = nil;
+//		
+//		[fm copyItemAtPath:bundlePath toPath:[destinationPathLocal stringByAppendingPathComponent:@"CoRD.app"] error:&error];
+//
+//		if (error != nil)
+//			NSLog(@"%@",error);
+//
+//		NSArray *shArgs = [NSArray arrayWithObjects:@"-c",
+//						   @"sleep 3 && open /Applications/CoRD.app",
+//						   nil];
+//		
+//		NSTask *restartTask = [NSTask launchedTaskWithLaunchPath:@"/bin/sh" arguments:shArgs];
+//		[restartTask waitUntilExit];
+//
+//		[[NSApplication sharedApplication] terminate:self];
 	}
 }
 		
