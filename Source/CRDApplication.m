@@ -30,7 +30,7 @@
 	if ( ([ev type] == NSKeyDown) && [[self menu] performKeyEquivalent:ev])
 		return;
 
-	if ( ([ev type] == NSKeyDown) && ( [[ev charactersIgnoringModifiers] isEqualToString:@"`"] ) )
+	if ( ([ev type] == NSKeyDown) && ( [[ev characters] isEqualToString:@"`"] ) )
 	{
 		[super sendEvent:ev];
 		return;
