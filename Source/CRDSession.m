@@ -316,7 +316,7 @@
 		{	
 			for (NSDictionary *pair in [[NSUserDefaults standardUserDefaults] arrayForKey:@"CRDForwardedPaths"])
 			{
-				if (![[pair objectForKey:@"enabled"] boolValue])
+				if (![pair boolForKey:@"enabled"])
 					continue;
 				
 				if (![[NSFileManager defaultManager] fileExistsAtPath:[[pair objectForKey:@"path"] stringByExpandingTildeInPath]] || ![[pair objectForKey:@"label"] length])
