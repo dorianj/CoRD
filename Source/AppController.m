@@ -57,6 +57,7 @@
 	- (void)storeSavedServerPositions;
 	- (void)validateControls;
 	- (void)loadSavedServers;
+	- (void)parseUrlQueryString:(NSString *)queryString forSession:(CRDSession *)session;
 @end
 
 
@@ -65,7 +66,7 @@
 
 + (void)initialize
 {
-    [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]]];
+	[[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Defaults" ofType:@"plist"]]];
 }
 
 - (id)init
@@ -157,9 +158,9 @@
 	[gui_toolbar validateVisibleItems];
 	[self validateControls];
 	[self listUpdated];
-        
-    if ([[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] != nil)
-        [self parseCommandLine];
+
+	if ([[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] != nil)
+		[self parseCommandLine];
 }
 		
 - (void)checkOnDiskPath
@@ -1775,8 +1776,9 @@
 	if ([url password] != nil)
 		[session setValue:[url password] forKey:@"password"];
 	if ([url path] != nil)
-		[session setValue:[[url path] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]]  forKey:@"domain"];
-	
+		[session setValue:[[url path] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]] forKey:@"domain"];
+	if ([url query] != nil)
+		[self parseUrlQueryString:[url query] forSession:session];
 	
 	[connectedServers addObject:session];
 	[gui_serverList deselectAll:self];
@@ -1983,6 +1985,27 @@
 	}
 }
 
+- (void)parseUrlQueryString:(NSString *)queryString forSession:(CRDSession *)session
+{
+	//NSLog(@"Hostname: %@, Query String: %@", [session hostName], queryString);
+	
+	NSArray *booleanParamters = [NSArray arrayWithObjects:@"consoleSession",@"fullscreen",@"windowDrags",@"drawDesktop",@"windowAnimation",@"themes",@"fontSmoothing",@"savePassword",@"forwardDisks",@"forwardPrinters",nil];
+	NSArray *stringParameters = [NSArray arrayWithObjects:@"screenDepth",@"screenWidth",@"screenHeight",nil];
+	
+	for (id setting in [queryString componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"&:"]]) {
+		//NSLog(@"Setting: %@",setting);
+		
+		NSString *key = [[setting componentsSeparatedByString:@"="] objectAtIndex:0];
+		
+		if ([stringParameters containsObject:key])
+			[session setValue:[[setting componentsSeparatedByString:@"="] objectAtIndex:1] forKey:key];
+		else if ([booleanParamters containsObject:key])
+			[session setValue:[NSNumber numberWithInt:[[[setting componentsSeparatedByString:@"="] objectAtIndex:1] boolValue]] forKey:key];
+		else
+			NSLog(@"Invalid Parameter: %@", setting);
+	}
+}
+
 #pragma mark -
 #pragma mark Managing inspector settings
 
@@ -1993,21 +2016,21 @@
 		return;
 	
 	// Checkboxes
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)     forKey:@"windowDrags"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)         forKey:@"drawDesktop"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)    forKey:@"windowAnimation"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)        forKey:@"themes"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableFontSmoothing) forKey:@"fontSmoothing"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)        forKey:@"savePassword"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)        forKey:@"forwardDisks"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)     forKey:@"forwardPrinters"];
-	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)      forKey:@"consoleSession"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_displayDragging)		forKey:@"windowDrags"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_drawDesktop)			forKey:@"drawDesktop"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableAnimations)		forKey:@"windowAnimation"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableThemes)			forKey:@"themes"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_enableFontSmoothing)	forKey:@"fontSmoothing"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_savePassword)			forKey:@"savePassword"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardDisks)			forKey:@"forwardDisks"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_forwardPrinters)		forKey:@"forwardPrinters"];
+	[inst setValue:BUTTON_STATE_AS_NUMBER(gui_consoleSession)		forKey:@"consoleSession"];
 	
 	// Text fields
-	[inst setValue:[gui_label stringValue]    forKey:@"label"];
-	[inst setValue:[gui_username stringValue] forKey:@"username"];
-	[inst setValue:[gui_domain stringValue]   forKey:@"domain"];	
-	[inst setValue:[gui_password stringValue] forKey:@"password"];
+	[inst setValue:[gui_label stringValue]		forKey:@"label"];
+	[inst setValue:[gui_username stringValue]	forKey:@"username"];
+	[inst setValue:[gui_domain stringValue]		forKey:@"domain"];	
+	[inst setValue:[gui_password stringValue]	forKey:@"password"];
 	
 	// Host
 	NSInteger port;
