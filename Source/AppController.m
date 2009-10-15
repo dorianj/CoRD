@@ -205,7 +205,20 @@
 	}
 	
 	if (alertResponse == NSAlertDefaultReturn) {
+		if ([fm fileExistsAtPath:[destinationPathLocal stringByAppendingPathComponent:@"CoRD.app"]]) {
+			NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD already Installed!", @"CoRD Disk Location Already Installed -> Title")
+											 defaultButton:NSLocalizedString(@"Try Again", @"CoRD Disk Location Already Installed -> Try Again")
+										   alternateButton:NSLocalizedString(@"Cancel", @"CoRD Disk Location Already Installed -> Cancel")
+											   otherButton:NSLocalizedString(@"Show in Finder",@"CoRD Disk Location Already Installed -> Show in Finder")
+								 informativeTextWithFormat:NSLocalizedString(@"There appears to be a copy of CoRD already installed.  Please delete it and Try Again, or Cancel.", @"CoRD Disk Location Alert -> infoText")];
+			
+			[alert setAlertStyle:NSInformationalAlertStyle];
+			
+			NSInteger alreadyInstalledResponse = [alert runModal];
+
+		}
 		[[NSAlert alertWithMessageText:@"Coming Soon!" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Self Installation isn't quite there yet.  We're working on it!"] runModal];
+
 //		NSError *error = nil;
 //		
 //		[fm copyItemAtPath:bundlePath toPath:[destinationPathLocal stringByAppendingPathComponent:@"CoRD.app"] error:&error];
