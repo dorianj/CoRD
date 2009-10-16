@@ -205,7 +205,7 @@
 	}
 	
 	if (alertResponse == NSAlertDefaultReturn) {
-		if ([fm fileExistsAtPath:[destinationPathLocal stringByAppendingPathComponent:@"CoRD.app"]]) {
+		if ([fm fileExistsAtPath:[destinationPathLocal stringByAppendingPathComponent:[bundlePath lastPathComponent]]]) {
 			NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD already Installed!", @"CoRD Disk Location Already Installed -> Title")
 											 defaultButton:NSLocalizedString(@"Try Again", @"CoRD Disk Location Already Installed -> Try Again")
 										   alternateButton:NSLocalizedString(@"Cancel", @"CoRD Disk Location Already Installed -> Cancel")
