@@ -588,7 +588,9 @@
 	rdBufferBitmapLength = rdBufferWidth*rdBufferHeight*4;
 	rdBufferBitmapData = calloc(rdBufferBitmapLength, 1);
 
-	CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	// ::fbu - Gamma Issue on Snow Leopard, see http://www.jizoh.jp/issue/colorissue.html
+	//CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
+	CGColorSpaceRef cs = CGColorSpaceCreateDeviceRGB();
 	
 	rdBufferContext = CGBitmapContextCreate(rdBufferBitmapData, rdBufferWidth, rdBufferHeight, 8, rdBufferWidth*4, cs, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little); 		
 
