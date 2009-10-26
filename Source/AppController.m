@@ -171,19 +171,21 @@
 	NSString *destinationPathUser = [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES) objectAtIndex:0];
 	BOOL userHasApplicationsFolder = NO;
 	
-	if ([fm isWritableFileAtPath:destinationPathUser]) {
-		userHasApplicationsFolder = YES;
-	}
-		
+	for (NSString *e in NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSAllDomainsMask, YES))
+		if ([bundlePath hasPrefix:e])
+			return;
+
 	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ignoreLocationCheck"])
 		return;
 	
 	if (![fm isWritableFileAtPath:bundlePath])
 		return;
 	
-	for (NSString *e in NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSAllDomainsMask, YES))
-		if ([bundlePath hasPrefix:e])
-			return;
+	if ([fm isWritableFileAtPath:destinationPathUser]) {
+		userHasApplicationsFolder = YES;
+	}
+	
+
 	
 	NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD is not currently located in your Applications folder!", @"CoRD Disk Location Alert -> Title")
 									 defaultButton:NSLocalizedString(@"Move", @"CoRD Disk Location Alert -> Move")
@@ -202,6 +204,10 @@
 		if ([[alert suppressionButton] state] == NSOnState)
 			[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ignoreLocationCheck"];
 		return;
+	}
+	
+	if (alertResponse == NSAlertOtherReturn) {
+		
 	}
 	
 	if (alertResponse == NSAlertDefaultReturn) {
