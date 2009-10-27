@@ -649,6 +649,18 @@ rdp_out_pointer_caps(RDStreamRef s)
 	out_uint16_le(s, 20);	/* Cache size */
 }
 
+/* Output new pointer capability set */
+static void
+rdp_out_newpointer_caps(RDStreamRef s)
+{
+	out_uint16_le(s, RDP_CAPSET_POINTER);
+	out_uint16_le(s, RDP_CAPLEN_NEWPOINTER);
+
+	out_uint16_le(s, 1);	/* Colour pointer */
+	out_uint16_le(s, 20);	/* Cache size */
+	out_uint16_le(s, 20);	/* Cache size for new pointers */
+}
+
 /* Output share capability set */
 static void
 rdp_out_share_caps(RDStreamRef s)
@@ -726,12 +738,23 @@ rdp_send_confirm_active(RDConnectionRef conn)
 	uint32 sec_flags = conn->useEncryption ? (RDP5_FLAG | SEC_ENCRYPT) : RDP5_FLAG;
 	uint16 caplen =
 		RDP_CAPLEN_GENERAL + RDP_CAPLEN_BITMAP + RDP_CAPLEN_ORDER +
-		RDP_CAPLEN_BMPCACHE + RDP_CAPLEN_COLCACHE +
+		RDP_CAPLEN_COLCACHE +
 		RDP_CAPLEN_ACTIVATE + RDP_CAPLEN_CONTROL +
-		RDP_CAPLEN_POINTER + RDP_CAPLEN_SHARE +
+		RDP_CAPLEN_SHARE +
 		RDP_CAPLEN_BRUSHCACHE + 0x58 + 0x08 + 0x08 + 0x34 /* unknown caps */  +
 		4 /* w2k fix, why? */ ;
 
+	if (conn->useRdp5)
+	{
+		caplen += RDP_CAPLEN_BMPCACHE2;
+		caplen += RDP_CAPLEN_NEWPOINTER;
+	}
+	else
+	{
+		caplen += RDP_CAPLEN_BMPCACHE;
+		caplen += RDP_CAPLEN_POINTER;
+	}
+	
 	s = sec_init(conn, sec_flags, 6 + 14 + caplen + sizeof(RDP_SOURCE));
 
 	out_uint16_le(s, 2 + 14 + caplen + sizeof(RDP_SOURCE));
@@ -744,24 +767,30 @@ rdp_send_confirm_active(RDConnectionRef conn)
 	out_uint16_le(s, caplen);
 
 	out_uint8p(s, RDP_SOURCE, sizeof(RDP_SOURCE));
-	out_uint16_le(s, 0xd);	/* num_caps */
+	out_uint16_le(s, 0xe);	/* num_caps */
 	out_uint8s(s, 2);	/* pad */
 
 	rdp_out_general_caps(conn, s);
 	rdp_out_bitmap_caps(conn, s);
 	rdp_out_order_caps(conn, s);
-	conn->useRdp5 ? rdp_out_bmpcache2_caps(conn, s) : rdp_out_bmpcache_caps(conn, s);
+	if (conn->useRdp5)
+	{
+		rdp_out_bmpcache2_caps(conn, s);
+		rdp_out_newpointer_caps(s);
+	} else {
+		rdp_out_bmpcache_caps(conn, s);
+		rdp_out_pointer_caps(s);
+	}
 	rdp_out_colcache_caps(s);
 	rdp_out_activate_caps(s);
 	rdp_out_control_caps(s);
-	rdp_out_pointer_caps(s);
 	rdp_out_share_caps(s);
 	rdp_out_brushcache_caps(s);
 
-	rdp_out_unknown_caps(s, 0x0d, 0x58, caps_0x0d);	/* international? */
-	rdp_out_unknown_caps(s, 0x0c, 0x08, caps_0x0c);
-	rdp_out_unknown_caps(s, 0x0e, 0x08, caps_0x0e);
-	rdp_out_unknown_caps(s, 0x10, 0x34, caps_0x10);	/* glyph cache? */
+	rdp_out_unknown_caps(s, 0x0d, 0x58, caps_0x0d);	/* CAPSTYPE_INPUT */
+	rdp_out_unknown_caps(s, 0x0c, 0x08, caps_0x0c); /* CAPSTYPE_SOUND */
+	rdp_out_unknown_caps(s, 0x0e, 0x08, caps_0x0e); /* CAPSTYPE_FONT */
+	rdp_out_unknown_caps(s, 0x10, 0x34, caps_0x10);	/* CAPSTYPE_GLYPHCACHE */
 
 	s_mark_end(s);
 	sec_send(conn, s, sec_flags);
@@ -893,10 +922,11 @@ process_demand_active(RDConnectionRef conn, RDStreamRef s)
 }
 
 /* Process a colour pointer PDU */
-void
-process_colour_pointer_pdu(RDConnectionRef conn, RDStreamRef s)
+static void
+process_colour_pointer_common(RDConnectionRef conn, RDStreamRef s, int bpp)
 {
-	uint16 x, y, width, height, cache_idx, masklen, datalen;
+	uint16 width, height, cache_idx, masklen, datalen;
+	sint16 x, y;
 	uint8 *mask, *data;
 	RDCursorRef cursor;
 
@@ -909,10 +939,36 @@ process_colour_pointer_pdu(RDConnectionRef conn, RDStreamRef s)
 	in_uint16_le(s, datalen);
 	in_uint8p(s, data, datalen);
 	in_uint8p(s, mask, masklen);
-	cursor = ui_create_cursor(conn, x, y, width, height, mask, data);
+	if ((width != 32) || (height != 32))
+	{
+		NSLog(@"process_colour_pointer_common: width %d height %d\n", width, height);
+	}
+	x = MAX(x,0);
+	x = MIN(x, width - 1);
+	y = MAX(y,0);
+	y = MIN(y, height - 1);
+	cursor = ui_create_cursor(conn, x, y, width, height, mask, data, bpp);
 	ui_set_cursor(conn, cursor);
 	cache_put_cursor(conn, cache_idx, cursor);
 }
+
+/* Process a colour pointer PDU */
+void
+process_colour_pointer_pdu(RDConnectionRef conn, RDStreamRef s)
+{
+	process_colour_pointer_common(conn, s, 24);
+}
+
+/* Process a New Pointer PDU - these pointers have variable bit depth */
+void 
+process_new_pointer_pdu(RDConnectionRef conn, RDStreamRef s)
+{
+	int xor_bpp;
+	
+	in_uint16_le(s, xor_bpp);
+	process_colour_pointer_common(conn, s, xor_bpp);
+}
+
 
 /* Process a cached pointer PDU */
 void
@@ -971,6 +1027,10 @@ process_pointer_pdu(RDConnectionRef conn, RDStreamRef s)
 
 		case RDP_POINTER_SYSTEM:
 			process_system_pointer_pdu(conn, s);
+			break;
+			
+		case RDP_POINTER_NEW:
+			process_new_pointer_pdu(conn, s);
 			break;
 
 		default:

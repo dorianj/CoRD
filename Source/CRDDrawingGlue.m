@@ -939,7 +939,7 @@ void ui_reset_clip(RDConnectionRef conn)
 #pragma mark -
 #pragma mark Cursors and Pointers
 
-RDCursorRef ui_create_cursor(RDConnectionRef conn, unsigned int x, unsigned int y, int width, int height, uint8 * andmask, uint8 * xormask)
+RDCursorRef ui_create_cursor(RDConnectionRef conn, signed int x, signed int y, int width, int height, uint8 * andmask, uint8 * xormask, int bpp)
 {
 	return [[CRDBitmap alloc] initWithCursorData:andmask alpha:xormask size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui];
 }
@@ -949,7 +949,7 @@ void ui_set_null_cursor(RDConnectionRef conn)
 	static CRDBitmap *nullCursor = nil;
 
 	if (!nullCursor)
-		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL);
+		nullCursor = ui_create_cursor(conn, 0, 0, 0, 0, NULL, NULL, 0);
 		
 	ui_set_cursor(conn, nullCursor);
 }

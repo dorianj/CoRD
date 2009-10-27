@@ -109,6 +109,9 @@ rdp5_process(RDConnectionRef conn, RDStreamRef s)
 			case 10: /* cached pointer */
 				process_cached_pointer_pdu(conn, ts);
 				break;
+			case 11: /* Win7/Server08R2 pointer */
+				process_new_pointer_pdu(conn, ts);
+				break;
 			default:
 				unimpl("RDP5 opcode %d\n", type);
 		}

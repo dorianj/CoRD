@@ -158,6 +158,7 @@ int rdp_in_unistr(RDStreamRef s, char *string, int uni_len);
 void rdp_send_input(RDConnectionRef conn, uint32 time, uint16 message_type, uint16 device_flags, uint16 param1, uint16 param2);
 void rdp_send_client_window_status(RDConnectionRef conn, int status);
 void process_colour_pointer_pdu(RDConnectionRef conn, RDStreamRef s);
+void process_new_pointer_pdu(RDConnectionRef conn, RDStreamRef s);
 void process_cached_pointer_pdu(RDConnectionRef conn, RDStreamRef s);
 void process_system_pointer_pdu(RDConnectionRef conn, RDStreamRef s);
 void process_bitmap_updates(RDConnectionRef conn, RDStreamRef s);
@@ -256,7 +257,7 @@ void ui_paint_bitmap(RDConnectionRef conn, int x, int y, int cx, int cy, int wid
 void ui_destroy_bitmap(RDBitmapRef bmp);
 RDGlyphRef ui_create_glyph(RDConnectionRef conn, int width, int height, const uint8 * data);
 void ui_destroy_glyph(RDGlyphRef glyph);
-RDCursorRef ui_create_cursor(RDConnectionRef conn, unsigned int x, unsigned int y, int width, int height, uint8 * andmask, uint8 * xormask);
+RDCursorRef ui_create_cursor(RDConnectionRef conn, signed int x, signed int y, int width, int height, uint8 * andmask, uint8 * xormask, int bpp);
 void ui_set_cursor(RDConnectionRef,RDCursorRef cursor);
 void ui_destroy_cursor(RDCursorRef cursor);
 void ui_set_null_cursor(RDConnectionRef conn);
