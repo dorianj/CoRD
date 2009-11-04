@@ -18,6 +18,7 @@
 #import <Carbon/Carbon.h>
 
 #import "AppController.h"
+#import "PFMoveApplication.h"
 #import "CRDSession.h"
 #import "CRDSessionView.h"
 
@@ -105,7 +106,8 @@
 {
 	g_appController = self;
 
-	[self checkOnDiskPath];
+	PFMoveToApplicationsFolderIfNecessary();
+	[gui_unifiedWindow makeKeyAndOrderFront:self];
 
 	displayMode = CRDDisplayUnified;
 	
@@ -161,88 +163,7 @@
 
 	if ([[NSUserDefaults standardUserDefaults] volatileDomainForName:NSArgumentDomain] != nil)
 		[self parseCommandLine];
-}
-		
-- (void)checkOnDiskPath
-{
-	NSFileManager *fm = [NSFileManager defaultManager];
-	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
-	NSString *destinationPathLocal = [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSLocalDomainMask, NO) objectAtIndex:0];
-	NSString *destinationPathUser = [NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-	BOOL userHasApplicationsFolder = NO;
-	
-	for (NSString *e in NSSearchPathForDirectoriesInDomains(NSApplicationDirectory, NSAllDomainsMask, YES))
-		if ([bundlePath hasPrefix:e])
-			return;
-
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:@"ignoreLocationCheck"])
-		return;
-	
-	if (![fm isWritableFileAtPath:bundlePath])
-		return;
-	
-	if ([fm isWritableFileAtPath:destinationPathUser]) {
-		userHasApplicationsFolder = YES;
-	}
-	
-
-	
-	NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD is not currently located in your Applications folder!", @"CoRD Disk Location Alert -> Title")
-									 defaultButton:NSLocalizedString(@"Move", @"CoRD Disk Location Alert -> Move")
-								   alternateButton:NSLocalizedString(@"Ignore", @"CoRD Disk Location Alert -> Ignore")
-									   otherButton:userHasApplicationsFolder ? NSLocalizedString(@"Move to ~/Applications",@"CoRD Disk Location Alert -> Move to ~/Applications") : nil
-						 informativeTextWithFormat:NSLocalizedString(@"It appears you're using CoRD outside of your Applications folder.  Would you like to move it there?", @"CoRD Disk Location Alert -> infoText")];
-
-	[alert setAlertStyle:NSInformationalAlertStyle];
-	[alert setShowsSuppressionButton:YES];
-	[[[alert suppressionButton] cell] setControlSize:NSSmallControlSize];
-	[[[alert suppressionButton] cell] setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
-	
-	NSInteger alertResponse = [alert runModal];
-
-	if (alertResponse == NSAlertAlternateReturn) {
-		if ([[alert suppressionButton] state] == NSOnState)
-			[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ignoreLocationCheck"];
-		return;
-	}
-	
-	if (alertResponse == NSAlertOtherReturn) {
-		
-	}
-	
-	if (alertResponse == NSAlertDefaultReturn) {
-		if ([fm fileExistsAtPath:[destinationPathLocal stringByAppendingPathComponent:[bundlePath lastPathComponent]]]) {
-			NSAlert *alert = [NSAlert alertWithMessageText:NSLocalizedString(@"CoRD already Installed!", @"CoRD Disk Location Already Installed -> Title")
-											 defaultButton:NSLocalizedString(@"Try Again", @"CoRD Disk Location Already Installed -> Try Again")
-										   alternateButton:NSLocalizedString(@"Cancel", @"CoRD Disk Location Already Installed -> Cancel")
-											   otherButton:NSLocalizedString(@"Show in Finder",@"CoRD Disk Location Already Installed -> Show in Finder")
-								 informativeTextWithFormat:NSLocalizedString(@"There appears to be a copy of CoRD already installed.  Please delete it and Try Again, or Cancel.", @"CoRD Disk Location Alert -> infoText")];
-			
-			[alert setAlertStyle:NSInformationalAlertStyle];
-			
-			NSInteger alreadyInstalledResponse = [alert runModal];
-
-		}
-		[[NSAlert alertWithMessageText:@"Coming Soon!" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Self Installation isn't quite there yet.  We're working on it!"] runModal];
-
-//		NSError *error = nil;
-//		
-//		[fm copyItemAtPath:bundlePath toPath:[destinationPathLocal stringByAppendingPathComponent:@"CoRD.app"] error:&error];
-//
-//		if (error != nil)
-//			NSLog(@"%@",error);
-//
-//		NSArray *shArgs = [NSArray arrayWithObjects:@"-c",
-//						   @"sleep 3 && open /Applications/CoRD.app",
-//						   nil];
-//		
-//		NSTask *restartTask = [NSTask launchedTaskWithLaunchPath:@"/bin/sh" arguments:shArgs];
-//		[restartTask waitUntilExit];
-//
-//		[[NSApplication sharedApplication] terminate:self];
-	}
-}
-		
+}		
 
 - (void)parseCommandLine
 {

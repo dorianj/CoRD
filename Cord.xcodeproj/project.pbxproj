@@ -83,6 +83,7 @@
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		99ADBC451024CDAC0025E314 /* ForwardedDisksIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99ADBC441024CDAC0025E314 /* ForwardedDisksIcon.icns */; };
+		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -212,6 +213,8 @@
 		999A01E10FAA1DC300FA512C /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Source/PreferencesController.h; sourceTree = "<group>"; };
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
 		99ADBC441024CDAC0025E314 /* ForwardedDisksIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ForwardedDisksIcon.icns; path = Resources/ForwardedDisksIcon.icns; sourceTree = "<group>"; };
+		99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PFMoveApplication.m; path = Source/LetsMove/PFMoveApplication.m; sourceTree = "<group>"; };
+		99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFMoveApplication.h; path = Source/LetsMove/PFMoveApplication.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -254,6 +257,8 @@
 				9872FD5D0C0902DA00078CB2 /* CRDShared.m */,
 				999A01E10FAA1DC300FA512C /* PreferencesController.h */,
 				999A01E20FAA1DC300FA512C /* PreferencesController.m */,
+				99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */,
+				99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */,
 			);
 			name = CoRD;
 			sourceTree = "<group>";
@@ -584,6 +589,7 @@
 				3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */,
 				3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */,
 				3E4B67921019E3E600D3A911 /* CRDFullScreenWindow.m in Sources */,
+				99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

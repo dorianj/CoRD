@@ -29,7 +29,7 @@
 
 - (id)initWithBitmapData:(const unsigned char *)d size:(NSSize)s view:(CRDSessionView *)v;
 - (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(CRDSessionView *)v;
-- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(CRDSessionView *)v;
+- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(CRDSessionView *)v bpp:(int)bpp;
 
 - (void)drawInRect:(NSRect)dstRect fromRect:(NSRect)srcRect operation:(NSCompositingOperation)op;
 

@@ -941,7 +941,7 @@ void ui_reset_clip(RDConnectionRef conn)
 
 RDCursorRef ui_create_cursor(RDConnectionRef conn, signed int x, signed int y, int width, int height, uint8 * andmask, uint8 * xormask, int bpp)
 {
-	return [[CRDBitmap alloc] initWithCursorData:andmask alpha:xormask size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui];
+	return [[CRDBitmap alloc] initWithCursorData:andmask alpha:xormask size:NSMakeSize(width, height) hotspot:NSMakePoint(x, y) view:conn->ui bpp:bpp];
 }
 
 void ui_set_null_cursor(RDConnectionRef conn)

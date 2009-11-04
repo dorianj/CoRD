@@ -124,7 +124,6 @@
 - (void)parseCommandLine;
 - (void)printUsage;
 - (void)updateInspectorToMatchSelectedServer;
-- (void)checkOnDiskPath;
 
 - (CRDSession *)serverInstanceForRow:(int)row;
 - (CRDSession *)selectedServer;
