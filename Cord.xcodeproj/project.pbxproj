@@ -81,6 +81,7 @@
 		98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 98F2A7C310152DA800E1D5B5 /* CoRD Help */; };
 		991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 991FE8B01024C71D00EC603C /* SystemConfiguration.framework */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
+		9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */ = {isa = PBXBuildFile; fileRef = 9997480C10A3C653000B8061 /* ForwardPrefs.png */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		99ADBC451024CDAC0025E314 /* ForwardedDisksIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99ADBC441024CDAC0025E314 /* ForwardedDisksIcon.icns */; };
 		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
@@ -210,6 +211,7 @@
 		98F2A7C310152DA800E1D5B5 /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
 		991FE8B01024C71D00EC603C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		993AEC350FB136AB0031B013 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		9997480C10A3C653000B8061 /* ForwardPrefs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ForwardPrefs.png; path = Resources/ForwardPrefs.png; sourceTree = "<group>"; };
 		999A01E10FAA1DC300FA512C /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Source/PreferencesController.h; sourceTree = "<group>"; };
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
 		99ADBC441024CDAC0025E314 /* ForwardedDisksIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ForwardedDisksIcon.icns; path = Resources/ForwardedDisksIcon.icns; sourceTree = "<group>"; };
@@ -418,6 +420,7 @@
 		98E70F110D3EC591009731C7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				9997480C10A3C653000B8061 /* ForwardPrefs.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
 				3E713D501080071800FB7F2D /* CRDDisconnect.png */,
@@ -534,6 +537,7 @@
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
 				99ADBC451024CDAC0025E314 /* ForwardedDisksIcon.icns in Resources */,
 				3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */,
+				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
