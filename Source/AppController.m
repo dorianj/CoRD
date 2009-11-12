@@ -105,8 +105,9 @@
 - (void)awakeFromNib
 {
 	g_appController = self;
-
+#ifndef CORD_DEBUG_BUILD
 	PFMoveToApplicationsFolderIfNecessary();
+#endif
 	[gui_unifiedWindow makeKeyAndOrderFront:self];
 
 	displayMode = CRDDisplayUnified;
