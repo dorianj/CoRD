@@ -47,7 +47,7 @@
 	
 	// For mouse event throttling
 	NSDate *lastMouseEventSentAt;
-	NSEvent *deferredMouseEvent;
+	NSValue *deferredMouseMoveLocation;
 	NSTimer *mouseInputScheduler;
 }
 
@@ -78,7 +78,7 @@
 - (int)getBackingStoreBytes:(unsigned char **)retBytes;
 
 
-- (BOOL)checkMouseInBounds:(NSEvent *)ev;
+- (BOOL)checkMouseInBounds:(id)ev;
 - (void)sendMouseInput:(unsigned short)flags;
 
 // Converting colors
@@ -104,5 +104,7 @@
 - (void)setColorMap:(unsigned int *)map;
 - (void)setCursor:(NSCursor *)cur;
 - (CGContextRef)rdBufferContext;
+- (void)setMouseLocationInWindow:(NSPoint)locationInWindow;
+
 
 @end

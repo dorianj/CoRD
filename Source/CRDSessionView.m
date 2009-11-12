@@ -73,7 +73,7 @@
 - (void)dealloc
 {
 	[lastMouseEventSentAt release];
-	[deferredMouseEvent release];
+	[deferredMouseMoveLocation release];
 	[mouseInputScheduler invalidate];
 	[mouseInputScheduler release];
 	
@@ -323,7 +323,8 @@
 	[self mouseMoved:ev];
 }
 
-- (void)mouseMoved:(NSEvent *)ev
+// ev can either be a live NSEvent* or an NSValue* coordinate
+- (void)mouseMoved:(id)ev
 {
 	if (![self checkMouseInBounds:ev])
 		return;
@@ -339,31 +340,38 @@
 
 		if ([[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt] >= (1.0f/CRDMouseEventLimit))
 		{
-			// It's been longer than the threshold, send event immediately
+			// It's been longer than the threshold, send event immediately (this is the route through which deferred events are sent)
 			[lastMouseEventSentAt release];
 			lastMouseEventSentAt = [[NSDate date] retain];
 			[self sendMouseInput:MOUSE_FLAG_MOVE];
 		}
-		else
+		else if ([ev isKindOfClass:[NSEvent class]])
 		{
-			// It's been less than the threshold since the last event, schedule it to be sent later
-			[deferredMouseEvent release];
-			deferredMouseEvent = nil;
-			deferredMouseEvent = [ev copy];
+			// It's been less than the threshold since the last live event, schedule this live event to be sent later
+			[deferredMouseMoveLocation release];
+			deferredMouseMoveLocation = [[NSValue valueWithPoint:[ev locationInWindow]] retain];
 			mouseInputScheduler = [[NSTimer scheduledTimerWithTimeInterval:((1.0/CRDMouseEventLimit)-[[NSDate date] timeIntervalSinceDate:lastMouseEventSentAt]) target:self selector:@selector(recheckScheduledMouseInput:) userInfo:nil repeats:NO] retain];
 		}
 	}
-
 }
 
 
 #pragma mark -
 #pragma mark Translating Input Events
 
-- (BOOL)checkMouseInBounds:(NSEvent *)ev
-{ 
-	mouseLoc = [self convertPoint:[ev locationInWindow] fromView:nil];
+- (BOOL)checkMouseInBounds:(id)loc
+{
+	if ([loc isKindOfClass:[NSEvent class]])
+		[self setMouseLocationInWindow:[loc locationInWindow]];
+	else if ([loc isKindOfClass:[NSValue class]])
+		[self setMouseLocationInWindow:[loc pointValue]];
+		
 	return NSPointInRect(mouseLoc, [self bounds]);
+}
+
+- (void)setMouseLocationInWindow:(NSPoint)locationInWindow
+{
+	mouseLoc = [self convertPoint:locationInWindow fromView:nil];
 }
 
 - (void)sendMouseInput:(unsigned short)flags
@@ -374,19 +382,19 @@
 
 - (void)recheckScheduledMouseInput:(NSTimer*)timer
 {
-	if (!deferredMouseEvent)
+	if (!deferredMouseMoveLocation)
 		return;
 	
-	DEBUG_MOUSE((@"Sending deferred mouse event %@", deferredMouseEvent));
+	DEBUG_MOUSE((@"Sending deferred mouse event %@", deferredMouseMoveLocation));
 	
 	@synchronized(self)
 	{
-		[self mouseMoved:deferredMouseEvent];
+		[self mouseMoved:(id)deferredMouseMoveLocation];
 	
 		if (mouseInputScheduler == nil)
 		{
-			[deferredMouseEvent release];
-			deferredMouseEvent = nil;
+			[deferredMouseMoveLocation release];
+			deferredMouseMoveLocation = nil;
 		}
 	}
 }
