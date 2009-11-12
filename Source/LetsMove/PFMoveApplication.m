@@ -88,6 +88,11 @@ void PFMoveToApplicationsFolderIfNecessary()
 		// Add deny button
 		NSButton *cancelButton = [alert addButtonWithTitle:NSLocalizedStringFromTable(@"Do Not Move", @"MoveApplication", nil)];
 		[cancelButton setKeyEquivalent:@"\e"];
+		
+		// Setup suppression button
+		[alert setShowsSuppressionButton:YES];
+		[[[alert suppressionButton] cell] setControlSize:NSSmallControlSize];
+		[[[alert suppressionButton] cell] setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
 	}
 
 	if ([alert runModal] == NSAlertFirstButtonReturn) {
