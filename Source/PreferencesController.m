@@ -195,6 +195,7 @@
 	if (foundExistingEmptyRow)
 	{	
 		[forwardedPathsTableView editSelectedRow:[NSNumber numberWithInteger:1]];
+		[[[forwardedPathsController selectedObjects] lastObject] setObject:[NSNumber numberWithBool:YES] forKey:@"enabled"];
 		[self addPathPanelOpen:sender];
 	}
 	else
