@@ -72,7 +72,7 @@
 @property (readonly) CRDServerCell *cellRepresentation;
 @property (readonly) volatile CRDConnectionStatus status;
 @property (readonly) NSWindow *window;
-@property (assign) NSInteger hotkey;
+@property (assign) NSInteger hotkey, forwardAudio;
 
 
 
@@ -121,4 +121,6 @@
 - (void)setHostName:(NSString *)newHost;
 - (void)setUsername:(NSString *)s;
 - (void)setPassword:(NSString *)pass;
+- (void)setPort:(int)newPort;
+- (void)setSavePassword:(BOOL)saves;
 @end

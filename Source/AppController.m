@@ -1930,7 +1930,7 @@
 {
 	//NSLog(@"Hostname: %@, Query String: %@", [session hostName], queryString);
 	
-	NSArray *booleanParamters = [NSArray arrayWithObjects:@"consoleSession",@"fullscreen",@"windowDrags",@"drawDesktop",@"windowAnimation",@"themes",@"fontSmoothing",@"savePassword",@"forwardDisks",@"forwardPrinters",nil];
+	NSArray *booleanParamters = [NSArray arrayWithObjects:@"consoleSession",@"fullscreen",@"windowDrags",@"drawDesktop",@"windowAnimation",@"themes",@"fontSmoothing",@"savePassword",@"forwardDisks",@"forwardPrinters", @"fowardAudio",nil];
 	NSArray *stringParameters = [NSArray arrayWithObjects:@"screenDepth",@"screenWidth",@"screenHeight",nil];
 	
 	for (id setting in [queryString componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"&:"]]) {
@@ -1980,7 +1980,7 @@
 	[inst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
 	[inst setValue:s forKey:@"hostName"];
 	
-	//Hotkey
+	// Hotkey
 	NSInteger hotkey;
 	if ( ([gui_hotkey indexOfSelectedItem] > 9) || ([gui_hotkey indexOfSelectedItem] == 0) )
 		hotkey = -1;
@@ -1991,7 +1991,9 @@
 	}
 	[inst setValue:[NSNumber numberWithInteger:hotkey] forKey:@"hotkey"];
 
-	
+	// Audio Forwarding
+	[inst setValue:[NSNumber numberWithInt:[[gui_forwardAudio selectedCell] tag]] forKey:@"forwardAudio"];
+
 	// Screen depth
 	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8] forKey:@"screenDepth"];
 			
@@ -2008,6 +2010,7 @@
 	[inst setValue:[NSNumber numberWithInt:width] forKey:@"screenWidth"];
 	[inst setValue:[NSNumber numberWithInt:height] forKey:@"screenHeight"];
 	
+	[self saveInspectedServer];
 }
 
 // Sets the inspector options to match an CRDSession
@@ -2047,12 +2050,15 @@
 	NSString *host = [newSettings valueForKey:@"hostName"];
 	[gui_host setStringValue:CRDJoinHostNameAndPort(host, port)];
 	
-	//Hotkey
+	// Hotkey
 	int hotkey = [[newSettings valueForKey:@"hotkey"] intValue];
 	if (hotkey > 0 && hotkey <= 9)
 		[gui_hotkey selectItemAtIndex:hotkey];
 	else
 		[gui_hotkey selectItemAtIndex:0];
+	
+	// Audio Forwarding Matrix
+	[gui_forwardAudio selectCellWithTag:[[newSettings valueForKey:@"forwardAudio"] intValue]];
 	
 	// Color depth
 	int colorDepth = [[newSettings valueForKey:@"screenDepth"] intValue];

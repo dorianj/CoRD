@@ -34,6 +34,7 @@
     IBOutlet NSButton *gui_savePassword, *gui_consoleSession, *gui_forwardDisks, *gui_forwardPrinters, *gui_displayDragging, *gui_drawDesktop, *gui_enableAnimations, *gui_enableThemes, *gui_enableFontSmoothing;
     IBOutlet NSPopUpButton *gui_screenResolution, *gui_colorCount, *gui_hotkey;
 	IBOutlet NSBox *gui_performanceOptions;
+	IBOutlet NSMatrix *gui_forwardAudio;
     CRDSession *inspectedServer;
 	
 	// Drawer

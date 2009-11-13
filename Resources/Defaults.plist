@@ -31,6 +31,8 @@
 	<false/>
 	<key>CRDBaseConnectionForwardPrinters</key>
 	<false/>
+	<key>CRDBaseConnectionForwardAudio</key>
+	<integer>2</integer>
 	<key>CRDBaseConnectionDrawDesktop</key>
 	<false/>
 	<key>CRDBaseConnectionWindowDrags</key>

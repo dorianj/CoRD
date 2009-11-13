@@ -49,6 +49,7 @@
 	screenDepth = 16;
 	temporary = themes = YES;
 	hotkey = -1;
+	forwardAudio = CRDDisableAudio;
 	fileEncoding = NSUTF8StringEncoding;
 	
 	// Other initialization
@@ -93,6 +94,7 @@
 	
 	[self setValue:CRDNumberForColorsText([defaults valueForKey:@"CRDBaseConnectionColors"]) forKey:@"screenDepth"];
 	
+	[self setValue:[NSNumber numberWithInt:[[defaults valueForKey:@"CRDBaseConnectionForwardAudio"] intValue]] forKey:@"forwardAudio"];
 	
 	NSString *resolutionString = [defaults valueForKey:@"CRDBaseConnectionScreenSize"];
 	fullscreen = CRDResolutionStringIsFullscreen(resolutionString);
@@ -347,8 +349,9 @@
 	if (forwardPrinters)
 		printer_enum_devices(conn);
 	
-	if (USE_SOUND_FORWARDING)
+	if (forwardAudio == CRDLeaveAudio)
 	{
+		logonFlags |= RDP_LOGON_LEAVE_AUDIO;
 	}
 	
 	
@@ -876,7 +879,7 @@
 #pragma mark -
 #pragma mark Accessors
 
-@synthesize hostName, label, conn, view, temporary, modified, cellRepresentation, status=connectionStatus, window, hotkey;
+@synthesize hostName, label, conn, view, temporary, modified, cellRepresentation, status=connectionStatus, window, hotkey, forwardAudio;
 
 - (NSView *)tabItemView
 {
