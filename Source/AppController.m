@@ -1005,6 +1005,18 @@
 	[[NSWorkspace sharedWorkspace] selectFile:[selectedServer filename] inFileViewerRootedAtPath:nil];
 }
 
+- (IBAction)openServerInTextEditor:(id)sender
+{
+	CRDSession *selectedServer = [self selectedServer];
+	
+	if (selectedServer == nil)
+		return;
+	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
+	NSString *textEditor = (NSString *)LSCopyDefaultRoleHandlerForContentType(CFSTR("public.plain-text"), kLSRolesAll);
+	[ws openFile:[selectedServer filename] withApplication:[[ws absolutePathForAppBundleWithIdentifier:textEditor] lastPathComponent] andDeactivate:YES];
+	
+}
+
 - (IBAction)visitDevelopment:(id)sender
 {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDTracURL]];
