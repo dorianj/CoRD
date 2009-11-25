@@ -1012,7 +1012,7 @@
 	if (selectedServer == nil)
 		return;
 	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
-	NSString *textEditor = (NSString *)LSCopyDefaultRoleHandlerForContentType(CFSTR("public.plain-text"), kLSRolesAll);
+	NSString *textEditor = (NSString *)LSCopyDefaultRoleHandlerForContentType(kUTTypePlainText, kLSRolesAll);
 	[ws openFile:[selectedServer filename] withApplication:[[ws absolutePathForAppBundleWithIdentifier:textEditor] lastPathComponent] andDeactivate:YES];
 	
 }
