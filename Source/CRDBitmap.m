@@ -186,7 +186,7 @@
 	p = a;
 	end = a + ((int)s.width * (int)s.height * 3);
 	np = (uint8 *)[data bytes];
-	int i = 0, alpha;
+	int i = 0, alpha, total=0;
 	while (p < end)
 	{
 		np[0] = p[0];
@@ -194,6 +194,7 @@
 		np[2] = p[2];
 		
 		alpha = d[i / 8] & (0x80 >> (i % 8));
+		total += alpha;
 		if (alpha && (np[0] || np[1] || np[2]))
 		{
 			np[0] = np[1] = np[2] = 0;
@@ -226,7 +227,26 @@
 	[image addRepresentation:bitmap];
 	[image setFlipped:YES];
 	
-	cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
+// DIRTY HACK TO IMPLEMENT A LOCAL CURSOR WHILE WE FIX THE CURRENT ISSUES:
+	if (total == 32640 || total == 26557) {
+		cursor = [[NSCursor IBeamCursor] retain];
+		//NSLog(@"%i - Ibeam cursor", total);
+	} else if (total == 28575) {
+		cursor = [[NSCursor resizeLeftRightCursor] retain];
+		//NSLog(@"%i - Resize Horiz Cursor", total);
+	} else if (total == 27875) {
+		cursor = [[NSCursor resizeUpDownCursor] retain];
+		//NSLog(@"%i - Resize Vert Cursor", total);
+	} else if (total == 29943) {
+		cursor = [[NSCursor openHandCursor] retain];
+		//NSLog(@"%i - Resize both Cursor",total);
+	} else {
+		cursor = [[NSCursor arrowCursor] retain];
+		//NSLog(@"%i - Arrow cursor",total);
+	}
+
+//	Uncomment once the Math is fixed!
+//	cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
 	
 	return self;
 }
