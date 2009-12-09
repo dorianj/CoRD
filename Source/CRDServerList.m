@@ -231,6 +231,7 @@
 		switch ([str characterAtIndex:0])
 		{
 			case NSDeleteFunctionKey:
+			case NSBackspaceCharacter:
 			case NSDeleteCharacter: /* backward delete */
 				[g_appController removeSelectedSavedServer:self];
 				return;
