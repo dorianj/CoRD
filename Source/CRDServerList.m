@@ -231,13 +231,13 @@
 		switch ([str characterAtIndex:0])
 		{
 			case NSDeleteFunctionKey:
-			case 0x007f: /* backward delete */
+			case NSDeleteCharacter: /* backward delete */
 				[g_appController removeSelectedSavedServer:self];
 				return;
 				break;
 			
-			case 0x0003: // return
-			case 0x000d: // numpad enter
+			case NSEnterCharacter: // return
+			case NSCarriageReturnCharacter: // numpad enter
 				[g_appController connect:self];
 				return;
 				break;
