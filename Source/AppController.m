@@ -283,6 +283,10 @@
         return (inst != nil) && [inst status] == CRDConnectionClosed;
     else if (action == @selector(disconnect:))
 		return (inst != nil) && [inst status] != CRDConnectionClosed;
+	else if (action == @selector(showServerInFinder:))
+		return (inst != nil);
+	else if (action == @selector(openServerInTextEditor:))
+		return (inst != nil);
 	else if (action == @selector(selectNext:))
 		return [gui_tabView numberOfItems] > 1;
 	else if (action == @selector(selectPrevious:))
