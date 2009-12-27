@@ -1758,9 +1758,9 @@
 	if ([url port] != nil)
 		[session setValue:[url port] forKey:@"port"];
 	if ([url user] != nil)
-		[session setValue:[url user] forKey:@"username"];
+		[session setValue:[[url user] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] forKey:@"username"];
 	if ([url password] != nil)
-		[session setValue:[url password] forKey:@"password"];
+		[session setValue:[[url password] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] forKey:@"password"];
 	if ([url path] != nil)
 		[session setValue:[[url path] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"/"]] forKey:@"domain"];
 	if ([url query] != nil)
