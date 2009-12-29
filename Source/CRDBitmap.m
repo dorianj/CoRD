@@ -167,12 +167,10 @@
 {	
 	if (![super init])
 		return nil;
-	
-	NSLog(@"bpp: %d; w: %d/h: %d", bpp, (int)s.width, (int)s.height);
-	
+
 	int w = roundf(s.width), h = roundf(s.height);
 	
-	if (w == 0 || h == 0)
+	if (!w || !h)
 	{
 		image = [[NSImage alloc] initWithSize:NSMakeSize(1,1)];		
 		cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
@@ -180,71 +178,56 @@
 	}
 
 	int andScanlineLength = CRDRoundUpToEven(s.width/8.0f), xorScanlineLength = CRDRoundUpToEven(s.width * bpp / 8.0f);
-	const uint8 *p = xorMask;
-	
-	NSLog(@"andScanlineLength = %d; xorScanlineLength = %d", andScanlineLength, xorScanlineLength);
-	[[NSData dataWithBytes:andMask length:andScanlineLength*h] writeToFile:@"/users/dorian/desktop/alpha.bin" atomically:YES]; 
-	
+	const uint8 *d = xorMask, *a = andMask;
+		
 	data = [[NSMutableData alloc] initWithCapacity:(int)s.width * (int)s.height * 4];
 	uint8 *np = (uint8 *)[data bytes];
 	
-	int isTrans, alphaIndex, xorIndex, x;
+	int alphaBit, alphaIndex, x;
 	
 	for (int i = 0; i < h; i++)
 	{
-		alphaIndex = andScanlineLength * i;
-		xorIndex = xorScanlineLength * i;
+		a = andMask + andScanlineLength * i;
+		d = xorMask + xorScanlineLength * i;
 		
 		for (int j = 0; j < w; j++)
 		{
-			isTrans = andMask[alphaIndex + j/8] & (0x80 >> (j % 8));
+			alphaBit = a[j/8] & (0x80 >> (j % 8));
 			
 			switch (bpp)
 			{
 				case 1:
-					x = (xorMask[xorIndex + j/8] & (0x80 >> (j % 8))) ^ isTrans;
-					np[0] = np[1] = np[2] = x ? 0xff : 0;
-					
-					if (!x && isTrans)
-						isTrans = 0;
-						
+					x = (d[j/8] & (0x80 >> (j % 8))) ^ alphaBit;
+					np[0] = np[1] = np[2] = x ? 0xff : 0;					
+					np[3] = (alphaBit && x) ? 0 : 0xff;
+					break;
+	
+				case 24:
+				case 32:
+					np[0] = d[2];
+					np[1] = d[1];
+					np[2] = d[0];
+					np[3] = d[3];			
+					d += bpp / 8;
 					break;
 				
+				// Some potential cursor bpp's that don't seem to be used by RDP
 				case 4:
 				case 8:
 				case 15:
 				case 16:
-				case 24:
-					unimpl("%dbpp cursor", bpp);
-					break;
-
-				
-				case 32:
-					
-					
-					p += bpp/8;
-					break;
-				
-				
-				
 				default:
 					unimpl("%d bpp cursor", bpp);
 					np[0] = np[1] = np[2] = 0;
+					np[3] = 0xff;
 					break;
 			}
 
-			np[3] = isTrans ? 0 : 0xff;
-
-			// display alpha in cursor
-			//np[0] = np[1] = np[2] = (andMask[alphaIndex + j/8] & (0x80 >> (j % 8))) ? 0 : 0xff;
-							
 			np += 4;
 		}
 	}
-
 	
 	unsigned char *planes[2] = {(unsigned char *)[data bytes], NULL};
-	
 	NSBitmapImageRep *bitmap = [[[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
 													 pixelsWide:s.width
 													 pixelsHigh:s.height
@@ -258,31 +241,11 @@
 	
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
-	//[image setFlipped:YES];
 	
-	[[image TIFFRepresentation] writeToFile:@"/users/dorian/desktop/bah.tiff" atomically:YES];
-
-/* DIRTY (but still pretty cool) HACK TO IMPLEMENT A LOCAL CURSOR WHILE WE FIX THE CURRENT ISSUES:
-	if (total == 32640 || total == 26557) {
-		cursor = [[NSCursor IBeamCursor] retain];
-		//NSLog(@"%i - Ibeam cursor", total);
-	} else if (total == 28575) {
-		cursor = [[NSCursor resizeLeftRightCursor] retain];
-		//NSLog(@"%i - Resize Horiz Cursor", total);
-	} else if (total == 27875) {
-		cursor = [[NSCursor resizeUpDownCursor] retain];
-		//NSLog(@"%i - Resize Vert Cursor", total);
-	} else if (total == 29943) {
-		cursor = [[NSCursor openHandCursor] retain];
-		//NSLog(@"%i - Resize both Cursor",total);
-	} else {
-		cursor = [[NSCursor arrowCursor] retain];
-		//NSLog(@"%i - Arrow cursor",total);
-	}
-
-//	Uncomment once the Math is fixed!*/
+	if (bpp == 32 || bpp == 24)
+		[image setFlipped:YES];
+		
 	cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
-	
 	return self;
 }
 
