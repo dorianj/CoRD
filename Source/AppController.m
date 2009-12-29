@@ -1456,6 +1456,11 @@
 	return [[self serverInstanceForRow:row] cellRepresentation];
 }
 
+- (NSString *)tableView:(NSTableView *)tableView typeSelectStringForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
+{
+	return [[self serverInstanceForRow:row] label];
+}
+
 #pragma mark Other table view related
 - (void)cellNeedsDisplay:(NSCell *)cell
 {
