@@ -66,6 +66,8 @@ BOOL CRDResolutionStringIsFullscreen(NSString *screenResolution);
 void CRDSplitResolutionString(NSString *resolution, NSInteger *width, NSInteger *height);
 NSNumber *CRDNumberForColorsText(NSString * colorsText);
 
+unsigned int CRDRoundUpToEven(float n);
+
 BOOL CRDDrawerIsVisible(NSDrawer *drawer);
 
 NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);

@@ -163,13 +163,14 @@
 }
 
 // Not a performance critical region at all
-- (id)initWithCursorData:(const unsigned char *)d alpha:(const unsigned char *)a size:(NSSize)s hotspot:(NSPoint)hotspot view:(CRDSessionView *)v bpp:(int)bpp
+- (id)initWithCursorData:(const unsigned char *)xorMask alpha:(const unsigned char *)andMask size:(NSSize)s hotspot:(NSPoint)hotspot view:(CRDSessionView *)v bpp:(int)bpp
 {	
 	if (![super init])
 		return nil;
-
 	
-	int w = s.width, h = s.height;
+	NSLog(@"bpp: %d; w: %d/h: %d", bpp, (int)s.width, (int)s.height);
+	
+	int w = roundf(s.width), h = roundf(s.height);
 	
 	if (w == 0 || h == 0)
 	{
@@ -178,37 +179,69 @@
 		return self;
 	}
 
-	int scanline = (int)s.width + 7 / 8;
-	uint8 *np;
-	const uint8 *p, *end;
+	int andScanlineLength = CRDRoundUpToEven(s.width/8.0f), xorScanlineLength = CRDRoundUpToEven(s.width * bpp / 8.0f);
+	const uint8 *p = xorMask;
+	
+	NSLog(@"andScanlineLength = %d; xorScanlineLength = %d", andScanlineLength, xorScanlineLength);
+	[[NSData dataWithBytes:andMask length:andScanlineLength*h] writeToFile:@"/users/dorian/desktop/alpha.bin" atomically:YES]; 
 	
 	data = [[NSMutableData alloc] initWithCapacity:(int)s.width * (int)s.height * 4];
-	p = a;
-	end = a + ((int)s.width * (int)s.height * 3);
-	np = (uint8 *)[data bytes];
-	int i = 0, alpha, total=0;
-	while (p < end)
+	uint8 *np = (uint8 *)[data bytes];
+	
+	int isTrans, alphaIndex, xorIndex, x;
+	
+	for (int i = 0; i < h; i++)
 	{
-		np[0] = p[0];
-		np[1] = p[1];
-		np[2] = p[2];
+		alphaIndex = andScanlineLength * i;
+		xorIndex = xorScanlineLength * i;
 		
-		alpha = d[i / 8] & (0x80 >> (i % 8));
-		total += alpha;
-		if (alpha && (np[0] || np[1] || np[2]))
+		for (int j = 0; j < w; j++)
 		{
-			np[0] = np[1] = np[2] = 0;
-			np[3] = 0xff;
+			isTrans = andMask[alphaIndex + j/8] & (0x80 >> (j % 8));
+			
+			switch (bpp)
+			{
+				case 1:
+					x = (xorMask[xorIndex + j/8] & (0x80 >> (j % 8))) ^ isTrans;
+					np[0] = np[1] = np[2] = x ? 0xff : 0;
+					
+					if (!x && isTrans)
+						isTrans = 0;
+						
+					break;
+				
+				case 4:
+				case 8:
+				case 15:
+				case 16:
+				case 24:
+					unimpl("%dbpp cursor", bpp);
+					break;
+
+				
+				case 32:
+					
+					
+					p += bpp/8;
+					break;
+				
+				
+				
+				default:
+					unimpl("%d bpp cursor", bpp);
+					np[0] = np[1] = np[2] = 0;
+					break;
+			}
+
+			np[3] = isTrans ? 0 : 0xff;
+
+			// display alpha in cursor
+			//np[0] = np[1] = np[2] = (andMask[alphaIndex + j/8] & (0x80 >> (j % 8))) ? 0 : 0xff;
+							
+			np += 4;
 		}
-		else
-		{
-			np[3] = alpha ? 0 : 0xff;
-		}
-		
-		i++;
-		p += 3;
-		np += 4;
 	}
+
 	
 	unsigned char *planes[2] = {(unsigned char *)[data bytes], NULL};
 	
@@ -220,14 +253,16 @@
 													   hasAlpha:YES
 													   isPlanar:NO
 												 colorSpaceName:NSDeviceRGBColorSpace
-													bytesPerRow:scanline * 4
+													bytesPerRow:w * 4
 												   bitsPerPixel:0] autorelease];	
 	
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
-	[image setFlipped:YES];
+	//[image setFlipped:YES];
 	
-// DIRTY HACK TO IMPLEMENT A LOCAL CURSOR WHILE WE FIX THE CURRENT ISSUES:
+	[[image TIFFRepresentation] writeToFile:@"/users/dorian/desktop/bah.tiff" atomically:YES];
+
+/* DIRTY (but still pretty cool) HACK TO IMPLEMENT A LOCAL CURSOR WHILE WE FIX THE CURRENT ISSUES:
 	if (total == 32640 || total == 26557) {
 		cursor = [[NSCursor IBeamCursor] retain];
 		//NSLog(@"%i - Ibeam cursor", total);
@@ -245,8 +280,8 @@
 		//NSLog(@"%i - Arrow cursor",total);
 	}
 
-//	Uncomment once the Math is fixed!
-//	cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
+//	Uncomment once the Math is fixed!*/
+	cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
 	
 	return self;
 }

@@ -109,34 +109,6 @@
 	PFMoveToApplicationsFolderIfNecessary();
 #endif
 	
-// prompt about cursor issues
-// remove once they're solved
-	NSAlert *alert = [[[NSAlert alloc] init] autorelease];
-	{
-
-		[alert setMessageText:@"Cursor Issues in Nightlies"];
-		
-		[alert setInformativeText:@"We are aware of issues with the Cursor in the nightly builds. Ticket #62 in our Trac system has more information. \n\nhttp://sourceforge.net/apps/trac/cord/ticket/62\n\nPlease comment there rather than creating duplicate bugs."];
-		
-		// Add accept button
-		[alert addButtonWithTitle:@"OK"];
-		[alert addButtonWithTitle:@"See Bug #62"];
-		
-		// Setup suppression button
-		[alert setShowsSuppressionButton:YES];
-		[[[alert suppressionButton] cell] setControlSize:NSSmallControlSize];
-		[[[alert suppressionButton] cell] setFont:[NSFont systemFontOfSize:[NSFont smallSystemFontSize]]];
-	}
-	if (![[NSUserDefaults standardUserDefaults] boolForKey:@"ignoreNightlyBuildCursorWarning"])
-		if ([alert runModal] == NSAlertSecondButtonReturn)
-			[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@ticket/62", CRDTracURL]]];
-	
-	
-	
-	if ([[alert suppressionButton] state] == NSOnState) {
-		[[NSUserDefaults standardUserDefaults] setBool:YES forKey:@"ignoreNightlyBuildCursorWarning"];
-	}
-// end prompt	
 	[gui_unifiedWindow makeKeyAndOrderFront:self];
 
 	displayMode = CRDDisplayUnified;

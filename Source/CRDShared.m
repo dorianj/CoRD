@@ -162,7 +162,11 @@ NSNumber * CRDNumberForColorsText(NSString *colorsText)
 	return [NSNumber numberWithInt:16];
 }
 
-
+inline unsigned int CRDRoundUpToEven(float n)
+{
+	unsigned int i = n + 0.5;
+	return i % 2 ? i + 1 : i;
+}
 
 NSString * CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn)
 {
