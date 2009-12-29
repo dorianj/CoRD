@@ -178,12 +178,12 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	float textY = frame.origin.y + ((frame.size.height-textHeight) / 4.0);  // center vertically
 	float textWidth = frame.size.width - (textX - frame.origin.x) - PADDING_LEFT;
 	
-	[label drawWithRect:NSMakeRect(textX, textY, textWidth, 0.0) options:NSStringDrawingUsesLineFragmentOrigin];
+	[label drawWithRect:NSMakeRect(textX, textY, textWidth, FLT_MAX) options:NSStringDrawingUsesLineFragmentOrigin];
 	
 	if (!abbreviatedSize)
 	{
-		[user drawWithRect:NSMakeRect(textX, textY += [label size].height + PADDING_TEXT, textWidth, 0.0) options:NSStringDrawingUsesLineFragmentOrigin];
-		[host drawWithRect:NSMakeRect(textX, textY + [user size].height + PADDING_TEXT, textWidth, 0.0) options:NSStringDrawingUsesLineFragmentOrigin];
+		[user drawWithRect:NSMakeRect(textX, textY += [label size].height + PADDING_TEXT, textWidth, FLT_MAX) options:NSStringDrawingUsesLineFragmentOrigin];
+		[host drawWithRect:NSMakeRect(textX, textY + [user size].height + PADDING_TEXT, textWidth, FLT_MAX) options:NSStringDrawingUsesLineFragmentOrigin];
 	}
 }
 
