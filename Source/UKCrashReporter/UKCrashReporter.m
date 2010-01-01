@@ -32,8 +32,7 @@ NSString*	UKCrashReporterFindTenFiveCrashReportPath( NSString* appName, NSString
 //		for the developer and *mustn't* interfere with regular operation of the
 //		application.
 // -----------------------------------------------------------------------------
-
-void	UKCrashReporterCheckForCrash()
+void	UKCrashReporterCheckForCrash(void)
 {
 	NSAutoreleasePool*	pool = [[NSAutoreleasePool alloc] init];
 	
@@ -171,14 +170,11 @@ NSString*	gCrashLogString = nil;
 -(void)	awakeFromNib
 {
 	// Insert the app name into the explanation message:
-	NSString*			appName = [[NSFileManager defaultManager] displayNameAtPath: [[NSBundle mainBundle] bundlePath]];
+	NSString*			appName = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleName"];
 	NSMutableString*	expl = nil;
-	if( gCrashLogString )
-		expl = [[[explanationField stringValue] mutableCopy] autorelease];
-	else
-		expl = [[NSLocalizedStringFromTable(@"FEEDBACK_EXPLANATION_TEXT",@"UKCrashReporter",@"") mutableCopy] autorelease];
-	[expl replaceOccurrencesOfString: @"%%APPNAME" withString: appName
-				options: 0 range: NSMakeRange(0, [expl length])];
+
+	expl = [[[explanationField stringValue] mutableCopy] autorelease];
+	[expl replaceOccurrencesOfString: @"%%APPNAME" withString: appName options: 0 range: NSMakeRange(0, [expl length])];
 	[explanationField setStringValue: expl];
 	
 	// Insert user name and e-mail address into the information field:

@@ -573,7 +573,7 @@
 }
 
 - (IBAction)toggleDrawer:(id)sender
-{
+{	
 	[self toggleDrawer:sender visible:!CRDDrawerIsVisible(gui_serversDrawer)];
 	[gui_toolbar validateVisibleItems];
 }
@@ -1026,11 +1026,11 @@
 
 - (IBAction)visitDevelopment:(id)sender
 {
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDTracURL]];
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDTracURL]];
 }
 - (IBAction)reportABug:(id)sender
 {
-    [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDBugReportURL()]];
+	[[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:CRDBugReportURL()]];
 }
 - (IBAction)visitHomepage:(id)sender
 {
