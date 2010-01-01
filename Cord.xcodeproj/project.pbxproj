@@ -79,6 +79,11 @@
 		98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */; };
 		98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 98F2A7C310152DA800E1D5B5 /* CoRD Help */; };
+		98FF000110EEA9F7005510EB /* UKCrashReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 98FFFFFC10EEA9F7005510EB /* UKCrashReporter.m */; };
+		98FF000210EEA9F7005510EB /* UKNibOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 98FFFFFE10EEA9F7005510EB /* UKNibOwner.m */; };
+		98FF000310EEA9F7005510EB /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 98FF000010EEA9F7005510EB /* UKSystemInfo.m */; };
+		98FFFFBF10EEA890005510EB /* UKCrashReporter.nib in Resources */ = {isa = PBXBuildFile; fileRef = 98FFFFBD10EEA890005510EB /* UKCrashReporter.nib */; };
+		98FFFFC010EEA890005510EB /* UKCrashReporter.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98FFFFBE10EEA890005510EB /* UKCrashReporter.strings */; };
 		991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 991FE8B01024C71D00EC603C /* SystemConfiguration.framework */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */ = {isa = PBXBuildFile; fileRef = 9997480C10A3C653000B8061 /* ForwardPrefs.png */; };
@@ -209,6 +214,14 @@
 		98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDScreenResFormatter.m; path = Source/CRDScreenResFormatter.m; sourceTree = "<group>"; };
 		98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDScreenResFormatter.h; path = Source/CRDScreenResFormatter.h; sourceTree = "<group>"; };
 		98F2A7C310152DA800E1D5B5 /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
+		98FF000010EEA9F7005510EB /* UKSystemInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKSystemInfo.m; sourceTree = "<group>"; };
+		98FFFFBD10EEA890005510EB /* UKCrashReporter.nib */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = UKCrashReporter.nib; path = Resources/UKCrashReporter.nib; sourceTree = "<group>"; };
+		98FFFFBE10EEA890005510EB /* UKCrashReporter.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = UKCrashReporter.strings; path = Resources/UKCrashReporter.strings; sourceTree = "<group>"; };
+		98FFFFFB10EEA9F7005510EB /* UKCrashReporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKCrashReporter.h; sourceTree = "<group>"; };
+		98FFFFFC10EEA9F7005510EB /* UKCrashReporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKCrashReporter.m; sourceTree = "<group>"; };
+		98FFFFFD10EEA9F7005510EB /* UKNibOwner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKNibOwner.h; sourceTree = "<group>"; };
+		98FFFFFE10EEA9F7005510EB /* UKNibOwner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKNibOwner.m; sourceTree = "<group>"; };
+		98FFFFFF10EEA9F7005510EB /* UKSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKSystemInfo.h; sourceTree = "<group>"; };
 		991FE8B01024C71D00EC603C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		993AEC350FB136AB0031B013 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		9997480C10A3C653000B8061 /* ForwardPrefs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ForwardPrefs.png; path = Resources/ForwardPrefs.png; sourceTree = "<group>"; };
@@ -261,6 +274,7 @@
 				999A01E20FAA1DC300FA512C /* PreferencesController.m */,
 				99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */,
 				99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */,
+				98FFFFFA10EEA9F7005510EB /* UKCrashReporter */,
 			);
 			name = CoRD;
 			sourceTree = "<group>";
@@ -321,15 +335,17 @@
 			children = (
 				98E70F110D3EC591009731C7 /* Images */,
 				98F2A7C310152DA800E1D5B5 /* CoRD Help */,
+				98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */,
 				98520EEB0BFEB77700DD732F /* Defaults.plist */,
 				986A8BF9100EAE54006AFE36 /* dsa_pub.pem */,
-				98E972E30BD9DA9F0041110D /* InfoPlist.strings */,
-				993AEC340FB136AB0031B013 /* MainMenu.xib */,
 				98E972C60BD9DA820041110D /* Info.plist */,
+				98E972E30BD9DA9F0041110D /* InfoPlist.strings */,
 				98E972C70BD9DA820041110D /* keymap.txt */,
-				98E972CE0BD9DA820041110D /* windows_keymap_table.txt */,
 				9860D7100BFFA565007FA463 /* Localizable.strings */,
-				98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */,
+				993AEC340FB136AB0031B013 /* MainMenu.xib */,
+				98FFFFBD10EEA890005510EB /* UKCrashReporter.nib */,
+				98FFFFBE10EEA890005510EB /* UKCrashReporter.strings */,
+				98E972CE0BD9DA820041110D /* windows_keymap_table.txt */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -462,6 +478,20 @@
 			name = Formatters;
 			sourceTree = "<group>";
 		};
+		98FFFFFA10EEA9F7005510EB /* UKCrashReporter */ = {
+			isa = PBXGroup;
+			children = (
+				98FFFFFB10EEA9F7005510EB /* UKCrashReporter.h */,
+				98FFFFFC10EEA9F7005510EB /* UKCrashReporter.m */,
+				98FFFFFD10EEA9F7005510EB /* UKNibOwner.h */,
+				98FFFFFE10EEA9F7005510EB /* UKNibOwner.m */,
+				98FFFFFF10EEA9F7005510EB /* UKSystemInfo.h */,
+				98FF000010EEA9F7005510EB /* UKSystemInfo.m */,
+			);
+			name = UKCrashReporter;
+			path = Source/UKCrashReporter;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -538,6 +568,8 @@
 				99ADBC451024CDAC0025E314 /* ForwardedDisksIcon.icns in Resources */,
 				3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */,
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
+				98FFFFBF10EEA890005510EB /* UKCrashReporter.nib in Resources */,
+				98FFFFC010EEA890005510EB /* UKCrashReporter.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -594,6 +626,9 @@
 				3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */,
 				3E4B67921019E3E600D3A911 /* CRDFullScreenWindow.m in Sources */,
 				99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */,
+				98FF000110EEA9F7005510EB /* UKCrashReporter.m in Sources */,
+				98FF000210EEA9F7005510EB /* UKNibOwner.m in Sources */,
+				98FF000310EEA9F7005510EB /* UKSystemInfo.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

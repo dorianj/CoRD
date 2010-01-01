@@ -28,6 +28,8 @@
 #import "CRDShared.h"
 #import "CRDLabelCell.h"
 
+#import "UKCrashReporter.h"
+
 #define TOOLBAR_DISCONNECT	@"Disconnect"
 #define TOOLBAR_DRAWER @"Servers"
 #define TOOLBAR_FULLSCREEN @"Fullscreen"
@@ -1189,6 +1191,8 @@
 		[gui_serversDrawer openOnEdge:[userDefaults integerForKey:CRDDefaultsUnifiedDrawerSide]];
 	
 	[self validateControls];
+	
+	UKCrashReporterCheckForCrash();
 }
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)hasVisibleWindows
