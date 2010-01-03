@@ -491,7 +491,7 @@ rdp_out_general_caps(RDConnectionRef conn, RDStreamRef s)
 	out_uint16_le(s, 3);	/* OS minor type */
 	out_uint16_le(s, 0x200);	/* Protocol version */
 	out_uint16(s, 0);	/* Pad */
-	out_uint16(s, conn->useRdp5 ? RDP_LOGON_COMPRESSION2 : RDP_LOGON_COMPRESSION);	/* Compression types */
+	out_uint16(s, RDP_MPPC_COMPRESSED);	/* Compression types */
 	out_uint16_le(s, conn->useRdp5 ? 0x40d : 0);
 	/* Pad, according to T.128. 0x40d seems to 
 	   trigger

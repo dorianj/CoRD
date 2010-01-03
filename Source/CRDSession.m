@@ -296,6 +296,8 @@
 	if (consoleSession)
 		logonFlags |= RDP_LOGON_LEAVE_AUDIO;
 	
+	logonFlags |= conn->useRdp5 ? RDP_LOGON_COMPRESSION2 : RDP_LOGON_COMPRESSION;
+	
 	// Other various settings
 	conn->serverBpp = (screenDepth==8 || screenDepth==16 || screenDepth==24) ? screenDepth : 16;
 	conn->consoleSession = consoleSession;
