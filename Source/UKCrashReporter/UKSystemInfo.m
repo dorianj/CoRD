@@ -11,7 +11,7 @@
 #include <sys/types.h>
 #include <sys/sysctl.h>
 
-unsigned	UKPhysicalRAMSize()
+unsigned	UKPhysicalRAMSize(void)
 {
 	long		ramSize;
 	
@@ -22,7 +22,7 @@ unsigned	UKPhysicalRAMSize()
 }
 
 
-NSString*	UKSystemVersionString()
+NSString*	UKSystemVersionString(void)
 {
 	long		vMajor = 10, vMinor = 0, vBugfix = 0;
 	UKGetSystemVersionComponents( &vMajor, &vMinor, &vBugfix );
@@ -49,7 +49,7 @@ void	UKGetSystemVersionComponents( long* outMajor, long* outMinor, long* outBugf
 }
 
 
-long	UKSystemVersion()
+long	UKSystemVersion(void)
 {
 	long		sysVersion;
 	
@@ -60,7 +60,7 @@ long	UKSystemVersion()
 }
 
 
-unsigned	UKClockSpeed()
+unsigned	UKClockSpeed(void)
 {
 	long		speed;
 	
@@ -71,7 +71,7 @@ unsigned	UKClockSpeed()
 }
 
 
-unsigned	UKCountCores()
+unsigned	UKCountCores(void)
 {
 	unsigned	count = 0;
 	size_t		size = sizeof(count);
@@ -83,7 +83,7 @@ unsigned	UKCountCores()
 }
 
 
-NSString*	UKMachineName()
+NSString*	UKMachineName(void)
 {
 	static NSString*	cpuName = nil;
 	if( cpuName )
@@ -93,7 +93,8 @@ NSString*	UKMachineName()
 	
 	if( Gestalt( gestaltUserVisibleMachineName, (long*) &machineName ) == noErr )
 	{
-		NSString*	internalName = [NSString stringWithCString: machineName +1 length: machineName[0]];
+//		NSString*	internalName = [NSString stringWithCString: machineName +1 length: machineName[0]];
+		NSString *internalName = [NSString stringWithCString:machineName +1 encoding:NSUTF8StringEncoding];
 		
 		NSDictionary* translationDictionary = [[NSDictionary alloc] initWithObjectsAndKeys:
 					@"PowerMac 8500/8600",@"AAPL,8500",
@@ -174,10 +175,8 @@ NSString*	UKMachineName()
 		//	Keys should be sorted to distinguish 'generic' from 'specific' names.
 		//	So we can overwrite generic names with the more specific ones as we
 		//	progress through the list.
-		NSEnumerator	*e=[[[translationDictionary allKeys]
-									sortedArrayUsingSelector:@selector(compare:)]
-									objectEnumerator];
-		while( aKey = [e nextObject] )
+		
+		for (aKey in [[translationDictionary allKeys] sortedArrayUsingSelector:@selector(compare:)])
 		{
 			r = [internalName rangeOfString: aKey];
 			if( r.location != NSNotFound )
@@ -204,7 +203,7 @@ NSString*	UKMachineName()
 }
 
 
-NSString*	UKCPUName()
+NSString*	UKCPUName(void)
 {
 	return UKAutoreleasedCPUName( NO );
 }
