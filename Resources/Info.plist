@@ -90,9 +90,5 @@
 	<string>http://cord.sourceforge.net/sparkle.xml</string>
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
-	<key>SmartCrashReports_CompanyName</key>
-	<string>CoRD Project</string>
-	<key>SmartCrashReports_EmailTicket</key>
-	<string>SCR-0E940983EA</string>
 </dict>
 </plist>
