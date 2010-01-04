@@ -207,6 +207,12 @@
 
 - (IBAction)addPathPanelOpen:(id)sender
 {
+	if (sender != self)
+	{
+		[self performSelector:@selector(addPathPanelOpen:) withObject:self afterDelay:0.05];
+		return;
+	}
+
 	NSOpenPanel *folderPanel = [NSOpenPanel openPanel];
 	
 	[folderPanel setPrompt: NSLocalizedString(@"Select", "Preferences -> New Forwarded Path Panel Prompt")];
@@ -214,8 +220,8 @@
 	[folderPanel setCanChooseFiles: NO];
 	[folderPanel setCanChooseDirectories: YES];
 	[folderPanel setCanCreateDirectories: YES];
-	
-	[folderPanel beginSheetForDirectory:nil 
+
+	[folderPanel beginSheetForDirectory:[[[[forwardedPathsController selectedObjects] lastObject] valueForKey:@"path"] stringByExpandingTildeInPath] 
 								   file:nil 
 								  types:nil
 						 modalForWindow:preferencesWindow 
