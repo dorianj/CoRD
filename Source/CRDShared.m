@@ -416,3 +416,28 @@ inline NSString *CRDBugReportURL(void)
 {
 	return [NSString stringWithFormat:@"%@newticket?type=defect&version=%@&keywords=MenuBarSubmission,%@", CRDTracURL, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];	
 }
+
+
+void CRDLog(NSString *message, CRDLogLevel logLevel)
+{
+	CRDLogLevel userLogLevel = [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] intValue];
+	
+	if (!userLogLevel)
+		return;
+
+	NSString *logFilePath = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"Logs/CoRD.log"];
+	
+	if (![[NSFileManager defaultManager] fileExistsAtPath:logFilePath])
+		if (![[NSFileManager defaultManager] createFileAtPath:logFilePath contents:nil attributes:nil])
+			  NSLog(@"Log File Doesn't Exist, and I couldn't create one. %@", logFilePath);
+
+	if (logLevel <= userLogLevel) {
+		NSDate *rightNow = [NSDate date];
+		NSFileHandle *logFileHandle = [NSFileHandle fileHandleForUpdatingAtPath:logFilePath];
+		[logFileHandle seekToEndOfFile];
+		NSString *formattedMessage = [NSString stringWithFormat:@"%@ %@\n", [rightNow description], message];
+		[logFileHandle writeData:[formattedMessage dataUsingEncoding:NSASCIIStringEncoding]];
+		[logFileHandle closeFile];
+	}
+}
+

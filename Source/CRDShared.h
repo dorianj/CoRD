@@ -51,6 +51,14 @@ typedef struct _CRDInputEvent
 	unsigned short type, deviceFlags, param1, param2;
 } CRDInputEvent;
 
+typedef enum _CRDLogLevel
+{
+	CRDLogLevelOff = 0,
+	CRDLogLevelInfo = 1,
+	CRDLogLevelWarn = 2,
+	CRDLogLevelError = 3,
+	CRDLogLevelDebug = 4
+} CRDLogLevel;
 
 #pragma mark -
 #pragma mark Shared routines
@@ -98,6 +106,7 @@ void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
 void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
 NSString *CRDBugReportURL(void);
+void CRDLog(NSString *message, CRDLogLevel logLevel);
 
 
 

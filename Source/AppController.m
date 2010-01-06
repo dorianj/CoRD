@@ -86,7 +86,7 @@
 	filteredServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
 	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
 	savedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
-
+	
 	return self;
 }
 - (void) dealloc
@@ -2376,6 +2376,8 @@
 	{
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
+			CRDLog([NSString stringWithFormat:@"Loading Server: %@",filename], CRDLogLevelDebug);
+
 			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
 			if (savedSession != nil)
 				[self addSavedServer:savedSession];
