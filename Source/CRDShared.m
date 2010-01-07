@@ -418,7 +418,7 @@ inline NSString *CRDBugReportURL(void)
 }
 
 
-void CRDLog(NSString *message, CRDLogLevel logLevel)
+void CRDLog(CRDLogLevel logLevel, NSString *message)
 {
 	CRDLogLevel userLogLevel = [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] intValue];
 	
@@ -432,10 +432,11 @@ void CRDLog(NSString *message, CRDLogLevel logLevel)
 			  NSLog(@"Log File Doesn't Exist, and I couldn't create one. %@", logFilePath);
 
 	if (logLevel <= userLogLevel) {
-		NSDate *rightNow = [NSDate date];
+
+		NSString *formattedMessage = [NSString stringWithFormat:@"%@ %@\n", [[NSDate date] descriptionWithCalendarFormat:@"%Y-%m-%d %H:%M:%S%z" timeZone:nil locale:nil], message];
 		NSFileHandle *logFileHandle = [NSFileHandle fileHandleForUpdatingAtPath:logFilePath];
+
 		[logFileHandle seekToEndOfFile];
-		NSString *formattedMessage = [NSString stringWithFormat:@"%@ %@\n", [rightNow description], message];
 		[logFileHandle writeData:[formattedMessage dataUsingEncoding:NSASCIIStringEncoding]];
 		[logFileHandle closeFile];
 	}

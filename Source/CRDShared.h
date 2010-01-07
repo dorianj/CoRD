@@ -106,7 +106,7 @@ void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
 void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
 NSString *CRDBugReportURL(void);
-void CRDLog(NSString *message, CRDLogLevel logLevel);
+void CRDLog(CRDLogLevel logLevel, NSString *message);
 
 
 
