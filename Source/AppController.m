@@ -2376,7 +2376,7 @@
 	{
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
-			CRDLog([NSString stringWithFormat:@"Loading Server: %@",filename], CRDLogLevelDebug);
+			CRDLog(CRDLogLevelDebug, [NSString stringWithFormat:@"Loading Server: %@",filename]);
 
 			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
 			if (savedSession != nil)
