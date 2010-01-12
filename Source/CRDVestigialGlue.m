@@ -333,7 +333,7 @@ unsigned int read_keyboard_state()
 
 unsigned short ui_get_numlock_state(unsigned int state)
 {
-	return 0;
+	return KBD_FLAG_NUMLOCK;
 }
 
 
