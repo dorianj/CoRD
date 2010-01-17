@@ -1016,7 +1016,7 @@
 	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
 	NSString *textEditor = (NSString *)LSCopyDefaultRoleHandlerForContentType(kUTTypePlainText, kLSRolesAll);
 	[ws openFile:[selectedServer filename] withApplication:[[ws absolutePathForAppBundleWithIdentifier:textEditor] lastPathComponent] andDeactivate:YES];
-	
+	[textEditor autorelease];
 }
 
 - (IBAction)visitDevelopment:(id)sender
