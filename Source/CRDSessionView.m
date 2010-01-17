@@ -31,6 +31,8 @@
 	- (void)generateTexture;
 	- (void)createBackingStore:(NSSize)s;
 	- (void)destroyBackingStore;
+	- (void)setScreenSizeByValue:(NSValue*)newSize;
+
 @end
 
 #pragma mark -
@@ -72,10 +74,10 @@
 
 - (void)dealloc
 {
-	[lastMouseEventSentAt release];
-	[deferredMouseMoveLocation release];
 	[mouseInputScheduler invalidate];
 	[mouseInputScheduler release];
+	[lastMouseEventSentAt release];
+	[deferredMouseMoveLocation release];
 	
 	[keyTranslator release];
 	[cursor release];
@@ -757,7 +759,11 @@
 
 - (void)setScreenSize:(NSSize)newSize
 {
-	screenSize = newSize;
+	// run on main thread to avoid crashes from destroying/creating the backing store
+	if (![NSThread isMainThread])
+		return [self performSelectorOnMainThread:@selector(setScreenSizeByValue:) withObject:[NSValue valueWithSize:newSize] waitUntilDone:YES];
+	
+	screenSize = newSize; 
 	[self setBounds:CRDRectFromSize(screenSize)];
 	
 	[self destroyBackingStore];
@@ -766,6 +772,12 @@
 	[self resetClip];
 	
 	[self setNeedsDisplay:YES];
+
+}
+
+- (void)setScreenSizeByValue:(NSValue*)newSize
+{
+	[self setScreenSize:[newSize sizeValue]];
 }
 
 // Whether or not this view is enclosed by an scroll view
