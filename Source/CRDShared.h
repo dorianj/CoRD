@@ -182,7 +182,7 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 //#define WITH_MID_LEVEL_DEBUG 1
 
 #ifdef WITH_MID_LEVEL_DEBUG
-	#define UNIMPL NSLog(@"Unimplemented: %s", __func__)
+	#define UNIMPL CRDLog(CRDLogLevelWarn, @"Unimplemented: %s", __func__)
 #else
 	#define UNIMPL
 #endif
@@ -195,7 +195,7 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 
 #ifdef WITH_DEBUG_UI
 	#define DEBUG_UI(args) NSLog args
-	#define CHECKOPCODE(x) if ((x)!=12 && (x) < 16) { NSLog(@"Unimplemented opcode %d in function %s", (x), __func__); }
+	#define CHECKOPCODE(x) if ((x)!=12 && (x) < 16) { CRDLog(CRDLogLevelWarn, @"Unimplemented opcode %d in function %s", (x), __func__); }
 #else
 	#define DEBUG_UI(args)
 	#define CHECKOPCODE(x) 
@@ -212,7 +212,7 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 #endif
 
 #ifdef CORD_DEBUG_BUILD
-	#define TRACE_FUNC NSLog(@"%s (%@@%u) entered", __func__, [[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lastPathComponent], __LINE__)
+	#define TRACE_FUNC CRDLog(CRDLogLevelDebug, (@"%s (%@@%u) entered", __func__, [[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lastPathComponent], __LINE__)
 #endif
 
 

@@ -939,10 +939,7 @@ process_colour_pointer_common(RDConnectionRef conn, RDStreamRef s, int bpp)
 	in_uint16_le(s, datalen);
 	in_uint8p(s, data, datalen);
 	in_uint8p(s, mask, masklen);
-	if ((width != 32) || (height != 32))
-	{
-		NSLog(@"process_colour_pointer_common: width %d height %d\n", width, height);
-	}
+
 	x = MAX(x,0);
 	x = MIN(x, width - 1);
 	y = MAX(y,0);

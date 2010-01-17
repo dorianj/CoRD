@@ -103,8 +103,6 @@ printer_close(RDConnectionRef conn, NTHandle handle)
 	CFStringRef mimeType = CFStringCreateWithCString(NULL, "application/postscript", kCFStringEncodingASCII);
 	OSStatus err =  PMPrinterPrintWithFile(printerInfo->printer, printSettings, pageFormat, mimeType, filePath);
 	
-	NSLog(@"printer_close err=%d", err);
-
 	PMRelease(currentSession);
 	PMRelease(printSettings);
 	PMRelease(pageFormat);

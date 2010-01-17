@@ -200,8 +200,6 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 
 	overallSize.width = PADDING_LEFT + PADDING_RIGHT + IMAGE_SIZE + PADDING_IMAGE + textSize.width;
 	overallSize.height = abbreviatedSize ? 16 : 46; //PADDING_BOTTOM + PADDING_TOP + MAX(textSize.height, IMAGE_SIZE);
-
-	//NSLog(@"overallHeight=%d", overallSize.height);
 	
 	return overallSize;
 }

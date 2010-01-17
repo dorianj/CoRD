@@ -745,7 +745,7 @@ rdpdr_init(RDConnectionRef conn)
 static RD_BOOL
 add_async_iorequest(RDConnectionRef conn, uint32 device, uint32 file, uint32 fid, uint32 major, uint32 length, DEVICE_FNS * fns, uint8 * buffer, uint32 offset) 
 {
-	NSLog(@"Adding IO-req for fd %d", file);
+	CRDLog(CRDLogLevelInfo, @"Adding IO-req for fd %d", file);
 	
 	RDAsynchronousIORequest *newRequest = calloc(1, sizeof(RDAsynchronousIORequest));
 	newRequest->device = device;
@@ -781,7 +781,7 @@ add_async_iorequest(RDConnectionRef conn, uint32 device, uint32 file, uint32 fid
 RDAsynchronousIORequest *
 rdpdr_remove_iorequest(RDConnectionRef conn, uint32 fd, RDAsynchronousIORequest *requestToRemove)
 {
-	NSLog(@"Removing IO-req for fd %d", fd);
+	CRDLog(CRDLogLevelInfo, @"Removing IO-req for fd %d", fd);
 
 	if (requestToRemove == NULL)
 		return NULL;
@@ -810,7 +810,7 @@ rdpdr_remove_iorequest(RDConnectionRef conn, uint32 fd, RDAsynchronousIORequest 
 void 
 rdpdr_io_available_event(RDConnectionRef conn, uint32 file, RDAsynchronousIORequest *iorq)
 {
-	NSLog(@"Data became available for fd %d", file);
+	CRDLog(CRDLogLevelInfo, @"Data became available for fd %d", file);
 
 	if (iorq == NULL)
 	{
@@ -822,7 +822,7 @@ rdpdr_io_available_event(RDConnectionRef conn, uint32 file, RDAsynchronousIORequ
 	
 	if (iorq == NULL)
 	{
-		NSLog(@"Couldn't find a matching iorq for file %u", file);
+		CRDLog(CRDLogLevelInfo, @"Couldn't find a matching iorq for file %u", file);
 		return;
 	}	
 	

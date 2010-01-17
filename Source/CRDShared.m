@@ -421,9 +421,17 @@ inline NSString *CRDBugReportURL(void)
 BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...)
 {
 	static NSString* logFilePath = nil;
-	static BOOL logFileUnwritable = NO;
-		
-	if (logLevel > [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] integerValue])
+	static BOOL logFileUnwritable = NO, forceLogToStdout = NO;
+	CRDLogLevel userLogLevelThreshold = [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] integerValue];
+	
+#ifdef CORD_DEBUG_BUILD	
+	forceLogToStdout = YES;
+	
+	if (userLogLevelThreshold)
+		userLogLevelThreshold++;
+#endif
+
+	if (logLevel > userLogLevelThreshold)
 		return NO;
 
 	va_list args;
@@ -436,9 +444,9 @@ BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...)
 		logFilePath = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"Logs/CoRD.log"];
 
 	
-	if (![[NSFileManager defaultManager] fileExistsAtPath:logFilePath] && ![[NSFileManager defaultManager] createFileAtPath:logFilePath contents:nil attributes:nil])
+	if (forceLogToStdout || (![[NSFileManager defaultManager] fileExistsAtPath:logFilePath] && ![[NSFileManager defaultManager] createFileAtPath:logFilePath contents:nil attributes:nil]))
 	{
-		if (!logFileUnwritable)
+		if (!forceLogToStdout && !logFileUnwritable)
 		{
 			NSLog(@"Log file was unwritable -- using stdout instead. Tried: %@", logFilePath);
 			logFileUnwritable = YES;
