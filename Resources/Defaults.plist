@@ -5,7 +5,7 @@
 	<key>CRDUseSocksProxy</key>
 	<false/>
 	<key>CRDLogLevel</key>
-	<integer>0</integer>
+	<integer>3</integer>
 	<key>CRDForwardOnlyDefinedPaths</key>
 	<false/>
 	<key>CRDForwardedPaths</key>

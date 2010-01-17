@@ -112,7 +112,7 @@
 #endif
 	
 	[gui_unifiedWindow makeKeyAndOrderFront:self];
-
+	
 	displayMode = CRDDisplayUnified;
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];

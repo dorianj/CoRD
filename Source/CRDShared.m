@@ -418,27 +418,45 @@ inline NSString *CRDBugReportURL(void)
 }
 
 
-void CRDLog(CRDLogLevel logLevel, NSString *message)
+BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...)
 {
-	CRDLogLevel userLogLevel = [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] intValue];
+	static NSString* logFilePath = nil;
+	static BOOL logFileUnwritable = NO;
+		
+	if (logLevel > [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] integerValue])
+		return NO;
+
+	va_list args;
+    va_start(args, format);
+    NSString* composedMessage = [[[NSString alloc] initWithFormat:format arguments:args] autorelease];
+    va_end(args);
+
+
+	if (!logFilePath)
+		logFilePath = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"Logs/CoRD.log"];
+
 	
-	if (!userLogLevel)
-		return;
-
-	NSString *logFilePath = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"Logs/CoRD.log"];
-	
-	if (![[NSFileManager defaultManager] fileExistsAtPath:logFilePath])
-		if (![[NSFileManager defaultManager] createFileAtPath:logFilePath contents:nil attributes:nil])
-			  NSLog(@"Log File Doesn't Exist, and I couldn't create one. %@", logFilePath);
-
-	if (logLevel <= userLogLevel) {
-
-		NSString *formattedMessage = [NSString stringWithFormat:@"%@ %@\n", [[NSDate date] descriptionWithCalendarFormat:@"%Y-%m-%d %H:%M:%S%z" timeZone:nil locale:nil], message];
-		NSFileHandle *logFileHandle = [NSFileHandle fileHandleForUpdatingAtPath:logFilePath];
+	if (![[NSFileManager defaultManager] fileExistsAtPath:logFilePath] && ![[NSFileManager defaultManager] createFileAtPath:logFilePath contents:nil attributes:nil])
+	{
+		if (!logFileUnwritable)
+		{
+			NSLog(@"Log file was unwritable -- using stdout instead. Tried: %@", logFilePath);
+			logFileUnwritable = YES;
+		}
+		
+		NSLog(composedMessage);
+	}
+	else
+	{
+		NSString* messageWithDatetime = [NSString stringWithFormat:@"%@ %@\n", [[NSDate date] descriptionWithCalendarFormat:@"%Y-%m-%d %H:%M:%S" timeZone:nil locale:nil], composedMessage];
+		NSFileHandle* logFileHandle = [NSFileHandle fileHandleForUpdatingAtPath:logFilePath];
 
 		[logFileHandle seekToEndOfFile];
-		[logFileHandle writeData:[formattedMessage dataUsingEncoding:NSASCIIStringEncoding]];
+		[logFileHandle writeData:[messageWithDatetime dataUsingEncoding:NSUTF8StringEncoding]];
 		[logFileHandle closeFile];
 	}
+	
+	return NO;
 }
+
 

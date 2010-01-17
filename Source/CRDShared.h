@@ -53,9 +53,9 @@ typedef struct _CRDInputEvent
 
 typedef enum _CRDLogLevel
 {
-	CRDLogLevelOff = 0,
-	CRDLogLevelInfo = 1,
-	CRDLogLevelWarn = 2,
+	CRDLogLevelOff   = 0,
+	CRDLogLevelInfo  = 1,
+	CRDLogLevelWarn  = 2,
 	CRDLogLevelError = 3,
 	CRDLogLevelDebug = 4
 } CRDLogLevel;
@@ -106,7 +106,7 @@ void CRDSetPreferenceIsEnabled(NSString *prefName, BOOL enabled);
 void CRDFillDefaultConnection(RDConnectionRef conn);
 NSSize CRDProportionallyScaleSize(NSSize orig, NSSize enclosure);
 NSString *CRDBugReportURL(void);
-void CRDLog(CRDLogLevel logLevel, NSString *message);
+BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...);
 
 
 

@@ -62,7 +62,7 @@
 	colorMap = calloc(256, sizeof(unsigned int));
 	keyTranslator = [[CRDKeyboard alloc] init];
 	lastMouseEventSentAt = [[NSDate date] retain];
-	
+	mouseLoc = NSMakePoint(0, 0);
 	
 	[self resetCursorRects];
 	[self resetClip];
