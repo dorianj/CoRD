@@ -241,7 +241,7 @@
 			usleep(1000);
 			
 		if (time(NULL) - startTime > 10)
-			NSLog(@"Got hung up on old frozen connection while connecting to %@", label);
+			CRDLog(CRDLogLevelError, @"Got hung up on old frozen connection while connecting to %@", label);
 	}
 	
 	if (connectionStatus != CRDConnectionClosed)
@@ -325,7 +325,7 @@
 				
 				if (![[NSFileManager defaultManager] fileExistsAtPath:[[pair objectForKey:@"path"] stringByExpandingTildeInPath]] || ![[pair objectForKey:@"label"] length])
 				{
-					NSLog(@"Empty custom forward label or path, skipping: %@", pair);
+					CRDLog(CRDLogLevelInfo, @"Empty custom forward label or path, skipping: %@", pair);
 					continue;
 				}
 				
@@ -627,7 +627,7 @@
 	}
 	else
 	{
-		NSLog(@"Error writing RDP file to '%@'", path);
+		CRDLog(CRDLogLevelError, @"Error writing RDP file to '%@'", path);
 	}
 
 	if (writeToFileSucceeded && updateNamesFlag)
@@ -994,7 +994,7 @@
 
 	if (fileLines == nil)
 	{
-		NSLog(@"Couldn't open RDP file '%@'!", path);
+		CRDLog(CRDLogLevelError, @"Couldn't open RDP file '%@'!", path);
 		return NO;
 	}
 		

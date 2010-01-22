@@ -86,7 +86,7 @@
 	filteredServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
 	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
 	savedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
-
+	
 	return self;
 }
 - (void) dealloc
@@ -112,7 +112,7 @@
 #endif
 	
 	[gui_unifiedWindow makeKeyAndOrderFront:self];
-
+	
 	displayMode = CRDDisplayUnified;
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
@@ -210,7 +210,6 @@
 	{
 		newInst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 	
-	
 		if ([arguments objectForKey:@"g"])
 		{
 			NSInteger w, h;
@@ -225,11 +224,7 @@
 			
 			for (NSString *argumentKey in argumentKeys)
 				if ([arguments objectForKey:argumentKey])
-				{
-					//NSLog(@"CLI: setting %@ to %@, %@", instanceKeyPath, [[arguments objectForKey:argumentKey] className], [arguments objectForKey:argumentKey]);
-
 					[newInst setValue:[arguments objectForKey:argumentKey] forKey:instanceKeyPath];
-				}
 		}
 
 		[connectedServers addObject:newInst];
@@ -1021,7 +1016,7 @@
 	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
 	NSString *textEditor = (NSString *)LSCopyDefaultRoleHandlerForContentType(kUTTypePlainText, kLSRolesAll);
 	[ws openFile:[selectedServer filename] withApplication:[[ws absolutePathForAppBundleWithIdentifier:textEditor] lastPathComponent] andDeactivate:YES];
-	
+	[textEditor autorelease];
 }
 
 - (IBAction)visitDevelopment:(id)sender
@@ -1953,15 +1948,12 @@
 }
 
 - (void)parseUrlQueryString:(NSString *)queryString forSession:(CRDSession *)session
-{
-	//NSLog(@"Hostname: %@, Query String: %@", [session hostName], queryString);
-	
+{	
 	NSArray *booleanParamters = [NSArray arrayWithObjects:@"consoleSession",@"fullscreen",@"windowDrags",@"drawDesktop",@"windowAnimation",@"themes",@"fontSmoothing",@"savePassword",@"forwardDisks",@"forwardPrinters",nil];
 	NSArray *stringParameters = [NSArray arrayWithObjects:@"screenDepth",@"screenWidth",@"screenHeight",@"fowardAudio",nil];
 	
-	for (id setting in [queryString componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"&:"]]) {
-		//NSLog(@"Setting: %@",setting);
-		
+	for (id setting in [queryString componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"&:"]])
+	{
 		NSString *key = [[setting componentsSeparatedByString:@"="] objectAtIndex:0];
 		
 		if ([stringParameters containsObject:key])
@@ -1969,7 +1961,7 @@
 		else if ([booleanParamters containsObject:key])
 			[session setValue:[NSNumber numberWithInt:[[[setting componentsSeparatedByString:@"="] objectAtIndex:1] boolValue]] forKey:key];
 		else
-			NSLog(@"Invalid Parameter: %@", setting);
+			CRDLog(CRDLogLevelWarn, @"Invalid Parameter: %@", setting);
 	}
 }
 
@@ -2376,11 +2368,13 @@
 	{
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
+			CRDLog(CRDLogLevelDebug, [NSString stringWithFormat:@"Loading Server: %@",filename]);
+
 			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
 			if (savedSession != nil)
 				[self addSavedServer:savedSession];
 			else
-				NSLog(@"RDP file '%@' failed to load!", filename);
+				CRDLog(CRDLogLevelError, @"RDP file '%@' failed to load!", filename);
 			
 			[savedSession release];
 		}

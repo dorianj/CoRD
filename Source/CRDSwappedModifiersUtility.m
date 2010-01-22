@@ -132,7 +132,7 @@ static NSArray *rawDefaultTable;
 	[CRDSwappedModifiersUtility loadStandardTranslation];
 
 	#define TEST_THEN_SWAP(realKeyFlag, virtKeyFlag) if (flags & virtKeyFlag) newFlags |= realKeyFlag;
-	//	NSLog(@"Swapping? %s", (flags & virtKeyFlag) ? "Yes." : "No.");
+	//	CRDLog(CRDLogLevelInfo, @"Swapping? %s", (flags & virtKeyFlag) ? "Yes." : "No.");
 
 	int keys[5] = {CRDSwappedModifiersCapsLockKey, CRDSwappedModifiersControlKey, CRDSwappedModifiersOptionKey, CRDSwappedModifiersCommandKey, CRDSwappedModifiersShiftKey};
 	unsigned newFlags = 0, i, realKeyNum;

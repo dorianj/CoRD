@@ -416,3 +416,55 @@ inline NSString *CRDBugReportURL(void)
 {
 	return [NSString stringWithFormat:@"%@newticket?type=defect&version=%@&keywords=MenuBarSubmission,%@", CRDTracURL, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];	
 }
+
+
+BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...)
+{
+	static NSString* logFilePath = nil;
+	static BOOL logFileUnwritable = NO, forceLogToStdout = NO;
+	CRDLogLevel userLogLevelThreshold = [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] integerValue];
+	
+#ifdef CORD_DEBUG_BUILD	
+	forceLogToStdout = YES;
+	
+	if (userLogLevelThreshold)
+		userLogLevelThreshold++;
+#endif
+
+	if (logLevel > userLogLevelThreshold)
+		return NO;
+
+	va_list args;
+    va_start(args, format);
+    NSString* composedMessage = [[[NSString alloc] initWithFormat:format arguments:args] autorelease];
+    va_end(args);
+
+
+	if (!logFilePath)
+		logFilePath = [[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"Logs/CoRD.log"];
+
+	
+	if (forceLogToStdout || (![[NSFileManager defaultManager] fileExistsAtPath:logFilePath] && ![[NSFileManager defaultManager] createFileAtPath:logFilePath contents:nil attributes:nil]))
+	{
+		if (!forceLogToStdout && !logFileUnwritable)
+		{
+			NSLog(@"Log file was unwritable -- using stdout instead. Tried: %@", logFilePath);
+			logFileUnwritable = YES;
+		}
+		
+		NSLog(composedMessage);
+	}
+	else
+	{
+		NSString* messageWithDatetime = [NSString stringWithFormat:@"%@ %@\n", [[NSDate date] descriptionWithCalendarFormat:@"%Y-%m-%d %H:%M:%S" timeZone:nil locale:nil], composedMessage];
+		NSFileHandle* logFileHandle = [NSFileHandle fileHandleForUpdatingAtPath:logFilePath];
+
+		[logFileHandle seekToEndOfFile];
+		[logFileHandle writeData:[messageWithDatetime dataUsingEncoding:NSUTF8StringEncoding]];
+		[logFileHandle closeFile];
+	}
+	
+	return NO;
+}
+
+
