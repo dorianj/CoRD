@@ -84,6 +84,8 @@
 		98FF000310EEA9F7005510EB /* UKSystemInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 98FF000010EEA9F7005510EB /* UKSystemInfo.m */; };
 		98FFFFBF10EEA890005510EB /* UKCrashReporter.nib in Resources */ = {isa = PBXBuildFile; fileRef = 98FFFFBD10EEA890005510EB /* UKCrashReporter.nib */; };
 		98FFFFC010EEA890005510EB /* UKCrashReporter.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98FFFFBE10EEA890005510EB /* UKCrashReporter.strings */; };
+		9910D95E110C20C20085DCB2 /* next.png in Resources */ = {isa = PBXBuildFile; fileRef = 9910D95C110C20C20085DCB2 /* next.png */; };
+		9910D95F110C20C20085DCB2 /* previous.png in Resources */ = {isa = PBXBuildFile; fileRef = 9910D95D110C20C20085DCB2 /* previous.png */; };
 		991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 991FE8B01024C71D00EC603C /* SystemConfiguration.framework */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */ = {isa = PBXBuildFile; fileRef = 9997480C10A3C653000B8061 /* ForwardPrefs.png */; };
@@ -222,6 +224,8 @@
 		98FFFFFD10EEA9F7005510EB /* UKNibOwner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKNibOwner.h; sourceTree = "<group>"; };
 		98FFFFFE10EEA9F7005510EB /* UKNibOwner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UKNibOwner.m; sourceTree = "<group>"; };
 		98FFFFFF10EEA9F7005510EB /* UKSystemInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UKSystemInfo.h; sourceTree = "<group>"; };
+		9910D95C110C20C20085DCB2 /* next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = next.png; path = Resources/next.png; sourceTree = "<group>"; };
+		9910D95D110C20C20085DCB2 /* previous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = previous.png; path = Resources/previous.png; sourceTree = "<group>"; };
 		991FE8B01024C71D00EC603C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		993AEC350FB136AB0031B013 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		9997480C10A3C653000B8061 /* ForwardPrefs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ForwardPrefs.png; path = Resources/ForwardPrefs.png; sourceTree = "<group>"; };
@@ -436,6 +440,8 @@
 		98E70F110D3EC591009731C7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				9910D95C110C20C20085DCB2 /* next.png */,
+				9910D95D110C20C20085DCB2 /* previous.png */,
 				9997480C10A3C653000B8061 /* ForwardPrefs.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
@@ -570,6 +576,8 @@
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
 				98FFFFBF10EEA890005510EB /* UKCrashReporter.nib in Resources */,
 				98FFFFC010EEA890005510EB /* UKCrashReporter.strings in Resources */,
+				9910D95E110C20C20085DCB2 /* next.png in Resources */,
+				9910D95F110C20C20085DCB2 /* previous.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
