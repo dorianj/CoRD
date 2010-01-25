@@ -1095,6 +1095,10 @@
 		[toolbarItem setValue:localizedLabel forKey:@"label"];
 		return ([inst status] == CRDConnectionConnecting) || ( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
 	}
+	else if (itemTag == 6 || itemTag == 7)
+	{
+		return ([connectedServers count] > 1);
+	}
 	return YES;
 }
 
