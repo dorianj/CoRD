@@ -26,13 +26,13 @@
 "COULDNT_SEND_CRASH_REPORT_ERROR_OK" = "OK";
 
 /* Text for feedback messages: */
-"FEEDBACK_MESSAGE_TEXT" = "Hi Uli,\n\nhere's what I'd like to tell you:\n\n\t...\n\n-- %%LONGUSERNAME\n\nReply to me at %%EMAILADDRESS";
+"FEEDBACK_MESSAGE_TEXT" = "Hi CoRD Developers,\n\nhere's what I'd like to tell you:\n\n\t...\n\n-- %%LONGUSERNAME\n\nReply to me at %%EMAILADDRESS";
 
 /* String to substitute if we can't determine user's e-mail address: */
 "MISSING_EMAIL_ADDRESS" = "<Your E-Mail Address here>";
 
 /* Text at the top of the window for feedback messages: */
-"FEEDBACK_EXPLANATION_TEXT" = "Enter your message below. If you are reporting a bug, please include information about your Mac and operating system version, and a list of steps to help reproduce the problem.\n\nBe sure to include your E-Mail address, otherwise Uli won't be able to get back to you.";
+"FEEDBACK_EXPLANATION_TEXT" = "Enter your message below. If you are reporting a bug, please include information about your Mac and operating system version, and a list of steps to help reproduce the problem.\n\nBe sure to include your E-Mail address, otherwise the CoRD Developers won't be able to get back to you.";
 
 /* Name of "Crash Log" tab for feedback messages: */
 "SYSTEM_INFO_TAB_NAME" = "System Information";
