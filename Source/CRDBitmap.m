@@ -203,21 +203,28 @@
 					break;
 	
 				case 24:
+					np[0] = d[2];
+					np[1] = d[1];
+					np[2] = d[0]; 
+					np[3] = alphaBit ? 0 : 0xff; 
+					d += 3;
+					break;
+
 				case 32:
 					np[0] = d[2];
 					np[1] = d[1];
 					np[2] = d[0];
 					np[3] = d[3];			
-					d += bpp / 8;
+					d += 4;
 					break;
 				
-				// Some potential cursor bpp's that don't seem to be used by RDP
+				// Some potential cursor bpp's that we haven't implemented yet (but are evidently used by some servers in some circumstances)
 				case 4:
 				case 8:
 				case 15:
 				case 16:
 				default:
-					unimpl("%d bpp cursor", bpp);
+					CRDLog(CRDLogLevelError, @"Cursor sent in unsupported bit-depth: %d bpp", bpp);
 					np[0] = np[1] = np[2] = 0;
 					np[3] = 0xff;
 					break;
