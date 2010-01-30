@@ -1727,14 +1727,21 @@
 	// rdp://user:password@host:port/Domain
 
 	NSURL *url = [NSURL URLWithString:[[event paramDescriptorForKeyword:keyDirectObject] stringValue]];
-
+	
+	if (![url host])
+		return;
+	
+	for (id server in savedServers)
+		if ([[[server label] lowercaseString] isEqualToString:[[url host] lowercaseString]]) {
+			[self connectInstance:server];
+			return;
+		}
+	
 	CRDSession *session = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 
-	if ([url host] != nil)
-	{
-		[session setValue:[url host] forKey:@"hostName"];
-		[session setValue:[url host] forKey:@"label"];
-	}
+	[session setValue:[url host] forKey:@"hostName"];
+	[session setValue:[url host] forKey:@"label"];
+
 	if ([url port] != nil)
 		[session setValue:[url port] forKey:@"port"];
 	if ([url user] != nil)
