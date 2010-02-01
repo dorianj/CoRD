@@ -90,7 +90,6 @@
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */ = {isa = PBXBuildFile; fileRef = 9997480C10A3C653000B8061 /* ForwardPrefs.png */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
-		99ADBC451024CDAC0025E314 /* ForwardedDisksIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 99ADBC441024CDAC0025E314 /* ForwardedDisksIcon.icns */; };
 		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
 /* End PBXBuildFile section */
 
@@ -121,7 +120,7 @@
 		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
 		3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathFormatter.h; path = Source/CRDFilePathFormatter.h; sourceTree = "<group>"; };
 		3E713D501080071800FB7F2D /* CRDDisconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CRDDisconnect.png; path = Resources/CRDDisconnect.png; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107320486CEB800E47090 /* CoRD.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CoRD.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		98369D370C050B3D009BF52F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ConnectionDefaultsIcon.png; path = Resources/ConnectionDefaultsIcon.png; sourceTree = "<group>"; };
@@ -231,7 +230,6 @@
 		9997480C10A3C653000B8061 /* ForwardPrefs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ForwardPrefs.png; path = Resources/ForwardPrefs.png; sourceTree = "<group>"; };
 		999A01E10FAA1DC300FA512C /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Source/PreferencesController.h; sourceTree = "<group>"; };
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
-		99ADBC441024CDAC0025E314 /* ForwardedDisksIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ForwardedDisksIcon.icns; path = Resources/ForwardedDisksIcon.icns; sourceTree = "<group>"; };
 		99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PFMoveApplication.m; path = Source/LetsMove/PFMoveApplication.m; sourceTree = "<group>"; };
 		99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFMoveApplication.h; path = Source/LetsMove/PFMoveApplication.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -307,7 +305,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* Cord.app */,
+				8D1107320486CEB800E47090 /* CoRD.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -447,7 +445,6 @@
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
 				3E713D501080071800FB7F2D /* CRDDisconnect.png */,
 				98E66D240FF2FF8300736CFA /* CoRD.icns */,
-				99ADBC441024CDAC0025E314 /* ForwardedDisksIcon.icns */,
 				98E972BF0BD9DA820041110D /* Disconnect.png */,
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
 				98E972C50BD9DA820041110D /* i Button Face.png */,
@@ -517,7 +514,7 @@
 			name = CoRD;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Cord;
-			productReference = 8D1107320486CEB800E47090 /* Cord.app */;
+			productReference = 8D1107320486CEB800E47090 /* CoRD.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -571,7 +568,6 @@
 				986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */,
 				9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */,
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
-				99ADBC451024CDAC0025E314 /* ForwardedDisksIcon.icns in Resources */,
 				3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */,
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
 				98FFFFBF10EEA890005510EB /* UKCrashReporter.nib in Resources */,
