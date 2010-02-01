@@ -1972,7 +1972,7 @@
 		else if ([booleanParamters containsObject:key])
 			[session setValue:[NSNumber numberWithInt:[[[setting componentsSeparatedByString:@"="] objectAtIndex:1] boolValue]] forKey:key];
 		else
-			CRDLog(CRDLogLevelWarn, @"Invalid Parameter: %@", setting);
+			CRDLog(CRDLogLevelError, @"Invalid Parameter: %@", setting);
 	}
 }
 
@@ -2379,7 +2379,7 @@
 	{
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
-			CRDLog(CRDLogLevelDebug, [NSString stringWithFormat:@"Loading Server: %@",filename]);
+			CRDLog(CRDLogLevelInfo, [NSString stringWithFormat:@"Loading Server: %@",filename]);
 
 			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
 			if (savedSession != nil)
