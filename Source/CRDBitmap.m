@@ -224,7 +224,6 @@
 				case 15:
 				case 16:
 				default:
-					CRDLog(CRDLogLevelError, @"Cursor sent in unsupported bit-depth: %d bpp", bpp);
 					np[0] = np[1] = np[2] = 0;
 					np[3] = 0xff;
 					break;
@@ -248,6 +247,13 @@
 	
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
+	
+	if (bpp == 4 || bpp == 8 || bpp == 15 || bpp == 16)
+	{
+		CRDLog(CRDLogLevelError, @"Cursor sent in unsupported bit-depth: %d bpp", bpp);
+		cursor = [NSCursor arrowCursor];
+		return self;
+	}
 	
 	if (bpp == 32 || bpp == 24)
 		[image setFlipped:YES];
