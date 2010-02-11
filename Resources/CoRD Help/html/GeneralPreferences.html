@@ -31,11 +31,12 @@
 	<ul>
 		<li><strong>Ignore Local Keyboard Modifiers</strong> 
 			<p>OS X allows the remapping/rearranging of CMD (⌘), Alt (⌥), and Control (⌃).  CoRD normally ignores these modifiers, unchecking this box will force it to obey them.  Default is On.</p></li>
-		<li><strong>Set Remote Keyboard Layout</strong> 
-			<p>If the local computer is using an International Keyboard Layout, CoRD will send this layout to the remote machine (which should them adhere to it).  Default is On.</p></li>
+		<li><strong>Set Remote Keyboard Layout at Logon</strong> 
+			<p>If the local computer is using an International Keyboard Layout, CoRD will send this layout to the remote machine (which should them adhere to it).  Default is On.<br />
+				<span class="redText">Note:</span> The keyboard layout is set <em>only at logon</em>. If you want to change the keyboard layout, you must log off the RDP session instead of simply disconnecting.</p></li>
 		<li><strong>Send Command (⌘) Key</strong>
 			<p>Stops CoRD from sending the Command Key through to the remote session.  Does not affect local hotkey use.<br />
-				<span class="redText">WARNING:</span>  This will completely disable any Windows key shortcuts at the remote server.  Win-R, Win-E, etc., will no longer work.</span></span></p></li>
+				<span class="redText">WARNING:</span>  This will completely disable any Windows key shortcuts at the remote server.  Win-R, Win-E, etc., will no longer work.</p></li>
 	</ul>
 	
 	
