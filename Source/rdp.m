@@ -22,6 +22,7 @@
 #import <errno.h>
 #import <unistd.h>
 #import "rdesktop.h"
+#import "ssl.h"
 
 #import "CRDSessionView.h"
 #import "CRDShared.h"
@@ -199,7 +200,8 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, NSString *nsdomain, NSSt
 	RDStreamRef s;
 	time_t t = time(NULL);
 	time_t tzone;
-
+	uint8 security_verifier[16];
+	
 	if (!conn->useRdp5 || 1 == conn->serverRdpVersion)
 	{
 		DEBUG_RDP5(("Sending RDP4-style Logon packet\n"));
@@ -307,29 +309,50 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, NSString *nsdomain, NSSt
 		out_uint16_le(s, len_dll + 2);
 		rdp_out_unistr(s, "C:\\WINNT\\System32\\mstscax.dll", len_dll);
 
+		/* TS_EXTENDED_INFO_PACKET */
+		out_uint16_le(s, 2);	/* clientAddressFamily = AF_INET */
+		out_uint16_le(s, len_ip + 2);	/* cbClientAddress, Length of client ip */
+		rdp_out_unistr(s, ipaddr, len_ip);	/* clientAddress */
+		out_uint16_le(s, len_dll + 2);	/* cbClientDir */
+		rdp_out_unistr(s, "C:\\WINNT\\System32\\mstscax.dll", len_dll);	/* clientDir */
+
+		/* TS_TIME_ZONE_INFORMATION */
 		tzone = (mktime(gmtime(&t)) - mktime(localtime(&t))) / 60;
 		out_uint32_le(s, tzone);
-
 		rdp_out_unistr(s, "GTB, normaltid", 2 * strlen("GTB, normaltid"));
 		out_uint8s(s, 62 - 2 * strlen("GTB, normaltid"));
-
 		out_uint32_le(s, 0x0a0000);
 		out_uint32_le(s, 0x050000);
 		out_uint32_le(s, 3);
 		out_uint32_le(s, 0);
 		out_uint32_le(s, 0);
-
 		rdp_out_unistr(s, "GTB, sommartid", 2 * strlen("GTB, sommartid"));
 		out_uint8s(s, 62 - 2 * strlen("GTB, sommartid"));
-
 		out_uint32_le(s, 0x30000);
 		out_uint32_le(s, 0x050000);
 		out_uint32_le(s, 2);
 		out_uint32(s, 0);
-		out_uint32_le(s, 0xffffffc4);
-		out_uint32_le(s, 0xfffffffe);
+		out_uint32_le(s, 0xffffffc4);		/* DaylightBias */
+
+		/* Rest of TS_EXTENDED_INFO_PACKET */
+		out_uint32_le(s, 0xfffffffe);		/* clientSessionId, consider changing to 0 */
 		out_uint32_le(s, conn->rdp5PerformanceFlags);
-		out_uint16(s, 0);
+
+		if (conn->tryAutoReconnect)
+		{
+			/* Client Auto-Reconnect */
+			out_uint16_le(s, 28);	/* cbAutoReconnectLen */
+			/* ARC_CS_PRIVATE_PACKET */
+			out_uint32_le(s, 28);	/* cbLen */
+			out_uint32_le(s, 1);	/* Version */
+			out_uint32_le(s, conn->autoReconnectLogonID);	/* LogonId */
+			ssl_hmac_md5(conn->autoReconnectRandom, sizeof(conn->autoReconnectRandom),
+					 conn->autoReconnectClientRandom, SEC_RANDOM_SIZE, security_verifier);
+			out_uint8a(s, security_verifier, sizeof(security_verifier));
+		} else {
+			out_uint16_le(s, 0);    /* cbAutoReconnectLen */
+		}
+
 
 
 	}
@@ -1174,6 +1197,51 @@ process_update_pdu(RDConnectionRef conn, RDStreamRef s)
 	ui_end_update(conn);
 }
 
+/* Process a Save Session Info PDU */
+static void
+process_pdu_logon(RDConnectionRef conn, RDStreamRef s)
+{
+	uint32 infotype;
+	in_uint32_le(s, infotype);
+	if (infotype == INFOTYPE_LOGON_EXTENDED_INF)
+	{
+		uint32 fieldspresent;
+
+		in_uint8s(s, 2);	/* Length */
+		in_uint32_le(s, fieldspresent);
+		if (fieldspresent & LOGON_EX_AUTORECONNECTCOOKIE)
+		{
+			uint32 len;
+			uint32 version;
+
+			/* TS_LOGON_INFO_FIELD */
+			in_uint8s(s, 4);	/* cbFieldData */
+
+			/* ARC_SC_PRIVATE_PACKET */
+			in_uint32_le(s, len);
+			if (len != 28)
+			{
+				warning("Invalid length in Auto-Reconnect packet\n");
+				return;
+			}
+
+			in_uint32_le(s, version);
+			if (version != 1)
+			{
+				warning("Unsupported version of Auto-Reconnect packet\n");
+				return;
+			}
+
+			in_uint32_le(s, conn->autoReconnectLogonID);
+			in_uint8a(s, conn->autoReconnectRandom, 16);
+			conn->tryAutoReconnect = True;
+			DEBUG(("Saving auto-reconnect cookie, id=%u\n", conn->autoReconnectLogonID));
+		}
+	}
+}
+
+
+
 /* Process a disconnect PDU */
 void
 process_disconnect_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason)
@@ -1251,6 +1319,7 @@ process_data_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason)
 		case RDP_DATA_PDU_LOGON:
 			DEBUG(("Received Logon PDU\n"));
 			/* User logged on */
+			process_pdu_logon(conn, s);
 			break;
 
 		case RDP_DATA_PDU_DISCONNECT:
@@ -1320,26 +1389,14 @@ process_redirect_pdu(RDConnectionRef conn, RDStreamRef s /*, uint32 * ext_disc_r
 /* Establish a connection up to the RDP layer */
 RD_BOOL
 rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, NSString *domain, NSString *username, NSString *password,
-	    const char *command, const char *directory)
+	    const char *command, const char *directory, RD_BOOL reconnect)
 {
-	if (!sec_connect(conn, server, conn->username))
+	if (!sec_connect(conn, server, conn->username, reconnect))
 		return False;
 
 	rdp_send_logon_info(conn, flags, domain, username, password, command, directory);
 	return True;
 }
-
-/* Establish a reconnection up to the RDP layer */
-RD_BOOL
-rdp_reconnect(RDConnectionRef conn, const char *server, uint32 flags, NSString *domain, NSString *username, NSString *password,
-		const char *command, const char *directory, char *cookie)
-{
-	if (!sec_reconnect(conn, (char *)server))
-		return False;
-	
-	rdp_send_logon_info(conn, flags, domain, username, password, command, directory);
-	return True;
-} 
 
 /* Called during redirection to reset the state to support redirection */
 void

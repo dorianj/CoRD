@@ -175,19 +175,23 @@ iso_recv(RDConnectionRef conn, uint8 * rdpver)
 
 /* Establish a connection up to the ISO layer */
 RD_BOOL
-iso_connect(RDConnectionRef conn, const char *server, char *username)
+iso_connect(RDConnectionRef conn, const char *server, char *username, RD_BOOL reconnect)
 {
 	uint8 code = 0;
 
 	if (!tcp_connect(conn, server))
 		return False;
 
-	iso_send_connection_request(conn, username);
-
-	if (iso_recv_msg(conn, &code, NULL) == NULL)
+	if (reconnect)
 	{
-		return False;
+		iso_send_msg(conn, ISO_PDU_CR);
 	}
+	else {
+		iso_send_connection_request(conn, username);
+	}
+	
+	if (iso_recv_msg(conn, &code, NULL) == NULL)
+		return False;
 
 	if (code != ISO_PDU_CC)
 	{
@@ -199,29 +203,7 @@ iso_connect(RDConnectionRef conn, const char *server, char *username)
 	return True;
 }
 
-/* Establish a reconnection up to the ISO layer */
-RD_BOOL
-iso_reconnect(RDConnectionRef conn, char *server)
-{
-	uint8 code = 0;
 
-	if (!tcp_connect(conn, server))
-		return False;
-
-	iso_send_msg(conn, ISO_PDU_CR);
-
-	if (iso_recv_msg(conn, &code, NULL) == NULL)
-		return False;
-
-	if (code != ISO_PDU_CC)
-	{
-		error("expected CC, got 0x%x\n", code);
-		tcp_disconnect(conn);
-		return False;
-	}
-
-	return True;
-}
 
 /* Disconnect from the ISO layer */
 void

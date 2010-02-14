@@ -367,55 +367,13 @@ mcs_recv(RDConnectionRef conn, uint16 * channel, uint8 * rdpver)
 		in_uint8s(s, 1);	/* second byte of length */
 	return s;
 }
-
 /* Establish a connection up to the MCS layer */
 RD_BOOL
-mcs_connect(RDConnectionRef conn, const char *server, RDStreamRef mcs_data, char *username)
+mcs_connect(RDConnectionRef conn, const char *server, RDStreamRef mcs_data, char *username, RD_BOOL reconnect)
 {
 	unsigned int i;
 
-	if (!iso_connect(conn, server, username))
-		return False;
-
-	mcs_send_connect_initial(conn, mcs_data);
-	if (!mcs_recv_connect_response(conn, mcs_data))
-		goto error;
-
-	mcs_send_edrq(conn);
-
-	mcs_send_aurq(conn);
-	if (!mcs_recv_aucf(conn))
-		goto error;
-
-	mcs_send_cjrq(conn, conn->mcsUserid + MCS_USERCHANNEL_BASE);
-
-	if (!mcs_recv_cjcf(conn))
-		goto error;
-
-	mcs_send_cjrq(conn, MCS_GLOBAL_CHANNEL);
-	if (!mcs_recv_cjcf(conn))
-		goto error;
-
-	for (i = 0; i < conn->numChannels; i++)
-	{
-		mcs_send_cjrq(conn, conn->channels[i].mcs_id);
-		if (!mcs_recv_cjcf(conn))
-			goto error;
-	}
-	return True;
-
-      error:
-	iso_disconnect(conn);
-	return False;
-}
-
-/* Establish a connection up to the MCS layer */
-RD_BOOL
-mcs_reconnect(RDConnectionRef conn, char *server, RDStreamRef mcs_data)
-{
-	unsigned int i;
-
-	if (!iso_reconnect(conn, server))
+	if (!iso_connect(conn, server, username, reconnect))
 		return False;
 
 	mcs_send_connect_initial(conn, mcs_data);

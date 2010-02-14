@@ -160,7 +160,7 @@ cache_evict_bitmap(RDConnectionRef conn, uint8 id)
 
 	idx = conn->bmpcacheLru[id];
 	n_idx = conn->bmpcache[id][idx].next;
-	DEBUG_RDP5(("evict bitmap: id=%d idx=%d n_idx=%d bmp=0x%p\n", id, idx, n_idx,
+	DEBUG_RDP5(("evict bitmap: id=%d idx=%d n_idx=%d bmp=%p\n", id, idx, n_idx,
 		    conn->bmpcache[id][idx].bitmap));
 
 	ui_destroy_bitmap(conn->bmpcache[id][idx].bitmap);
