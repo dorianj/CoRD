@@ -24,6 +24,7 @@
 @class CRDServerList;
 @class CRDSession;
 @class CRDTabView;
+@class CRDServerGroup;
 
 @interface AppController : NSObject
 {
@@ -42,6 +43,10 @@
 	IBOutlet CRDServerList *gui_serverList;
 	IBOutlet NSButton *gui_connectButton, *gui_inspectorButton, *gui_addNewButton;
 	CRDLabelCell *connectedServersLabel, *savedServersLabel, *filteredServersLabel;
+	
+	// Outline View
+	CRDServerGroup *userServers;
+	CRDServerGroup *machineServers;
 	
 	// Unified window
 	IBOutlet NSWindow *gui_unifiedWindow;

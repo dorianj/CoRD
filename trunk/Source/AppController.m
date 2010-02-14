@@ -27,6 +27,7 @@
 #import "CRDTabView.h"
 #import "CRDShared.h"
 #import "CRDLabelCell.h"
+#import "CRDServerGroup.h"
 
 #import "UKCrashReporter.h"
 
@@ -83,6 +84,10 @@
 	savedServers = [[NSMutableArray alloc] init];
 	filteredServers = [[NSMutableArray alloc] init];
 	
+	userServers = [[CRDServerGroup alloc] initWithLabel:@"User Servers"];
+	machineServers = [[CRDServerGroup alloc] initWithLabel:@"Machine Servers"];
+	
+	
 	filteredServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
 	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
 	savedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
@@ -127,6 +132,9 @@
 	
 	// Load servers from the saved servers directory
 	[self loadSavedServers];
+	
+	for (id i in [userServers serverList])
+		NSLog(@"Label: %@", [i label]);
 	
 	[gui_serverList deselectAll:nil];
 	[self sortSavedServersByStoredListPosition];
@@ -1213,6 +1221,89 @@
 	shouldForward &= ([viewedSessionWindow firstResponder] == viewedSessionView) && [viewedSessionWindow isKeyWindow] && ([viewedSessionWindow isMainWindow] || ([self displayMode] == CRDDisplayFullscreen));
 	
 	return shouldForward ? viewedSessionView : nil;
+}
+
+#pragma mark -
+#pragma mark NSOutlineViewDataSource methods
+
+- (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
+{
+	if ([item isKindOfClass:[CRDSession class]])
+		return 0;
+	
+	//NSLog(@"Item: %@ number of children: %@", [item label], [item count]);
+	if (!item)
+		return 2;
+	else
+		return [item count];
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
+{
+	NSLog(@"Item: %@ child %d", [item label], index);
+	if (!item)
+		switch (index) {
+			case 0:
+				return userServers;
+				break;
+			case 1:
+				return machineServers;
+				break;
+			default:
+				return nil;
+				break;
+		}
+	if (item == userServers)
+	{
+		return [[item serverList] objectAtIndex:index];
+	}
+	else {
+		return nil;
+	}
+
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
+{
+	if ([item isKindOfClass:[CRDSession class]])
+	{
+		NSLog(@"Its a session");
+		return NO;
+	}
+	
+	//NSLog(@"Item: %@ is expandable? Item Count: %d", [item label], [item count]);
+	if (!item)
+		return YES;
+	
+	if ([item count] > 0) {
+		return YES;
+	}
+	
+	return NO;
+}
+
+- (id)outlineView:(NSOutlineView *)outlineView objectValueForTableColumn:(NSTableColumn *)tableColumn byItem:(id)item
+{
+	//NSLog(@"Item: %@ value for Table Column: %@", [item label], [[tableColumn headerCell] title]);
+	if (!item)
+		return nil;	
+	return [item label];
+}
+
+- (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
+{
+	if ([item isKindOfClass:[CRDServerGroup class]])
+		return YES;
+	else 
+		return NO;
+}
+- (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
+{
+	if ([item isKindOfClass:[CRDServerGroup class]])
+		return NO;
+	else
+		return YES;
+	
 }
 
 #pragma mark -
@@ -2383,7 +2474,9 @@
 
 			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
 			if (savedSession != nil)
+			{
 				[self addSavedServer:savedSession];
+			}
 			else
 				CRDLog(CRDLogLevelError, @"RDP file '%@' failed to load!", filename);
 			
@@ -2412,7 +2505,8 @@
 	index = MIN(MAX(index, 0), [savedServers count]);
 		
 	[savedServers insertObject:inst atIndex:index];
-	
+	NSLog(@"adding to userServers");
+	[userServers addServer:inst];
 	if (_isFilteringSavedServers)
 		[self filterServers:nil];
 		
