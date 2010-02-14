@@ -87,6 +87,8 @@
 		9910D95E110C20C20085DCB2 /* next.png in Resources */ = {isa = PBXBuildFile; fileRef = 9910D95C110C20C20085DCB2 /* next.png */; };
 		9910D95F110C20C20085DCB2 /* previous.png in Resources */ = {isa = PBXBuildFile; fileRef = 9910D95D110C20C20085DCB2 /* previous.png */; };
 		991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 991FE8B01024C71D00EC603C /* SystemConfiguration.framework */; };
+		992114381128A708006EC6C9 /* ssl.c in Sources */ = {isa = PBXBuildFile; fileRef = 992114361128A708006EC6C9 /* ssl.c */; };
+		9921143D1128A71D006EC6C9 /* CRDServerGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 9921143C1128A71D006EC6C9 /* CRDServerGroup.m */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */ = {isa = PBXBuildFile; fileRef = 9997480C10A3C653000B8061 /* ForwardPrefs.png */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
@@ -226,6 +228,10 @@
 		9910D95C110C20C20085DCB2 /* next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = next.png; path = Resources/next.png; sourceTree = "<group>"; };
 		9910D95D110C20C20085DCB2 /* previous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = previous.png; path = Resources/previous.png; sourceTree = "<group>"; };
 		991FE8B01024C71D00EC603C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
+		992114361128A708006EC6C9 /* ssl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ssl.c; path = Source/ssl.c; sourceTree = "<group>"; };
+		992114371128A708006EC6C9 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = Source/ssl.h; sourceTree = "<group>"; };
+		9921143B1128A71D006EC6C9 /* CRDServerGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDServerGroup.h; path = Source/CRDServerGroup.h; sourceTree = "<group>"; };
+		9921143C1128A71D006EC6C9 /* CRDServerGroup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDServerGroup.m; path = Source/CRDServerGroup.m; sourceTree = "<group>"; };
 		993AEC350FB136AB0031B013 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		9997480C10A3C653000B8061 /* ForwardPrefs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ForwardPrefs.png; path = Resources/ForwardPrefs.png; sourceTree = "<group>"; };
 		999A01E10FAA1DC300FA512C /* PreferencesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PreferencesController.h; path = Source/PreferencesController.h; sourceTree = "<group>"; };
@@ -266,6 +272,8 @@
 				9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */,
 				9872FCD20C08FD8E00078CB2 /* CRDKeyboard.h */,
 				9872FCD30C08FD8E00078CB2 /* CRDKeyboard.m */,
+				9921143B1128A71D006EC6C9 /* CRDServerGroup.h */,
+				9921143C1128A71D006EC6C9 /* CRDServerGroup.m */,
 				9872FCD40C08FD8E00078CB2 /* CRDSession.h */,
 				9872FCD50C08FD8E00078CB2 /* CRDSession.m */,
 				9872FCF10C08FE6800078CB2 /* CRDSessionView.h */,
@@ -396,6 +404,8 @@
 				98E972590BD9D9DF0041110D /* scancodes.h */,
 				98E9725A0BD9D9DF0041110D /* secure.c */,
 				98E9725B0BD9D9DF0041110D /* serial.c */,
+				992114361128A708006EC6C9 /* ssl.c */,
+				992114371128A708006EC6C9 /* ssl.h */,
 				98E9725C0BD9D9DF0041110D /* tcp.m */,
 				98E9725D0BD9D9DF0041110D /* types.h */,
 			);
@@ -633,6 +643,8 @@
 				98FF000110EEA9F7005510EB /* UKCrashReporter.m in Sources */,
 				98FF000210EEA9F7005510EB /* UKNibOwner.m in Sources */,
 				98FF000310EEA9F7005510EB /* UKSystemInfo.m in Sources */,
+				992114381128A708006EC6C9 /* ssl.c in Sources */,
+				9921143D1128A71D006EC6C9 /* CRDServerGroup.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
