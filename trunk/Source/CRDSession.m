@@ -368,7 +368,8 @@
 							username,
 							password,
 							"",  /* xxx: command on logon */
-							"" /* xxx: session directory */
+							"", /* xxx: session directory */
+							NO
 							);
 							
 	// Upon success, set up the input socket

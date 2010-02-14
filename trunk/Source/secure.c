@@ -685,7 +685,6 @@ static void
 sec_process_crypt_info(RDConnectionRef conn, RDStreamRef s)
 {
 	uint8 *server_random = NULL, *modulus = NULL, *exponent = NULL;
-	uint8 client_random[SEC_RANDOM_SIZE];
 	uint32 rc4_key_size;
 
 	if (!sec_parse_crypt_info(conn, s, &rc4_key_size, &server_random, &modulus, &exponent))
@@ -695,7 +694,7 @@ sec_process_crypt_info(RDConnectionRef conn, RDStreamRef s)
 	}
 
 	DEBUG(("Generating client random\n"));
-	generate_random(client_random);
+	generate_random(conn->autoReconnectClientRandom);
 	
 	if (NULL != conn->serverPublicKey)
 	{			/* Which means we should use 
@@ -713,7 +712,7 @@ sec_process_crypt_info(RDConnectionRef conn, RDStreamRef s)
 		   successful connection. Nice. Not! 
 		 */
 		 
-		memcpy(inr + padding_len, client_random, SEC_RANDOM_SIZE);
+		memcpy(inr + padding_len, conn->autoReconnectClientRandom, SEC_RANDOM_SIZE);
 		reverse(inr + padding_len, SEC_RANDOM_SIZE);
 
 		RSA_public_encrypt(conn->serverPublicKeyLen, inr, conn->secCryptedRandom, conn->serverPublicKey, RSA_NO_PADDING);
@@ -724,10 +723,10 @@ sec_process_crypt_info(RDConnectionRef conn, RDStreamRef s)
 		conn->serverPublicKey = NULL;
 	}
 	else
-	{			/* RDP4-style encryption */
-		sec_rsa_encrypt(conn->secCryptedRandom, client_random, SEC_RANDOM_SIZE, conn->serverPublicKeyLen, modulus, exponent);
+	{	/* RDP4-style encryption */
+		sec_rsa_encrypt(conn->secCryptedRandom, conn->autoReconnectClientRandom, SEC_RANDOM_SIZE, conn->serverPublicKeyLen, modulus, exponent);
 	}
-	sec_generate_keys(conn, client_random, server_random, rc4_key_size);
+	sec_generate_keys(conn, conn->autoReconnectClientRandom, server_random, rc4_key_size);
 }
 
 
@@ -880,7 +879,7 @@ sec_recv(RDConnectionRef conn, uint8 * rdpver)
 
 /* Establish a secure connection */
 RD_BOOL
-sec_connect(RDConnectionRef conn, const char *server, char *username)
+sec_connect(RDConnectionRef conn, const char *server, char *username, RD_BOOL reconnect)
 {
 	RDStream mcs_data;
 
@@ -889,33 +888,12 @@ sec_connect(RDConnectionRef conn, const char *server, char *username)
 	mcs_data.p = mcs_data.data = (uint8 *) xmalloc(mcs_data.size);
 	sec_out_mcs_data(conn, &mcs_data);
 
-	if (!mcs_connect(conn, server, &mcs_data, username))
+	if (!mcs_connect(conn, server, &mcs_data, username, reconnect))
 	{
 		xfree(mcs_data.data);
 		return False;
 	}
 	
-	/*      sec_process_mcs_data(&mcs_data); */
-	if (conn->useEncryption)
-		sec_establish_key(conn);
-	xfree(mcs_data.data);
-	return True;
-}
-
-/* Establish a secure connection */
-RD_BOOL
-sec_reconnect(RDConnectionRef conn, char *server)
-{
-	RDStream mcs_data;
-
-	/* We exchange some RDP data during the MCS-Connect */
-	mcs_data.size = 512;
-	mcs_data.p = mcs_data.data = (uint8 *) xmalloc(mcs_data.size);
-	sec_out_mcs_data(conn, &mcs_data);
-
-	if (!mcs_reconnect(conn, server, &mcs_data))
-		return False;
-
 	/*      sec_process_mcs_data(&mcs_data); */
 	if (conn->useEncryption)
 		sec_establish_key(conn);

@@ -73,8 +73,7 @@ int mppc_expand(RDConnectionRef conn, uint8 * data, uint32 clen, uint8 ctype, ui
 RDStreamRef iso_init(RDConnectionRef conn, int length);
 void iso_send(RDConnectionRef conn, RDStreamRef s);
 RDStreamRef iso_recv(RDConnectionRef conn, uint8 * rdpver);
-RD_BOOL iso_connect(RDConnectionRef conn, const char *server, char *username);
-RD_BOOL iso_reconnect(RDConnectionRef conn, char *server);
+RD_BOOL iso_connect(RDConnectionRef conn, const char *server, char *username, RD_BOOL reconnect);
 void iso_disconnect(RDConnectionRef conn);
 void iso_reset_state(RDConnectionRef conn);
 
@@ -88,8 +87,7 @@ RDStreamRef mcs_init(RDConnectionRef conn, int length);
 void mcs_send_to_channel(RDConnectionRef conn, RDStreamRef s, uint16 channel);
 void mcs_send(RDConnectionRef conn, RDStreamRef s);
 RDStreamRef mcs_recv(RDConnectionRef conn, uint16 * channel, uint8 * rdpver);
-RD_BOOL mcs_connect(RDConnectionRef conn, const char *server, RDStreamRef mcs_data, char *username);
-RD_BOOL mcs_reconnect(RDConnectionRef conn, char *server, RDStreamRef mcs_data);
+RD_BOOL mcs_connect(RDConnectionRef conn, const char *server, RDStreamRef mcs_data, char *username, RD_BOOL reconnect);
 void mcs_disconnect(RDConnectionRef conn);
 void mcs_reset_state(RDConnectionRef conn);
 
@@ -164,8 +162,7 @@ void process_system_pointer_pdu(RDConnectionRef conn, RDStreamRef s);
 void process_bitmap_updates(RDConnectionRef conn, RDStreamRef s);
 void process_palette(RDConnectionRef conn, RDStreamRef s);
 void process_disconnect_pdu(RDConnectionRef conn, RDStreamRef s, uint32 * ext_disc_reason);
-RD_BOOL rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, NSString *domain, NSString *username, NSString *password, const char *command, const char *directory);
-RD_BOOL rdp_reconnect(RDConnectionRef conn, const char *server, uint32 flags, NSString *domain, NSString *username, NSString *password, const char *command, const char *directory, char *cookie);
+RD_BOOL rdp_connect(RDConnectionRef conn, const char *server, uint32 flags, NSString *domain, NSString *username, NSString *password, const char *command, const char *directory, RD_BOOL reconnect);
 void rdp_reset_state(RDConnectionRef conn);
 void rdp_disconnect(RDConnectionRef conn);
 void rdp_reset_state(RDConnectionRef conn);
@@ -211,8 +208,7 @@ void sec_send_to_channel(RDConnectionRef conn, RDStreamRef s, uint32 flags, uint
 void sec_send(RDConnectionRef conn, RDStreamRef s, uint32 flags);
 void sec_process_mcs_data(RDConnectionRef conn, RDStreamRef s);
 RDStreamRef sec_recv(RDConnectionRef conn, uint8 * rdpver);
-RD_BOOL sec_connect(RDConnectionRef conn, const char *server, char *username);
-RD_BOOL sec_reconnect(RDConnectionRef conn, char *server);
+RD_BOOL sec_connect(RDConnectionRef conn, const char *server, char *username, RD_BOOL reconnect);
 void sec_disconnect(RDConnectionRef conn);
 void sec_reset_state(RDConnectionRef conn);
 

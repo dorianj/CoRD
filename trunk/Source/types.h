@@ -326,6 +326,12 @@ struct _RDConnection
 	char sessionDirServer[64], sessionDirDomain[16], sessionDirPassword[64], sessionDirUsername[64], sessionDirCookie[128];
 	unsigned int sessionDirFlags;
 	
+	// Auto Reconnect
+	RD_BOOL tryAutoReconnect;							/* g_has_reconnect_random */
+	unsigned int autoReconnectLogonID;					/* g_reconnect_logonid */
+	char autoReconnectRandom[16];						/* g_reconnect_random[16] */
+	uint8 autoReconnectClientRandom[SEC_RANDOM_SIZE];	/* g_client_random[SEC_RANDOM_SIZE] */
+	RD_BOOL pendingResize;								/* g_pending_resize */
 	
 	// Network
 	unsigned char *nextPacket;

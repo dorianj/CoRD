@@ -403,6 +403,11 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 	conn->numChannels = 0;
 	conn->rdp5PerformanceFlags = RDP5_NO_WALLPAPER | RDP5_NO_FULLWINDOWDRAG | RDP5_NO_MENUANIMATIONS;
 	
+	// Auto Reconnect
+	conn->tryAutoReconnect = False;
+	conn->autoReconnectLogonID = 0;
+	conn->pendingResize = False;
+	
 	conn->rdpdrClientname = malloc(strlen(hostString) + 1);
 	strcpy(conn->rdpdrClientname, hostString);
 	strncpy(conn->hostname, hostString, 64);
