@@ -17,6 +17,7 @@
 		9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
+		982212001128A03900936745 /* ssl.c in Sources */ = {isa = PBXBuildFile; fileRef = 982211FF1128A03900936745 /* ssl.c */; };
 		98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98369D370C050B3D009BF52F /* OpenGL.framework */; };
 		9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */; };
 		98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98520EEB0BFEB77700DD732F /* Defaults.plist */; };
@@ -122,6 +123,8 @@
 		3E713D501080071800FB7F2D /* CRDDisconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CRDDisconnect.png; path = Resources/CRDDisconnect.png; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
+		982211FE1128A03900936745 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = Source/ssl.h; sourceTree = "<group>"; };
+		982211FF1128A03900936745 /* ssl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ssl.c; path = Source/ssl.c; sourceTree = "<group>"; };
 		98369D370C050B3D009BF52F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ConnectionDefaultsIcon.png; path = Resources/ConnectionDefaultsIcon.png; sourceTree = "<group>"; };
 		98520EEB0BFEB77700DD732F /* Defaults.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; fileEncoding = 4; name = Defaults.plist; path = Resources/Defaults.plist; sourceTree = "<group>"; };
@@ -396,6 +399,8 @@
 				98E972590BD9D9DF0041110D /* scancodes.h */,
 				98E9725A0BD9D9DF0041110D /* secure.c */,
 				98E9725B0BD9D9DF0041110D /* serial.c */,
+				982211FE1128A03900936745 /* ssl.h */,
+				982211FF1128A03900936745 /* ssl.c */,
 				98E9725C0BD9D9DF0041110D /* tcp.m */,
 				98E9725D0BD9D9DF0041110D /* types.h */,
 			);
@@ -633,6 +638,7 @@
 				98FF000110EEA9F7005510EB /* UKCrashReporter.m in Sources */,
 				98FF000210EEA9F7005510EB /* UKNibOwner.m in Sources */,
 				98FF000310EEA9F7005510EB /* UKSystemInfo.m in Sources */,
+				982212001128A03900936745 /* ssl.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
