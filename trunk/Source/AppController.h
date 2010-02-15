@@ -45,6 +45,7 @@
 	CRDLabelCell *connectedServersLabel, *savedServersLabel, *filteredServersLabel;
 	
 	// Outline View
+	IBOutlet NSOutlineView *gui_ServerOutlineView;
 	CRDServerGroup *userServers;
 	CRDServerGroup *machineServers;
 	
@@ -121,6 +122,9 @@
 - (IBAction)visitHomepage:(id)sender;
 - (IBAction)visitSupportForums:(id)sender;
 - (IBAction)closeSessionOrWindow:(id)sender;
+
+- (IBAction)addServer:(id)sender;
+- (IBAction)addGroup:(id)sender;
 
 // Other methods are in no particular order
 - (void)cellNeedsDisplay:(NSCell *)cell;

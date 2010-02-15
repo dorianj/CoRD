@@ -1240,7 +1240,7 @@
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
 {
-	NSLog(@"Item: %@ child %d", [item label], index);
+	//NSLog(@"Item: %@ child %d", [item label], index);
 	if (!item)
 		switch (index) {
 			case 0:
@@ -1255,7 +1255,7 @@
 		}
 	if (item == userServers)
 	{
-		return [[item serverList] objectAtIndex:index];
+		return [[[item groupList] arrayByAddingObjectsFromArray:[item serverList]] objectAtIndex:index];
 	}
 	else {
 		return nil;
@@ -1267,7 +1267,6 @@
 {
 	if ([item isKindOfClass:[CRDSession class]])
 	{
-		NSLog(@"Its a session");
 		return NO;
 	}
 	
@@ -1290,6 +1289,9 @@
 	return [item label];
 }
 
+#pragma mark -
+#pragma mark NSOutlineViewDelegate methods
+
 - (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
 {
 	if ([item isKindOfClass:[CRDServerGroup class]])
@@ -1299,12 +1301,58 @@
 }
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
 {
-	if ([item isKindOfClass:[CRDServerGroup class]])
-		return NO;
-	else
-		return YES;
-	
+	return YES;	
 }
+
+
+- (IBAction)addServer:(id)sender
+{
+	if (![gui_unifiedWindow isVisible])
+		[gui_unifiedWindow makeKeyAndOrderFront:nil];
+
+	if (!CRDDrawerIsVisible(gui_serversDrawer))
+		[self toggleDrawer:nil visible:YES];
+
+	id selectedItem = [gui_ServerOutlineView itemAtRow:[gui_ServerOutlineView selectedRow]];
+	
+	CRDServerGroup *targetGroup;
+
+	if ([selectedItem isKindOfClass:[CRDServerGroup class]])
+		targetGroup = selectedItem;
+	else
+		targetGroup = [gui_ServerOutlineView parentForItem:selectedItem];
+
+	
+	CRDSession *inst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
+	
+	NSString *path = CRDFindAvailableFileName([AppController savedServersPath], NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
+		
+	[inst setTemporary:NO];
+	[inst setFilename:path];
+	[inst setValue:[[path lastPathComponent] stringByDeletingPathExtension] forKey:@"label"];
+	[inst flushChangesToFile];
+	
+	[targetGroup addServer:inst];
+	
+	//	[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObjectIdenticalTo:inst]] forKey:@"preferredRowIndex"];
+	
+	//	if (![gui_inspector isVisible])
+	//		[self toggleInspector:nil];}
+}
+- (IBAction)addGroup:(id)sender
+{
+	CRDServerGroup *targetGroup;
+	id selectedItem = [gui_ServerOutlineView itemAtRow:[gui_ServerOutlineView selectedRow]];
+	
+	if ([selectedItem isKindOfClass:[CRDServerGroup class]])
+		targetGroup = selectedItem;
+	else
+		targetGroup = [gui_ServerOutlineView parentForItem:selectedItem];
+
+	CRDLog(CRDLogLevelError, @"Add Group to: %@", [targetGroup label]);
+	[targetGroup addGroup:[[CRDServerGroup alloc] initWithLabel:@"New Group"]];
+}
+
 
 #pragma mark -
 #pragma mark NSTableDataSource methods
@@ -2466,8 +2514,12 @@
 {
 	CRDSession *savedSession;
 	NSArray *files = [[NSFileManager defaultManager] directoryContentsAtPath:[AppController savedServersPath]];
+	BOOL isDir = NO;
+	
 	for ( id filename in files )
 	{
+		[[NSFileManager defaultManager] fileExistsAtPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename] isDirectory:&isDir];
+		
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
 			CRDLog(CRDLogLevelInfo, [NSString stringWithFormat:@"Loading Server: %@",filename]);
@@ -2476,12 +2528,14 @@
 			if (savedSession != nil)
 			{
 				[self addSavedServer:savedSession];
+				[userServers addServer:savedSession];
 			}
 			else
 				CRDLog(CRDLogLevelError, @"RDP file '%@' failed to load!", filename);
 			
 			[savedSession release];
-		}
+		} else if (isDir)
+			[userServers addGroup:[[CRDServerGroup alloc] initWithLabel:filename]];
 	}
 }
 
@@ -2505,8 +2559,7 @@
 	index = MIN(MAX(index, 0), [savedServers count]);
 		
 	[savedServers insertObject:inst atIndex:index];
-	NSLog(@"adding to userServers");
-	[userServers addServer:inst];
+
 	if (_isFilteringSavedServers)
 		[self filterServers:nil];
 		

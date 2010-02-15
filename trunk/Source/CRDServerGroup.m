@@ -57,7 +57,7 @@
 
 -(NSInteger)count
 {
-	return [serverList count];
+	return [serverList count] + [groupList count];
 }
 
 @end
