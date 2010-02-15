@@ -26,13 +26,24 @@
 @property(retain) NSString *label;
 @property(nonatomic, retain) NSMutableArray *serverList, *groupList;
 
++(CRDServerGroup *)initWithLabel:(NSString *)newLabel;
+
 -(id)initWithLabel:(NSString *)newLabel;
 
+// Handle Servers
 -(void)addServer:(CRDSession *)server;
 -(void)removeServer:(CRDSession *)server;
 
+
+// Handle Groups
 -(void)addGroup:(CRDServerGroup *)group;
 -(void)removeGroup:(CRDServerGroup *)group;
+
+// Handle Input/Output
+-(NSMutableDictionary *)dumpToDictionary;
+-(void)exportToPlist:(NSString *)filename atPath:(NSString *)path;
+// Uncomment when we go to 10.6 only
+//-(void)exportToPlist:(NSString *)filename atURL:(NSURL *)url;
 
 -(NSInteger)count;
 

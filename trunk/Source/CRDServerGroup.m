@@ -22,6 +22,13 @@
 
 @synthesize label, serverList, groupList;
 
++(CRDServerGroup *)initWithLabel:(NSString *)newLabel
+{
+	CRDServerGroup *serverGroup = [[CRDServerGroup alloc] initWithLabel:newLabel];
+	
+	return serverGroup;
+}
+
 - (id)init
 {
 	if (![super init])
@@ -31,6 +38,7 @@
 	
 	return self;
 }
+
 -(id)initWithLabel:(NSString *)newLabel
 {
 	[self init];
@@ -64,9 +72,53 @@
 	[groupList removeObject:group];
 }
 
+-(NSMutableDictionary *)dumpToDictionary
+{
+	NSMutableDictionary *serverGroupContents = [[NSMutableDictionary alloc] initWithCapacity:1];
+	[serverGroupContents setValue:[self label] forKey:@"label"];
+	
+	if ([serverList count] > 0) {
+		
+		NSMutableDictionary *serverGroupServerList = [[NSMutableDictionary alloc] initWithCapacity:1];
+		for (CRDSession *session in serverList)
+		{
+			// CRDSession Method to Export Settings to a MutableDictionary
+			// Add aforementioned MutableDiciontary to serverGroupServerList
+		}
+		
+		[serverGroupContents setObject:serverGroupServerList forKey:@"serverList"];
+	}
+	
+	if ([groupList count] > 0) {
+		
+		NSMutableDictionary *serverGroupGroupList = [[NSMutableDictionary alloc] initWithCapacity:1];
+		for (CRDServerGroup *group in groupList)
+		{
+			[serverGroupGroupList setObject:[group dumpToDictionary] forKey:[group label]];
+		}
+			 
+		[serverGroupContents setObject:serverGroupGroupList forKey:@"groupList"];
+	 }
+	
+	return serverGroupContents;
+}
+-(void)exportToPlist:(NSString *)filename atPath:(NSString *)path
+{
+	NSMutableDictionary *plist = [self dumpToDictionary];
+	[plist writeToFile:[path stringByAppendingPathComponent:filename] atomically:YES];
+}
+// Uncomment when we go to 10.6 only
+//-(void)exportToPlist:(NSString *)filename atURL:(NSURL *)url
+//{
+//	NSMutableDictionary *plist = [self dumpToDictionary];
+//	
+//	[plist writeToURL:[url URLByAppendingPathComponent:filename] atomically:YES];
+//}
+
 -(NSInteger)count
 {
 	return [serverList count] + [groupList count];
 }
+
 
 @end

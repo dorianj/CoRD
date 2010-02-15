@@ -84,8 +84,8 @@
 	savedServers = [[NSMutableArray alloc] init];
 	filteredServers = [[NSMutableArray alloc] init];
 	
-	userServers = [[CRDServerGroup alloc] initWithLabel:@"User Servers"];
-	machineServers = [[CRDServerGroup alloc] initWithLabel:@"Machine Servers"];
+	userServers = [CRDServerGroup initWithLabel:@"User Servers"];
+	machineServers = [CRDServerGroup initWithLabel:@"Machine Servers"];
 	
 	
 	filteredServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
@@ -132,9 +132,6 @@
 	
 	// Load servers from the saved servers directory
 	[self loadSavedServers];
-	
-	for (id i in [userServers serverList])
-		NSLog(@"Label: %@", [i label]);
 	
 	[gui_serverList deselectAll:nil];
 	[self sortSavedServersByStoredListPosition];
@@ -566,7 +563,7 @@
 {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
 	[panel setAllowsMultipleSelection:YES];
-	[panel runModalForTypes:[NSArray arrayWithObjects:@"rdp",@"msrcincident",nil]];
+	[panel runModalForTypes:[NSArray arrayWithObjects:@"rdp",@"msrcincident",@"cordlist",nil]];
 	NSArray *filenames = [panel filenames];
 	
 	if ([filenames count] <= 0)
