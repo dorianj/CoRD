@@ -162,7 +162,7 @@
 	return self;
 }
 
-// Not a performance critical region at all
+// Not a performance critical region
 - (id)initWithCursorData:(const unsigned char *)xorMask alpha:(const unsigned char *)andMask size:(NSSize)s hotspot:(NSPoint)hotspot view:(CRDSessionView *)v bpp:(int)bpp
 {	
 	if (![super init])
@@ -183,8 +183,9 @@
 	data = [[NSMutableData alloc] initWithCapacity:(int)s.width * (int)s.height * 4];
 	uint8 *np = (uint8 *)[data bytes];
 	
-	int alphaBit, alphaIndex, x;
-	
+	unsigned short c;
+	unsigned int alphaBit, alphaIndex, x, *colorMap = [v colorMap];
+
 	for (int i = 0; i < h; i++)
 	{
 		a = andMask + andScanlineLength * i;
@@ -201,7 +202,51 @@
 					np[0] = np[1] = np[2] = x ? 0xff : 0;					
 					np[3] = (alphaBit && x) ? 0 : 0xff;
 					break;
-	
+					
+				case 4: // two colormap indices packed into each byte
+					if (j % 2)
+					{
+						c = ((*d) & 0xf0) >> 4;
+						d++;
+					}
+					else
+						c = *d & 0xf;
+					
+					
+					np[0] = colorMap[c] & 0xff;
+					np[1] = (colorMap[c] >> 8) & 0xff;
+					np[2] = (colorMap[c] >> 16) & 0xff;
+					np[3] = alphaBit ? 0 : 0xff;
+					break;
+				
+				case 8:
+					np[0] = colorMap[*d] & 0xff;
+					np[1] = (colorMap[*d] >> 8) & 0xff;
+					np[2] = (colorMap[*d] >> 16) & 0xff;
+					np[3] = alphaBit ? 0 : 0xff;
+					d++;	
+					break;
+					
+				case 15:
+					c = d[0] | (d[1] << 8);
+
+					np[0] = (( (c >> 10) & 0x1f) * 255 + 15) / 31;
+					np[1] = (( (c >> 5) & 0x1f) * 255 + 15) / 31;
+					np[2] = ((c & 0x1f) * 255 + 15) / 31;
+					np[3] = alphaBit ? 0 : 0xff;
+					break;
+					
+				case 16:
+					c = d[0] | (d[1] << 8);
+					
+					np[0] = (( (c >> 11) & 0x1f) * 255 + 15) / 31;
+					np[1] = (( (c >> 5) & 0x3f) * 255 + 31) / 63;
+					np[2] = ((c & 0x1f) * 255 + 15) / 31;
+					np[3] = alphaBit ? 0 : 0xff;
+					
+					d += 2;		
+					break;
+					
 				case 24:
 					np[0] = d[2];
 					np[1] = d[1];
@@ -219,11 +264,10 @@
 					break;
 				
 				// Some potential cursor bpp's that we haven't implemented yet (but are evidently used by some servers in some circumstances)
-				case 4:
-				case 8:
-				case 15:
-				case 16:
+				
+				
 				default:
+					NSLog(@"crap %d", bpp);
 					np[0] = np[1] = np[2] = 0;
 					np[3] = 0xff;
 					break;
@@ -232,6 +276,9 @@
 			np += 4;
 		}
 	}
+	NSLog(@"finished getting cursor in %d bits", bpp);
+	
+	
 	
 	unsigned char *planes[2] = {(unsigned char *)[data bytes], NULL};
 	NSBitmapImageRep *bitmap = [[[NSBitmapImageRep alloc] initWithBitmapDataPlanes:planes
@@ -248,17 +295,11 @@
 	image = [[NSImage alloc] init];
 	[image addRepresentation:bitmap];
 	
-	if (bpp == 4 || bpp == 8 || bpp == 15 || bpp == 16)
-	{
-		CRDLog(CRDLogLevelError, @"Cursor sent in unsupported bit-depth: %d bpp", bpp);
-		cursor = [NSCursor arrowCursor];
-		return self;
-	}
-	
-	if (bpp == 32 || bpp == 24)
+	if (bpp != 1)
 		[image setFlipped:YES];
-		
+	
 	cursor = [[NSCursor alloc] initWithImage:image hotSpot:hotspot];
+
 	return self;
 }
 
