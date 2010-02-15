@@ -851,6 +851,8 @@
 	[recent insertObject:address atIndex:0];
 	[userDefaults setObject:recent forKey:CRDDefaultsQuickConnectServers];
 	[userDefaults synchronize];
+	
+	[gui_quickConnect setStringValue:@""];
 }
 
 
