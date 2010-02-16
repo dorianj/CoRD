@@ -212,7 +212,6 @@
 					else
 						c = *d & 0xf;
 					
-					
 					np[0] = colorMap[c] & 0xff;
 					np[1] = (colorMap[c] >> 8) & 0xff;
 					np[2] = (colorMap[c] >> 16) & 0xff;
@@ -262,12 +261,9 @@
 					np[3] = d[3];			
 					d += 4;
 					break;
-				
-				// Some potential cursor bpp's that we haven't implemented yet (but are evidently used by some servers in some circumstances)
-				
-				
+
+
 				default:
-					NSLog(@"crap %d", bpp);
 					np[0] = np[1] = np[2] = 0;
 					np[3] = 0xff;
 					break;
@@ -276,8 +272,6 @@
 			np += 4;
 		}
 	}
-	NSLog(@"finished getting cursor in %d bits", bpp);
-	
 	
 	
 	unsigned char *planes[2] = {(unsigned char *)[data bytes], NULL};
