@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="3292"/>
+			<integer value="3288"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -5036,7 +5036,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 												<bool key="EncodedWithXMLCoder">YES</bool>
 												<object class="NSTableColumn" id="378514345">
 													<string key="NSIdentifier">serverLabel</string>
-													<double key="NSWidth">197</double>
+													<double key="NSWidth">198</double>
 													<double key="NSMinWidth">160</double>
 													<double key="NSMaxWidth">400</double>
 													<object class="NSTableHeaderCell" key="NSHeaderCell">
@@ -5114,39 +5114,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<reference key="NSHScroller" ref="337895092"/>
 							<reference key="NSContentView" ref="257270822"/>
 							<bytes key="NSScrollAmts">QSAAAEEgAABBoAAAQaAAAA</bytes>
-						</object>
-						<object class="NSSegmentedControl" id="896952144">
-							<reference key="NSNextResponder" ref="374521836"/>
-							<int key="NSvFlags">268</int>
-							<string key="NSFrame">{{6, 6}, {100, 19}}</string>
-							<reference key="NSSuperview" ref="374521836"/>
-							<bool key="NSEnabled">YES</bool>
-							<object class="NSSegmentedCell" key="NSCell" id="731537223">
-								<int key="NSCellFlags">67239424</int>
-								<int key="NSCellFlags2">131072</int>
-								<reference key="NSSupport" ref="26"/>
-								<reference key="NSControlView" ref="896952144"/>
-								<object class="NSMutableArray" key="NSSegmentImages">
-									<bool key="EncodedWithXMLCoder">YES</bool>
-									<object class="NSSegmentItem">
-										<double key="NSSegmentItemWidth">32</double>
-										<string key="NSSegmentItemLabel"/>
-										<int key="NSSegmentItemImageScaling">0</int>
-									</object>
-									<object class="NSSegmentItem">
-										<double key="NSSegmentItemWidth">32</double>
-										<string key="NSSegmentItemLabel"/>
-										<int key="NSSegmentItemTag">1</int>
-										<int key="NSSegmentItemImageScaling">0</int>
-									</object>
-									<object class="NSSegmentItem">
-										<double key="NSSegmentItemWidth">32</double>
-										<int key="NSSegmentItemImageScaling">0</int>
-									</object>
-								</object>
-								<int key="NSSelectedSegment">1</int>
-								<int key="NSSegmentStyle">4</int>
-							</object>
 						</object>
 					</object>
 					<string key="NSFrameSize">{200, 500}</string>
@@ -10337,7 +10304,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="803291712"/>
-							<reference ref="896952144"/>
 						</object>
 						<reference key="parent" ref="290546472"/>
 					</object>
@@ -10434,20 +10400,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<int key="objectID">3309</int>
 						<reference key="object" ref="476855156"/>
 						<reference key="parent" ref="683128921"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">3313</int>
-						<reference key="object" ref="896952144"/>
-						<object class="NSMutableArray" key="children">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="731537223"/>
-						</object>
-						<reference key="parent" ref="374521836"/>
-					</object>
-					<object class="IBObjectRecord">
-						<int key="objectID">3314</int>
-						<reference key="object" ref="731537223"/>
-						<reference key="parent" ref="896952144"/>
 					</object>
 				</object>
 			</object>
@@ -10929,11 +10881,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<string>3308.IBPluginDependency</string>
 					<string>3309.IBPluginDependency</string>
 					<string>3310.IBPluginDependency</string>
-					<string>3313.IBPluginDependency</string>
-					<string>3313.IBSegmentedControlTracker.RoundRobinState</string>
-					<string>3313.IBSegmentedControlTracker.WasGrowing</string>
-					<string>3314.IBPluginDependency</string>
-					<string>3314.IBSegmentedControlInspectorSelectedSegmentMetadataKey</string>
 					<string>395.IBPluginDependency</string>
 					<string>395.ImportedFromIB2</string>
 					<string>400.ImportedFromIB2</string>
@@ -11722,11 +11669,6 @@ ZW1vdGUgc2VydmVyLiAgV2luLVIsIFdpbi1FLCBldGMuLCB3aWxsIG5vIGxvbmdlciB3b3JrLg</stri
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<integer value="2"/>
-					<integer value="0"/>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<integer value="2"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
 					<boolean value="YES"/>
@@ -13005,14 +12947,6 @@ ZW1vdGUgc2VydmVyLiAgV2luLVIsIFdpbi1FLCBldGMuLCB3aWxsIG5vIGxvbmdlciB3b3JrLg</stri
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBFrameworkSource</string>
 						<string key="minorKey">AppKit.framework/Headers/NSSegmentedCell.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">NSSegmentedControl</string>
-					<string key="superclassName">NSControl</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBFrameworkSource</string>
-						<string key="minorKey">AppKit.framework/Headers/NSSegmentedControl.h</string>
 					</object>
 				</object>
 				<object class="IBPartialClassDescription">
