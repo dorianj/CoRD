@@ -61,6 +61,8 @@
 	- (void)storeSavedServerPositions;
 	- (void)validateControls;
 	- (void)loadSavedServers;
+	- (void)loadSavedServersInDir:(NSString *)path intoGroup:(CRDServerGroup *)group;
+
 	- (void)parseUrlQueryString:(NSString *)queryString forSession:(CRDSession *)session;
 @end
 
@@ -1262,18 +1264,12 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
 {
-	if ([item isKindOfClass:[CRDSession class]])
-	{
-		return NO;
-	}
-	
-	//NSLog(@"Item: %@ is expandable? Item Count: %d", [item label], [item count]);
 	if (!item)
-		return YES;
+		return NO;
 	
-	if ([item count] > 0) {
-		return YES;
-	}
+	if ([item respondsToSelector:@selector(count)])
+		if ([item count] > 0)
+			return YES;
 	
 	return NO;
 }
@@ -1291,9 +1287,9 @@
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isGroupItem:(id)item
 {
-	if ([item isKindOfClass:[CRDServerGroup class]])
-		return YES;
-	else 
+//	if ([item isKindOfClass:[CRDServerGroup class]])
+//		return YES;
+//	else 
 		return NO;
 }
 - (BOOL)outlineView:(NSOutlineView *)outlineView shouldSelectItem:(id)item
@@ -1301,6 +1297,13 @@
 	return YES;	
 }
 
+- (NSCell *)outlineView:(NSOutlineView *)outlineView dataCellForTableColumn:(NSTableColumn *)tableColumn item:(id)item
+{
+	if ([item isKindOfClass:[CRDSession class]]) {
+		return [item cellRepresentation];
+	}
+	return [tableColumn dataCellForRow:[outlineView rowForItem:item]];
+}
 
 - (IBAction)addServer:(id)sender
 {
@@ -2509,30 +2512,42 @@
 
 - (void)loadSavedServers
 {
-	CRDSession *savedSession;
-	NSArray *files = [[NSFileManager defaultManager] directoryContentsAtPath:[AppController savedServersPath]];
+	[self loadSavedServersInDir:[AppController savedServersPath] intoGroup:nil];
+}
+
+- (void)loadSavedServersInDir:(NSString *)path intoGroup:(CRDServerGroup *)group
+{
+	if (!group)
+		group = userServers;
+	
+	CRDSession *savedSession = nil;
+	NSArray *files = [[NSFileManager defaultManager] directoryContentsAtPath:path];
 	BOOL isDir = NO;
 	
 	for ( id filename in files )
 	{
-		[[NSFileManager defaultManager] fileExistsAtPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename] isDirectory:&isDir];
+		[[NSFileManager defaultManager] fileExistsAtPath:[path stringByAppendingPathComponent:filename] isDirectory:&isDir];
 		
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
-			CRDLog(CRDLogLevelInfo, [NSString stringWithFormat:@"Loading Server: %@",filename]);
-
-			savedSession = [[CRDSession alloc] initWithPath:[[AppController savedServersPath] stringByAppendingPathComponent:filename]];
+			CRDLog(CRDLogLevelInfo, [NSString stringWithFormat:@"Loading Server: %@",[path stringByAppendingPathComponent:filename]]);
+			savedSession = [[CRDSession alloc] initWithPath:[path stringByAppendingPathComponent:filename]];
 			if (savedSession != nil)
 			{
 				[self addSavedServer:savedSession];
-				[userServers addServer:savedSession];
+				[group addServer:savedSession];
 			}
 			else
 				CRDLog(CRDLogLevelError, @"RDP file '%@' failed to load!", filename);
 			
 			[savedSession release];
-		} else if (isDir)
-			[userServers addGroup:[[CRDServerGroup alloc] initWithLabel:filename]];
+		}
+		else if (isDir && ![[filename pathExtension] isEqualToString:@"ignore"])
+		{	
+			CRDServerGroup *newGroup = [CRDServerGroup initWithLabel:filename];
+			[self loadSavedServersInDir:[path stringByAppendingPathComponent:filename] intoGroup:newGroup];
+			[group addGroup:newGroup];
+		}
 	}
 }
 
