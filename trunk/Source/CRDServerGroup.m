@@ -84,6 +84,7 @@
 		{
 			// CRDSession Method to Export Settings to a MutableDictionary
 			// Add aforementioned MutableDiciontary to serverGroupServerList
+			[serverGroupServerList setObject:[session dumpToDictionary] forKey:[session label]];
 		}
 		
 		[serverGroupContents setObject:serverGroupServerList forKey:@"serverList"];

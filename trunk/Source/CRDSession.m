@@ -878,6 +878,23 @@
 	keychain_clear_password([hostName UTF8String], [username UTF8String]);
 }
 
+- (NSDictionary *)dumpToDictionary
+{
+	NSLog(@"Dump to Dictionary");
+	NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:1];
+	
+	[dictionary setValue:label forKey:@"label"];
+	[dictionary setValue:hostName forKey:@"hostname"];
+	[dictionary setValue:[NSNumber numberWithInt:port] forKey:@"port"];
+	[dictionary setValue:username forKey:@"username"];
+
+	
+	[dictionary setValue:[NSNumber numberWithInt:forwardPrinters] forKey:@"forwardPrinters"];
+	[dictionary setValue:[NSNumber numberWithInt:forwardAudio] forKey:@"forwardAudio"];
+	[dictionary setValue:[NSNumber numberWithInt:forwardDisks] forKey:@"forwardDisks"];
+	
+	return dictionary;
+}
 
 #pragma mark -
 #pragma mark Accessors

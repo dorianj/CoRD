@@ -107,6 +107,8 @@
 - (void)destroyWindow;
 - (void)destroyUIElements;
 
+- (NSDictionary *)dumpToDictionary;
+
 // Working with the represented file
 - (void)setFilename:(NSString *)filename;
 - (BOOL)writeToFile:(NSString *)path atomically:(BOOL)atomicFlag updateFilenames:(BOOL)updateNamesFlag;

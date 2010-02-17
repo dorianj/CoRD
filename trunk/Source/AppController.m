@@ -1180,7 +1180,9 @@
 	[self storeSavedServerPositions];
 	
 	for (CRDSession *inst in savedServers)
-		[inst flushChangesToFile];	
+		[inst flushChangesToFile];
+	
+	[userServers exportToPlist:@"serverlist.cordlist" atPath:[AppController savedServersPath]];
 }
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
@@ -2525,7 +2527,7 @@
 	BOOL isDir = NO;
 	
 	for ( id filename in files )
-	{
+	{ 
 		[[NSFileManager defaultManager] fileExistsAtPath:[path stringByAppendingPathComponent:filename] isDirectory:&isDir];
 		
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
