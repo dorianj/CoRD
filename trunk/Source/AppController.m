@@ -1229,14 +1229,13 @@
 
 - (NSInteger)outlineView:(NSOutlineView *)outlineView numberOfChildrenOfItem:(id)item
 {
-	if ([item isKindOfClass:[CRDSession class]])
-		return 0;
-	
-	//NSLog(@"Item: %@ number of children: %@", [item label], [item count]);
 	if (!item)
 		return 2;
-	else
+
+	if ([item isKindOfClass:[CRDServerGroup class]])
 		return [item count];
+	else
+		return 0;
 }
 
 - (id)outlineView:(NSOutlineView *)outlineView child:(NSInteger)index ofItem:(id)item
@@ -1254,14 +1253,9 @@
 				return nil;
 				break;
 		}
-	if (item == userServers)
-	{
-		return [[[item groupList] arrayByAddingObjectsFromArray:[item serverList]] objectAtIndex:index];
-	}
-	else {
-		return nil;
-	}
-
+	// This could be dangerous, concatenating the arrays together, if one gets modified, etc.  
+	// Would like to see something more resilent and predicable here if possible
+	return [[[item groupList] arrayByAddingObjectsFromArray:[item serverList]] objectAtIndex:index];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
@@ -1314,7 +1308,7 @@
 
 	if (!CRDDrawerIsVisible(gui_serversDrawer))
 		[self toggleDrawer:nil visible:YES];
-
+	
 	id selectedItem = [gui_ServerOutlineView itemAtRow:[gui_ServerOutlineView selectedRow]];
 	
 	CRDServerGroup *targetGroup;
@@ -1324,6 +1318,7 @@
 	else
 		targetGroup = [gui_ServerOutlineView parentForItem:selectedItem];
 
+	CRDLog(CRDLogLevelInfo, @"Add Server To: %@", [targetGroup label]);
 	
 	CRDSession *inst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 	
@@ -1335,6 +1330,7 @@
 	[inst flushChangesToFile];
 	
 	[targetGroup addServer:inst];
+	[gui_ServerOutlineView reloadItem:targetGroup reloadChildren:YES];
 	
 	//	[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObjectIdenticalTo:inst]] forKey:@"preferredRowIndex"];
 	
@@ -1344,6 +1340,7 @@
 - (IBAction)addGroup:(id)sender
 {
 	CRDServerGroup *targetGroup;
+	
 	id selectedItem = [gui_ServerOutlineView itemAtRow:[gui_ServerOutlineView selectedRow]];
 	
 	if ([selectedItem isKindOfClass:[CRDServerGroup class]])
@@ -1351,8 +1348,10 @@
 	else
 		targetGroup = [gui_ServerOutlineView parentForItem:selectedItem];
 
-	CRDLog(CRDLogLevelError, @"Add Group to: %@", [targetGroup label]);
-	[targetGroup addGroup:[[CRDServerGroup alloc] initWithLabel:@"New Group"]];
+	CRDServerGroup *newGroup = [[CRDServerGroup alloc] initWithLabel:@"New Group"];
+	CRDLog(CRDLogLevelInfo, @"Add Group: %@ to: %@", [newGroup label], [targetGroup label]);
+	[targetGroup addGroup:newGroup];
+	[gui_ServerOutlineView reloadItem:targetGroup reloadChildren:YES];
 }
 
 
