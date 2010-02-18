@@ -880,7 +880,6 @@
 
 - (NSDictionary *)dumpToDictionary
 {
-	NSLog(@"Dump to Dictionary");
 	NSMutableDictionary *dictionary = [NSMutableDictionary dictionaryWithCapacity:1];
 	
 	[dictionary setValue:label forKey:@"label"];
