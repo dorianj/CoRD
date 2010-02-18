@@ -17,13 +17,16 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class CRDLabelCell;
 
 @interface CRDServerGroup : NSObject {
 	NSString *label;
+	CRDLabelCell *labelCell;
 	NSMutableArray *serverList, *groupList;
 }
 
 @property(retain) NSString *label;
+@property (retain) CRDLabelCell *labelCell;
 @property(nonatomic, retain) NSMutableArray *serverList, *groupList;
 
 +(CRDServerGroup *)initWithLabel:(NSString *)newLabel;

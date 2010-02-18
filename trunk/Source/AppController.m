@@ -1297,6 +1297,10 @@
 {
 	if ([item isKindOfClass:[CRDSession class]]) {
 		return [item cellRepresentation];
+	} 
+	else if ([item isKindOfClass:[CRDServerGroup class]])
+	{
+		return [item labelCell];
 	}
 	return [tableColumn dataCellForRow:[outlineView rowForItem:item]];
 }

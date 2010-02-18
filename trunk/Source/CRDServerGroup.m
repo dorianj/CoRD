@@ -16,11 +16,11 @@
  */
 
 #import "CRDServerGroup.h"
-
+#import "CRDLabelCell.h"
 
 @implementation CRDServerGroup
 
-@synthesize label, serverList, groupList;
+@synthesize label, labelCell, serverList, groupList;
 
 +(CRDServerGroup *)initWithLabel:(NSString *)newLabel
 {
@@ -33,9 +33,10 @@
 {
 	if (![super init])
 		return nil;
+	
 	serverList = [[NSMutableArray alloc] init];
 	groupList = [[NSMutableArray alloc] init];
-	
+
 	return self;
 }
 
@@ -43,12 +44,14 @@
 {
 	[self init];
 	[self setLabel:newLabel];
+	labelCell = [[CRDLabelCell alloc] initTextCell:label];
 	
 	return self;
 }
 
 - (void)dealloc
 {
+	[labelCell release];
 	[serverList release];
 	[groupList release];
 	[super dealloc];
