@@ -1331,6 +1331,7 @@
 	
 	[targetGroup addServer:inst];
 	[gui_ServerOutlineView reloadItem:targetGroup reloadChildren:YES];
+	[gui_ServerOutlineView expandItem:targetGroup];
 	
 	//	[inst setValue:[NSNumber numberWithInt:[savedServers indexOfObjectIdenticalTo:inst]] forKey:@"preferredRowIndex"];
 	
@@ -1352,6 +1353,7 @@
 	CRDLog(CRDLogLevelInfo, @"Add Group: %@ to: %@", [newGroup label], [targetGroup label]);
 	[targetGroup addGroup:newGroup];
 	[gui_ServerOutlineView reloadItem:targetGroup reloadChildren:YES];
+	[gui_ServerOutlineView expandItem:targetGroup];
 }
 
 
