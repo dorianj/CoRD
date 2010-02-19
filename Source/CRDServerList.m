@@ -108,6 +108,12 @@
 
 - (void)drawRow:(NSInteger)rowIndex clipRect:(NSRect)clipRect
 {
+	if ([g_appController displayMode] == CRDDisplayFullscreen)
+	{
+		[super drawRow:rowIndex clipRect:clipRect];
+		return;
+	}
+
 	// Lightly highlight the visible server if not selected
 	if ([[self delegate] tableView:self objectValueForTableColumn:nil row:rowIndex] == [g_appController viewedServer]
 		&& (selectedRow != rowIndex) && ([g_appController displayMode] == CRDDisplayUnified) )
