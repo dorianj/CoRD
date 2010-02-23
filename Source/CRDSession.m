@@ -44,7 +44,7 @@
 	if (![super init])
 		return nil;
 	
-	rdpFilename = label = hostName = username = password = domain = @"";
+	rdpFilename = label = hostName = clientHostname = username = password = domain = @"";
 	preferredRowIndex = -1;
 	screenDepth = 16;
 	temporary = themes = YES;
@@ -96,6 +96,8 @@
 	
 	[self setValue:[NSNumber numberWithInt:[[defaults valueForKey:@"CRDBaseConnectionForwardAudio"] intValue]] forKey:@"forwardAudio"];
 	
+	[self setValue:[defaults valueForKey:@"CRDBaseConnectionClientHostname"] forKey:@"clientHostname"];
+		
 	NSString *resolutionString = [defaults valueForKey:@"CRDBaseConnectionScreenSize"];
 	fullscreen = CRDResolutionStringIsFullscreen(resolutionString);
 
@@ -119,6 +121,7 @@
 	
 	[label release];
 	[hostName release];
+	[clientHostname release];
 	[username release];
 	[password release];
 	[domain release];
@@ -149,6 +152,7 @@
 	
 	newSession->label = [label copy];
 	newSession->hostName = [hostName copy];
+	newSession->clientHostname = [clientHostname copy];
 	newSession->username = [username copy];
 	newSession->password = [password copy];
 	newSession->domain = [domain copy];
@@ -356,10 +360,17 @@
 		logonFlags |= RDP_LOGON_LEAVE_AUDIO;
 	}
 	
+	if ([clientHostname length]) {
+		NSLog(@"str: %@", clientHostname);
+		NSLog(@"other str: '%s'", CRDMakeWindowsString(clientHostname)); 
+		memset(conn->hostname,0,64);
+		strncpy(conn->hostname, CRDMakeWindowsString(clientHostname), 64);
+        conn->hostname[MIN([clientHostname length], 64)] = '\0';
+	}
 	
 	rdpdr_init(conn);
 	cliprdr_init(conn);
-	
+
 	// Make the connection
 	BOOL connected = rdp_connect(conn,
 							[hostName UTF8String], 
@@ -882,7 +893,7 @@
 #pragma mark -
 #pragma mark Accessors
 
-@synthesize hostName, label, conn, view, temporary, modified, cellRepresentation, status=connectionStatus, window, hotkey, forwardAudio;
+@synthesize hostName, label, clientHostname, conn, view, temporary, modified, cellRepresentation, status=connectionStatus, window, hotkey, forwardAudio;
 
 - (NSView *)tabItemView
 {

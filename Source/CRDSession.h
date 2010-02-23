@@ -30,7 +30,7 @@
 	RDConnectionRef conn;
 
 	// User configurable RDP settings
-	NSString *label, *hostName, *username, *password, *domain;	
+	NSString *label, *hostName, *username, *password, *domain, *clientHostname;	
 	BOOL savePassword, forwardDisks, forwardPrinters, drawDesktop, windowDrags, windowAnimation, themes, fontSmoothing, consoleSession, fullscreen;
 	NSInteger forwardAudio, port;
 	NSInteger hotkey, screenDepth, screenWidth, screenHeight;
@@ -64,7 +64,7 @@
 	NSWindow *window;
 }
 
-@property (copy) NSString *hostName, *label;
+@property (copy) NSString *hostName, *label, *clientHostname;
 @property (readonly) RDConnectionRef conn;
 @property (readonly) CRDSessionView *view;
 @property (assign) BOOL temporary;
