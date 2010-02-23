@@ -86,8 +86,9 @@
 
 - (IBAction)showPreferencesHelp:(id)sender
 {
+	NSString *helpBook = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"];
 	NSString *helpAnchor = @"";
-	
+
 	if ([sender tag] == CRDPreferencesGeneralTabTag)
 		helpAnchor = @"GeneralPreferences";
 	else if ([sender tag] == CRDPreferencesConnectionTabTag)
@@ -95,10 +96,10 @@
 	else if ([sender tag] == CRDPreferencesForwardingTabTag)
 		helpAnchor = @"ForwardingPreferences";
 	else if ([sender tag] == CRDPreferencesAdvancedTabTag)
-		helpAnchor = @"";
+		helpAnchor = @"AdvancedPreferences";
 
 	if ([helpAnchor length])
-		[[NSHelpManager sharedHelpManager] openHelpAnchor:helpAnchor inBook:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleHelpBookName"]];
+		[[NSHelpManager sharedHelpManager] openHelpAnchor:helpAnchor inBook:helpBook];
 }
 
 
