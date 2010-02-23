@@ -5,7 +5,7 @@
 <a name="ConnectionPreferences"></a>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-	<meta name="AppleTitle" content="ConnectionOptions" />
+	<meta name="AppleTitle" content="ConnectionPreferences" />
 	<meta name="AppleIcon" content="images/CoRDIcon.png" />
 	<title>Connection Preferences</title>
 	<link rel="stylesheet" type="text/css" href="../style/contentpage.css" />
@@ -29,10 +29,15 @@
 		<li><strong>Hotkey</strong> Allows you to set hotkeys for up to 10 servers, using the number keys.  This lets you rapidly connect to and switch between heavily used servers.</li>
 	</ul>
 	
-	<h2>Devices</h2>
+	<h2>Devices &amp; Audio</h2>
 	<ul>
 		<li><strong>Forward disks</strong> Make local files accessible to the remote servers. Don't enable unless you trust the server, as it is a possible security risk.</li>
 		<li><strong>Forward printers</strong> Make local printers accessible to the remote servers.</li>
+		<li><strong>Forward audio</strong>
+		<ul>
+			<li><strong>Disable Audio</strong> Disables audio completely.</li>
+			<li><strong>Leave Audio</strong> Leaves audio at the remote machine.</li>
+		</ul></li>
 	</ul>
 	
 	<h2>Performance</h2>
@@ -46,7 +51,11 @@
 		<li><strong>Font smoothing (ClearType)</strong> Enables ClearType, can cause a significant bandwidth increase.</li>
 		
 	</ul>
-	
+
+	<h2>Advanced</h2>
+	<ul>
+		<li><strong>Client Hostname</strong> This allows you to set the hostname CoRD sends to the remote Windows machine.  By default CoRD detects and sends your machine's hostname automatically, but this setting allows you to customize what is sent.</li>
+	</ul>
 </div>
 </body>
 </html>
