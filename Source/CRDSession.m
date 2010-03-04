@@ -361,8 +361,6 @@
 	}
 	
 	if ([clientHostname length]) {
-		NSLog(@"str: %@", clientHostname);
-		NSLog(@"other str: '%s'", CRDMakeWindowsString(clientHostname)); 
 		memset(conn->hostname,0,64);
 		strncpy(conn->hostname, CRDMakeWindowsString(clientHostname), 64);
         conn->hostname[MIN([clientHostname length], 64)] = '\0';
