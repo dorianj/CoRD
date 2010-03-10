@@ -37,7 +37,7 @@
 			<string>Remote Desktop Connection</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
-				<string>RDP </string>
+				<string>RDP</string>
 			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
