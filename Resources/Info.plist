@@ -60,6 +60,35 @@
 			</array>
 		</dict>
 	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>net.sf.cord.rdp</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://download.microsoft.com/download/9/5/E/95EF66AF-9026-4BB0-A41D-A4F81802D92C/%5BMS-RDPBCGR%5D.pdf</string>
+			<key>UTTypeDescription</key>
+			<string>Remote Desktop Protocol file</string>
+			<key>UTTypeIconFile</key>
+			<string>RDP Document File</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<string>RDP</string>
+				<key>public.filename-extension</key>
+				<array>
+					<string>rdp</string>
+				</array>
+				<key>public.mime-type</key>
+				<string>application/octet-stream</string>
+			</dict>
+		</dict>
+	</array>
 	<key>CFBundleHelpBookFolder</key>
 	<string>CoRD Help</string>
 	<key>CFBundleHelpBookName</key>
