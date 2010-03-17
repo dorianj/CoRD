@@ -575,6 +575,8 @@
 
 - (IBAction)startFullscreen:(id)sender
 {
+	CRDLog(CRDLogLevelInfo, @"Starting Full Screen");
+	
 	if (displayMode == CRDDisplayFullscreen || ![connectedServers count] || ![self viewedServer])
 		return;
 	
@@ -664,6 +666,8 @@
 
 - (IBAction)endFullscreen:(id)sender
 {
+	CRDLog(CRDLogLevelInfo, @"Ending Full Screen");
+
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
 	
@@ -1494,6 +1498,17 @@
 	return proposedFrameSize;
 }
 
+- (void)windowDidResize:(NSNotification *)notification
+{
+//	CRDSession *inst = [self viewedServer];
+//	
+//	if (!inst)
+//	{
+//		[gui_unifiedWindow saveFrameUsingName:@"UnifiedWindowFrame"];	
+//	}
+
+	CRDLog(CRDLogLevelInfo, @"Window Did Resize; width: %f height: %f x: %f y: %f",[[gui_unifiedWindow contentView] frame].size.width, [[gui_unifiedWindow contentView] frame].size.height, [[gui_unifiedWindow contentView] frame].origin.x, [[gui_unifiedWindow contentView] frame].origin.y);
+}
 
 #pragma mark -
 #pragma mark NSSearchField Delegate
@@ -1605,6 +1620,7 @@
 		
 	if ((displayMode == CRDDisplayFullscreen) && ![gui_tabView numberOfItems])
 	{
+		CRDLog(CRDLogLevelInfo, @"Disconnecting while in Full Screen");
 		[self autosizeUnifiedWindowWithAnimation:NO];
 		[self endFullscreen:self];
 	}
@@ -1643,6 +1659,8 @@
 
 - (void)reconnectInstanceForEnteringFullscreen:(CRDSession*)inst
 {
+	CRDLog(CRDLogLevelInfo, @"Reconnecting for Full Screen...");
+	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	[self performSelectorOnMainThread:@selector(disconnectInstance:) withObject:inst waitUntilDone:YES];
@@ -2251,33 +2269,37 @@
 - (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate
 {
 	CRDSession *inst = [self viewedServer];
+	NSRect currentScreenFrame = [[gui_unifiedWindow screen] visibleFrame];
+	NSRect oldWindowFrame = [gui_unifiedWindow frame];
+	NSRect newWindowFrame;
 	NSSize newContentSize;
+	float scrollerWidth = [NSScroller scrollerWidth];
+	float toolbarHeight = oldWindowFrame.size.height - [[gui_unifiedWindow contentView] frame].size.height;
+
+	
 	if ([self displayMode] == CRDDisplayUnified && inst)
 	{
 		// Not pretty but better than before...
-		newContentSize = ([[inst view] bounds].size.width > 100) ? [[inst view] bounds].size : NSMakeSize(600, 400);
+		newContentSize = ([[inst view] bounds].size.width > 100) ? [[inst view] bounds].size : NSMakeSize(CRDDefaultFrameWidth, CRDDefaultFrameHeight);
 		[gui_unifiedWindow setContentMaxSize:newContentSize];
 	}
 	else
 	{
-		newContentSize = NSMakeSize(600, 400);
-		[gui_unifiedWindow setContentMaxSize:NSMakeSize(FLT_MAX, FLT_MAX)];
+		newContentSize = [[NSScreen mainScreen] visibleFrame].size;
+		[gui_unifiedWindow setContentMaxSize:newContentSize];
 	}
 
-	NSRect windowFrame = [gui_unifiedWindow frame];
-	NSRect screenRect = [[gui_unifiedWindow screen] visibleFrame];
 	
 	if (CRDPreferenceIsEnabled(CRDPrefsScaleSessions) && inst)
 		[gui_unifiedWindow setContentAspectRatio:newContentSize];
 	else
 		[gui_unifiedWindow setContentResizeIncrements:NSMakeSize(1.0,1.0)];
 	
-	float scrollerWidth = [NSScroller scrollerWidth];
-	float toolbarHeight = windowFrame.size.height - [[gui_unifiedWindow contentView] frame].size.height;
-	
-	NSRect newWindowFrame = NSMakeRect( windowFrame.origin.x, windowFrame.origin.y +
-										windowFrame.size.height-newContentSize.height-toolbarHeight, 
-										newContentSize.width, newContentSize.height + toolbarHeight);
+	newWindowFrame = NSMakeRect(oldWindowFrame.origin.x, 
+								oldWindowFrame.origin.y + oldWindowFrame.size.height - newContentSize.height - toolbarHeight,
+								newContentSize.width,
+								newContentSize.height + toolbarHeight
+								);
 	
 	float drawerWidth = [gui_serversDrawer contentSize].width + 
 			([[[gui_serversDrawer contentView] window] frame].size.width-[gui_serversDrawer contentSize].width) / 2.0 + 1.0;
@@ -2291,39 +2313,39 @@
 		newWindowFrame.size.width += drawerWidth;
 	}
 	
-	newWindowFrame.size.width = MIN(screenRect.size.width, newWindowFrame.size.width);
-	newWindowFrame.size.height = MIN(screenRect.size.height, newWindowFrame.size.height);
+	newWindowFrame.size.width = MIN(currentScreenFrame.size.width, newWindowFrame.size.width);
+	newWindowFrame.size.height = MIN(currentScreenFrame.size.height, newWindowFrame.size.height);
 	
 	
 	// Assure that no unneccesary scrollers are created
 	if (!CRDPreferenceIsEnabled(CRDPrefsScaleSessions))
 	{
 		
-		if (newWindowFrame.size.height > screenRect.size.height && newWindowFrame.size.width + scrollerWidth <= screenRect.size.width)
+		if (newWindowFrame.size.height > currentScreenFrame.size.height && newWindowFrame.size.width + scrollerWidth <= currentScreenFrame.size.width)
 		{
-			newWindowFrame.origin.y = screenRect.origin.y;
-			newWindowFrame.size.height = screenRect.size.height;
+			newWindowFrame.origin.y = currentScreenFrame.origin.y;
+			newWindowFrame.size.height = currentScreenFrame.size.height;
 			newWindowFrame.size.width += scrollerWidth;
 
 		}
-		if (newWindowFrame.size.width > screenRect.size.width && newWindowFrame.size.height+scrollerWidth <= screenRect.size.height)
+		if (newWindowFrame.size.width > currentScreenFrame.size.width && newWindowFrame.size.height+scrollerWidth <= currentScreenFrame.size.height)
 		{
-			newWindowFrame.origin.x = screenRect.origin.x;
-			newWindowFrame.size.width = screenRect.size.width;
+			newWindowFrame.origin.x = currentScreenFrame.origin.x;
+			newWindowFrame.size.width = currentScreenFrame.size.width;
 			newWindowFrame.size.height += scrollerWidth;
 		}
 	}
 	
 	// Try to make it contained within the screen
-	if (newWindowFrame.origin.y < screenRect.origin.y && newWindowFrame.size.height <= screenRect.size.height)
+	if (newWindowFrame.origin.y < currentScreenFrame.origin.y && newWindowFrame.size.height <= currentScreenFrame.size.height)
 	{
-		newWindowFrame.origin.y = screenRect.origin.y;
+		newWindowFrame.origin.y = currentScreenFrame.origin.y;
 	}
 	
-	if (newWindowFrame.origin.x + newWindowFrame.size.width > screenRect.size.width)
+	if (newWindowFrame.origin.x + newWindowFrame.size.width > currentScreenFrame.size.width)
 	{
-		newWindowFrame.origin.x -= (newWindowFrame.origin.x + newWindowFrame.size.width) - (screenRect.origin.x + screenRect.size.width);
-		newWindowFrame.origin.x = MAX(newWindowFrame.origin.x, screenRect.origin.x);
+		newWindowFrame.origin.x -= (newWindowFrame.origin.x + newWindowFrame.size.width) - (currentScreenFrame.origin.x + currentScreenFrame.size.width);
+		newWindowFrame.origin.x = MAX(newWindowFrame.origin.x, currentScreenFrame.origin.x);
 	}
 	
 		
