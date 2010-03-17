@@ -127,7 +127,7 @@ BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...);
 
 // Constants
 extern const NSInteger CRDDefaultPort;
-extern const NSInteger CRDDefaultScreenWidth, CRDDefaultScreenHeight;
+extern const NSInteger CRDDefaultScreenWidth, CRDDefaultScreenHeight, CRDDefaultFrameWidth, CRDDefaultFrameHeight;
 extern const NSInteger CRDMouseEventLimit;
 extern const NSInteger CRDInspectorMaxWidth;
 extern const NSInteger CRDForwardAudio, CRDLeaveAudio, CRDDisableAudio;

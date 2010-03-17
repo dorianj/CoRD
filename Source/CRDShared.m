@@ -26,6 +26,8 @@
 const NSInteger CRDDefaultPort = 3389;
 const NSInteger CRDDefaultScreenWidth = 1024;
 const NSInteger CRDDefaultScreenHeight = 640;
+const NSInteger CRDDefaultFrameWidth = 600;
+const NSInteger CRDDefaultFrameHeight = 400;
 const NSInteger CRDMouseEventLimit = 20;
 const NSInteger CRDInspectorMaxWidth = 500;
 const NSInteger CRDForwardAudio = 0;
