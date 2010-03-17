@@ -2041,7 +2041,10 @@
 	[inst setValue:[NSNumber numberWithInteger:hotkey] forKey:@"hotkey"];
 
 	// Audio Forwarding
-	[inst setValue:[NSNumber numberWithInt:[[gui_forwardAudio selectedCell] tag]] forKey:@"forwardAudio"];
+	if ([[gui_forwardAudio selectedCell] tag] >= 0  && [[gui_forwardAudio selectedCell] tag] < 3)
+		[inst setValue:[NSNumber numberWithInt:[[gui_forwardAudio selectedCell] tag]] forKey:@"forwardAudio"];
+	else
+		[inst setValue:[NSNumber numberWithInt:0] forKey:@"forwardAudio"];
 
 	// Screen depth
 	[inst setValue:[NSNumber numberWithInt:([gui_colorCount indexOfSelectedItem]+1)*8] forKey:@"screenDepth"];
