@@ -54,9 +54,9 @@ typedef struct _CRDInputEvent
 typedef enum _CRDLogLevel
 {
 	CRDLogLevelOff   = 0,
-	CRDLogLevelInfo  = 1,
+	CRDLogLevelError = 1,
 	CRDLogLevelWarn  = 2,
-	CRDLogLevelError = 3,
+	CRDLogLevelInfo  = 3,
 	CRDLogLevelDebug = 4
 } CRDLogLevel;
 
