@@ -264,7 +264,7 @@
 
 
 				default:
-					CRDLog(CRDLogLevelError, @"Error Rendering Cursor - Unknown Bitrate: %i", bpp)
+					CRDLog(CRDLogLevelError, @"Error Rendering Cursor - Unknown Bitrate: %i", bpp);
 					np[0] = np[1] = np[2] = 0;
 					np[3] = 0xff;
 					break;
