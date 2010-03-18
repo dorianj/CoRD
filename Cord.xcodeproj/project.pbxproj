@@ -322,7 +322,6 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				3E1E95A81152E41400D0A262 /* UKCrashReporter.xib */,
 			);
 			name = Cord;
 			sourceTree = "<group>";
@@ -351,6 +350,7 @@
 				993AEC340FB136AB0031B013 /* MainMenu.xib */,
 				98FFFFBE10EEA890005510EB /* UKCrashReporter.strings */,
 				98E972CE0BD9DA820041110D /* windows_keymap_table.txt */,
+				3E1E95A81152E41400D0A262 /* UKCrashReporter.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
