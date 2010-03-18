@@ -432,10 +432,12 @@ BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...)
 	CRDLogLevel userLogLevelThreshold = [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] integerValue];
 	
 #ifdef CORD_DEBUG_BUILD	
-	forceLogToStdout = YES;
 	
+	forceLogToStdout = YES;
+
 	if (userLogLevelThreshold)
 		userLogLevelThreshold++;
+	
 #endif
 
 	if (logLevel > userLogLevelThreshold)

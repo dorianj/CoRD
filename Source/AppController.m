@@ -491,6 +491,9 @@
 // Called whenever anything in the inspector is edited
 - (IBAction)fieldEdited:(id)sender
 {
+//	if (sender == nil)
+//		return;
+//	
 	if (inspectedServer != nil)
 	{
 		[self updateInstToMatchInspector:inspectedServer];
@@ -1148,11 +1151,15 @@
 
 - (void)applicationWillTerminate:(NSNotification *)aNotification
 {
+	CRDLog(CRDLogLevelInfo,@"CoRD is Terminating, Cleaning Up");
+	
 	_appIsTerminating = YES;
 	
+	CRDLog(CRDLogLevelDebug, @"Firing tableViewSelectionDidChange to force inspector to update");
 	[self tableViewSelectionDidChange:nil];
 	
 	// Save current state to user defaults
+	CRDLog(CRDLogLevelDebug, @"Saving current state to user defaults");
 	[userDefaults setInteger:[gui_serversDrawer edge] forKey:CRDDefaultsUnifiedDrawerSide];
 	[userDefaults setBool:CRDDrawerIsVisible(gui_serversDrawer) forKey:CRDDefaultsUnifiedDrawerShown];
 	[userDefaults setFloat:[gui_serversDrawer contentSize].width forKey:CRDDefaultsUnifiedDrawerWidth];
@@ -1162,12 +1169,14 @@
 	// Clean up the fullscreen window
 	if (displayMode == CRDDisplayFullscreen)
 	{
+		CRDLog(CRDLogLevelDebug, @"Cleaning up Fullscreen Window");
 		[gui_fullScreenWindow orderOut:nil];
 		displayMode = displayModeBeforeFullscreen;
 	}
 	[userDefaults setInteger:displayMode forKey:CRDDefaultsDisplayMode];
 	
 	// Disconnect all connected servers
+	CRDLog(CRDLogLevelInfo, @"Disconnecting any connected severs");
 	for ( CRDSession *inst in connectedServers )
 		[self disconnectInstance:inst];
 	
@@ -1176,8 +1185,8 @@
 	NSEnableScreenUpdates();
 	
 	// Flush each saved server to file (so that the perferred row will be saved)
+	CRDLog(CRDLogLevelDebug, @"Flush and store servers");
 	[self storeSavedServerPositions];
-	
 	for (CRDSession *inst in savedServers)
 		[inst flushChangesToFile];	
 }
@@ -1358,11 +1367,11 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
+	CRDLog(CRDLogLevelDebug,@"NSTableView Delegate - Selection Changed");
 	NSInteger selectedRow = [gui_serverList selectedRow];
 	CRDSession *inst = [self selectedServer];
-	
+		
 	[self validateControls];
-	[self fieldEdited:nil];
 	
 	// If there's no selection, clear the inspector
 	if (selectedRow == -1)
@@ -1370,13 +1379,17 @@
 		[self setInspectorSettings:nil];	
 		inspectedServer = nil;
 		[self setInspectorEnabled:NO];
-
 		return;
 	} else {
-		if ([inspectedServer modified] && ![inspectedServer temporary] )
-			[inspectedServer flushChangesToFile];	
+		[self updateInstToMatchInspector:inspectedServer];
+		[self saveInspectedServer];
 	}
-
+	
+	if (_appIsTerminating)
+	{
+		[self setInspectorEnabled:NO];
+		return;
+	}
 	[self setInspectorEnabled:YES];
 
 	inspectedServer = inst;
