@@ -380,14 +380,16 @@
 		return;
 	
 	if ([inst status] != CRDConnectionClosed)
+	{	
 		[self performStop:nil];
+		[self autosizeUnifiedWindowWithAnimation:NO];
+	}
 		
 	[gui_serverList deselectAll:self];
 	
 	[self removeSavedServer:inst deleteFile:YES];
 	
 	[self listUpdated];
-	[self autosizeUnifiedWindowWithAnimation:NO];
 }
 
 // Connects to the currently selected saved server
