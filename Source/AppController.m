@@ -1513,17 +1513,27 @@
 	
 	return proposedFrameSize;
 }
+- (void)windowDidMove:(NSNotification *)window
+{
+	CRDSession *inst = [self viewedServer];
+	
+	if (!inst)
+	{
+		[gui_unifiedWindow saveFrameUsingName:@"UnifiedWindowFrame"];	
+	}
+	CRDLog(CRDLogLevelDebug, @"Window Did Move; Origin-x: %f Origin-y: %f",[[gui_unifiedWindow contentView] frame].origin.x, [[gui_unifiedWindow contentView] frame].origin.y);
+}
 
 - (void)windowDidResize:(NSNotification *)notification
 {
-//	CRDSession *inst = [self viewedServer];
-//	
-//	if (!inst)
-//	{
-//		[gui_unifiedWindow saveFrameUsingName:@"UnifiedWindowFrame"];	
-//	}
+	CRDSession *inst = [self viewedServer];
+	
+	if (!inst)
+	{
+		[gui_unifiedWindow saveFrameUsingName:@"UnifiedWindowFrame"];	
+	}
 
-	CRDLog(CRDLogLevelInfo, @"Window Did Resize; width: %f height: %f x: %f y: %f",[[gui_unifiedWindow contentView] frame].size.width, [[gui_unifiedWindow contentView] frame].size.height, [[gui_unifiedWindow contentView] frame].origin.x, [[gui_unifiedWindow contentView] frame].origin.y);
+	CRDLog(CRDLogLevelDebug, @"Window Did Resize; Width: %f Height: %f",[[gui_unifiedWindow contentView] frame].size.width, [[gui_unifiedWindow contentView] frame].size.height);
 }
 
 #pragma mark -
@@ -1637,12 +1647,12 @@
 	if ((displayMode == CRDDisplayFullscreen) && ![gui_tabView numberOfItems])
 	{
 		CRDLog(CRDLogLevelInfo, @"Disconnecting while in Full Screen");
-		[self autosizeUnifiedWindowWithAnimation:NO];
+		[self autosizeUnifiedWindowWithAnimation:YES];
 		[self endFullscreen:self];
 	}
 	else if (displayMode == CRDDisplayUnified)
 	{
-		[self autosizeUnifiedWindowWithAnimation:!_appIsTerminating];
+		[self autosizeUnifiedWindowWithAnimation:YES];
 		
 		if (![self viewedServer] && CRDDrawerIsVisible(gui_serversDrawer))
 			[gui_unifiedWindow makeFirstResponder:gui_serverList];
@@ -2402,12 +2412,19 @@
 		}
 	}
 	
+	[NSAnimationContext beginGrouping];
+	[[NSAnimationContext currentContext] setDuration:0.5];
 	if ( ([self displayMode] != CRDDisplayUnified) || ([self viewedServer] == nil))
+	{
 		[gui_unifiedWindow setTitle:@"CoRD"];
-	else
+		[[gui_unifiedWindow animator] setFrameUsingName:@"UnifiedWindowFrame"];
+	}
+	else {
 		[gui_unifiedWindow setTitle:[[self viewedServer] label]];
-	
-	[gui_unifiedWindow setFrame:newWindowFrame display:YES animate:animate];
+		[[gui_unifiedWindow animator] setFrame:newWindowFrame display:YES];
+	}
+	[NSAnimationContext endGrouping];
+	//[gui_unifiedWindow setFrame:newWindowFrame display:YES animate:animate];
 }
 
 
