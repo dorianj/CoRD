@@ -14,9 +14,11 @@
 		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
 		3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */; };
 		3E4B67921019E3E600D3A911 /* CRDFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9722F0BD9D9DF0041110D /* CRDFullScreenWindow.m */; };
+		3E7018221153C7A9004D15CA /* CoRD Quicklook.qlgenerator in Resources */ = {isa = PBXBuildFile; fileRef = 3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */; };
+		3E7018311153C7CA004D15CA /* CoRD Quicklook.qlgenerator in Copy Quicklook Item */ = {isa = PBXBuildFile; fileRef = 3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */; };
 		3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E713D501080071800FB7F2D /* CRDDisconnect.png */; };
 		9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
-		9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
+		9816F0620BEE48F600E439BE /* Sparkle.framework in Copy Sparkle Framework */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
 		982212001128A03900936745 /* ssl.c in Sources */ = {isa = PBXBuildFile; fileRef = 982211FF1128A03900936745 /* ssl.c */; };
 		98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98369D370C050B3D009BF52F /* OpenGL.framework */; };
@@ -95,14 +97,26 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		446801890ABF9AAB00FE4069 /* CopyFiles */ = {
+		3E70183E1153C7D4004D15CA /* Copy Quicklook Item */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Contents/Library/Quicklook;
+			dstSubfolderSpec = 1;
+			files = (
+				3E7018311153C7CA004D15CA /* CoRD Quicklook.qlgenerator in Copy Quicklook Item */,
+			);
+			name = "Copy Quicklook Item";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		446801890ABF9AAB00FE4069 /* Copy Sparkle Framework */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				9816F0620BEE48F600E439BE /* Sparkle.framework in CopyFiles */,
+				9816F0620BEE48F600E439BE /* Sparkle.framework in Copy Sparkle Framework */,
 			);
+			name = "Copy Sparkle Framework";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -121,6 +135,7 @@
 		3E4B676C1019E2D700D3A911 /* CRDFilePathLabelFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathLabelFormatter.h; path = Source/CRDFilePathLabelFormatter.h; sourceTree = "<group>"; };
 		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
 		3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathFormatter.h; path = Source/CRDFilePathFormatter.h; sourceTree = "<group>"; };
+		3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Quicklook.qlgenerator"; path = "Library/Quicklook/CoRD Quicklook.qlgenerator"; sourceTree = "<group>"; };
 		3E713D501080071800FB7F2D /* CRDDisconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CRDDisconnect.png; path = Resources/CRDDisconnect.png; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
@@ -316,6 +331,7 @@
 		29B97314FDCFA39411CA2CEA /* Cord */ = {
 			isa = PBXGroup;
 			children = (
+				3E70185B1153C91D004D15CA /* Library */,
 				44D2AE410AA761C000EA19A1 /* rdesktop */,
 				080E96DDFE201D6D7F000001 /* CoRD */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
@@ -363,6 +379,14 @@
 				1058C7A2FEA54F0111CA2CBB /* Included Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3E70185B1153C91D004D15CA /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */,
+			);
+			name = Library;
 			sourceTree = "<group>";
 		};
 		44D2AE410AA761C000EA19A1 /* rdesktop */ = {
@@ -508,9 +532,10 @@
 			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "CoRD" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
+				3E70183E1153C7D4004D15CA /* Copy Quicklook Item */,
+				446801890ABF9AAB00FE4069 /* Copy Sparkle Framework */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
-				446801890ABF9AAB00FE4069 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -579,6 +604,7 @@
 				9910D95E110C20C20085DCB2 /* next.png in Resources */,
 				9910D95F110C20C20085DCB2 /* previous.png in Resources */,
 				3E1E95A91152E41400D0A262 /* UKCrashReporter.xib in Resources */,
+				3E7018221153C7A9004D15CA /* CoRD Quicklook.qlgenerator in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

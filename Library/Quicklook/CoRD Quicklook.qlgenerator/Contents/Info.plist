@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>rdp</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>RDP Document File</string>
+			<key>CFBundleTypeName</key>
+			<string>Remote Desktop v1</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>net.sf.cord.rdp</string>
+			</array>
+			<key>LSTypeIsPackage</key>
+			<false/>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>XML</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>msrcincident</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>RDP Document File</string>
+			<key>CFBundleTypeName</key>
+			<string>MS Remote Incident File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>net.sf.cord.msrcincident</string>
+			</array>
+			<key>NSPersistentStoreTypeKey</key>
+			<string>XML</string>
+		</dict>
+	</array>
+	<key>CFBundleExecutable</key>
+	<string>CoRD Quicklook</string>
+	<key>CFBundleIconFile</key>
+	<string>RDP Document File</string>
+	<key>CFBundleIdentifier</key>
+	<string>net.sf.cord.quicklookgenerator</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>CoRD Quicklook</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.5.4</string>
+	<key>CFBundleVersion</key>
+	<string>0.5.4</string>
+	<key>CFPlugInDynamicRegisterFunction</key>
+	<string></string>
+	<key>CFPlugInDynamicRegistration</key>
+	<string>NO</string>
+	<key>CFPlugInFactories</key>
+	<dict>
+		<key>88622969-FFF9-4884-B453-0BAFD352355B</key>
+		<string>QuickLookGeneratorPluginFactory</string>
+	</dict>
+	<key>CFPlugInTypes</key>
+	<dict>
+		<key>5E2D9680-5022-40FA-B806-43349622E5B9</key>
+		<array>
+			<string>88622969-FFF9-4884-B453-0BAFD352355B</string>
+		</array>
+	</dict>
+	<key>CFPlugInUnloadFunction</key>
+	<string></string>
+	<key>QLNeedsToBeRunInMainThread</key>
+	<false/>
+	<key>QLPreviewHeight</key>
+	<integer>300</integer>
+	<key>QLPreviewWidth</key>
+	<integer>200</integer>
+	<key>QLSupportsConcurrentRequests</key>
+	<false/>
+	<key>QLThumbnailMinimumSize</key>
+	<real>17</real>
+</dict>
+</plist>
