@@ -135,7 +135,7 @@
 		3E4B676C1019E2D700D3A911 /* CRDFilePathLabelFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathLabelFormatter.h; path = Source/CRDFilePathLabelFormatter.h; sourceTree = "<group>"; };
 		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
 		3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathFormatter.h; path = Source/CRDFilePathFormatter.h; sourceTree = "<group>"; };
-		3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Quicklook.qlgenerator"; path = "Library/Quicklook/CoRD Quicklook.qlgenerator"; sourceTree = "<group>"; };
+		3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Quicklook.qlgenerator"; path = "Library/Quicklook/CoRD Quicklook.qlgenerator"; sourceTree = SOURCE_ROOT; };
 		3E713D501080071800FB7F2D /* CRDDisconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CRDDisconnect.png; path = Resources/CRDDisconnect.png; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
@@ -384,9 +384,17 @@
 		3E70185B1153C91D004D15CA /* Library */ = {
 			isa = PBXGroup;
 			children = (
+				3E7018721153CB35004D15CA /* Quicklook */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		3E7018721153CB35004D15CA /* Quicklook */ = {
+			isa = PBXGroup;
+			children = (
 				3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */,
 			);
-			name = Library;
+			path = Quicklook;
 			sourceTree = "<group>";
 		};
 		44D2AE410AA761C000EA19A1 /* rdesktop */ = {
