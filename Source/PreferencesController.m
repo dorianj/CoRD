@@ -37,33 +37,51 @@
 
 - (IBAction)changePanes:(id)sender
 {
-	NSView *currentPane = [preferencesWindow contentView], *newPane = nil;
+	NSRect currentWindowFrame = [preferencesWindow frame];
+	NSRect newWindowFrame;
+	
+	NSView *currentContentView = [preferencesWindow contentView];
+	NSRect  currentContentFrame = [[preferencesWindow contentView] frame];
+	
+	NSView *newContentView = nil;
+	NSRect  newContentFrame;
 	
 	if ([sender tag] == CRDPreferencesGeneralTabTag)
-		newPane = generalView;
+		newContentView = generalView;
 	else if ([sender tag] == CRDPreferencesConnectionTabTag)
-		newPane = connectionView;
+		newContentView = connectionView;
 	else if ([sender tag] == CRDPreferencesForwardingTabTag)
-		newPane = forwardingView;
+		newContentView = forwardingView;
 	else if ([sender tag] == CRDPreferencesAdvancedTabTag)
-		newPane = advancedView;
+		newContentView = advancedView;
 	
-	if ( (newPane == nil) || (currentPane == newPane) )
+	if ( (newContentView == nil) || (currentContentView == newContentView) )
 		return;
 		
+	newContentFrame = [newContentView frame];
+	
 	[preferencesWindow makeFirstResponder:nil];
-	[preferencesWindow setContentView:[[[NSView alloc] initWithFrame:[[preferencesWindow contentView] frame]] autorelease]];
+	//[preferencesWindow setContentView:[[[NSView alloc] initWithFrame:[[preferencesWindow contentView] frame]] autorelease]];
+	
+	newWindowFrame = currentWindowFrame;
+
+	newWindowFrame.size.height = (currentWindowFrame.size.height - currentContentFrame.size.height) + newContentFrame.size.height;
+
+	newWindowFrame.size.width = newContentFrame.size.width;
+
+	newWindowFrame.origin.y += ([[preferencesWindow contentView] frame].size.height - [newContentView frame].size.height);
+	
+	[NSAnimationContext beginGrouping];
+		if ([[NSApp currentEvent] modifierFlags] & NSShiftKeyMask)
+			[[NSAnimationContext currentContext] setDuration:2.0];
+		[newContentView setAlphaValue:0.0];
+		[[preferencesWindow animator] setFrame:newWindowFrame display:YES];
+		[[preferencesWindow animator] setContentView:newContentView];
+		[[newContentView animator] setAlphaValue:1.0];
+	[NSAnimationContext endGrouping];
+
+	[preferencesWindow makeFirstResponder:newContentView];
 	[toolbar setSelectedItemIdentifier:[sender itemIdentifier]];
-	
-	NSRect newFrame = [preferencesWindow frame];
-	newFrame.size.height = [newPane frame].size.height + ([preferencesWindow frame].size.height - [[preferencesWindow contentView] frame].size.height);
-	newFrame.size.width = [newPane frame].size.width; 
-	newFrame.origin.y += ([[preferencesWindow contentView] frame].size.height - [newPane frame].size.height);
-	
-	
-	[preferencesWindow setFrame:newFrame display:YES animate:YES];
-	[[preferencesWindow animator] setContentView:newPane];
-	[preferencesWindow makeFirstResponder:newPane];
 }
 
 #pragma mark -
