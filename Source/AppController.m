@@ -1523,7 +1523,7 @@
 	{
 		[gui_unifiedWindow saveFrameUsingName:@"UnifiedWindowFrame"];	
 	}
-	CRDLog(CRDLogLevelDebug, @"Window Did Move; Origin-x: %f Origin-y: %f",[[gui_unifiedWindow contentView] frame].origin.x, [[gui_unifiedWindow contentView] frame].origin.y);
+	CRDLog(CRDLogLevelDebug, @"Window Did Move; Origin-x: %f Origin-y: %f",[gui_unifiedWindow frame].origin.x, [gui_unifiedWindow frame].origin.y);
 }
 
 - (void)windowDidResize:(NSNotification *)notification
@@ -1535,7 +1535,7 @@
 		[gui_unifiedWindow saveFrameUsingName:@"UnifiedWindowFrame"];	
 	}
 
-	CRDLog(CRDLogLevelDebug, @"Window Did Resize; Width: %f Height: %f",[[gui_unifiedWindow contentView] frame].size.width, [[gui_unifiedWindow contentView] frame].size.height);
+	CRDLog(CRDLogLevelDebug, @"Window Did Resize; Width: %f Height: %f",[gui_unifiedWindow frame].size.width, [gui_unifiedWindow frame].size.height);
 }
 
 #pragma mark -
