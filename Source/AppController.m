@@ -113,6 +113,9 @@
 	
 	[gui_unifiedWindow makeKeyAndOrderFront:self];
 	
+	[[[NSApp windowsMenu] itemWithTitle:@"CoRD"] setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];
+	[[[NSApp windowsMenu] itemWithTitle:@"CoRD"] setKeyEquivalent:@"1"];
+	
 	displayMode = CRDDisplayUnified;
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
