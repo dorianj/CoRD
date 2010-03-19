@@ -461,7 +461,7 @@ BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...)
 			logFileUnwritable = YES;
 		}
 		
-		NSLog(composedMessage);
+		NSLog(@"%@",composedMessage);
 	}
 	else
 	{
