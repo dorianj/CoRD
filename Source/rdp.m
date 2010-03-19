@@ -194,7 +194,7 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, NSString *nsdomain, NSSt
 	int len_password = CRDGetUTF16LEStringLength(nspassword);
 	int len_directory = 2 * strlen(directory);
 	int len_ip = 2 * strlen(ipaddr);
-	int len_dll = 2 * strlen("C:\\WINNT\\System32\\mstscax.dll");
+	int len_dll = 2 * strlen("%systemroot%\\system32\\mstscax.dll");
 	int packetlen = 0;
 	uint32 sec_flags = conn->useEncryption ? (SEC_LOGON_INFO | SEC_ENCRYPT) : SEC_LOGON_INFO;
 	RDStreamRef s;
@@ -302,19 +302,14 @@ rdp_send_logon_info(RDConnectionRef conn, uint32 flags, NSString *nsdomain, NSSt
 		{
 			out_uint16_le(s, 0);
 		}
-		out_uint16_le(s, 2);
-		out_uint16_le(s, len_ip + 2);	/* Length of client ip */
-		rdp_out_unistr(s, ipaddr, len_ip);
-		free(ipaddr);
-		out_uint16_le(s, len_dll + 2);
-		rdp_out_unistr(s, "C:\\WINNT\\System32\\mstscax.dll", len_dll);
 
 		/* TS_EXTENDED_INFO_PACKET */
 		out_uint16_le(s, 2);	/* clientAddressFamily = AF_INET */
 		out_uint16_le(s, len_ip + 2);	/* cbClientAddress, Length of client ip */
 		rdp_out_unistr(s, ipaddr, len_ip);	/* clientAddress */
+		free(ipaddr);
 		out_uint16_le(s, len_dll + 2);	/* cbClientDir */
-		rdp_out_unistr(s, "C:\\WINNT\\System32\\mstscax.dll", len_dll);	/* clientDir */
+		rdp_out_unistr(s, "%systemroot%\\system32\\mstscax.dll", len_dll);	/* clientDir */
 
 		/* TS_TIME_ZONE_INFORMATION */
 		tzone = (mktime(gmtime(&t)) - mktime(localtime(&t))) / 60;
