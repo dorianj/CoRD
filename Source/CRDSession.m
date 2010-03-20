@@ -712,6 +712,7 @@
 
 - (void)createWindow:(BOOL)useScrollView
 {	
+	[NSAnimationContext beginGrouping];
 	_usesScrollers = useScrollView;
 	[window release];
 	NSRect sessionScreenSize = [view bounds];
@@ -725,6 +726,7 @@
 	[[window contentView] setAutoresizesSubviews:YES];
 	[window setContentMinSize:NSMakeSize(100.0, 75.0)];
 	
+	[window setAlphaValue:0.0];
 	[view setFrameOrigin:NSZeroPoint];
 	[view removeFromSuperview];
 	
@@ -742,8 +744,10 @@
 		[view setNeedsDisplay:YES];
 	}
 	
+	[[window animator] setAlphaValue:1.0];
 	[window makeFirstResponder:view];
 	[window display];
+	[NSAnimationContext endGrouping];
 }
 
 
