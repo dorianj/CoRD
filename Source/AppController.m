@@ -2415,7 +2415,6 @@
 	}
 	
 	[NSAnimationContext beginGrouping];
-	[[NSAnimationContext currentContext] setDuration:0.5];
 	if ( ([self displayMode] != CRDDisplayUnified) || ([self viewedServer] == nil))
 	{
 		[gui_unifiedWindow setTitle:@"CoRD"];
