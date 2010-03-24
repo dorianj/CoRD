@@ -91,7 +91,7 @@ static NSDictionary *windowsKeymapTable = nil;
 		// suppress keydown event for windows key
 		newMods &= !NSCommandKeyMask;
 		windowsKeySuppressed = 1;
-		DEBUG_KEYBOARD( (@"Supressing windows key") );
+		DEBUG_KEYBOARD( (@"Suppressing windows key") );
 	}
 	else if ( !(newMods & NSCommandKeyMask) && (windowsKeySuppressed || (remoteModifiers & NSCommandKeyMask)) )
 	{
@@ -225,7 +225,7 @@ static NSDictionary *windowsKeymapTable = nil;
 		lineNumber++;
 		
 		if (!b)
-			DEBUG_KEYBOARD( (@"Uncaught keymap syntax error at line %d. Ignoring.", lineNumber - 1) );
+			CRDLog(CRDLogLevelError, @"Reading Keymap - Uncaught keymap syntax error at line %d. Ignoring.", lineNumber - 1);
 
 		scanner = [NSScanner scannerWithString:line];
 		b = YES;
@@ -251,7 +251,7 @@ static NSDictionary *windowsKeymapTable = nil;
 	switch (physicalKeyboardType)
 	{
 		case kKeyboardISO:
-			DEBUG_KEYBOARD( (@"Enabling hacks for European keyboard") );
+			CRDLog(CRDLogLevelDebug, @"Enabling hacks for European keyboard");
 			SET_KEYMAP_ENTRY(0x32, 0x56);
 			break;
 				
@@ -268,7 +268,7 @@ static NSDictionary *windowsKeymapTable = nil;
 // This method isn't fully re-entrant but shouldn't be a problem in practice
 + (unsigned)windowsKeymapForMacKeymap:(NSString *)keymapIdentifier
 {
-	DEBUG_KEYBOARD((@"Loading windows keymap for Mac keymap identifier %@", keymapIdentifier));
+	CRDLog(CRDLogLevelInfo, @"Loading windows keymap for Mac keymap identifier %@", keymapIdentifier);
 
 	// Load 'OSX keymap name' --> 'Windows keymap number' lookup table if it isn't already loaded
 	if (windowsKeymapTable == nil)
@@ -316,15 +316,15 @@ static NSDictionary *windowsKeymapTable = nil;
 			if ([[keymapName commonPrefixWithString:potentialKeymapName options:NSCaseInsensitiveSearch] length] >= 4)
 			{ 
 				windowsKeymap = [windowsKeymapTable objectForKey:potentialKeymapName];
-				DEBUG_KEYBOARD( (@"windowsKeymapForMacKeymap: substituting keymap '%@' for passed '%@', giving Windows keymap 0x%x", potentialKeymapName, keymapIdentifier, [windowsKeymap intValue]));
+				CRDLog(CRDLogLevelDebug, @"windowsKeymapForMacKeymap: substituting keymap '%@' for passed '%@', giving Windows keymap 0x%x", potentialKeymapName, keymapIdentifier, [windowsKeymap intValue]);
 				break;
 			}
 	}
 	
 	if (windowsKeymap)
-		DEBUG_KEYBOARD( (@"Setting remote keymap to %@ (int value: 0x%x)", keymapIdentifier, [windowsKeymap unsignedIntValue]) );
+		CRDLog(CRDLogLevelInfo, @"Setting remote keymap to %@ (int value: 0x%x)", keymapIdentifier, [windowsKeymap unsignedIntValue]);
 	else
-		DEBUG_KEYBOARD( (@"Using default American English keyboard layout") );
+		CRDLog(CRDLogLevelInfo, @"Using default American English keyboard layout");
 		
 	return (!windowsKeymap) ? 0x409 : [windowsKeymap unsignedIntValue];
 }
@@ -333,7 +333,7 @@ static NSDictionary *windowsKeymapTable = nil;
 {
 	TISInputSourceRef keyLayout;
 	keyLayout = TISCopyCurrentKeyboardInputSource();
-	DEBUG_KEYBOARD((@"Current keymap identifier: %@", (NSString *)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID)));
+	CRDLog(CRDLogLevelDebug, @"Current keymap identifier: %@", (NSString *)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID));
 	return (NSString*)TISGetInputSourceProperty(keyLayout, kTISPropertyInputSourceID);
 }
 
