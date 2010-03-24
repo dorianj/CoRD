@@ -192,7 +192,10 @@
 
 - (void)reshape
 {
-	if (![self openGLContext] || ([controller status] != CRDConnectionConnected) || [[NSThread currentThread] isEqualTo:[controller valueForKey:@"connectionThread"]] ) 
+	if ( ( ![self openGLContext] ) || ( !controller ) || ( ![controller respondsToSelector:@selector(status)] ) )
+		return;
+	
+	if ( ( [controller status] != CRDConnectionConnected ) || ( [[NSThread currentThread] isEqualTo:[controller valueForKey:@"connectionThread"]] ) ) 
 		return;
 		
 	NSRect visibleRect = [self isScrolled] ? [[[self enclosingScrollView] documentView] visibleRect] : [self convertRect:[self bounds] toView:nil];
