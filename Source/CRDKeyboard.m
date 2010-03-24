@@ -310,7 +310,8 @@ static NSDictionary *windowsKeymapTable = nil;
 	
 	if (!windowsKeymap)
 	{
-		NSString *keymapName = [[keymapIdentifier componentsSeparatedByString:@"."] objectAtIndex:3];
+		NSArray *keymapNameComponents = [keymapIdentifier componentsSeparatedByString:@"."];
+		NSString *keymapName = [keymapNameComponents objectAtIndex:MIN(3,[keymapNameComponents count])];
 				
 		for (NSString *potentialKeymapName in windowsKeymapTable)
 			if ([[keymapName commonPrefixWithString:potentialKeymapName options:NSCaseInsensitiveSearch] length] >= 4)
