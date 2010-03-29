@@ -108,9 +108,9 @@
 	<key>CFBundleName</key>
 	<string>CoRD</string>
 	<key>CFBundleShortVersionString</key>
-	<string>0.5.0-svn</string>
+	<string>0.5.4</string>
 	<key>CFBundleVersion</key>
-	<string>5000</string>
+	<string>5400</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
