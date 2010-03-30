@@ -1143,6 +1143,12 @@
 			}
 		}
 		else if ([[[file pathExtension] lowercaseString] isEqualTo:@"msrcincident"]) {
+			CRDLog(CRDLogLevelInfo, @"Loading MSRCIncident File: %@", [[NSURL fileURLWithPath:file] absoluteString]);
+			NSXMLDocument *incidentFile = [[NSXMLDocument alloc] initWithContentsOfURL:[NSURL fileURLWithPath:file] options:NSXMLDocumentTidyXML error:nil];
+			CRDLog(CRDLogLevelInfo, @"File: %@, Version: %i", [incidentFile URI], [incidentFile version]);
+			NSXMLElement *rootElement = [incidentFile rootElement];
+			for (id child in [rootElement children])
+				CRDLog(CRDLogLevelInfo,@"Child Name: %@",[child name]);
 			[[NSAlert alertWithMessageText:@"Coming Soon!" defaultButton:@"OK" alternateButton:nil otherButton:nil informativeTextWithFormat:@"Support for MS Incident files coming soon!"] runModal];
 		}
 	}
