@@ -30,14 +30,6 @@
 #import "CRDServerCell.h"
 #import "CRDSession.h"
 
-
-// Start is top, end is bottom
-#define HIGHLIGHT_START [NSColor colorWithDeviceRed:(66/255.0) green:(154/255.0) blue:(227/255.0) alpha:1.0]
-#define HIGHLIGHT_END [NSColor colorWithDeviceRed:(25/255.0) green:(85/255.0) blue:(205/255.0) alpha:1.0]
-
-#define UNFOCUSED_START [NSColor colorWithDeviceRed:(150/255.0) green:(150/255.0) blue:(150/255.0) alpha:1.0]
-#define UNFOCUSED_END [NSColor colorWithDeviceRed:(100/255.0) green:(100/255.0) blue:(100/255.0) alpha:1.0]
-
 #define ANIMATION_DURATION 0.18
 
 #pragma mark -
@@ -85,24 +77,19 @@
 {	
 	if (selectedRow == -1)
 		return;
-	
-	NSColor *topColor, *bottomColor;
-	if ([g_appController mainWindowIsFocused])
-	{
-		topColor = HIGHLIGHT_START;
-		bottomColor = HIGHLIGHT_END;
-	} else {
-		topColor = UNFOCUSED_START;
-		bottomColor = UNFOCUSED_END;	
-	}
-	
+
 	NSRect drawRect = [self rectOfRow:selectedRow];
-	
+	NSColor *fillColor;
+
+	if ([[NSApp mainWindow] isKeyWindow])
+		fillColor = [NSColor alternateSelectedControlColor];
+	else
+		fillColor = [NSColor lightGrayColor];
+
 	[self lockFocus];	
-	NSRectClip(drawRect);
-	CRDDrawVerticalGradient(bottomColor, topColor, drawRect);
-	CRDDrawHorizontalLine([bottomColor blendedColorWithFraction:0.6 ofColor:topColor], 
-			NSMakePoint(drawRect.origin.x, drawRect.origin.y), drawRect.size.width);
+		NSRectClip(drawRect);
+		[fillColor set];
+		NSRectFillUsingOperation(NSMakeRect(drawRect.origin.x, drawRect.origin.y, drawRect.size.width, drawRect.size.height), NSCompositeSourceOver);
 	[self unlockFocus];
 }
 
@@ -119,7 +106,7 @@
 		&& (selectedRow != rowIndex) && ([g_appController displayMode] == CRDDisplayUnified) )
 	{
 		[NSGraphicsContext saveGraphicsState];
-		[[[NSColor selectedTextBackgroundColor] blendedColorWithFraction:0.4 ofColor:[NSColor whiteColor]] set];
+		[[NSColor selectedControlColor] set];
 		[NSBezierPath fillRect:[self rectOfRow:rowIndex]];		
 		[NSGraphicsContext restoreGraphicsState];	
 	}

@@ -63,10 +63,6 @@ typedef enum _CRDLogLevel
 #pragma mark -
 #pragma mark Shared routines
 
-void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rect);
-void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width);
-
-
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port);
 NSString *CRDJoinHostNameAndPort(NSString *host, NSInteger port);
 

@@ -153,9 +153,15 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	
 	// Set up text styling
 	if (highlighted) {
-		CRDSetAttributedStringColor(label, static_highlightedBoldColor);
-		CRDSetAttributedStringColor(user, static_highlightedRegularColor);
-		CRDSetAttributedStringColor(host, static_highlightedRegularColor);
+		if ([[NSApp mainWindow] isKeyWindow]) {
+			CRDSetAttributedStringColor(label, static_highlightedBoldColor);
+			CRDSetAttributedStringColor(user, static_highlightedRegularColor);
+			CRDSetAttributedStringColor(host, static_highlightedRegularColor);
+		} else {
+			CRDSetAttributedStringColor(label, [NSColor textColor]);
+			CRDSetAttributedStringColor(user, [NSColor textColor]);
+			CRDSetAttributedStringColor(host, [NSColor textColor]);			
+		}
 	} else {
 		CRDSetAttributedStringColor(label, static_normalBoldColor);
 		CRDSetAttributedStringColor(user, static_normalRegularColor);

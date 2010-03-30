@@ -69,25 +69,6 @@ NSString * const CRDUseSocksProxy = @"CRDUseSocksProxy";
 #pragma mark -
 #pragma mark General purpose routines
 
-void CRDDrawVerticalGradient(NSColor *topColor, NSColor *bottomColor, NSRect rect)
-{
-	float delta, cur = rect.origin.y, limit = rect.origin.y + rect.size.height;
-	while (limit - cur > .001)
-	{
-		// Interpolate the colors, draw a line for this pixel
-		delta = 1.0 - (float)(cur - rect.origin.y) / rect.size.height;
-		CRDDrawHorizontalLine([topColor blendedColorWithFraction:delta ofColor:bottomColor], NSMakePoint(rect.origin.x, cur), rect.size.width);
-							
-		cur += 1.0;
-	}
-}
-
-inline void CRDDrawHorizontalLine(NSColor *color, NSPoint start, float width)
-{
-	[color set];
-	NSRectFillUsingOperation(NSMakeRect(start.x, start.y, width, 1.0), NSCompositeSourceOver);
-}
-
 inline NSString * CRDJoinHostNameAndPort(NSString *host, NSInteger port)
 {
 	return (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", host, port] : [[host copy] autorelease];
