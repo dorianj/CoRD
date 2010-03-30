@@ -2274,14 +2274,15 @@
 			NSString *title = [NSString stringWithFormat:NSLocalizedString(@"Couldn't connect to %@",
 					@"Connection error alert -> Title"), [inst label]];
 			
-			NSAlert *alert = [NSAlert alertWithMessageText:title defaultButton:nil
-						alternateButton:NSLocalizedString(@"Retry", @"Connection errors -> Retry button")
-						otherButton:nil
-						informativeTextWithFormat:localizedErrorDescriptions[errorCode]];
+			NSAlert *alert = [NSAlert alertWithMessageText:title 
+											 defaultButton:NSLocalizedString(@"Retry", @"Connection errors -> Retry button") 
+										   alternateButton:NSLocalizedString(@"Cancel",@"Connection errors -> Cancel button") 
+											   otherButton:nil 
+								 informativeTextWithFormat:localizedErrorDescriptions[errorCode]];
 			[alert setAlertStyle:NSCriticalAlertStyle];
 			
 			// Retry if requested
-			if ([alert runModal] == NSAlertAlternateReturn)
+			if ([alert runModal] == NSAlertDefaultReturn)
 			{
 				[self connectInstance:inst];
 			}
