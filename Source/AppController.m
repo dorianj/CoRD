@@ -84,7 +84,7 @@
 	filteredServers = [[NSMutableArray alloc] init];
 	
 	filteredServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Search Results", @"Servers list label 3")];
-	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Active sessions", @"Servers list label 1")];
+	connectedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Active Sessions", @"Servers list label 1")];
 	savedServersLabel = [[CRDLabelCell alloc] initTextCell:NSLocalizedString(@"Saved Servers", @"Servers list label 2")];
 	
 	return self;
