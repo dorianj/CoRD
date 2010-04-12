@@ -85,7 +85,10 @@
 					<string>rdp</string>
 				</array>
 				<key>public.mime-type</key>
-				<string>application/octet-stream</string>
+				<array>
+					<string>application/x-rdp</string>
+					<string>application/rdp</string>
+				</array>
 			</dict>
 		</dict>
 	</array>
