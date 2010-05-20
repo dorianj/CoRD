@@ -1293,6 +1293,14 @@
 	return YES;	
 }
 
+- (CGFloat)outlineView:(NSOutlineView *)outlineView heightOfRowByItem:(id)item
+{
+	if ([item isKindOfClass:[CRDServerGroup class]])
+		return 25;
+	else
+		return 15;
+}
+
 - (NSCell *)outlineView:(NSOutlineView *)outlineView dataCellForTableColumn:(NSTableColumn *)tableColumn item:(id)item
 {
 	if ([item isKindOfClass:[CRDSession class]]) {

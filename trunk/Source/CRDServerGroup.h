@@ -45,8 +45,7 @@
 // Handle Input/Output
 -(NSMutableDictionary *)dumpToDictionary;
 -(void)exportToPlist:(NSString *)filename atPath:(NSString *)path;
-// Uncomment when we go to 10.6 only
-//-(void)exportToPlist:(NSString *)filename atURL:(NSURL *)url;
+-(void)exportToPlist:(NSString *)filename atURL:(NSURL *)url;
 
 -(NSInteger)count;
 

@@ -111,13 +111,13 @@
 	NSMutableDictionary *plist = [self dumpToDictionary];
 	[plist writeToFile:[path stringByAppendingPathComponent:filename] atomically:YES];
 }
-// Uncomment when we go to 10.6 only
-//-(void)exportToPlist:(NSString *)filename atURL:(NSURL *)url
-//{
-//	NSMutableDictionary *plist = [self dumpToDictionary];
-//	
-//	[plist writeToURL:[url URLByAppendingPathComponent:filename] atomically:YES];
-//}
+
+-(void)exportToPlist:(NSString *)filename atURL:(NSURL *)url
+{
+	NSMutableDictionary *plist = [self dumpToDictionary];
+	
+	[plist writeToURL:[url URLByAppendingPathComponent:filename] atomically:YES];
+}
 
 -(NSInteger)count
 {
