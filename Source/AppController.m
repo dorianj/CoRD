@@ -833,8 +833,17 @@
 	NSString *address = [gui_quickConnect stringValue], *hostname;
 	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] & NSShiftKeyMask;
 	NSInteger port;
-	
+		
 	CRDSplitHostNameAndPort(address, &hostname, &port);
+	
+	
+	// Check if hostname is already in saved servers...
+	for (id server in savedServers)
+		if ([[[server label] lowercaseString] isEqualToString:[hostname lowercaseString]]) {
+			[self connectInstance:server];
+			return;
+		}
+	
 	
 	CRDSession *newInst = [[[CRDSession alloc] initWithBaseConnection] autorelease];
 	
@@ -1784,7 +1793,8 @@
 	
 	if (![url host])
 		return;
-	
+
+	// Check if hostname is already in saved servers...
 	for (id server in savedServers)
 		if ([[[server label] lowercaseString] isEqualToString:[[url host] lowercaseString]]) {
 			[self connectInstance:server];
