@@ -44,7 +44,7 @@
 	NSMutableArray *inputEventStack;
 
 	// General information about instance
-	BOOL temporary, modified, temporarilyFullscreen, _usesScrollers;
+	BOOL isTemporary, modified, temporarilyFullscreen, _usesScrollers;
 	NSInteger preferredRowIndex;
 	volatile CRDConnectionStatus connectionStatus;
 	
@@ -67,7 +67,7 @@
 @property (copy) NSString *hostName, *label, *clientHostname;
 @property (readonly) RDConnectionRef conn;
 @property (readonly) CRDSessionView *view;
-@property (assign) BOOL temporary;
+@property (assign) BOOL isTemporary;
 @property (readonly) BOOL modified;
 @property (readonly) CRDServerCell *cellRepresentation;
 @property (readonly) volatile CRDConnectionStatus status;
@@ -117,7 +117,7 @@
 - (NSView *)tabItemView;
 - (NSString *)filename;
 - (void)setFilename:(NSString *)path;
-- (void)setTemporary:(BOOL)temp;
+- (void)setIsTemporary:(BOOL)temp;
 - (void)setHostName:(NSString *)newHost;
 - (void)setUsername:(NSString *)s;
 - (void)setPassword:(NSString *)pass;

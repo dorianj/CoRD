@@ -250,7 +250,7 @@
 	SEL action = [item action];
 	
     if (action == @selector(removeSelectedSavedServer:))
-		return (inst != nil) && ![inst temporary] && ([inst status] == CRDConnectionClosed);
+		return (inst != nil) && ![inst isTemporary] && ([inst status] == CRDConnectionClosed);
     else if (action == @selector(connect:))
         return (inst != nil) && [inst status] == CRDConnectionClosed;
     else if (action == @selector(disconnect:))
@@ -288,7 +288,7 @@
 	}
 	else if (action == @selector(keepSelectedServer:))
 	{
-		[item setState:CRDButtonState(![inst temporary])];
+		[item setState:CRDButtonState(![inst isTemporary])];
 		return [inst status] == CRDConnectionConnected;
 	}
 	else if (action == @selector(performFullScreen:)) 
@@ -345,7 +345,7 @@
 	
 	NSString *path = CRDFindAvailableFileName([AppController savedServersPath], NSLocalizedString(@"New Server", @"Name of newly added servers"), @".rdp");
 		
-	[inst setTemporary:NO];
+	[inst setIsTemporary:NO];
 	[inst setFilename:path];
 	[inst setValue:[[path lastPathComponent] stringByDeletingPathExtension] forKey:@"label"];
 	[inst flushChangesToFile];
@@ -364,7 +364,7 @@
 {
 	CRDSession *inst = [self selectedServer];
 	
-	if (inst == nil || [inst temporary] || ([inst status] != CRDConnectionClosed) )
+	if (inst == nil || [inst isTemporary] || ([inst status] != CRDConnectionClosed) )
 		return;
 	
 	NSAlert *alert = [NSAlert alertWithMessageText:
@@ -437,7 +437,13 @@
 	if (inst == nil)
 		return;
 	
-	[inst setTemporary:![inst temporary]];
+	[inst setIsTemporary:![inst isTemporary]];
+	
+	if (![inst isTemporary])
+	{
+		[inst setFilename:CRDFindAvailableFileName([AppController savedServersPath], [inst hostName], @".rdp")];
+		[inst flushChangesToFile];
+	}
 	[self validateControls];
 	[self listUpdated];
 }
@@ -1144,7 +1150,7 @@
 			
 			if (inst != nil)
 			{
-				[inst setTemporary:YES];
+				[inst setIsTemporary:YES];
 				[connectedServers addObject:inst];
 				[gui_serverList deselectAll:self];
 				[self listUpdated];
@@ -1632,7 +1638,7 @@
 	[[inst retain] autorelease];
 	[connectedServers removeObject:inst];
 	
-	if ([inst temporary])
+	if ([inst isTemporary])
 	{
 		// If temporary and in the CoRD servers directory, delete it
 		if ([[[inst filename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
@@ -1888,7 +1894,7 @@
 	if ([keyPath isEqualToString:@"label"])
 	{
 		NSString *newLabel = [change objectForKey:NSKeyValueChangeNewKey];
-		if ( ([newLabel length] > 0) && ![newLabel isEqual:[change objectForKey:NSKeyValueChangeOldKey]] && ![object temporary])
+		if ( ([newLabel length] > 0) && ![newLabel isEqual:[change objectForKey:NSKeyValueChangeOldKey]] && ![object isTemporary])
 		{
 			NSString *newPath = CRDFindAvailableFileName([AppController savedServersPath], [newLabel stringByDeletingFileSystemCharacters], @".rdp");
 			
@@ -2001,7 +2007,7 @@
 
 - (void)saveInspectedServer
 {
-	if ([inspectedServer modified] && ![inspectedServer temporary])
+	if ([inspectedServer modified] && ![inspectedServer isTemporary])
 		[inspectedServer flushChangesToFile];
 }
 
@@ -2232,7 +2238,7 @@
 	if ([inst status] == CRDConnectionConnected)
 	{
 		// Move it into the proper list
-		if (![inst temporary])
+		if (![inst isTemporary])
 		{
 			[[inst retain] autorelease];
 			[savedServers removeObject:inst];
@@ -2296,7 +2302,7 @@
 			{
 				[self connectInstance:inst];
 			}
-			else if ([inst temporary]) // Temporary items may be in connectedServers even though connection failed
+			else if ([inst isTemporary]) // Temporary items may be in connectedServers even though connection failed
 			{
 				[connectedServers removeObject:inst];
 				[self listUpdated];
@@ -2485,7 +2491,7 @@
 	if ( !inst || (index < 0) || (index > [savedServers count]) )
 		return;
 	
-	[inst setTemporary:NO];
+	[inst setIsTemporary:NO];
 	
 	index = MIN(MAX(index, 0), [savedServers count]);
 		

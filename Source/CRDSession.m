@@ -47,7 +47,7 @@
 	rdpFilename = label = hostName = clientHostname = username = password = domain = @"";
 	preferredRowIndex = -1;
 	screenDepth = 16;
-	temporary = themes = YES;
+	isTemporary = themes = YES;
 	hotkey = -1;
 	forwardAudio = CRDDisableAudio;
 	fileEncoding = NSUTF8StringEncoding;
@@ -689,7 +689,7 @@
 			[base drawInRect:CRDRectFromSize([cellImage size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];
 		} [cellImage unlockFocus];
 
-		if ([self temporary])
+		if ([self isTemporary])
 		{
 			// Copy the document image into a new image and badge it with the clock
 			[cellImage lockFocus]; {
@@ -895,7 +895,7 @@
 #pragma mark -
 #pragma mark Accessors
 
-@synthesize hostName, label, clientHostname, conn, view, temporary, modified, cellRepresentation, status=connectionStatus, window, hotkey, forwardAudio;
+@synthesize hostName, label, clientHostname, conn, view, isTemporary, modified, cellRepresentation, status=connectionStatus, window, hotkey, forwardAudio;
 
 - (NSView *)tabItemView
 {
@@ -918,13 +918,14 @@
 	[self didChangeValueForKey:@"rdpFilename"];
 }
 
-- (void)setTemporary:(BOOL)temp
+- (void)setIsTemporary:(BOOL)temp
 {
-	if (temp == temporary)
+	if (temp == isTemporary)
 		return;
 		
+		
 	[self willChangeValueForKey:@"temporary"];
-	temporary = temp;
+	isTemporary = temp;
 	[self didChangeValueForKey:@"temporary"];
 	[self updateCellData];
 }
@@ -1098,7 +1099,7 @@
 	}
 		
 	modified = NO;
-	[self setTemporary:NO];
+	[self setIsTemporary:NO];
 	
 	if (savePassword)
 	{
