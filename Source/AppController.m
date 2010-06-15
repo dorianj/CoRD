@@ -1002,7 +1002,7 @@
 
 		[filteredServers addObjectsFromArray:connectedServers];
 		[filteredServers addObjectsFromArray:savedServers];
-		[filteredServers filterUsingPredicate:[NSPredicate predicateWithFormat:@"(label like[c] %@) OR (hostName like[c] %@)",searchCompareString,searchCompareString]];
+		[filteredServers filterUsingPredicate:[NSPredicate predicateWithFormat:@"(label like[c] %@) OR (hostName like[c] %@) OR (username like[c] %@) OR (domain like[c] %@)",searchCompareString,searchCompareString,searchCompareString,searchCompareString]];
 	}
 	
 	if (sender == gui_searchField)
@@ -1010,10 +1010,7 @@
 		[self listUpdated];
 				
 		if ([filteredServers count])
-		{
 			[gui_serverList selectRow:1];
-			//[self updateInspectorToMatchSelectedServer];
-		}
 	}
 }
 

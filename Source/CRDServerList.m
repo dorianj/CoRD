@@ -126,8 +126,8 @@
 	
 	[self setNeedsDisplay:YES];
 	
-	if (oldSelection != selectedRow)
-		[[NSNotificationCenter defaultCenter] postNotificationName:NSTableViewSelectionDidChangeNotification object:self];	
+	[[NSNotificationCenter defaultCenter] postNotificationName:NSTableViewSelectionDidChangeNotification object:self];
+
 }
 
 - (void)deselectRow:(NSInteger)rowIndex
