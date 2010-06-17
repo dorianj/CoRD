@@ -1418,8 +1418,8 @@
 	inspectedServer = inst;
 	[self setInspectorSettings:inst];
 	
-	// If the new selection is an active session and this wasn't called from self, change the selected view
-	if (inst != nil && aNotification != nil && [inst status] == CRDConnectionConnected)
+	// If we're not filtering servers, and the new selection is an active session and this wasn't called from self, change the selected view
+	if (!_isFilteringSavedServers && inst != nil && aNotification != nil && [inst status] == CRDConnectionConnected)
 	{
 		if ( ([gui_tabView indexOfItem:inst] != NSNotFound) && ([self viewedServer] != inspectedServer) )
 		{
