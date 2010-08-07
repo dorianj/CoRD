@@ -519,7 +519,7 @@
 	
 	if ([connectedServers count] == 0)
 		return;
-	
+
 	CRDSession *inst = [self viewedServer];
 	if (inst == nil)
 	{
@@ -527,15 +527,21 @@
 		[self autosizeUnifiedWindow];
 		return;
 	}
-	
+
 	if ([gui_tabView indexOfSelectedItem] == ([connectedServers count] - 1))
 	{
+		if (!CRDDrawerIsVisible(gui_serversDrawer))
+			[gui_tabView selectItemAtIndex:0];
+
 		[gui_serverList selectRow:1];
 		[self autosizeUnifiedWindow];
 		return;
 	}
-	
+
 	// There is a Selected Server and we don't need to loop, select the next.
+	if (!CRDDrawerIsVisible(gui_serversDrawer))
+		[gui_tabView selectItemAtIndex:([gui_tabView indexOfSelectedItem]+1)];
+
 	[gui_serverList selectRow:(2 + [connectedServers indexOfObjectIdenticalTo:inst])];
 	[self autosizeUnifiedWindow];
 	
@@ -559,11 +565,17 @@
 	
 	if ( [gui_tabView indexOfSelectedItem] == 0 )
 	{
+		if (!CRDDrawerIsVisible(gui_serversDrawer))
+			[gui_tabView selectItemAtIndex:([connectedServers count] - 1)];
+
 		[gui_serverList selectRow:([connectedServers count])];
 		[self autosizeUnifiedWindow];
 		return;
 	}
 	// There is a Selected Server and we don't need to loop, select the prev.
+	if (!CRDDrawerIsVisible(gui_serversDrawer))
+		[gui_tabView selectItemAtIndex:([gui_tabView indexOfSelectedItem]-1)];
+
 	[gui_serverList selectRow:( [connectedServers indexOfObjectIdenticalTo:inst] ) ];
 	[self autosizeUnifiedWindow];
 }
