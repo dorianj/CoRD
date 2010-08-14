@@ -891,6 +891,8 @@
 	[dictionary setValue:[NSNumber numberWithInt:forwardPrinters] forKey:@"forwardPrinters"];
 	[dictionary setValue:[NSNumber numberWithInt:forwardAudio] forKey:@"forwardAudio"];
 	[dictionary setValue:[NSNumber numberWithInt:forwardDisks] forKey:@"forwardDisks"];
+	[dictionary setValue:[NSNumber numberWithInt:hotkey] forKey:@"hotkey"];
+	[dictionary setValue:[NSNumber numberWithBool:themes] forKey:@"themes"];
 	
 	return dictionary;
 }
