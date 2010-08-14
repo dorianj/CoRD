@@ -48,5 +48,6 @@
 -(void)exportToPlist:(NSString *)filename atURL:(NSURL *)url;
 
 -(NSInteger)count;
+-(NSArray *)allItems;
 
 @end

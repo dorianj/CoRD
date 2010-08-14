@@ -124,5 +124,10 @@
 	return [serverList count] + [groupList count];
 }
 
+-(NSArray *)allItems
+{
+	return [[groupList arrayByAddingObjectsFromArray:serverList] retain];
+}
+
 
 @end
