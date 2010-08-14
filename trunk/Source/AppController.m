@@ -1253,9 +1253,8 @@
 				return nil;
 				break;
 		}
-	// This could be dangerous, concatenating the arrays together, if one gets modified, etc.  
-	// Would like to see something more resilent and predicable here if possible
-	return [[[item groupList] arrayByAddingObjectsFromArray:[item serverList]] objectAtIndex:index];
+	
+	return [[item allItems] objectAtIndex:index];
 }
 
 - (BOOL)outlineView:(NSOutlineView *)outlineView isItemExpandable:(id)item
@@ -1312,6 +1311,13 @@
 	}
 	return [tableColumn dataCellForRow:[outlineView rowForItem:item]];
 }
+
+- (void)outlineViewSelectionDidChange:(NSNotification *)notification
+{
+	NSLog(@"%@",[[gui_ServerOutlineView itemAtRow:[gui_ServerOutlineView selectedRow]] label]);
+}
+
+
 
 - (IBAction)addServer:(id)sender
 {
@@ -1753,6 +1759,7 @@
 		[self addSavedServer:inst atIndex:preferredRow select:YES];
 	}
 
+	[gui_ServerOutlineView reloadData];
 	[self listUpdated];
 		
 	if ((displayMode == CRDDisplayFullscreen) && ![gui_tabView numberOfItems])
@@ -1967,7 +1974,7 @@
 	if (!CRDDrawerIsVisible(gui_serversDrawer))
 		return nil;
 	else
-		return [self serverInstanceForRow:[gui_serverList selectedRow]];
+		return [gui_ServerOutlineView itemAtRow:[gui_ServerOutlineView selectedRow]];
 }
 
 #pragma mark -
@@ -2330,6 +2337,8 @@
 			[gui_serverList selectRow:(1 + [connectedServers indexOfObject:inst])];
 		
 		[self listUpdated];
+		
+		[gui_ServerOutlineView reloadData];
 		
 		// Create gui
 		if ( (displayMode == CRDDisplayUnified) || (displayMode == CRDDisplayFullscreen) )
