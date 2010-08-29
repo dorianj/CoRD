@@ -130,6 +130,11 @@ void ui_memblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy,
 		case 14: // OR
 			compositingOp = NSCompositePlusLighter;
 			break;
+						
+		case 11: // XOR
+			bmp = [bmp invert];
+			compositingOp = NSCompositePlusLighter;
+			break;
 		
 		default:
 			CHECKOPCODE(opcode);

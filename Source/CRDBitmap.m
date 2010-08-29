@@ -21,6 +21,8 @@
 		- Using an accelerated buffer would speed up drawing. An option could be used for the situations where an NSImage is required. My tests on a machine with a capable graphics card show that CGImage would speed normal drawing up about 30-40%, and CGLayer would be 2-12 times quicker. The hassle is that some situations, a normal NSImage is needed (eg: when using the image as a pattern for NSColor and patblt), so it would either have to create both or have a switch for which to create, and neither CGImage nor CGLayer have a way to draw only a portion of itself, meaning the only way to do it is clip drawing to match the origin. I've written some basic code to use CFLayer, but it needs more work before I commit it.
 */
 
+#import <Quartz/Quartz.h>
+
 #import "CRDBitmap.h"
 #import "AppController.h"
 #import "CRDShared.h"
@@ -119,7 +121,7 @@
 												samplesPerPixel:4
 													   hasAlpha:YES
 													   isPlanar:NO
-												 colorSpaceName:NSCalibratedRGBColorSpace
+												 colorSpaceName:NSDeviceRGBColorSpace
 												   bitmapFormat:NSAlphaFirstBitmapFormat
 													bytesPerRow:width * 4
 												   bitsPerPixel:32] autorelease];
@@ -298,6 +300,15 @@
 	return self;
 }
 
+- (id)initWithImage:(NSImage *)img
+{
+	if (![super init])
+			return nil;
+	
+	image = [img retain];
+	
+	return self;
+}
 
 #pragma mark -
 #pragma mark Drawing the CRDBitmap
@@ -319,6 +330,50 @@
 		NSRectFillUsingOperation(CRDRectFromSize([image size]), NSCompositeSourceAtop);
 	} [image unlockFocus];
 }
+
+- (CRDBitmap *)invert
+{ 
+	NSData *tiffData = [image TIFFRepresentation];
+	CIImage *ci = [CIImage imageWithData:tiffData];
+
+	if([image isFlipped]) {
+		NSAffineTransform *affineTransform = [NSAffineTransform transform];
+		[affineTransform translateXBy:0 yBy:128];
+		[affineTransform scaleXBy:1 yBy:-1];
+
+		CIFilter *transform = [CIFilter filterWithName:@"CIAffineTransform"];
+		[transform setValue:ci forKey:@"inputImage"];
+		[transform setValue:affineTransform forKey:@"inputTransform"];
+
+		// get the new CIImage, flipped and ready to serve
+		ci = [transform valueForKey:@"outputImage"];
+	}
+
+	CIFilter *invert = [CIFilter filterWithName:@"CIColorInvert"];
+	[invert setValue:ci forKey:@"inputImage"];
+	ci = [invert valueForKey:@"outputImage"];
+
+	int width = [ci extent].size.width;
+	int rows = [ci extent].size.height;
+	int rowBytes = (width * 4);
+	
+	NSBitmapImageRep* rep = [[NSBitmapImageRep alloc] initWithBitmapDataPlanes:nil pixelsWide:width pixelsHigh:rows bitsPerSample:8 samplesPerPixel:4 hasAlpha:YES isPlanar:NO colorSpaceName:NSCalibratedRGBColorSpace bitmapFormat:0 bytesPerRow:rowBytes bitsPerPixel:0];
+
+	CGColorSpaceRef colorSpace = CGColorSpaceCreateWithName ( kCGColorSpaceGenericRGB );
+	CGContextRef context = CGBitmapContextCreate([rep bitmapData], width, rows, 8, rowBytes, colorSpace, kCGImageAlphaPremultipliedLast );
+	 
+	CIContext* ciContext = [CIContext contextWithCGContext:context options:nil];
+	[ciContext drawImage:ci atPoint:CGPointZero fromRect: [ci extent]];
+
+	CGContextRelease( context );
+	CGColorSpaceRelease( colorSpace );
+
+	NSImage *invertedImage = [[[NSImage alloc] initWithSize:NSMakeSize([ci extent].size.width, [ci extent].size.height)] autorelease];
+	[invertedImage addRepresentation:rep];
+	[rep release];
+
+	return [[[CRDBitmap alloc] initWithImage:invertedImage] autorelease];
+} 
 
 #pragma mark -
 #pragma mark Accessors
