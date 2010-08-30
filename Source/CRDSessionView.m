@@ -456,7 +456,8 @@
 		[bp relativeLineToPoint:NSMakePoint(points[i].x, points[i].y)];
 
 	[bp setLineWidth:w];
-	[bp closePath];
+	// Commented to test fix to #163...
+	//[bp closePath];
 	
 	[self focusBackingStore];
 	[c set];
