@@ -118,24 +118,29 @@ void ui_memblt(RDConnectionRef conn, uint8 opcode, int x, int y, int cx, int cy,
 		case 12:
 			compositingOp = NSCompositeCopy;
 			break;
-		
+
 		case 6:
 			compositingOp = NSCompositePlusLighter;
 			break;
-			
+
 		case 8: // AND
 			compositingOp = NSCompositePlusDarker;
 			break;
-			
+
 		case 14: // OR
 			compositingOp = NSCompositePlusLighter;
 			break;
-						
-		case 11: // XOR
+
+		case 2: //Inverted AND
+			bmp = [bmp invert];
+			compositingOp = NSCompositePlusDarker;
+			break;
+
+		case 11: // Inverted OR
 			bmp = [bmp invert];
 			compositingOp = NSCompositePlusLighter;
 			break;
-		
+
 		default:
 			CHECKOPCODE(opcode);
 			compositingOp = NSCompositeCopy;
