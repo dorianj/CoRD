@@ -1402,22 +1402,20 @@
 
 - (void)tableViewSelectionDidChange:(NSNotification *)aNotification
 {
-	CRDLog(CRDLogLevelDebug,@"NSTableView Delegate - Selection Changed");
 	NSInteger selectedRow = [gui_serverList selectedRow];
 	CRDSession *inst = [self selectedServer];
-		
+	
+	CRDLog(CRDLogLevelDebug,@"NSTableView Delegate - Selection Changed Server: %@ Row Index: %i", [inst label], selectedRow);
+	
 	[self validateControls];
 	
 	// If there's no selection, clear the inspector
-	if (selectedRow == -1)
+	if (selectedRow < 1 || (selectedRow == [connectedServers count] + 1))
 	{
 		[self setInspectorSettings:nil];	
 		inspectedServer = nil;
 		[self setInspectorEnabled:NO];
 		return;
-	} else {
-		[self updateInstToMatchInspector:inspectedServer];
-		[self saveInspectedServer];
 	}
 	
 	if (_appIsTerminating)
@@ -1425,19 +1423,40 @@
 		[self setInspectorEnabled:NO];
 		return;
 	}
-	[self setInspectorEnabled:YES];
 
 	inspectedServer = inst;
 	[self setInspectorSettings:inst];
 	
+	[self setInspectorEnabled:YES];
+	
+	
+	if (_isFilteringSavedServers)
+		return;
+	
 	// If we're not filtering servers, and the new selection is an active session and this wasn't called from self, change the selected view
-	if (!_isFilteringSavedServers && inst != nil && aNotification != nil && [inst status] == CRDConnectionConnected)
+	if ( inst != nil && aNotification != nil )
 	{
-		if ( ([gui_tabView indexOfItem:inst] != NSNotFound) && ([self viewedServer] != inspectedServer) )
+		if ( [inst status] == CRDConnectionConnected ) 
+		{			
+			if ( ([gui_tabView indexOfItem:inst] != NSNotFound) )
+			{
+				[gui_tabView selectItem:inspectedServer];
+				[gui_unifiedWindow makeFirstResponder:[[self viewedServer] view]];
+				[self autosizeUnifiedWindow];
+			}
+		}
+		
+		if ([inst status] == CRDConnectionDisconnecting || [inst status] == CRDConnectionClosed) 
 		{
-			[gui_tabView selectItem:inspectedServer];
-			[gui_unifiedWindow makeFirstResponder:[[self viewedServer] view]];
-			[self autosizeUnifiedWindow];
+
+			if (displayMode == CRDDisplayFullscreen) 
+			{
+				[self selectNext:self];
+				return;
+			}
+			
+			if (displayMode == CRDDisplayWindowed)
+				return;
 		}
 	}
 	
@@ -1445,6 +1464,9 @@
 
 - (BOOL)tableView:(NSTableView *)aTableView shouldSelectRow:(NSInteger)rowIndex
 {
+	[self updateInstToMatchInspector:inspectedServer];
+	[self saveInspectedServer];
+	
 	if (_isFilteringSavedServers)
 		return rowIndex >= 1;
 	else
