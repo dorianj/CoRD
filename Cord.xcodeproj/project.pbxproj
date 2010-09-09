@@ -14,7 +14,6 @@
 		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
 		3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */; };
 		3E4B67921019E3E600D3A911 /* CRDFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9722F0BD9D9DF0041110D /* CRDFullScreenWindow.m */; };
-		3E7018221153C7A9004D15CA /* CoRD Quicklook.qlgenerator in Resources */ = {isa = PBXBuildFile; fileRef = 3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */; };
 		3E7018311153C7CA004D15CA /* CoRD Quicklook.qlgenerator in Copy Quicklook Item */ = {isa = PBXBuildFile; fileRef = 3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */; };
 		3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E713D501080071800FB7F2D /* CRDDisconnect.png */; };
 		9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
@@ -616,7 +615,6 @@
 				9910D95E110C20C20085DCB2 /* next.png in Resources */,
 				9910D95F110C20C20085DCB2 /* previous.png in Resources */,
 				3E1E95A91152E41400D0A262 /* UKCrashReporter.xib in Resources */,
-				3E7018221153C7A9004D15CA /* CoRD Quicklook.qlgenerator in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
