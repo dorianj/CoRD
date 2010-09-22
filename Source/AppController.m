@@ -50,6 +50,7 @@
 	- (void)setInspectorEnabled:(BOOL)enabled;
 	- (void)toggleControlsEnabledInView:(NSView *)view enabled:(BOOL)enabled;
 	- (void)createWindowForInstance:(CRDSession *)inst;
+	- (void)createWindowForInstance:(CRDSession *)inst asFullscreen:(BOOL)fullscreen;
 	- (void)toggleDrawer:(id)sender visible:(BOOL)VisibleLength;
 	- (void)addSavedServer:(CRDSession *)inst;
 	- (void)addSavedServer:(CRDSession *)inst atIndex:(int)index;
@@ -2027,6 +2028,11 @@
 }
 
 - (void)createWindowForInstance:(CRDSession *)inst
+{
+	[self createWindowForInstance:inst asFullscreen:NO];
+}
+
+- (void)createWindowForInstance:(CRDSession *)inst asFullscreen:(BOOL)fullscreen
 {
 	[inst createWindow:!CRDPreferenceIsEnabled(CRDPrefsScaleSessions)];
 	
