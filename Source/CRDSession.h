@@ -33,7 +33,7 @@
 	NSString *label, *hostName, *username, *password, *domain, *clientHostname;	
 	BOOL savePassword, forwardDisks, forwardPrinters, drawDesktop, windowDrags, windowAnimation, themes, fontSmoothing, consoleSession, fullscreen;
 	NSInteger forwardAudio, port;
-	NSInteger hotkey, screenDepth, screenWidth, screenHeight;
+	NSInteger hotkey, screenDepth, screenWidth, screenHeight, displayMode;
 	NSMutableDictionary *otherAttributes;
 	
 	// Working between main thread and connection thread
@@ -72,7 +72,7 @@
 @property (readonly) CRDServerCell *cellRepresentation;
 @property (readonly) volatile CRDConnectionStatus status;
 @property (readonly) NSWindow *window;
-@property (assign) NSInteger hotkey, forwardAudio;
+@property (assign) NSInteger hotkey, forwardAudio, displayMode;
 
 
 

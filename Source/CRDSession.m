@@ -610,6 +610,7 @@
 	write_int(@"cord fullscreen", fullscreen);
 	write_int(@"cord row index", preferredRowIndex);
 	write_int(@"cord hotkey", hotkey);
+	write_int(@"cord displayMode", displayMode);
 	
 	write_string(@"full address", CRDJoinHostNameAndPort(hostName, port));
 	write_string(@"username", username);
@@ -895,7 +896,7 @@
 #pragma mark -
 #pragma mark Accessors
 
-@synthesize hostName, label, clientHostname, conn, view, isTemporary, modified, cellRepresentation, status=connectionStatus, window, hotkey, forwardAudio;
+@synthesize hostName, label, clientHostname, conn, view, isTemporary, modified, cellRepresentation, status=connectionStatus, window, hotkey, forwardAudio, displayMode;
 
 - (NSView *)tabItemView
 {
@@ -1086,9 +1087,12 @@
 		}
 		else if ([name isEqualToString:@"cord fullscreen"])
 			fullscreen = numVal;
+		else if ([name isEqualToString:@"cord displayMode"])
+			displayMode = numVal;
 		else if ([name isEqualToString:@"cord hotkey"]) {
 			hotkey = (numVal == 0) ? (-1) : numVal;
 		}
+
 		else
 		{
 			if ([type isEqualToString:@"i"])
