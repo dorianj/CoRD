@@ -328,6 +328,11 @@
 	[self mouseMoved:ev];
 }
 
+- (void)otherMouseDragged:(NSEvent *)ev  
+{ 
+	[self mouseMoved:ev]; 
+} 
+
 // ev can either be a live NSEvent* or an NSValue* coordinate
 - (void)mouseMoved:(id)ev
 {
