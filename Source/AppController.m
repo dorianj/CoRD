@@ -2150,6 +2150,8 @@
 	[inst setValue:[NSNumber numberWithInt:height] forKey:@"screenHeight"];
 	
 	[self saveInspectedServer];
+	
+	[gui_inspector setTitle:[NSLocalizedString(@"Inspector: ", @"Inspector -> Enabled title") stringByAppendingString:[inst label]]];
 }
 
 // Sets the inspector options to match an CRDSession
