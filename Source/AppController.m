@@ -850,7 +850,7 @@
 - (IBAction)performQuickConnect:(id)sender
 {
 	NSString *address = [gui_quickConnect stringValue], *hostname;
-	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] & NSShiftKeyMask;
+	BOOL isConsoleSession = [[NSApp currentEvent] modifierFlags] | NSShiftKeyMask;
 	NSInteger port;
 		
 	CRDSplitHostNameAndPort(address, &hostname, &port);
@@ -869,7 +869,9 @@
 	[newInst setValue:hostname forKey:@"label"];
 	[newInst setValue:hostname forKey:@"hostName"];
 	[newInst setValue:[NSNumber numberWithInt:port] forKey:@"port"];
-	[newInst setValue:[NSNumber numberWithBool:isConsoleSession] forKey:@"consoleSession"];
+
+	if (isConsoleSession)
+		[newInst setValue:[NSNumber numberWithBool:isConsoleSession] forKey:@"consoleSession"];
 	
 	[connectedServers addObject:newInst];
 	[gui_serverList deselectAll:self];
