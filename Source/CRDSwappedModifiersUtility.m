@@ -1,4 +1,4 @@
-/*	Copyright (c) 2007-2010 Dorian Johnson <2010@dorianj.net>
+/*	Copyright (c) 2007-2011 Dorian Johnson <2011@dorianj.net>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
