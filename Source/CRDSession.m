@@ -127,6 +127,7 @@
 	[domain release];
 	[otherAttributes release];
 	[rdpFilename release];
+	
 		
 	[cellRepresentation release];
 	[super dealloc];
@@ -772,8 +773,10 @@
 	[window release];
 	window = nil;
 }
+
 - (void)destroyUIElements
 {
+	[view setController:nil]; // inform view it's no longer being controller and is probably being deallocated
 	[self destroyWindow];
 	[scrollEnclosure release];
 	scrollEnclosure = nil;
@@ -1026,7 +1029,7 @@
 	
 	// Extract the name, type, and value from each line and load into ivars
 	id line;
-	for ( line in fileLines )
+	for (line in fileLines)
 	{
 		scan = [NSScanner scannerWithString:line];
 		[scan setCharactersToBeSkipped:colonSet];

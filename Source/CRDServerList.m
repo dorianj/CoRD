@@ -16,8 +16,6 @@
 */
 
 /*	Notes:
-		- I could have used CoreGraphics for the gradients. Drawing my own was easier.
-			It's the same exact result: a calculated gradient.
 		- In its current form, this isn't as abstracted as a view object should be. 
 			The delegate is assumed to respond to messages, it delves into the controller
 			realm, etc.

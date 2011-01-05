@@ -192,10 +192,10 @@
 
 - (void)reshape
 {
-	if ( ( ![self openGLContext] ) || ( !controller ) || ( ![controller respondsToSelector:@selector(status)] ) )
+	if ( ![self openGLContext] || !controller || ![controller respondsToSelector:@selector(status)] )
 		return;
 	
-	if ( ( [controller status] != CRDConnectionConnected ) || ( [[NSThread currentThread] isEqualTo:[controller valueForKey:@"connectionThread"]] ) ) 
+	if ( ([controller status] != CRDConnectionConnected) || [[NSThread currentThread] isEqualTo:[controller valueForKey:@"connectionThread"]] ) 
 		return;
 		
 	NSRect visibleRect = [self isScrolled] ? [[[self enclosingScrollView] documentView] visibleRect] : [self convertRect:[self bounds] toView:nil];
@@ -336,7 +336,7 @@
 // ev can either be a live NSEvent* or an NSValue* coordinate
 - (void)mouseMoved:(id)ev
 {
-	if (![self checkMouseInBounds:ev])
+	if (!controller || ![self checkMouseInBounds:ev])
 		return;
 
 	@synchronized(self)
@@ -386,6 +386,9 @@
 
 - (void)sendMouseInput:(unsigned short)flags
 {
+	if (!controller)
+		return;
+		
 	DEBUG_MOUSE((@"Sending mouse event at (%d,%d). Flags: %d. Event: %@", lrintf(mouseLoc.x), lrintf(mouseLoc.y), flags, [NSApp currentEvent]));
 	[controller sendInputOnConnectionThread:time(NULL) type:RDP_INPUT_MOUSE flags:flags param1:lrintf(mouseLoc.x) param2:lrintf(mouseLoc.y)];
 }
@@ -803,7 +806,9 @@
 {
 	controller = instance;
 	[keyTranslator setController:instance];
-	bitdepth = [instance conn]->serverBpp;
+
+	if (instance)
+		bitdepth = [instance conn]->serverBpp;
 }
 
 - (int)bitsPerPixel

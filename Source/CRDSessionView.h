@@ -27,7 +27,7 @@
 
 @interface CRDSessionView : NSOpenGLView
 {
-	CRDSession *controller;
+	CRDSession *controller; // weak reference (not retained)
 	
 	// OpenGL back buffer
 	CGContextRef rdBufferContext;
