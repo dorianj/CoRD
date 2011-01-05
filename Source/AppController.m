@@ -1244,7 +1244,8 @@
 	
 	[self validateControls];
 	
-	UKCrashReporterCheckForCrash();
+	if (![userDefaults boolForKey:CRDDisableCrashReporter])
+		UKCrashReporterCheckForCrash();
 }
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication *)theApplication hasVisibleWindows:(BOOL)hasVisibleWindows

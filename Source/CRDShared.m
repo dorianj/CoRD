@@ -56,6 +56,7 @@ NSString * const CRDDefaultsDisplayMode = @"windowed_mode";
 NSString * const CRDDefaultsQuickConnectServers = @"RecentServers";
 NSString * const CRDDefaultsSendWindowsKey = @"SendWindowsKey";
 
+
 // User-configurable NSUserDefaults keys (preferences)
 NSString * const CRDPrefsReconnectIntoFullScreen = @"reconnectFullScreen";
 NSString * const CRDPrefsReconnectOutOfFullScreen = @"ReconnectWhenLeavingFullScreen";
@@ -65,6 +66,7 @@ NSString * const CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizatio
 NSString * const CRDSetServerKeyboardLayout = @"SetServerKeyboardLayout";
 NSString * const CRDForwardOnlyDefinedPaths = @"CRDForwardOnlyDefinedPaths";
 NSString * const CRDUseSocksProxy = @"CRDUseSocksProxy";
+NSString * const CRDDisableCrashReporter = @"disableCrashReporter";
 
 #pragma mark -
 #pragma mark General purpose routines
