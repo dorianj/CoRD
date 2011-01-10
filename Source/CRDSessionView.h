@@ -75,8 +75,6 @@
 - (void)stopUpdate;
 - (void)focusBackingStore;
 - (void)releaseBackingStore;
-- (int)getBackingStoreBytes:(unsigned char **)retBytes;
-
 
 - (BOOL)checkMouseInBounds:(id)ev;
 - (void)sendMouseInput:(unsigned short)flags;

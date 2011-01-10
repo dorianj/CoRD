@@ -44,7 +44,6 @@
 
 - (id)initWithFrame:(NSRect)frame
 {
-    drawnRect = FALSE;
 	NSOpenGLPixelFormatAttribute pixelAttribs[4] = {NSOpenGLPFADoubleBuffer, NSOpenGLPFAColorSize, 24, 0};
 	NSOpenGLPixelFormat *pf = [[[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttribs] autorelease];
 	
@@ -170,7 +169,7 @@
 	} glEnd();   
 
 	[[self openGLContext] flushBuffer];
-    drawnRect = TRUE;
+    drawnRect = YES;
 }
 
 
@@ -178,11 +177,6 @@
 {
 	GLint swapInterval = 1;
 	[[self openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
-	
-	// xxx: possible solutions for diagonal triangular tearing on faster gfx cards
-	//GL_SAMPLE_ALPHA_TO_COVERAGE, GL_SAMPLE_ALPHA_TO_ONE and GL_SAMPLE_COVERAGE?
-	//glEnable(GL_LINE_SMOOTH);
-	//glEnable(GL_POLYGON_SMOOTH);
 	
 	glEnable(GL_TEXTURE_RECTANGLE_EXT);
 	glShadeModel(GL_SMOOTH);
@@ -516,11 +510,8 @@
 	[self focusBackingStore];
 	NSRectClip(NSMakeRect(to.x, to.y, NSWidth(from), NSHeight(from)));
 	CGImageRef rdBufferImage = CGBitmapContextCreateImage(rdBufferContext);
-	
 	CGContextDrawImage([[NSGraphicsContext currentContext] graphicsPort], CGRectMake(to.x - from.origin.x, to.y - from.origin.y,  screenSize.width, screenSize.height), rdBufferImage);
-	
 	CGImageRelease(rdBufferImage);
-	
 	[self releaseBackingStore];
 }
 
@@ -610,28 +601,23 @@
 	rdBufferBitmapLength = rdBufferWidth*rdBufferHeight*4;
 	rdBufferBitmapData = calloc(rdBufferBitmapLength, 1);
 
-	// ::fbu - Gamma Issue on Snow Leopard, see http://www.jizoh.jp/issue/colorissue.html
-	//CGColorSpaceRef cs = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-	CGColorSpaceRef cs = CGColorSpaceCreateDeviceRGB();
-	
-	rdBufferContext = CGBitmapContextCreate(rdBufferBitmapData, rdBufferWidth, rdBufferHeight, 8, rdBufferWidth*4, cs, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little); 		
-
+	CGColorSpaceRef cs = CGColorSpaceCreateDeviceRGB(); // instead of CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);, see http://www.jizoh.jp/issue/colorissue.html
+	rdBufferContext = CGBitmapContextCreate(rdBufferBitmapData, rdBufferWidth, rdBufferHeight, 8, rdBufferWidth*4, cs, kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little);
     CFRelease(cs);
 }
 
 - (void)destroyBackingStore
 {
-    if(drawnRect)
-    {
+    if (drawnRect)
         glDeleteTextures(1, &rdBufferTexture);
-	}
+
     CGContextRelease(rdBufferContext);
 	free(rdBufferBitmapData);
 	
 	rdBufferBitmapData = NULL;
 	rdBufferContext = NULL;
 	rdBufferTexture = rdBufferBitmapLength = rdBufferWidth = rdBufferHeight = 0;
-    drawnRect = FALSE;
+    drawnRect = NO;
 }
 
 - (void)generateTexture
@@ -656,12 +642,6 @@
 
 	glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_RECTANGLE_EXT, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-}
-
-- (int)getBackingStoreBytes:(unsigned char **)retBytes
-{
-	*retBytes = rdBufferBitmapData;
-	return rdBufferBitmapLength;
 }
 
 
@@ -771,7 +751,7 @@
 
 - (void)setScreenSize:(NSSize)newSize
 {
-	// run on main thread to avoid crashes from destroying/creating the backing store
+	// Avoid crashes caused by destroying/creating the backing store
 	if (![NSThread isMainThread])
 		return [self performSelectorOnMainThread:@selector(setScreenSizeByValue:) withObject:[NSValue valueWithSize:newSize] waitUntilDone:YES];
 	
