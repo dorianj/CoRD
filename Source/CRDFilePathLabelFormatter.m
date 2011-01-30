@@ -33,7 +33,10 @@
 	if (string == nil)
 		*obj = @"";
 	
-	if ([string length] > 0 && [string length] <= 7)
+	NSCharacterSet *invalidChars = [NSCharacterSet characterSetWithCharactersInString:@":<>\"/\\|"];
+	BOOL validString = [[string stringByDeletingCharactersInSet:invalidChars] length] == [string length];
+
+	if ([string length] > 0 && [string length] <= 7 && validString )
 	{
 		if (obj)
 			*obj = string;
@@ -41,8 +44,14 @@
 		return YES;
 	}
 	
+	if (!validString && error) {
+		*error = NSLocalizedString(@"Invalid label: Lables cannont contain the following characters: :<>\\/|\"", @"Invalid Label - Characters");
+		return NO;
+	}
+
+	
 	if (error)
-		*error = NSLocalizedString(@"Invalid label: Labels must exist, but are limited by Windows to 7 characters.", @"Invalid Label");
+		*error = NSLocalizedString(@"Invalid label: Labels must exist, but are limited by Windows to 7 characters.", @"Invalid Label - Length");
 	
 	return NO;
 }
