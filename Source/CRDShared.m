@@ -404,7 +404,8 @@ void CRDFillDefaultConnection(RDConnectionRef conn)
 
 inline NSString *CRDBugReportURL(void)
 {
-	return [NSString stringWithFormat:@"%@newticket?type=defect&version=%@&keywords=MenuBarSubmission,%@", CRDTracURL, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];	
+	return CRDSupportForumsURL;
+	//return [NSString stringWithFormat:@"%@newticket?type=defect&version=%@&keywords=MenuBarSubmission,%@", CRDTracURL, [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];	
 }
 
 
