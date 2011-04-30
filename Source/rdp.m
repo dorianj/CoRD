@@ -1349,32 +1349,44 @@ process_redirect_pdu(RDConnectionRef conn, RDStreamRef s /*, uint32 * ext_disc_r
 	in_uint32_le(s, len);
 
 	/* read ip string */
-	rdp_in_unistr(s, conn->sessionDirServer, len);
+	rdp_in_unistr(s, conn->sessionDirServer, MIN(len, sizeof(conn->sessionDirServer)));
 
 	/* read length of cookie string */
 	in_uint32_le(s, len);
 
 	/* read cookie string (plain ASCII) */
-	in_uint8a(s, conn->sessionDirCookie, len);
+    if (len > sizeof(conn->sessionDirCookie)-1)
+	{
+		uint32 rem = len - (sizeof(conn->sessionDirCookie)-1);
+		len = sizeof(conn->sessionDirCookie)-1;
+
+		warning("Unexpectedly large redirection cookie\n");
+		in_uint8a(s, conn->sessionDirCookie, len);
+		in_uint8s(s, rem);
+	}
+	else
+	{
+		in_uint8a(s, conn->sessionDirCookie, len);
+	}
 	conn->sessionDirCookie[len] = '\0';
 
 	/* read length of username string */
 	in_uint32_le(s, len);
 
 	/* read username string */
-	rdp_in_unistr(s, conn->sessionDirUsername, len);
+	rdp_in_unistr(s, conn->sessionDirUsername, MIN(len, sizeof(conn->sessionDirUsername)));
 
 	/* read length of domain string */
 	in_uint32_le(s, len);
 
 	/* read domain string */
-	rdp_in_unistr(s, conn->sessionDirDomain, len);
+	rdp_in_unistr(s, conn->sessionDirDomain, MIN(len, sizeof(conn->sessionDirDomain)));
 
 	/* read length of password string */
 	in_uint32_le(s, len);
 
 	/* read password string */
-	rdp_in_unistr(s, conn->sessionDirPassword, len);
+	rdp_in_unistr(s, conn->sessionDirPassword, MIN(len, sizeof(conn->sessionDirPassword)));
 
 	conn->sessionDirRedirect = True;
 
