@@ -33,6 +33,8 @@
 	[screenResolutionsController setSortDescriptors:[NSArray arrayWithObject:[[[NSSortDescriptor alloc] initWithKey:@"resolution" ascending:YES selector:@selector(compareScreenResolution:)] autorelease]]];
 	[screenResolutionsController addObserver:self forKeyPath:@"sortDescriptors" options:0 context:NULL];
 	[self changePanes:[[toolbar items] objectAtIndex:0]];
+	
+	[savedServersPathControl registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 }
 
 - (IBAction)changePanes:(id)sender
@@ -267,6 +269,42 @@
 			
 		
 	}
+}
+
+- (IBAction)editSavedServersPath:(id)sender
+{
+	CRDLog(CRDLogLevelDebug, @"Value: %@, Path: %@", [[savedServersPathControl value] absoluteString], [[savedServersPathControl value] relativePath]);
+	
+	NSOpenPanel *folderPanel = [NSOpenPanel openPanel];
+	
+	[folderPanel setPrompt: NSLocalizedString(@"Select", "Preferences -> Path Panel Prompt")];
+	[folderPanel setAllowsMultipleSelection: NO];
+	[folderPanel setCanChooseFiles: NO];
+	[folderPanel setCanChooseDirectories: YES];
+	[folderPanel setCanCreateDirectories: YES];
+	
+	[folderPanel beginSheetForDirectory:[[savedServersPathControl value] stringByExpandingTildeInPath] 
+								   file:nil 
+								  types:nil
+						 modalForWindow:preferencesWindow 
+						  modalDelegate:self 
+						 didEndSelector:@selector(editSavedServersPathClosed: returnCode: contextInfo:) 
+							contextInfo: nil];
+}
+
+- (void)editSavedServersPathClosed:(NSOpenPanel *)openPanel returnCode:(int)code contextInfo:(void *)info
+{
+	NSString *path;
+	if (code == NSOKButton)
+	{		
+		path = [[openPanel filenames] objectAtIndex: 0];
+		[[NSUserDefaults standardUserDefaults] setValue:[path stringByExpandingTildeInPath] forKey:CRDSavedServersPath];		
+	}
+}
+
+- (IBAction)resetSavedServersPath:(id)sender
+{
+	[[NSUserDefaults standardUserDefaults] removeObjectForKey:CRDSavedServersPath];
 }
 
 @end

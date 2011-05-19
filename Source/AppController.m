@@ -2602,11 +2602,14 @@
 {
 	static NSString *s_savedServersPath = nil;
 	
+	s_savedServersPath = [[[NSUserDefaults standardUserDefaults] objectForKey:CRDSavedServersPath] stringByExpandingTildeInPath];
+
 	if (s_savedServersPath == nil)
 	{
 		s_savedServersPath = [[[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoRD/Servers"] retain];
 	}
 
+	
 	return s_savedServersPath;
 }
 

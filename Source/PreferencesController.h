@@ -30,6 +30,8 @@
 	
 	IBOutlet NSArrayController *forwardedPathsController;
 	IBOutlet NSTableView *forwardedPathsTableView;
+
+	IBOutlet NSPathControl *savedServersPathControl;
 }
 
 

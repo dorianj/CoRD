@@ -590,7 +590,9 @@
 	#define write_int(n, v)	 [outputBuffer appendString:[NSString stringWithFormat:@"%@:i:%d\r\n", (n), (v)]]
 	#define write_string(n, v) [outputBuffer appendString:[NSString stringWithFormat:@"%@:s:%@\r\n", (n), (v) ? (v) : @""]]
 	
-	if (![path length])
+	NSString *expandedPath = [path stringByExpandingTildeInPath];
+	
+	if (![expandedPath length])
 		return NO;
 
 	NSMutableString *outputBuffer = [[NSMutableString alloc] init];
@@ -628,24 +630,24 @@
 			write_string(key, value);
 	}
 	
-	BOOL writeToFileSucceeded = [outputBuffer writeToFile:path atomically:atomicFlag encoding:fileEncoding error:NULL] | [outputBuffer writeToFile:path atomically:atomicFlag encoding:(fileEncoding = NSUTF8StringEncoding) error:NULL];
+	BOOL writeToFileSucceeded = [outputBuffer writeToFile:expandedPath atomically:atomicFlag encoding:fileEncoding error:NULL] | [outputBuffer writeToFile:expandedPath atomically:atomicFlag encoding:(fileEncoding = NSUTF8StringEncoding) error:NULL];
 
 	[outputBuffer release];
 	
 	if (writeToFileSucceeded)
 	{
 		NSDictionary *newAttrs = [NSDictionary dictionaryWithObject:[NSNumber numberWithUnsignedLong:'RDP '] forKey:NSFileHFSTypeCode];
-		[[NSFileManager defaultManager] changeFileAttributes:newAttrs atPath:path];
+		[[NSFileManager defaultManager] changeFileAttributes:newAttrs atPath:expandedPath];
 	}
 	else
 	{
-		CRDLog(CRDLogLevelError, @"Error writing RDP file to '%@'", path);
+		CRDLog(CRDLogLevelError, @"Error writing RDP file to '%@'", expandedPath);
 	}
 
 	if (writeToFileSucceeded && updateNamesFlag)
 	{
 		modified = NO;
-		[self setFilename:path];
+		[self setFilename:expandedPath];
 	}
 	
 	return writeToFileSucceeded;
@@ -918,7 +920,7 @@
 			
 	[self willChangeValueForKey:@"rdpFilename"];
 	[rdpFilename autorelease];
-	rdpFilename = [path copy];
+	rdpFilename = [[path stringByExpandingTildeInPath] copy];
 	[self didChangeValueForKey:@"rdpFilename"];
 }
 
