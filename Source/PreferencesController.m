@@ -272,9 +272,7 @@
 }
 
 - (IBAction)editSavedServersPath:(id)sender
-{
-	CRDLog(CRDLogLevelDebug, @"Value: %@, Path: %@", [[savedServersPathControl value] absoluteString], [[savedServersPathControl value] relativePath]);
-	
+{	
 	NSOpenPanel *folderPanel = [NSOpenPanel openPanel];
 	
 	[folderPanel setPrompt: NSLocalizedString(@"Select", "Preferences -> Path Panel Prompt")];
