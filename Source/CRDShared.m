@@ -172,14 +172,24 @@ inline BOOL CRDDrawerIsVisible(NSDrawer *drawer)
 
 inline const char * CRDMakeWindowsString(NSString *str)
 {
-	/* returns a best effort conversion to Windows CP1250 */
-	return str ? (const char *)[[str dataUsingEncoding:NSWindowsCP1250StringEncoding allowLossyConversion:YES] bytes] : "";
+    return CRDLossyConvertString(str, NSWindowsCP1250StringEncoding);
 }
 
 inline const char * CRDMakeUTF16LEString(NSString *str)
 {
-	/* returns a best effort conversion to UTF-16 Little Endian */
-	return str ? (const char *)[[str dataUsingEncoding:NSUTF16LittleEndianStringEncoding allowLossyConversion:YES] bytes] : "";
+    return CRDLossyConvertString(str, NSUTF16LittleEndianStringEncoding);
+}
+
+// Best attempt to convert a string to the specified encoding, null terminated
+const char * CRDLossyConvertString(NSString *str, NSStringEncoding encoding)
+{
+    if (![str length])
+        return "";
+    
+    NSMutableData *d = [[[str dataUsingEncoding:encoding allowLossyConversion:YES] mutableCopy] autorelease];
+    [d appendBytes:"" length:1];
+    NSLog(@"%@", d);
+    return [d bytes];
 }
 
 inline int CRDGetUTF16LEStringLength(NSString *str)

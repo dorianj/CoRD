@@ -75,6 +75,7 @@ unsigned int CRDRoundUpToEven(float n);
 BOOL CRDDrawerIsVisible(NSDrawer *drawer);
 
 NSString *CRDConvertLineEndings(NSString *orig, BOOL withCarriageReturn);
+const char * CRDLossyConvertString(NSString *str, NSStringEncoding encoding);
 const char *CRDMakeWindowsString(NSString *src);
 const char *CRDMakeUTF16LEString(NSString *src);
 int CRDGetUTF16LEStringLength(NSString *src);
