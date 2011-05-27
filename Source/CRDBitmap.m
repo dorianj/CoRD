@@ -372,7 +372,7 @@
 	[invertedImage addRepresentation:rep];
 	[rep release];
 
-	return [[[CRDBitmap alloc] initWithImage:invertedImage] autorelease];
+	return [[(CRDBitmap*)[CRDBitmap alloc] initWithImage:invertedImage] autorelease];
 } 
 
 #pragma mark -
