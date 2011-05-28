@@ -188,7 +188,6 @@ const char * CRDLossyConvertString(NSString *str, NSStringEncoding encoding)
     
     NSMutableData *d = [[[str dataUsingEncoding:encoding allowLossyConversion:YES] mutableCopy] autorelease];
     [d appendBytes:"" length:1];
-    NSLog(@"%@", d);
     return [d bytes];
 }
 
