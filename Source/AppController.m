@@ -629,12 +629,40 @@
 	[gui_fullScreenWindow setDelegate:self];
 	
 	[[gui_tabView retain] autorelease];
+	
 
-    
+	// Force the unified window to maintain content by copying currently viewed server into an NSImageView and display it. see endFullscreen for details on why. xxx: doesn't do the right thing when scrollers are on (needs to copy full tabview, but cacheDisplayInRectAsImage'ing gui_tabView doesn't work since CRDSessionView is opengl
+	NSImageView *visibleSessionCacheImageView = nil;
+	if (![[inst valueForKey:@"usesScrollers"] boolValue])
+	{
+		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [serverView bounds].size}] autorelease];
+		[visibleSessionCacheImageView setImage:[serverView cacheDisplayInRectAsImage:[serverView bounds]]];
+		[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
+	} 
+	else
+	{
+		// Capture the scrollbar and the image of the server separately since the server won't show up naturally
+		NSImage *fullCapture = [[gui_unifiedWindow contentView] cacheDisplayInRectAsImage:[[gui_unifiedWindow contentView] frame]]; // start with just scrollbars
+		
+		[fullCapture lockFocus]; {
+			NSRect visibleSessionRect = [[serverView enclosingScrollView] documentVisibleRect];
+			NSRect drawnRect = NSMakeRect(NSMinX(visibleSessionRect), [serverView screenSize].height-NSHeight(visibleSessionRect), NSWidth(visibleSessionRect), visibleSessionRect.size.height);		
+			float yScrollerAdjust = NSWidth([serverView bounds]) > NSWidth(visibleSessionRect) ? [NSScroller scrollerWidth] : 0.0f; 
+			[[serverView cacheDisplayInRectAsImage:(NSRect){NSZeroPoint, [serverView screenSize]}] drawInRect:(NSRect){{0, yScrollerAdjust}, drawnRect.size} fromRect:drawnRect operation:NSCompositeSourceOver fraction:1.0];
+		} [fullCapture unlockFocus];
+				
+		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [[gui_unifiedWindow contentView] frame].size}] autorelease];
+		[visibleSessionCacheImageView setImage:fullCapture];
+		[visibleSessionCacheImageView setImageScaling:NSScaleNone];
+	}
+		
+	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
+	[visibleSessionCacheImageView setFrame:CRDRectFromSize([[gui_unifiedWindow contentView] frame].size)];
+	
 	NSDisableScreenUpdates(); {
 		[[gui_tabView retain] autorelease];
 		[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
-		//[[gui_unifiedWindow contentView] addSubview:visibleSessionCacheImageView];
+		[[gui_unifiedWindow contentView] addSubview:visibleSessionCacheImageView];
 		[gui_unifiedWindow display];
 	} NSEnableScreenUpdates();
 	
@@ -650,13 +678,16 @@
 		}
 	}
 	
+	
 	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
 	
 	NSEnableScreenUpdates(); // Disable may have been used for slightly deferred fullscreen (see completeConnection:)
 	[gui_fullScreenWindow startFullScreen];
 
 	[gui_fullScreenWindow makeFirstResponder:serverView];
-		
+	
+	[visibleSessionCacheImageView removeFromSuperview];
+	
 	displayMode = CRDDisplayFullscreen;
 }
 
