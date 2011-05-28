@@ -64,7 +64,7 @@
 	NSWindow *window;
 }
 
-@property (copy) NSString *hostName, *label, *clientHostname;
+@property (copy,nonatomic) NSString *hostName, *label, *clientHostname;
 @property (readonly) RDConnectionRef conn;
 @property (readonly) CRDSessionView *view;
 @property (assign) BOOL isTemporary;

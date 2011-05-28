@@ -39,9 +39,7 @@ static void keychain_error(char *format, ...);
 static const char *strpre(const char *base, const char *prefix);
 
 
-/* Gets a password for a passed Server/Username. Returns NULL on failure. Caller
-	is responsible for freeing the returned string on success.
-*/
+// Gets a password for a passed Server/Username. Returns NULL on failure. Caller is responsible for freeing the returned string on success.
 const char *keychain_get_password(const char *server, const char *username)
 {
 	if (!strlen(server) || !strlen(username))
@@ -53,11 +51,10 @@ const char *keychain_get_password(const char *server, const char *username)
 	SecKeychainItemRef keychainItem;
 	keychainItem = get_password_details(server, username, &pass, 1);
 	free((void*)server);
-	return keychainItem? pass : NULL;
+	return keychainItem ? pass : NULL;
 }
 
-/*	Creates or updates a keychain item to match new details.
-*/
+// Creates or updates a keychain item to match new details.
 void keychain_update_password(const char *origServer, const char *origUser, const char *server, const char *username, const char *password)
 {
 	if (!strlen(server) || !strlen(username))

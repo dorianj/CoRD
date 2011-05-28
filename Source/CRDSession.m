@@ -652,8 +652,8 @@
 	
 	return writeToFileSucceeded;
 	
-	#undef write_int(n, v)
-	#undef write_string(n, v)
+	#undef write_int
+	#undef write_string
 }
 
 - (void)flushChangesToFile
