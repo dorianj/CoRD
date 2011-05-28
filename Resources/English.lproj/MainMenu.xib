@@ -3,12 +3,12 @@
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
 		<string key="IBDocument.SystemVersion">10J869</string>
-		<string key="IBDocument.InterfaceBuilderVersion">1305</string>
+		<string key="IBDocument.InterfaceBuilderVersion">1306</string>
 		<string key="IBDocument.AppKitVersion">1038.35</string>
 		<string key="IBDocument.HIToolboxVersion">461.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">1305</string>
+			<string key="NS.object.0">1306</string>
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -4588,13 +4588,9 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<object class="NSURL" key="NSContents">
 								<object class="NSURL" key="NS.base">
 									<nil key="NS.base"/>
-									<object class="NSMutableString" key="NS.relative">
-										<characters key="NS.bytes">file://localhost/</characters>
-									</object>
+									<string key="NS.relative">file://localhost/</string>
 								</object>
-								<object class="NSMutableString" key="NS.relative">
-									<characters key="NS.bytes">~/Library/Application%20Support/CoRD</characters>
-								</object>
+								<string key="NS.relative">~/Library/Application%20Support/CoRD</string>
 							</object>
 							<reference key="NSSupport" ref="26"/>
 							<string key="NSPlaceholderString">Choose</string>
@@ -4679,7 +4675,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="NSFrame">{{408, 18}, {25, 25}}</string>
 						<reference key="NSSuperview" ref="96169602"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<int key="NSTag">3</int>
 						<bool key="NSEnabled">YES</bool>
 						<object class="NSButtonCell" key="NSCell" id="291954780">
@@ -4866,7 +4861,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 										<string key="NSFrameSize">{123, 190}</string>
 										<reference key="NSSuperview" ref="655243781"/>
 										<reference key="NSWindow"/>
-										<reference key="NSNextKeyView" ref="1024324334"/>
+										<reference key="NSNextKeyView" ref="978312064"/>
 										<bool key="NSEnabled">YES</bool>
 										<object class="NSTableHeaderView" key="NSHeaderView" id="115852621">
 											<reference key="NSNextResponder" ref="776682604"/>
@@ -4988,7 +4983,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<string key="NSFrame">{{290, 52}, {140, 208}}</string>
 						<reference key="NSSuperview" ref="96169602"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView" ref="978312064"/>
+						<reference key="NSNextKeyView" ref="655243781"/>
 						<int key="NSsFlags">18</int>
 						<reference key="NSVScroller" ref="1024324334"/>
 						<reference key="NSHScroller" ref="978312064"/>
@@ -7406,14 +7401,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					<int key="connectionID">3184</int>
 				</object>
 				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">remove:</string>
-						<reference key="source" ref="833809029"/>
-						<reference key="destination" ref="378310438"/>
-					</object>
-					<int key="connectionID">3187</int>
-				</object>
-				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
 						<string key="label">nextKeyView</string>
 						<reference key="source" ref="716181548"/>
@@ -7853,6 +7840,14 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 					</object>
 					<int key="connectionID">3377</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">restoreDefaultScreenResolutions:</string>
+						<reference key="source" ref="426746519"/>
+						<reference key="destination" ref="378310438"/>
+					</object>
+					<int key="connectionID">3378</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -8974,7 +8969,6 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="258383181"/>
-							<reference ref="567093040"/>
 							<reference ref="998984605"/>
 							<reference ref="392124157"/>
 							<reference ref="1016549795"/>
@@ -8991,6 +8985,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<reference ref="645701543"/>
 							<reference ref="909823604"/>
 							<reference ref="336500340"/>
+							<reference ref="567093040"/>
 						</object>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">Advanced Preferences</string>
@@ -12207,7 +12202,7 @@ ZW1vdGUgc2VydmVyLiAgV2luLVIsIFdpbi1FLCBldGMuLCB3aWxsIG5vIGxvbmdlciB3b3JrLg</stri
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">3377</int>
+			<int key="maxID">3378</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
