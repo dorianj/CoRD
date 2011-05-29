@@ -211,7 +211,9 @@ extern NSString * const CRDMinimalViewDidChangeNotification;
 #endif
 
 #ifdef CORD_DEBUG_BUILD
-	#define TRACE_FUNC CRDLog(CRDLogLevelDebug, (@"%s (%@@%u) entered", __func__, [[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lastPathComponent], __LINE__)
+	#define TRACE_FUNC CRDLog(CRDLogLevelDebug, @"%s (%@@%u) entered", __func__, [[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lastPathComponent], __LINE__)
+#else
+    #define TRACE_FUNC
 #endif
 
 
