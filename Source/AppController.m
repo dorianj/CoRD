@@ -1729,9 +1729,9 @@
 
 - (void)reconnectInstanceForEnteringFullscreen:(CRDSession*)inst
 {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
 	CRDLog(CRDLogLevelInfo, @"Reconnecting for Full Screen...");
-	
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	
 	[self performSelectorOnMainThread:@selector(disconnectInstance:) withObject:inst waitUntilDone:YES];
 
