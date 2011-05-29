@@ -424,9 +424,9 @@ BOOL CRDLog(CRDLogLevel logLevel, NSString *format, ...)
 	static NSString* logFilePath = nil;
 	static BOOL logFileUnwritable = NO, forceLogToStdout = NO;
 	CRDLogLevel userLogLevelThreshold = [[[NSUserDefaults standardUserDefaults] objectForKey:@"CRDLogLevel"] integerValue];
-	
+
 #ifdef CORD_DEBUG_BUILD	
-	
+
 	forceLogToStdout = YES;
 
 	if (userLogLevelThreshold)
