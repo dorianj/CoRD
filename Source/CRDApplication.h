@@ -21,7 +21,6 @@
 
 @interface CRDApplication : NSApplication
 {
-
 }
 
 + (SEL)selectorForEvent:(NSEvent *)ev;

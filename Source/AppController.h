@@ -26,7 +26,7 @@
 @class CRDTabView;
 @protocol CRDApplicationDelegate;
 
-@interface AppController : NSObject <NSWindowDelegate, CRDApplicationDelegate, NSTableViewDelegate, NSTableViewDataSource>
+@interface AppController : NSObject <NSWindowDelegate, CRDApplicationDelegate, NSTableViewDelegate, CRDServerListDataSource>
 {
 	// Inspector
 	IBOutlet NSWindow *gui_inspector;

@@ -65,8 +65,14 @@ typedef enum _CRDLogLevel
 #pragma mark Protocols
 
 @protocol CRDApplicationDelegate <NSApplicationDelegate>
-- (NSResponder *)application:(NSApplication *)application shouldForwardEvent:(NSEvent *)ev;
+    - (NSResponder *)application:(NSApplication *)application shouldForwardEvent:(NSEvent *)ev;
 @end
+
+@protocol CRDServerListDataSource <NSTableViewDataSource>
+    - (BOOL)tableView:(NSTableView *)aTableView canDragRow:(NSUInteger)rowIndex;
+    - (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(NSUInteger)rowIndex;
+@end
+
 
 #pragma mark -
 #pragma mark Shared routines

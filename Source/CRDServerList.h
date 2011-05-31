@@ -16,6 +16,7 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import "CRDShared.h"
 
 
 @interface CRDServerList : NSTableView <NSAnimationDelegate>
@@ -34,11 +35,7 @@
 }
 - (void)selectRow:(NSInteger)index;
 - (NSString *)pasteboardDataType:(NSPasteboard *)draggingPasteboard;
+- (id <CRDServerListDataSource>)dataSource;
 
 @end
 
-
-@interface NSObject (CRDServerListDataSource)
-	- (BOOL)tableView:(NSTableView *)aTableView canDragRow:(NSUInteger)rowIndex;
-	- (BOOL)tableView:(NSTableView *)aTableView canDropAboveRow:(NSUInteger)rowIndex;
-@end

@@ -59,7 +59,7 @@ void	UKCrashReporterCheckForCrash(void)
 			crashLogPath = [crashLogsFolder stringByAppendingPathComponent: crashLogName];
 		else
 			crashLogPath = UKCrashReporterFindTenFiveCrashReportPath( appName, crashLogsFolder );
-		NSDictionary*	fileAttrs = [[NSFileManager defaultManager] fileAttributesAtPath: crashLogPath traverseLink: YES];
+        NSDictionary*	fileAttrs = [[NSFileManager defaultManager] attributesOfItemAtPath:[crashLogPath stringByStandardizingPath] error:NULL];
 		NSDate*			lastTimeCrashLogged = (fileAttrs == nil) ? nil : [fileAttrs fileModificationDate];
 		NSTimeInterval	lastCrashReportInterval = [[NSUserDefaults standardUserDefaults] floatForKey: @"UKCrashReporterLastCrashReportDate"];
 		NSDate*			lastTimeCrashReported = [NSDate dateWithTimeIntervalSince1970: lastCrashReportInterval];

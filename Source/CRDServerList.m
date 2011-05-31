@@ -203,6 +203,10 @@
 	return [[self dataSource] tableView:self canDragRow:[rowIndexes firstIndex]];
 }
 
+- (id <CRDServerListDataSource>)dataSource
+{
+    return (id)[super dataSource];
+}
 
 #pragma mark -
 #pragma mark NSResponder
@@ -359,7 +363,7 @@
 		if (row == -1)
 			row = [self numberOfRows];
 		
-		[[self delegate] tableView:self acceptDrop:sender row:row dropOperation:[self dragOperationForSource:sender]];
+		[[self dataSource] tableView:self acceptDrop:sender row:row dropOperation:[self dragOperationForSource:sender]];
 		[self createNewRowOriginsAboveRow:[self numberOfRows]];
 		[self createConvolvedRowRects:1.0];
 		
@@ -547,7 +551,7 @@
 {	
 	NSInteger row = [self rowAtPoint:[self convertPoint:mouseDragStart fromView:nil]];
 	
-	if (![[self delegate] tableView:self canDragRow:row])
+	if (![[self dataSource] tableView:self canDragRow:row])
 		return;
 
 	NSRect rowRect = [self rectOfRow:row];
@@ -557,7 +561,7 @@
 	NSPasteboard *pboard;
 
 	pboard = [NSPasteboard pasteboardWithName:NSDragPboard];
-	[[self delegate] tableView:self writeRowsWithIndexes:index toPasteboard:pboard];
+	[[self dataSource] tableView:self writeRowsWithIndexes:index toPasteboard:pboard];
 
 	NSImage *dragImage = [self dragImageForRowsWithIndexes:index tableColumns:nil event:ev offset:&offset];
 	
