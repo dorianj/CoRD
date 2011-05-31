@@ -127,7 +127,6 @@
 	CRDCreateDirectory([appSupport stringByAppendingPathComponent:@"CoRD"]);
 	CRDCreateDirectory([AppController savedServersPath]);
 	
-	
 	// Load servers from the saved servers directory
 	[self loadSavedServers];
 	
@@ -500,9 +499,9 @@
 // Called whenever anything in the inspector is edited
 - (IBAction)fieldEdited:(id)sender
 {
-//	if (sender == nil)
-//		return;
-//	
+	if (sender == nil)
+		return;
+	
 	if (inspectedServer != nil)
 	{
 		[self updateInstToMatchInspector:inspectedServer];
@@ -582,7 +581,7 @@
 {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
 	[panel setAllowsMultipleSelection:YES];
-	[panel runModalForTypes:[NSArray arrayWithObjects:@"rdp",@"msrcincident",nil]];
+	[panel runModalForTypes:[NSArray arrayWithObjects:@"rdp", @"msrcincident", nil]];
 	NSArray *filenames = [panel filenames];
 	
 	if ([filenames count] <= 0)
@@ -2135,7 +2134,7 @@
 	[self performSelectorOnMainThread:@selector(completeConnection:) withObject:inst waitUntilDone:NO];
 					
 	if (connected)	
-		[inst runConnectionRunLoop]; // this will block until the connection is finished
+		[inst runConnectionRunLoop]; // this will block until the session is finished
 		
 	if ([inst status] == CRDConnectionConnected)
 		[self performSelectorOnMainThread:@selector(disconnectInstance:) withObject:inst waitUntilDone:YES];
@@ -2234,9 +2233,7 @@
 - (void)autosizeUnifiedWindowWithAnimation:(BOOL)animate
 {
 	CRDSession *inst = [self viewedServer];
-	NSRect currentScreenFrame = [[gui_unifiedWindow screen] visibleFrame];
-	NSRect oldWindowFrame = [gui_unifiedWindow frame];
-	NSRect newWindowFrame;
+	NSRect currentScreenFrame = [[gui_unifiedWindow screen] visibleFrame], oldWindowFrame = [gui_unifiedWindow frame], newWindowFrame;
 	NSSize newContentSize;
 	float scrollerWidth = [NSScroller scrollerWidth];
 	float toolbarHeight = oldWindowFrame.size.height - [[gui_unifiedWindow contentView] frame].size.height;
@@ -2473,10 +2470,7 @@
 	s_savedServersPath = [[[NSUserDefaults standardUserDefaults] objectForKey:CRDSavedServersPath] stringByExpandingTildeInPath];
 
 	if (s_savedServersPath == nil)
-	{
 		s_savedServersPath = [[[NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory, NSUserDomainMask, YES) objectAtIndex:0] stringByAppendingPathComponent:@"CoRD/Servers"] retain];
-	}
-
 	
 	return s_savedServersPath;
 }

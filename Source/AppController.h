@@ -109,7 +109,6 @@
 - (IBAction)filterServers:(id)sender;
 - (IBAction)jumpToFilter:(id)sender;
 - (IBAction)showServerInFinder:(id)sender;
-- (IBAction)openServerInTextEditor:(id)sender;
 - (IBAction)visitDevelopment:(id)sender;
 - (IBAction)reportABug:(id)sender;
 - (IBAction)visitHomepage:(id)sender;
