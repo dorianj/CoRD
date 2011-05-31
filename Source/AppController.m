@@ -624,23 +624,13 @@
 	if ([self displayMode] != CRDDisplayUnified)
 		[self startUnified:self];
 	
-		
-	NSDisableScreenUpdates(); {
-		[[gui_tabView retain] autorelease];
-		[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
-		[gui_unifiedWindow display];
-	} NSEnableScreenUpdates();
-	
-	if (CRDPreferenceIsEnabled(CRDPrefsScaleSessions))
-	{
-		NSSize fullScreenWindowSize = [gui_tabView frame].size, sessionSize = [serverView screenSize];
-		if ( (sessionSize.width > fullScreenWindowSize.width) || (sessionSize.height > fullScreenWindowSize.height) )
-		{
-			NSSize newSessionSize = CRDProportionallyScaleSize(sessionSize, fullScreenWindowSize);
-			[serverView setFrame:CRDRectFromSize(newSessionSize)];
-		}
-	}
-	
+    NSDisableScreenUpdates();
+    [[gui_tabView retain] autorelease];
+    [gui_tabView removeFromSuperviewWithoutNeedingDisplay];
+    [gui_unifiedWindow display];
+    NSEnableScreenUpdates();
+
+    
 	[gui_tabView enterFullScreenMode:[gui_unifiedWindow screen] withOptions:
             [NSDictionary dictionaryWithObjectsAndKeys:
             [NSNumber numberWithBool:NO], NSFullScreenModeAllScreens,
@@ -648,8 +638,7 @@
             nil]];
 	
 	NSEnableScreenUpdates(); // Disable may have been used for slightly deferred fullscreen (see completeConnection:)
-		
-	displayMode = CRDDisplayFullscreen;
+    displayMode = CRDDisplayFullscreen;
 }
 
 - (IBAction)endFullscreen:(id)sender
@@ -663,20 +652,12 @@
 	
 	CRDSession *inst = [self selectedServer];
 	CRDSessionView *sessionView = [inst view];
-	
-
-    
+	    
 	// Misc preparation
 	displayMode = CRDDisplayUnified;
 	[self autosizeUnifiedWindowWithAnimation:NO];
-	
-
-    [[gui_tabView retain] autorelease];
     [gui_tabView exitFullScreenModeWithOptions:nil];
 	
-	// Move the tab view to the unified view
-	
-	// Autosizing will get screwed up if the size is bigger than the content view
 	[gui_tabView setFrame:CRDRectFromSize([[gui_unifiedWindow contentView] frame].size)];
 	
 	[[gui_unifiedWindow contentView] addSubview:gui_tabView];	
@@ -2336,9 +2317,7 @@
 	
 	// Try to make it contained within the screen
 	if (newWindowFrame.origin.y < currentScreenFrame.origin.y && newWindowFrame.size.height <= currentScreenFrame.size.height)
-	{
 		newWindowFrame.origin.y = currentScreenFrame.origin.y;
-	}
 	
 	if (newWindowFrame.origin.x + newWindowFrame.size.width > currentScreenFrame.size.width)
 	{
@@ -2381,18 +2360,19 @@
 		}
 	}
 	
+    id resizeTarget = animate ? [gui_unifiedWindow animator] : gui_unifiedWindow;
+    
 	[NSAnimationContext beginGrouping];
 	if ( ([self displayMode] != CRDDisplayUnified) || ([self viewedServer] == nil))
 	{
 		[gui_unifiedWindow setTitle:@"CoRD"];
-		[[gui_unifiedWindow animator] setFrameUsingName:@"UnifiedWindowFrame"];
+		[resizeTarget setFrameUsingName:@"UnifiedWindowFrame"];
 	}
 	else {
 		[gui_unifiedWindow setTitle:[[self viewedServer] label]];
-		[[gui_unifiedWindow animator] setFrame:newWindowFrame display:YES];
+		[resizeTarget setFrame:newWindowFrame display:YES];
 	}
 	[NSAnimationContext endGrouping];
-	//[gui_unifiedWindow setFrame:newWindowFrame display:YES animate:animate];
 }
 
 
