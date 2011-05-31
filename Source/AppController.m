@@ -23,7 +23,6 @@
 #import "CRDSessionView.h"
 
 #import "CRDServerList.h"
-#import "CRDFullScreenWindow.h"
 #import "CRDTabView.h"
 #import "CRDShared.h"
 #import "CRDLabelCell.h"
@@ -624,11 +623,6 @@
 	
 	if ([self displayMode] != CRDDisplayUnified)
 		[self startUnified:self];
-		
-	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
-	[gui_fullScreenWindow setDelegate:self];
-	
-	[gui_tabView retain];
 	
 		
 	NSDisableScreenUpdates(); {
@@ -637,11 +631,9 @@
 		[gui_unifiedWindow display];
 	} NSEnableScreenUpdates();
 	
-	[gui_tabView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
-
 	if (CRDPreferenceIsEnabled(CRDPrefsScaleSessions))
 	{
-		NSSize fullScreenWindowSize = [gui_fullScreenWindow frame].size, sessionSize = [serverView screenSize];
+		NSSize fullScreenWindowSize = [gui_tabView frame].size, sessionSize = [serverView screenSize];
 		if ( (sessionSize.width > fullScreenWindowSize.width) || (sessionSize.height > fullScreenWindowSize.height) )
 		{
 			NSSize newSessionSize = CRDProportionallyScaleSize(sessionSize, fullScreenWindowSize);
@@ -1012,7 +1004,7 @@
 {
 	NSWindow *visibleWindow = [NSApp mainWindow];
 	
-	if (visibleWindow == gui_fullScreenWindow)
+	if ([gui_tabView isInFullScreenMode])
 		[self endFullscreen:sender];
 	else if ( (visibleWindow == gui_preferencesWindow) || (visibleWindow == gui_inspector) )
 		[visibleWindow orderOut:nil];
@@ -1138,7 +1130,7 @@
 	if (displayMode == CRDDisplayFullscreen)
 	{
 		CRDLog(CRDLogLevelDebug, @"Cleaning up Fullscreen Window");
-		[gui_fullScreenWindow orderOut:nil];
+		[gui_tabView exitFullScreenModeWithOptions:nil];
 		displayMode = displayModeBeforeFullscreen;
 	}
 	[userDefaults setInteger:displayMode forKey:CRDDefaultsDisplayMode];
@@ -1458,7 +1450,7 @@
 
 - (void)windowDidBecomeKey:(NSNotification *)sender
 {
-	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
+	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) ||  (displayMode == CRDDisplayFullscreen) )
 	{
 		[[self viewedServer] announceNewClipboardData];
 	}
@@ -1466,7 +1458,7 @@
 
 - (void)windowDidResignKey:(NSNotification *)sender
 {
-	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || ( ([sender object] == gui_fullScreenWindow) && (displayMode == CRDDisplayFullscreen)) )
+	if ( (([sender object] == gui_unifiedWindow) && (displayMode == CRDDisplayUnified)) || (displayMode == CRDDisplayFullscreen) )
 	{
 		[[self viewedServer] requestRemoteClipboardData];
 	}
@@ -1798,11 +1790,6 @@
 - (NSWindow *)unifiedWindow
 {
 	return gui_unifiedWindow;
-}
-
-- (CRDFullScreenWindow *)fullScreenWindow
-{
-	return gui_fullScreenWindow;
 }
 
 // Returns the connected server that the tab view is displaying

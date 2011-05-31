@@ -13,7 +13,6 @@
 		3E1E95A91152E41400D0A262 /* UKCrashReporter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3E1E95A81152E41400D0A262 /* UKCrashReporter.xib */; };
 		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
 		3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */; };
-		3E4B67921019E3E600D3A911 /* CRDFullScreenWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9722F0BD9D9DF0041110D /* CRDFullScreenWindow.m */; };
 		3E7018311153C7CA004D15CA /* CoRD Quicklook.qlgenerator in Copy Quicklook Item */ = {isa = PBXBuildFile; fileRef = 3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */; };
 		3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E713D501080071800FB7F2D /* CRDDisconnect.png */; };
 		9816F0610BEE48ED00E439BE /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
@@ -180,8 +179,6 @@
 		98E9722B0BD9D9DF0041110D /* Cord_Prefix.pch */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = Cord_Prefix.pch; path = Source/Cord_Prefix.pch; sourceTree = "<group>"; };
 		98E9722C0BD9D9DF0041110D /* CRDApplication.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDApplication.h; path = Source/CRDApplication.h; sourceTree = "<group>"; };
 		98E9722D0BD9D9DF0041110D /* CRDApplication.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDApplication.m; path = Source/CRDApplication.m; sourceTree = "<group>"; };
-		98E9722E0BD9D9DF0041110D /* CRDFullScreenWindow.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDFullScreenWindow.h; path = Source/CRDFullScreenWindow.h; sourceTree = "<group>"; };
-		98E9722F0BD9D9DF0041110D /* CRDFullScreenWindow.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDFullScreenWindow.m; path = Source/CRDFullScreenWindow.m; sourceTree = "<group>"; };
 		98E972300BD9D9DF0041110D /* CRDLabelCell.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDLabelCell.h; path = Source/CRDLabelCell.h; sourceTree = "<group>"; };
 		98E972310BD9D9DF0041110D /* CRDLabelCell.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDLabelCell.m; path = Source/CRDLabelCell.m; sourceTree = "<group>"; };
 		98E972320BD9D9DF0041110D /* CRDServerCell.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDServerCell.h; path = Source/CRDServerCell.h; sourceTree = "<group>"; };
@@ -448,8 +445,6 @@
 				98F2A708101527CA00E1D5B5 /* Formatters */,
 				987BE5270D4EC3DE00664843 /* CRDAdditions.h */,
 				987BE5280D4EC3DE00664843 /* CRDAdditions.m */,
-				98E9722E0BD9D9DF0041110D /* CRDFullScreenWindow.h */,
-				98E9722F0BD9D9DF0041110D /* CRDFullScreenWindow.m */,
 				98E972300BD9D9DF0041110D /* CRDLabelCell.h */,
 				98E972310BD9D9DF0041110D /* CRDLabelCell.m */,
 				98E972320BD9D9DF0041110D /* CRDServerCell.h */,
@@ -670,7 +665,6 @@
 				98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */,
 				3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */,
 				3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */,
-				3E4B67921019E3E600D3A911 /* CRDFullScreenWindow.m in Sources */,
 				99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */,
 				98FF000110EEA9F7005510EB /* UKCrashReporter.m in Sources */,
 				98FF000210EEA9F7005510EB /* UKNibOwner.m in Sources */,

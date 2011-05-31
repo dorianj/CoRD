@@ -19,7 +19,6 @@
 
 #import "CRDShared.h"
 
-@class CRDFullScreenWindow;
 @class CRDLabelCell;
 @class CRDServerList;
 @class CRDSession;
@@ -52,7 +51,6 @@
 	IBOutlet NSToolbarItem *gui_toolbarServers, *gui_toolbarFullscreen, *gui_toolbarWindowed, *gui_toolbarDisconnect;
     
 	// Other display modes
-	CRDFullScreenWindow *gui_fullScreenWindow;
 	CRDDisplayMode displayMode, displayModeBeforeFullscreen;
 	NSPoint windowCascadePoint;
 	IBOutlet NSUserDefaultsController *userDefaultsController;
@@ -135,7 +133,6 @@
 - (BOOL)mainWindowIsFocused;
 - (CRDDisplayMode)displayMode;
 - (NSWindow *)unifiedWindow;
-- (CRDFullScreenWindow *)fullScreenWindow;
 
 - (void)holdSavedServer:(NSInteger)row;
 - (void)reinsertHeldSavedServer:(NSInteger)intoRow;
