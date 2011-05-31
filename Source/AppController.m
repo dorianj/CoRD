@@ -628,10 +628,9 @@
 	gui_fullScreenWindow = [[CRDFullScreenWindow alloc] initWithScreen:[NSScreen mainScreen]];	
 	[gui_fullScreenWindow setDelegate:self];
 	
-	[[gui_tabView retain] autorelease];
+	[gui_tabView retain];
 	
 		
-
 	NSDisableScreenUpdates(); {
 		[[gui_tabView retain] autorelease];
 		[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
@@ -650,13 +649,13 @@
 		}
 	}
 	
-	
-	[[gui_fullScreenWindow contentView] addSubview:gui_tabView];
+	[gui_tabView enterFullScreenMode:[gui_unifiedWindow screen] withOptions:
+            [NSDictionary dictionaryWithObjectsAndKeys:
+            [NSNumber numberWithBool:NO], NSFullScreenModeAllScreens,
+            [NSNumber numberWithLong:(NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar)], NSFullScreenModeApplicationPresentationOptions,
+            nil]];
 	
 	NSEnableScreenUpdates(); // Disable may have been used for slightly deferred fullscreen (see completeConnection:)
-	[gui_fullScreenWindow startFullScreen];
-
-	[gui_fullScreenWindow makeFirstResponder:serverView];
 		
 	displayMode = CRDDisplayFullscreen;
 }
@@ -673,50 +672,15 @@
 	CRDSession *inst = [self selectedServer];
 	CRDSessionView *sessionView = [inst view];
 	
-	[gui_fullScreenWindow prepareForExit];
 
+    
 	// Misc preparation
 	displayMode = CRDDisplayUnified;
 	[self autosizeUnifiedWindowWithAnimation:NO];
 	
 
-	// Force the full screen window to maintain content by copying currently viewed server into an NSImageView and display it. The OpenGL-drawing CRDSession doesn't play nicely with being moved between windows (it clears the fullscreen window as soon as it's removed by removeFromSuperviewWithoutNeedingDisplay). xxx: same scroller problem as startFullscreen
-	
-	NSImageView *visibleSessionCacheImageView = nil;
-	if (![[inst valueForKey:@"usesScrollers"] boolValue])
-	{
-		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [sessionView bounds].size}] autorelease];
-		[visibleSessionCacheImageView setImage:[sessionView cacheDisplayInRectAsImage:[sessionView bounds]]];
-		[visibleSessionCacheImageView setImageScaling:NSScaleProportionally];
-	} 
-	else
-	{
-		// Capture the scrollbar and the image of the server separately since the server won't show up naturally
-		NSImage *fullCapture = [[gui_fullScreenWindow contentView] cacheDisplayInRectAsImage:[[gui_fullScreenWindow contentView] frame]]; // start with just scrollbars
-		
-		[fullCapture lockFocus]; {
-			NSRect visibleSessionRect = [[sessionView enclosingScrollView] documentVisibleRect];
-			NSRect drawnRect = NSMakeRect(NSMinX(visibleSessionRect), [sessionView screenSize].height-NSHeight(visibleSessionRect), NSWidth(visibleSessionRect), visibleSessionRect.size.height);
-			float yScrollerAdjust = NSWidth([sessionView bounds]) > NSWidth(visibleSessionRect) ? [NSScroller scrollerWidth] : 0.0f; 
-			[[sessionView cacheDisplayInRectAsImage:(NSRect){NSZeroPoint, [sessionView screenSize]}] drawInRect:(NSRect){{0, yScrollerAdjust}, drawnRect.size} fromRect:drawnRect operation:NSCompositeSourceOver fraction:1.0];
-		} [fullCapture unlockFocus];
-		
-		visibleSessionCacheImageView = [[[NSImageView alloc] initWithFrame:(NSRect){NSZeroPoint, [[gui_unifiedWindow contentView] frame].size}] autorelease];
-		[visibleSessionCacheImageView setImage:fullCapture];
-		[visibleSessionCacheImageView setImageScaling:NSScaleNone];
-	}
-		
-	
-	[visibleSessionCacheImageView setImageFrameStyle:NSImageFrameNone];
-	[visibleSessionCacheImageView setFrame:CRDRectFromSize([gui_fullScreenWindow frame].size)];
-	
-	NSDisableScreenUpdates(); {
-		[[gui_tabView retain] autorelease];
-		[gui_tabView removeFromSuperviewWithoutNeedingDisplay];
-		[[gui_fullScreenWindow contentView] addSubview:visibleSessionCacheImageView];
-		[gui_fullScreenWindow display];
-	} NSEnableScreenUpdates();
-	
+    [[gui_tabView retain] autorelease];
+    [gui_tabView exitFullScreenModeWithOptions:nil];
 	
 	// Move the tab view to the unified view
 	
@@ -729,10 +693,6 @@
 	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
 		[self startWindowed:self];
 		
-	// Animate the fullscreen window fading away, dispose of window
-	[gui_fullScreenWindow exitFullScreenWithAnimation:animate];
-	gui_fullScreenWindow = nil;
-	
 	displayMode = displayModeBeforeFullscreen;
 	
 	if (displayMode == CRDDisplayUnified)
