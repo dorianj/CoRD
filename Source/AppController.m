@@ -257,8 +257,6 @@
 		return (inst != nil) && [inst status] != CRDConnectionClosed;
 	else if (action == @selector(showServerInFinder:))
 		return (inst != nil);
-	else if (action == @selector(openServerInTextEditor:))
-		return (inst != nil);
 	else if (action == @selector(selectNext:))
 		return [gui_tabView numberOfItems] > 1;
 	else if (action == @selector(selectPrevious:))
@@ -949,18 +947,6 @@
 		return;
 		
 	[[NSWorkspace sharedWorkspace] selectFile:[selectedServer filename] inFileViewerRootedAtPath:nil];
-}
-
-- (IBAction)openServerInTextEditor:(id)sender
-{
-	CRDSession *selectedServer = [self selectedServer];
-	
-	if (selectedServer == nil)
-		return;
-	NSWorkspace *ws = [NSWorkspace sharedWorkspace];
-	NSString *textEditor = (NSString *)LSCopyDefaultRoleHandlerForContentType(kUTTypePlainText, kLSRolesAll);
-	[ws openFile:[selectedServer filename] withApplication:[[ws absolutePathForAppBundleWithIdentifier:textEditor] lastPathComponent] andDeactivate:YES];
-	[textEditor autorelease];
 }
 
 - (IBAction)visitDevelopment:(id)sender
