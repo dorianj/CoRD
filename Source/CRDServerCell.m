@@ -90,10 +90,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	
 	newInst->host = newInst->user = newInst->label = nil;
 	[newInst setDisplayedText:[label string] username:[user string] address:[host string]];
-	
-	newInst->progressIndicatorTimer = [progressIndicatorTimer retain];
-	newInst->progressIndicator = [progressIndicator retain];
-	
+		
 	[newInst setImage:[image retain]];
 	[newInst setStatus:status];
 	
@@ -104,7 +101,6 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 {
 	[label release]; [user release]; [host release];
 	[image release];
-	[progressIndicatorTimer release];
 	[progressIndicator removeFromSuperview];
 	[progressIndicator release];
 	
@@ -256,12 +252,6 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 #pragma mark -
 #pragma mark Internal use
 
-- (void)progressTimerFire:(NSTimer*)theTimer
-{
-	[progressIndicator animate:self];
-	[g_appController cellNeedsDisplay:self];
-}
-
 - (void)createProgressIndicator
 {
 	if (progressIndicator != nil)
@@ -285,18 +275,9 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	status = connStatus;
 
 	if (status == CRDConnectionConnecting)
-	{
-		if (progressIndicatorTimer == nil)
-		{
-			progressIndicatorTimer = [[NSTimer scheduledTimerWithTimeInterval:(5.0/60.0) target:self selector:@selector(progressTimerFire:) userInfo:nil repeats:YES] retain];
-		}
-	}
-	else
-	{
-		[progressIndicatorTimer invalidate];
-		[progressIndicatorTimer release];
-		progressIndicatorTimer = nil;
-	}
+        [progressIndicator startAnimation:self];
+    else
+        [progressIndicator stopAnimation:self];
 }
 
 @end

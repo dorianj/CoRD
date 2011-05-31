@@ -29,7 +29,6 @@
 	BOOL highlighted;
 	CRDConnectionStatus status;
 	NSProgressIndicator *progressIndicator;
-	NSTimer *progressIndicatorTimer;
 	
 	BOOL abbreviatedSize;
 }

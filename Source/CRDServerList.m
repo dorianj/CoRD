@@ -94,7 +94,7 @@
 - (void)drawRow:(NSInteger)rowIndex clipRect:(NSRect)clipRect
 {
 	// Lightly highlight the visible server if not selected
-	if ([[self delegate] tableView:self objectValueForTableColumn:nil row:rowIndex] == [g_appController viewedServer]
+	if ([[self dataSource] tableView:self objectValueForTableColumn:nil row:rowIndex] == [g_appController viewedServer]
 		&& (selectedRow != rowIndex) && ([g_appController displayMode] == CRDDisplayUnified) )
 	{
 		[NSGraphicsContext saveGraphicsState];
@@ -200,7 +200,7 @@
 
 - (BOOL)canDragRowsWithIndexes:(NSIndexSet *)rowIndexes atPoint:(NSPoint)mouseDownPoint
 {
-	return [[self delegate] tableView:self canDragRow:[rowIndexes firstIndex]];
+	return [[self dataSource] tableView:self canDragRow:[rowIndexes firstIndex]];
 }
 
 
@@ -314,7 +314,7 @@
 
 	inLiveDrag = YES;
 	
-	if ([[self delegate] tableView:self canDropAboveRow:row])
+	if ([[self dataSource] tableView:self canDropAboveRow:row])
 		retOperation = innerListDrag ? NSDragOperationMove : NSDragOperationCopy;
 	else 
 		return NSDragOperationNone;

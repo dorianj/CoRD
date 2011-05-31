@@ -200,7 +200,7 @@ inline int CRDGetUTF16LEStringLength(NSString *str)
 inline void CRDCreateDirectory(NSString *path)
 {
 	if (![[NSFileManager defaultManager] fileExistsAtPath:[path stringByExpandingTildeInPath]])
-		[[NSFileManager defaultManager] createDirectoryAtPath:[path stringByExpandingTildeInPath] attributes:nil];
+		[[NSFileManager defaultManager] createDirectoryAtPath:[path stringByExpandingTildeInPath] withIntermediateDirectories:NO attributes:nil error:NULL];
 }
 
 // Keeps trying filenames until it finds one that isn't taken.. eg: given "Untitled","rdp", if  'Untitled.rdp' is taken, it will try 'Untitled 1.rdp', 'Untitled 2.rdp', etc until one is found, then it returns the found filename. Useful for duplicating files.

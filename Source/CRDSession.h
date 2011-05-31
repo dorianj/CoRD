@@ -24,7 +24,7 @@
 @class CRDServerCell;
 @class CRDSessionView;
 
-@interface CRDSession : NSObject
+@interface CRDSession : NSObject <NSMachPortDelegate, NSStreamDelegate, NSWindowDelegate>
 {
 	// Represented rdesktop object
 	RDConnectionRef conn;
@@ -67,7 +67,7 @@
 @property (copy,nonatomic) NSString *hostName, *label, *clientHostname;
 @property (readonly) RDConnectionRef conn;
 @property (readonly) CRDSessionView *view;
-@property (assign) BOOL isTemporary;
+@property (assign,nonatomic) BOOL isTemporary;
 @property (readonly) BOOL modified;
 @property (readonly) CRDServerCell *cellRepresentation;
 @property (readonly) volatile CRDConnectionStatus status;

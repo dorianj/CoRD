@@ -60,6 +60,14 @@ typedef enum _CRDLogLevel
 	CRDLogLevelDebug = 4
 } CRDLogLevel;
 
+
+#pragma mark -
+#pragma mark Protocols
+
+@protocol CRDApplicationDelegate <NSApplicationDelegate>
+- (NSResponder *)application:(NSApplication *)application shouldForwardEvent:(NSEvent *)ev;
+@end
+
 #pragma mark -
 #pragma mark Shared routines
 

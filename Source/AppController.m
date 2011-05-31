@@ -1635,7 +1635,7 @@
 		if ([[[inst filename] stringByDeletingLastPathComponent] isEqualToString:[AppController savedServersPath]])
 		{
 			[inst clearKeychainData];
-			[[NSFileManager defaultManager] removeFileAtPath:[inst filename] handler:nil];
+			[[NSFileManager defaultManager] removeItemAtPath:[inst filename] error:NULL];
 		}
 		
 		if ([inst isEqualTo:[self selectedServer]])
@@ -1889,8 +1889,7 @@
 		{
 			NSString *newPath = CRDFindAvailableFileName([AppController savedServersPath], [newLabel stringByDeletingFileSystemCharacters], @".rdp");
 			
-			[[NSFileManager defaultManager] movePath:[object filename] toPath:newPath handler:nil];
-			
+			[[NSFileManager defaultManager] moveItemAtPath:[object filename] toPath:newPath error:NULL];
 			[object setFilename:newPath];
 		}
 	}
@@ -2456,8 +2455,8 @@
 - (void)loadSavedServers
 {
 	CRDSession *savedSession;
-	NSArray *files = [[NSFileManager defaultManager] directoryContentsAtPath:[AppController savedServersPath]];
-	for ( id filename in files )
+	NSArray *files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[AppController savedServersPath] error:NULL];
+	for (NSString *filename in files)
 	{
 		if ([[filename pathExtension] isEqualToString:@"rdp"])
 		{
@@ -2511,7 +2510,7 @@
 	if (deleteFile)
 	{
 		[inst clearKeychainData];
-		[[NSFileManager defaultManager] removeFileAtPath:[inst filename] handler:nil];
+		[[NSFileManager defaultManager] removeItemAtPath:[inst filename] error:NULL];
 	}
 	
 	[inst removeObserver:self forKeyPath:@"label"];

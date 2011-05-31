@@ -64,5 +64,10 @@
 	}
 }
 
+- (id <CRDApplicationDelegate>)delegate
+{
+    return (id)[super delegate];
+}
+
 
 @end

@@ -18,7 +18,7 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface CRDServerList : NSTableView
+@interface CRDServerList : NSTableView <NSAnimationDelegate>
 {
 	// Animated dragging
 	NSAnimation *autoexpansionAnimation;
