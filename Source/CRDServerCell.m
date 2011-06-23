@@ -35,8 +35,18 @@
 
 #define IMAGE_SIZE (abbreviatedSize ? SERVER_CELL_ABBREVIATED_IMAGE_SIZE : SERVER_CELL_FULL_IMAGE_SIZE)
 
+// Initialize badge variables, based on Apple Mail.
+static int BADGE_BUFFER_LEFT = 4;
+static int BADGE_BUFFER_TOP = 1;
+static int BADGE_BUFFER_LEFT_SMALL = 2;
+static int BADGE_CIRCLE_BUFFER_RIGHT = 5;
+static int BADGE_TEXT_HEIGHT = 14;
+static int BADGE_X_RADIUS = 7;
+static int BADGE_Y_RADIUS = 8;
+static int BADGE_TEXT_SMALL = 20;
 
-static NSDictionary *static_boldTextAtrributes, *static_regularTextAttributes;
+
+static NSDictionary *static_boldTextAttributes, *static_regularTextAttributes;
 static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 		*static_highlightedRegularColor, *static_normalRegularColor;
 
@@ -51,13 +61,13 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	NSMutableParagraphStyle *truncatingParagraph = [[[NSParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
 	[truncatingParagraph setLineBreakMode:NSLineBreakByTruncatingTail];
 	
-	static_boldTextAtrributes = [[NSDictionary dictionaryWithObjectsAndKeys:
+	static_boldTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
 			[NSFont fontWithName:@"LucidaGrande-Bold" size:11.5], NSFontAttributeName,
 			truncatingParagraph, NSParagraphStyleAttributeName,
 			nil] retain];
 	
-	static_normalBoldColor = [[NSColor blackColor] retain];
-	static_highlightedBoldColor = [[NSColor whiteColor] retain];
+	static_normalBoldColor = [NSColor controlTextColor];
+	static_highlightedBoldColor = [NSColor selectedControlTextColor];
 	
 	
 	static_regularTextAttributes = [[NSDictionary dictionaryWithObjectsAndKeys:
@@ -65,8 +75,8 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 			truncatingParagraph, NSParagraphStyleAttributeName, 
 			nil] retain];
 		
-	static_normalRegularColor = [[NSColor colorWithDeviceRed:(115/255.0) green:(115/255.0) blue:(115/255.0) alpha:1.0] retain];
-	static_highlightedRegularColor = [[NSColor colorWithDeviceRed:0.85 green:0.85 blue:0.85 alpha:1.0] retain];
+	static_normalRegularColor = [[[NSColor textColor] colorWithAlphaComponent:0.75] retain];
+	static_highlightedRegularColor = [[[NSColor selectedTextColor] colorWithAlphaComponent:0.75] retain];
 }
 
 #pragma mark -
@@ -140,7 +150,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 			[progressIndicator stopAnimation:self];
 			[progressIndicator removeFromSuperview];
 		}
-			
+
 		[NSGraphicsContext saveGraphicsState];
 		[[NSGraphicsContext currentContext] setImageInterpolation:NSImageInterpolationHigh]; 
 		[image drawInRect:imgRect fromRect:CRDRectFromSize([image size]) operation:NSCompositeSourceOver fraction:1.0];
@@ -179,7 +189,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	float textX = imgRect.origin.x + imgRect.size.width + PADDING_IMAGE;
 	float textY = frame.origin.y + ((frame.size.height-textHeight) / 4.0);  // center vertically
 	float textWidth = frame.size.width - (textX - frame.origin.x) - PADDING_LEFT;
-	
+
 	[label drawWithRect:NSMakeRect(textX, textY, textWidth, FLT_MAX) options:NSStringDrawingUsesLineFragmentOrigin];
 	
 	if (!abbreviatedSize)
@@ -187,6 +197,50 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 		[user drawWithRect:NSMakeRect(textX, textY += [label size].height + PADDING_TEXT, textWidth, FLT_MAX) options:NSStringDrawingUsesLineFragmentOrigin];
 		[host drawWithRect:NSMakeRect(textX, textY + [user size].height + PADDING_TEXT, textWidth, FLT_MAX) options:NSStringDrawingUsesLineFragmentOrigin];
 	}
+	
+	// If a hotkey is set, badge the cell accordingly
+	if ([inst hotkey] > -1) {
+		
+		// Set up badge string and size.
+		NSString *badge = [NSString stringWithFormat:@"%@%d", [NSString stringWithUTF8String:"\xE2\x8C\x98"], [inst hotkey]];
+		NSSize badgeNumSize = [badge sizeWithAttributes:nil];
+		
+		// Calculate the badge's coordinates.
+		int badgeWidth = badgeNumSize.width + BADGE_BUFFER_LEFT * 2;
+		if (badgeWidth < BADGE_TEXT_SMALL)
+		{
+			// The text is too short. Decrease the badge's size.
+			badgeWidth = BADGE_TEXT_SMALL;
+		}
+		int badgeX = frame.origin.x + frame.size.width - BADGE_CIRCLE_BUFFER_RIGHT - badgeWidth;
+		int badgeY = textY;
+		int badgeNumX = badgeX + BADGE_BUFFER_LEFT;
+		if (badgeWidth == BADGE_TEXT_SMALL)
+		{
+			badgeNumX += BADGE_BUFFER_LEFT_SMALL;
+		}
+		NSRect badgeRect = NSMakeRect(badgeX, badgeY, badgeWidth, BADGE_TEXT_HEIGHT);
+		
+		// Draw the badge and number.
+		NSBezierPath *badgePath = [NSBezierPath bezierPathWithRoundedRect:badgeRect xRadius:BADGE_X_RADIUS yRadius:BADGE_Y_RADIUS];
+		NSDictionary *dict;
+		if (highlighted) {
+			[[NSColor whiteColor] set];
+			dict = static_regularTextAttributes;
+		} else if (![[NSApp mainWindow] isKeyWindow]) {
+			[[[NSColor selectedControlColor] colorWithAlphaComponent:0.50] set];
+			dict = static_regularTextAttributes;
+		} else {
+			[[NSColor selectedControlColor] set];
+			dict = static_regularTextAttributes;
+		}
+		
+		[badgePath fill];
+		[badge drawAtPoint:NSMakePoint(badgeNumX,badgeY) withAttributes:dict];
+		
+
+	}
+	
 }
 
 - (NSSize)cellSize
@@ -239,7 +293,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 {
 	[label release]; [user release]; [host release];
 	
-	label = [[NSMutableAttributedString alloc] initWithString:displayName attributes:static_boldTextAtrributes];
+	label = [[NSMutableAttributedString alloc] initWithString:displayName attributes:static_boldTextAttributes];
 	user =  [[NSMutableAttributedString alloc] initWithString:username attributes:static_regularTextAttributes];
 	host =  [[NSMutableAttributedString alloc] initWithString:address attributes:static_regularTextAttributes];
 }

@@ -80,9 +80,9 @@
 	NSColor *fillColor;
 
 	if ([[NSApp mainWindow] isKeyWindow])
-		fillColor = [NSColor alternateSelectedControlColor];
+		fillColor = [NSColor selectedControlColor];
 	else
-		fillColor = [NSColor lightGrayColor];
+		fillColor = [[NSColor selectedControlColor] colorWithAlphaComponent:0.35];
 
 	[self lockFocus];	
 		NSRectClip(drawRect);
@@ -98,7 +98,7 @@
 		&& (selectedRow != rowIndex) && ([g_appController displayMode] == CRDDisplayUnified) )
 	{
 		[NSGraphicsContext saveGraphicsState];
-		[[NSColor selectedControlColor] set];
+		[[[NSColor selectedControlColor] colorWithAlphaComponent:0.5] set];
 		[NSBezierPath fillRect:[self rectOfRow:rowIndex]];		
 		[NSGraphicsContext restoreGraphicsState];	
 	}
