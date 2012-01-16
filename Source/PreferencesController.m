@@ -1,4 +1,4 @@
-/*	Copyright (c) 2009-2011 Nick Peelman <nick@peelman.us>
+/*	Copyright (c) 2009-2012 Nick Peelman <nick@peelman.us>
 	
 	This file is part of CoRD.
 	CoRD is free software; you can redistribute it and/or modify it under the
