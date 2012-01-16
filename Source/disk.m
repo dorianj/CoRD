@@ -981,11 +981,26 @@ disk_query_volume_information(RDConnectionRef conn, NTHandle handle, uint32 info
 			out_uint32_le(outStream, 2 * strlen(fsinfo->type));	/* length of fs_type */
 			rdp_out_unistr(outStream, fsinfo->type, 2 * strlen(fsinfo->type) - 2);
 			break;
-
+			
+		/* JMD 20090623: Needed for Windows 2008 support
+		 http://msdn.microsoft.com/en-us/library/cc232104(PROT.13).aspx
+		 IRP Query Volume Information class: 0x07 */
+		case FileFsFullSizeInformation:
+			printf("Called FileFsFullSizeInformation\n");
+			out_uint32_le(outStream, stat_fs.f_blocks);	/* TotalAllocationUnits */
+			out_uint32_le(outStream, 0);	
+			out_uint32_le(outStream, stat_fs.f_bavail);	/* CallerAvailableAllocationUnits */
+			out_uint32_le(outStream, 0);	
+			out_uint32_le(outStream, stat_fs.f_bfree);	/* ActualAvailableAllocationUnits */
+			out_uint32_le(outStream, 0);	
+			out_uint32_le(outStream, stat_fs.f_bsize / 0x200);	/* SectorsPerAllocationUnit */
+			out_uint32_le(outStream, 0x200);	/* Bytes per sector */
+			break;
+			
 		case FileFsLabelInformation:
 		case FileFsDeviceInformation:
 		case FileFsControlInformation:
-		case FileFsFullSizeInformation:
+
 		case FileFsObjectIdInformation:
 		case FileFsMaximumInformation:
 
