@@ -876,7 +876,7 @@ FsVolumeInfo(char *fpath)
 
 	/* initialize */
 	info = malloc(sizeof(FsInfoType));
-	memset(info, 0, sizeof(info));
+	memset(info, 0, sizeof(FsInfoType));
 	strcpy(info->label, "RDESKTOP");
 	strcpy(info->type, "RDPFS");
 
@@ -924,7 +924,7 @@ FsVolumeInfo(char *fpath)
 	endmntent(fdfs);
 #else
 	/* initialize */
-	memset(info, 0, sizeof(info));
+	memset(info, 0, sizeof(FsInfoType));
 	strcpy(info->label, "RDESKTOP");
 	strcpy(info->type, "RDPFS");
 

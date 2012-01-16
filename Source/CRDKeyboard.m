@@ -195,7 +195,7 @@ static NSDictionary *windowsKeymapTable = nil;
 
    remoteModifiers = newMods;
 
-   #undef UP_OR_DOWN(x)
+   #undef UP_OR_DOWN
 }
 
 
