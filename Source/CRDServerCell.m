@@ -84,7 +84,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 
 - (id)init
 {
-	if (![super init])
+	if (!(self = [super init]))
 		return nil;
 		
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(listStyleDidChange:) name:CRDMinimalViewDidChangeNotification object:nil];

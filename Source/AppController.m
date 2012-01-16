@@ -74,7 +74,7 @@
 
 - (id)init
 {
-	if (![super init])
+	if (!(self = [super init]))
 		return nil;
 		
 	userDefaults = [NSUserDefaults standardUserDefaults];
@@ -644,11 +644,8 @@
 
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
-	
-	BOOL animate = !_appIsTerminating;
-	
+
 	CRDSession *inst = [self selectedServer];
-	CRDSessionView *sessionView = [inst view];
 	    
 	// Misc preparation
 	displayMode = CRDDisplayUnified;

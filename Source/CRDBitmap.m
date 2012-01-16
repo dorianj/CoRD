@@ -33,7 +33,7 @@
 // Currently is adequately optimized: only somewhat critical
 - (id)initWithBitmapData:(const unsigned char *)sourceBitmap size:(NSSize)s view:(CRDSessionView *)v
 {
-	if (![super init])
+	if (!(self = [super init]))
 		return nil;
 
 	int bitsPerPixel = [v bitsPerPixel],  bytesPerPixel = (bitsPerPixel + 7) / 8;
@@ -136,7 +136,7 @@
 // Somewhat critical region: many glyph CRDBitmaps are created, one for each character drawn, as well as some when patterns are drawn. Currently efficient enough.
 - (id)initWithGlyphData:(const unsigned char *)d size:(NSSize)s view:(CRDSessionView *)v
 {	
-	if (![super init])
+	if (!(self = [super init]))
 		return nil;
 	
 	int width = s.width, height = s.height, scanline = ((int)width + 7) / 8;
@@ -167,7 +167,7 @@
 // Not a performance critical region
 - (id)initWithCursorData:(const unsigned char *)xorMask alpha:(const unsigned char *)andMask size:(NSSize)s hotspot:(NSPoint)hotspot view:(CRDSessionView *)v bpp:(int)bpp
 {	
-	if (![super init])
+	if (!(self = [super init]))
 		return nil;
 
 	int w = roundf(s.width), h = roundf(s.height);
@@ -302,7 +302,7 @@
 
 - (id)initWithImage:(NSImage *)img
 {
-	if (![super init])
+	if (!(self = [super init]))
 			return nil;
 	
 	image = [img retain];

@@ -48,7 +48,7 @@ static NSDictionary *windowsKeymapTable = nil;
 
 - (id) init
 {
-	if (![super init])
+	if (!(self = [super init]))
 		return nil;
 	
 	virtualKeymap = [[NSMutableDictionary alloc] init];

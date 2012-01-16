@@ -27,7 +27,7 @@
 
 - (id)initWithFrame:(NSRect)frame
 {
-	if (![super initWithFrame:frame])
+	if (!(self = [super initWithFrame:frame]))
 		return nil;
 		
 	_items = [[NSMutableArray alloc] init];

@@ -240,7 +240,6 @@ void ui_desktop_save(RDConnectionRef conn, uint32 offset, int x, int y, int w, i
 					
 					if (referenceColor == searchColor)
 					{
-						bestDelta = 0.0f;
 						bestIndex = k;
 						break;
 					}

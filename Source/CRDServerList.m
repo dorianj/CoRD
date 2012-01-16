@@ -115,7 +115,6 @@
 
 - (void)selectRow:(NSInteger)index
 {
-	int oldSelection = selectedRow;
 	selectedRow = [[self delegate] tableView:self shouldSelectRow:index] ? index : -1;
 	
 	// Very hacky, but works better than calling super (this way, we control the notification)

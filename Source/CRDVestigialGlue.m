@@ -59,7 +59,6 @@ char * next_arg(char *src, char needle)
 		}
 		else
 		{
-			p = nextval + 1;
 			break;
 		}
 	}
@@ -187,10 +186,10 @@ void hexdump(unsigned char *p, unsigned int len)
 /* Generate a 32-byte random for the secure transport code. */
 void generate_random(uint8 *randomValue)
 {
-    int fd, n;
+    int fd;
     if ( (fd = open("/dev/urandom", O_RDONLY)) != -1)
     {
-        n = read(fd, randomValue, 32);
+        read(fd, randomValue, 32);
         close(fd);
 		return;
     }
@@ -288,7 +287,7 @@ char *l_to_a(long N, int base)
     
 	ret = malloc(LTOA_BUFSIZE);
 	
-    char *head = ret, buf[LTOA_BUFSIZE], *tail = buf + sizeof(buf);
+    char *head = ret, buf[LTOA_BUFSIZE], *tail;
 
     register int divrem;
 

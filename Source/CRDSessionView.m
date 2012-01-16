@@ -47,7 +47,7 @@
 	NSOpenGLPixelFormatAttribute pixelAttribs[4] = {NSOpenGLPFADoubleBuffer, NSOpenGLPFAColorSize, 24, 0};
 	NSOpenGLPixelFormat *pf = [[[NSOpenGLPixelFormat alloc] initWithAttributes:pixelAttribs] autorelease];
 	
-	if (![super initWithFrame:frame pixelFormat:pf])
+	if (!(self = [super initWithFrame:frame pixelFormat:pf]))
 		return nil;
 	
 

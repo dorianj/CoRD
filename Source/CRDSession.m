@@ -41,7 +41,7 @@
 
 - (id)init
 {
-	if (![super init])
+	if (!(self = [super init]))
 		return nil;
 	
 	rdpFilename = label = hostName = clientHostname = username = password = domain = @"";
@@ -65,7 +65,7 @@
 
 - (id)initWithPath:(NSString *)path
 {
-	if (![self init])
+	if (!(self = [self init]))
 		return nil;
 	
 	if (![self readFileAtPath:path])
@@ -80,7 +80,7 @@
 // Initializes using user's 'base connection' settings
 - (id)initWithBaseConnection
 {
-	if (![self init])
+	if (!(self = [self init]))
 		return nil;
 	
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
