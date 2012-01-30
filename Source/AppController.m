@@ -1936,7 +1936,7 @@
 - (void)parseUrlQueryString:(NSString *)queryString forSession:(CRDSession *)session
 {	
 	NSArray *booleanParamters = [NSArray arrayWithObjects:@"consoleSession",@"fullscreen",@"windowDrags",@"drawDesktop",@"windowAnimation",@"themes",@"fontSmoothing",@"savePassword",@"forwardDisks",@"forwardPrinters",nil];
-	NSArray *stringParameters = [NSArray arrayWithObjects:@"screenDepth",@"screenWidth",@"screenHeight",@"fowardAudio",nil];
+	NSArray *stringParameters = [NSArray arrayWithObjects:@"screenDepth",@"screenWidth",@"screenHeight",@"fowardAudio",@"label",nil];
 	
 	for (id setting in [queryString componentsSeparatedByCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"&:"]])
 	{
