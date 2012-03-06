@@ -60,6 +60,8 @@
 	
 	[self setStatus:CRDConnectionClosed];
 	
+	[self setClientHostname:[[NSUserDefaults standardUserDefaults] valueForKey:@"CRDBaseConnectionClientHostname"]];
+	
 	return self;
 }
 
@@ -95,8 +97,6 @@
 	[self setValue:CRDNumberForColorsText([defaults valueForKey:@"CRDBaseConnectionColors"]) forKey:@"screenDepth"];
 	
 	[self setValue:[NSNumber numberWithInt:[[defaults valueForKey:@"CRDBaseConnectionForwardAudio"] intValue]] forKey:@"forwardAudio"];
-	
-	[self setValue:[defaults valueForKey:@"CRDBaseConnectionClientHostname"] forKey:@"clientHostname"];
 		
 	NSString *resolutionString = [defaults valueForKey:@"CRDBaseConnectionScreenSize"];
 	fullscreen = CRDResolutionStringIsFullscreen(resolutionString);
