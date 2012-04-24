@@ -1,8 +1,9 @@
 # OS X files
 .DS_Store
 
-
 # Xcode user files
-Cord.xcodeproj/project.xcworkspace/
-Cord.xcodeproj/xcuserdata/
+/Cord.xcodeproj/project.xcworkspace/
+/Cord.xcodeproj/xcuserdata/
 
+# Build data
+/build/
