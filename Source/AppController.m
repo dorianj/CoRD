@@ -644,8 +644,6 @@
 
 	if ([self displayMode] != CRDDisplayFullscreen)
 		return;
-
-	CRDSession *inst = [self selectedServer];
 	    
 	// Misc preparation
 	displayMode = CRDDisplayUnified;
@@ -890,7 +888,7 @@
 	if ( (serverIndex = [savedServers indexOfObject:selectedServer]) == NSNotFound)
 		serverIndex = [savedServers count]-1;
 	
-	CRDSession *duplicate = [selectedServer copy];
+	CRDSession *duplicate = [[selectedServer copy] autorelease];
 	[duplicate setFilename:CRDFindAvailableFileName([AppController savedServersPath], [[duplicate label] stringByDeletingFileSystemCharacters], @".rdp")];
 	[duplicate flushChangesToFile];
 	[self addSavedServer:duplicate atIndex:serverIndex+1 select:YES];
@@ -1957,7 +1955,7 @@
 // Sets all of the values in the passed CRDSession to match the inspector
 - (void)updateInstToMatchInspector:(CRDSession *)inst
 {
-	if (!inst)
+	if (![[inst retain] autorelease])
 		return;
 	
 	// Checkboxes
