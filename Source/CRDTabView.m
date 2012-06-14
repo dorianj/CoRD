@@ -85,7 +85,7 @@
 	[self selectItemAtIndex:([self indexOfSelectedItem]-1)];
 }
 
-- (IBAction)selectItemAtIndex:(NSInteger)index
+- (void)selectItemAtIndex:(NSInteger)index
 {
 	if (index >= [_items count])
 		index = 0;
