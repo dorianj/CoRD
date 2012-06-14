@@ -171,7 +171,6 @@ extern NSString * const CRDPrefsIgnoreCustomModifiers;
 extern NSString * const CRDSetServerKeyboardLayout;
 extern NSString * const CRDForwardOnlyDefinedPaths;
 extern NSString * const CRDUseSocksProxy;
-extern NSString * const CRDDisableCrashReporter;
 extern NSString * const CRDSavedServersPath;
 
 // Notifications

@@ -66,7 +66,6 @@ NSString * const CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizatio
 NSString * const CRDSetServerKeyboardLayout = @"CRDSetServerKeyboardLayout";
 NSString * const CRDForwardOnlyDefinedPaths = @"CRDForwardOnlyDefinedPaths";
 NSString * const CRDUseSocksProxy = @"CRDUseSocksProxy";
-NSString * const CRDDisableCrashReporter = @"disableCrashReporter";
 NSString * const CRDSavedServersPath = @"savedServersPath";
 
 #pragma mark -
