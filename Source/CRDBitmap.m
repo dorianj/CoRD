@@ -152,7 +152,7 @@
 												samplesPerPixel:2
 													   hasAlpha:YES
 													   isPlanar:YES
-												 colorSpaceName:NSDeviceBlackColorSpace
+												 colorSpaceName:NSDeviceWhiteColorSpace
 													bytesPerRow:scanline
 												   bitsPerPixel:0] autorelease];	
 	
