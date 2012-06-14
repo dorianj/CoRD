@@ -226,10 +226,13 @@
 				if ([arguments objectForKey:argumentKey])
 					[newInst setValue:[arguments objectForKey:argumentKey] forKey:instanceKeyPath];
 		}
-
+		
+		if ([[newInst hostName] length] == 0)
+			return;
+		
 		[connectedServers addObject:newInst];
 	}
-		
+	
 	[gui_serverList deselectAll:self];
 	[self listUpdated];
 	[self connectInstance:newInst];
