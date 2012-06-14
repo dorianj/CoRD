@@ -241,24 +241,14 @@
 	[folderPanel setCanChooseFiles: NO];
 	[folderPanel setCanChooseDirectories: YES];
 	[folderPanel setCanCreateDirectories: YES];
-
-	[folderPanel beginSheetForDirectory:[[[[forwardedPathsController selectedObjects] lastObject] valueForKey:@"path"] stringByExpandingTildeInPath] 
-								   file:nil 
-								  types:nil
-						 modalForWindow:preferencesWindow 
-						  modalDelegate:self 
-						 didEndSelector:@selector(addPathPanelClosed: returnCode: contextInfo:) 
-							contextInfo: nil];
-}
-
-- (void)addPathPanelClosed:(NSOpenPanel *)openPanel returnCode:(int)code contextInfo:(void *)info
-{
-	NSString *path = @"~/";
-	if (code == NSOKButton)
-	{		
-		path = [[openPanel filenames] objectAtIndex: 0];
+	[folderPanel setDirectoryURL:[NSURL fileURLWithPath:[[[[forwardedPathsController selectedObjects] lastObject] valueForKey:@"path"] stringByExpandingTildeInPath]]];
+	[folderPanel beginSheetModalForWindow:preferencesWindow completionHandler:^(NSInteger result) {
+		if (result != NSOKButton)
+			return;
+		
+		NSString* path = [[[folderPanel URLs] objectAtIndex: 0] path];
 		[[forwardedPathsController selection] setValue:[path stringByExpandingTildeInPath] forKey:@"path"];
-
+		
 		if (![[forwardedPathsController selection] valueForKey:@"label"])
 		{
 			if ([[path lastPathComponent] length] > 7)
@@ -266,10 +256,9 @@
 			else if (![path lastPathComponent])
 				[[forwardedPathsController selection] setValue:@"Root" forKey:@"label"];
 		}
-			
-		
-	}
+	}];
 }
+
 
 - (IBAction)editSavedServersPath:(id)sender
 {	
