@@ -241,7 +241,10 @@
 	[folderPanel setCanChooseFiles: NO];
 	[folderPanel setCanChooseDirectories: YES];
 	[folderPanel setCanCreateDirectories: YES];
-	[folderPanel setDirectoryURL:[NSURL fileURLWithPath:[[[[forwardedPathsController selectedObjects] lastObject] valueForKey:@"path"] stringByExpandingTildeInPath]]];
+	
+	if ([[forwardedPathsController selectedObjects] lastObject])
+		[folderPanel setDirectoryURL:[NSURL fileURLWithPath:[[[[forwardedPathsController selectedObjects] lastObject] valueForKey:@"path"] stringByExpandingTildeInPath]]];
+		
 	[folderPanel beginSheetModalForWindow:preferencesWindow completionHandler:^(NSInteger result) {
 		if (result != NSOKButton)
 			return;
@@ -270,23 +273,18 @@
 	[folderPanel setCanChooseDirectories: YES];
 	[folderPanel setCanCreateDirectories: YES];
 	
-	[folderPanel beginSheetForDirectory:[[savedServersPathControl value] stringByExpandingTildeInPath] 
-								   file:nil 
-								  types:nil
-						 modalForWindow:preferencesWindow 
-						  modalDelegate:self 
-						 didEndSelector:@selector(editSavedServersPathClosed: returnCode: contextInfo:) 
-							contextInfo: nil];
-}
+	if ([savedServersPathControl value] != nil)
+		[folderPanel setDirectoryURL:[NSURL fileURLWithPath:[[savedServersPathControl value] stringByExpandingTildeInPath]]];
+	
+	[folderPanel beginSheetModalForWindow:preferencesWindow completionHandler:^(NSInteger result) {
+		if (result != NSOKButton)
+			return;
 
-- (void)editSavedServersPathClosed:(NSOpenPanel *)openPanel returnCode:(int)code contextInfo:(void *)info
-{
-	NSString *path;
-	if (code == NSOKButton)
-	{		
-		path = [[openPanel filenames] objectAtIndex: 0];
-		[[NSUserDefaults standardUserDefaults] setValue:[path stringByExpandingTildeInPath] forKey:CRDSavedServersPath];		
-	}
+		NSURL* url = [[folderPanel URLs] objectAtIndex: 0];
+		
+		if (url != nil)
+			[[NSUserDefaults standardUserDefaults] setValue:[[url path] stringByExpandingTildeInPath] forKey:CRDSavedServersPath];
+	}];
 }
 
 - (IBAction)resetSavedServersPath:(id)sender

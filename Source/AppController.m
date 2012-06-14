@@ -579,8 +579,13 @@
 {
 	NSOpenPanel *panel = [NSOpenPanel openPanel];
 	[panel setAllowsMultipleSelection:YES];
-	[panel runModalForTypes:[NSArray arrayWithObjects:@"rdp", @"msrcincident", nil]];
-	NSArray *filenames = [panel filenames];
+	[panel setAllowedFileTypes:[NSArray arrayWithObjects:@"rdp", @"msrcincident", nil]];
+	[panel runModal];
+	
+	NSMutableArray *filenames = [NSMutableArray array];
+	
+	for (NSURL* url in [panel URLs])
+		[filenames addObject:[url path]];
 	
 	if ([filenames count] <= 0)
 		return;
@@ -858,8 +863,16 @@
 	[savePanel setCanSelectHiddenExtension:YES];
 	[savePanel setExtensionHidden:NO];
 	
+	if ([inst label] != nil)
+		[savePanel setNameFieldStringValue:[[inst label] stringByAppendingPathExtension:@"rdp"]];
+	
+	[savePanel beginSheetModalForWindow:gui_unifiedWindow completionHandler:^(NSInteger result) {		
+		if (result != NSOKButton)
+			return;
+			
+		[inst writeToFile:[[savePanel URL] path] atomically:YES updateFilenames:NO];
 
-	[savePanel beginSheetForDirectory:nil file:[[inst label] stringByAppendingPathExtension:@"rdp"] modalForWindow:gui_unifiedWindow modalDelegate:self didEndSelector:@selector(savePanelDidEnd:returnCode:contextInfo:) contextInfo:inst];
+	}];
 }
 
 - (IBAction)sortSavedServersAlphabetically:(id)sender
@@ -1655,16 +1668,6 @@
 - (BOOL)mainWindowIsFocused
 {
 	return [gui_unifiedWindow isMainWindow] && [gui_unifiedWindow isKeyWindow];
-}
-
-- (void)savePanelDidEnd:(NSSavePanel *)sheet returnCode:(int)returnCode contextInfo:(void  *)contextInfo
-{
-	CRDSession *inst = contextInfo;
-	
-	if ( (inst == nil) || (returnCode != NSOKButton) || ([[sheet filename] length] == 0) )
-		return;
-	
-	[inst writeToFile:[sheet filename] atomically:YES updateFilenames:NO];
 }
 
 // xxx probably should be private
