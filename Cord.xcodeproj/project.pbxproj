@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		37344C210FB141D200DFD6E6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37344C200FB141D200DFD6E6 /* Security.framework */; };
-		37344CBB0FB1743200DFD6E6 /* rdpsnd_dsp.c in Sources */ = {isa = PBXBuildFile; fileRef = 37344CBA0FB1743200DFD6E6 /* rdpsnd_dsp.c */; };
 		37D191820FCE69E8008797FD /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37D191810FCE69E8008797FD /* Carbon.framework */; };
 		3E1E95A91152E41400D0A262 /* UKCrashReporter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3E1E95A81152E41400D0A262 /* UKCrashReporter.xib */; };
 		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
@@ -57,7 +56,6 @@
 		98E9727A0BD9D9DF0041110D /* mcs.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9723F0BD9D9DF0041110D /* mcs.c */; };
 		98E9727D0BD9D9DF0041110D /* mppc.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972420BD9D9DF0041110D /* mppc.c */; };
 		98E9727E0BD9D9DF0041110D /* orders.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972430BD9D9DF0041110D /* orders.c */; };
-		98E972800BD9D9DF0041110D /* parallel.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972450BD9D9DF0041110D /* parallel.c */; };
 		98E972830BD9D9DF0041110D /* printercache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972480BD9D9DF0041110D /* printercache.c */; };
 		98E972850BD9D9DF0041110D /* pstcache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E9724A0BD9D9DF0041110D /* pstcache.c */; };
 		98E9728F0BD9D9DF0041110D /* rdp.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972540BD9D9DF0041110D /* rdp.m */; };
@@ -124,8 +122,6 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		37344C200FB141D200DFD6E6 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
-		37344CB90FB1743200DFD6E6 /* rdpsnd_dsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rdpsnd_dsp.h; path = Source/rdpsnd_dsp.h; sourceTree = "<group>"; };
-		37344CBA0FB1743200DFD6E6 /* rdpsnd_dsp.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = rdpsnd_dsp.c; path = Source/rdpsnd_dsp.c; sourceTree = "<group>"; };
 		37344CD30FB177AB00DFD6E6 /* rdpsnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rdpsnd.h; path = Source/rdpsnd.h; sourceTree = "<group>"; };
 		37D191810FCE69E8008797FD /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		3E1E95A81152E41400D0A262 /* UKCrashReporter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = UKCrashReporter.xib; path = Resources/UKCrashReporter.xib; sourceTree = "<group>"; };
@@ -197,7 +193,6 @@
 		98E972420BD9D9DF0041110D /* mppc.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = mppc.c; path = Source/mppc.c; sourceTree = "<group>"; };
 		98E972430BD9D9DF0041110D /* orders.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = orders.c; path = Source/orders.c; sourceTree = "<group>"; };
 		98E972440BD9D9DF0041110D /* orders.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = orders.h; path = Source/orders.h; sourceTree = "<group>"; };
-		98E972450BD9D9DF0041110D /* parallel.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = parallel.c; path = Source/parallel.c; sourceTree = "<group>"; };
 		98E972460BD9D9DF0041110D /* parse.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = parse.h; path = Source/parse.h; sourceTree = "<group>"; };
 		98E972470BD9D9DF0041110D /* printer.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = printer.m; path = Source/printer.m; sourceTree = "<group>"; };
 		98E972480BD9D9DF0041110D /* printercache.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = printercache.c; path = Source/printercache.c; sourceTree = "<group>"; };
@@ -208,7 +203,6 @@
 		98E972550BD9D9DF0041110D /* rdp5.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = rdp5.c; path = Source/rdp5.c; sourceTree = "<group>"; };
 		98E972560BD9D9DF0041110D /* rdpdr.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = rdpdr.m; path = Source/rdpdr.m; sourceTree = "<group>"; };
 		98E972570BD9D9DF0041110D /* rdpsnd.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = rdpsnd.c; path = Source/rdpsnd.c; sourceTree = "<group>"; };
-		98E972580BD9D9DF0041110D /* rdpsnd_oss.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = rdpsnd_oss.c; path = Source/rdpsnd_oss.c; sourceTree = "<group>"; };
 		98E972590BD9D9DF0041110D /* scancodes.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = scancodes.h; path = Source/scancodes.h; sourceTree = "<group>"; };
 		98E9725A0BD9D9DF0041110D /* secure.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = secure.c; path = Source/secure.c; sourceTree = "<group>"; };
 		98E9725B0BD9D9DF0041110D /* serial.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = serial.c; path = Source/serial.c; sourceTree = "<group>"; };
@@ -411,7 +405,6 @@
 				98E972420BD9D9DF0041110D /* mppc.c */,
 				98E972430BD9D9DF0041110D /* orders.c */,
 				98E972440BD9D9DF0041110D /* orders.h */,
-				98E972450BD9D9DF0041110D /* parallel.c */,
 				98E972460BD9D9DF0041110D /* parse.h */,
 				98E972470BD9D9DF0041110D /* printer.m */,
 				98E972480BD9D9DF0041110D /* printercache.c */,
@@ -423,9 +416,6 @@
 				98E972560BD9D9DF0041110D /* rdpdr.m */,
 				37344CD30FB177AB00DFD6E6 /* rdpsnd.h */,
 				98E972570BD9D9DF0041110D /* rdpsnd.c */,
-				37344CB90FB1743200DFD6E6 /* rdpsnd_dsp.h */,
-				37344CBA0FB1743200DFD6E6 /* rdpsnd_dsp.c */,
-				98E972580BD9D9DF0041110D /* rdpsnd_oss.c */,
 				98E972590BD9D9DF0041110D /* scancodes.h */,
 				98E9725A0BD9D9DF0041110D /* secure.c */,
 				98E9725B0BD9D9DF0041110D /* serial.c */,
@@ -640,7 +630,6 @@
 				98E9727A0BD9D9DF0041110D /* mcs.c in Sources */,
 				98E9727D0BD9D9DF0041110D /* mppc.c in Sources */,
 				98E9727E0BD9D9DF0041110D /* orders.c in Sources */,
-				98E972800BD9D9DF0041110D /* parallel.c in Sources */,
 				98E972830BD9D9DF0041110D /* printercache.c in Sources */,
 				98E972850BD9D9DF0041110D /* pstcache.c in Sources */,
 				98E9728F0BD9D9DF0041110D /* rdp.m in Sources */,
@@ -662,7 +651,6 @@
 				98C342310C2CEFBD005F2925 /* CRDTabView.m in Sources */,
 				987BE5290D4EC3DE00664843 /* CRDAdditions.m in Sources */,
 				999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */,
-				37344CBB0FB1743200DFD6E6 /* rdpsnd_dsp.c in Sources */,
 				98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */,
 				3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */,
 				3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */,
