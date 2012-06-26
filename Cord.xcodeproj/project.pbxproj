@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		37344C210FB141D200DFD6E6 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37344C200FB141D200DFD6E6 /* Security.framework */; };
 		37D191820FCE69E8008797FD /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37D191810FCE69E8008797FD /* Carbon.framework */; };
-		3E1E95A91152E41400D0A262 /* UKCrashReporter.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3E1E95A81152E41400D0A262 /* UKCrashReporter.xib */; };
 		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
 		3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */; };
 		3E7018311153C7CA004D15CA /* CoRD Quicklook.qlgenerator in Copy Quicklook Item */ = {isa = PBXBuildFile; fileRef = 3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */; };
@@ -78,7 +77,6 @@
 		98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */; };
 		98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 98F2A7C310152DA800E1D5B5 /* CoRD Help */; };
-		98FFFFC010EEA890005510EB /* UKCrashReporter.strings in Resources */ = {isa = PBXBuildFile; fileRef = 98FFFFBE10EEA890005510EB /* UKCrashReporter.strings */; };
 		9910D95E110C20C20085DCB2 /* next.png in Resources */ = {isa = PBXBuildFile; fileRef = 9910D95C110C20C20085DCB2 /* next.png */; };
 		9910D95F110C20C20085DCB2 /* previous.png in Resources */ = {isa = PBXBuildFile; fileRef = 9910D95D110C20C20085DCB2 /* previous.png */; };
 		991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 991FE8B01024C71D00EC603C /* SystemConfiguration.framework */; };
@@ -121,7 +119,6 @@
 		37344C200FB141D200DFD6E6 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = /System/Library/Frameworks/Security.framework; sourceTree = "<absolute>"; };
 		37344CD30FB177AB00DFD6E6 /* rdpsnd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = rdpsnd.h; path = Source/rdpsnd.h; sourceTree = "<group>"; };
 		37D191810FCE69E8008797FD /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		3E1E95A81152E41400D0A262 /* UKCrashReporter.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = UKCrashReporter.xib; path = Resources/UKCrashReporter.xib; sourceTree = "<group>"; };
 		3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathLabelFormatter.m; path = Source/CRDFilePathLabelFormatter.m; sourceTree = "<group>"; };
 		3E4B676C1019E2D700D3A911 /* CRDFilePathLabelFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathLabelFormatter.h; path = Source/CRDFilePathLabelFormatter.h; sourceTree = "<group>"; };
 		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
@@ -221,7 +218,6 @@
 		98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDScreenResFormatter.m; path = Source/CRDScreenResFormatter.m; sourceTree = "<group>"; };
 		98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDScreenResFormatter.h; path = Source/CRDScreenResFormatter.h; sourceTree = "<group>"; };
 		98F2A7C310152DA800E1D5B5 /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
-		98FFFFBE10EEA890005510EB /* UKCrashReporter.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = UKCrashReporter.strings; path = Resources/UKCrashReporter.strings; sourceTree = "<group>"; };
 		9910D95C110C20C20085DCB2 /* next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = next.png; path = Resources/next.png; sourceTree = "<group>"; };
 		9910D95D110C20C20085DCB2 /* previous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = previous.png; path = Resources/previous.png; sourceTree = "<group>"; };
 		991FE8B01024C71D00EC603C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
@@ -346,9 +342,7 @@
 				98E972C70BD9DA820041110D /* keymap.txt */,
 				9860D7100BFFA565007FA463 /* Localizable.strings */,
 				993AEC340FB136AB0031B013 /* MainMenu.xib */,
-				98FFFFBE10EEA890005510EB /* UKCrashReporter.strings */,
 				98E972CE0BD9DA820041110D /* windows_keymap_table.txt */,
-				3E1E95A81152E41400D0A262 /* UKCrashReporter.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -574,10 +568,8 @@
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
 				3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */,
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
-				98FFFFC010EEA890005510EB /* UKCrashReporter.strings in Resources */,
 				9910D95E110C20C20085DCB2 /* next.png in Resources */,
 				9910D95F110C20C20085DCB2 /* previous.png in Resources */,
-				3E1E95A91152E41400D0A262 /* UKCrashReporter.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -801,7 +793,7 @@
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -814,7 +806,7 @@
 				GCC_VERSION = "";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.6;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				SDKROOT = macosx;
 			};
 			name = Release;
