@@ -22,6 +22,7 @@
 		98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */; };
 		9860D7120BFFA565007FA463 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9860D7100BFFA565007FA463 /* Localizable.strings */; };
 		986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 986A8BF9100EAE54006AFE36 /* dsa_pub.pem */; };
+		986DCF2715A3767D00E70514 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986DCF2615A3767D00E70514 /* AppKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9872FCD90C08FD8E00078CB2 /* CRDBitmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */; };
 		9872FCDB0C08FD8E00078CB2 /* CRDKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD30C08FD8E00078CB2 /* CRDKeyboard.m */; };
 		9872FCDD0C08FD8E00078CB2 /* CRDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FCD50C08FD8E00078CB2 /* CRDSession.m */; };
@@ -31,7 +32,8 @@
 		9872FD640C0903C000078CB2 /* CRDMixedGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD610C0903C000078CB2 /* CRDMixedGlue.m */; };
 		9872FD650C0903C000078CB2 /* CRDVestigialGlue.m in Sources */ = {isa = PBXBuildFile; fileRef = 9872FD620C0903C000078CB2 /* CRDVestigialGlue.m */; };
 		987BE5290D4EC3DE00664843 /* CRDAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 987BE5280D4EC3DE00664843 /* CRDAdditions.m */; };
-		9881A4290BE9439D0073D189 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		987CD4D1159CAF0100998CFD /* libmycrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 987CD4D0159CAF0100998CFD /* libmycrypto.dylib */; };
+		9881A4290BE9439D0073D189 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9885D1940BFBBB0800C5451D /* printer.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972470BD9D9DF0041110D /* printer.m */; };
 		98C342310C2CEFBD005F2925 /* CRDTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C3422F0C2CEFBC005F2925 /* CRDTabView.m */; };
 		98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */; };
@@ -137,6 +139,7 @@
 		9860D7150BFFA56C007FA463 /* French */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = French; path = Resources/French.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9860D7180BFFA575007FA463 /* German */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = German; path = Resources/German.lproj/Localizable.strings; sourceTree = "<group>"; };
 		986A8BF9100EAE54006AFE36 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = dsa_pub.pem; path = Resources/dsa_pub.pem; sourceTree = "<group>"; };
+		986DCF2615A3767D00E70514 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		9872FCD00C08FD8E00078CB2 /* CRDBitmap.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDBitmap.h; path = Source/CRDBitmap.h; sourceTree = "<group>"; };
 		9872FCD10C08FD8E00078CB2 /* CRDBitmap.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDBitmap.m; path = Source/CRDBitmap.m; sourceTree = "<group>"; };
 		9872FCD20C08FD8E00078CB2 /* CRDKeyboard.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDKeyboard.h; path = Source/CRDKeyboard.h; sourceTree = "<group>"; };
@@ -152,6 +155,7 @@
 		9872FD620C0903C000078CB2 /* CRDVestigialGlue.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDVestigialGlue.m; path = Source/CRDVestigialGlue.m; sourceTree = "<group>"; };
 		987BE5270D4EC3DE00664843 /* CRDAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDAdditions.h; path = Source/CRDAdditions.h; sourceTree = "<group>"; };
 		987BE5280D4EC3DE00664843 /* CRDAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDAdditions.m; path = Source/CRDAdditions.m; sourceTree = "<group>"; };
+		987CD4D0159CAF0100998CFD /* libmycrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmycrypto.dylib; path = Resources/libmycrypto.dylib; sourceTree = "<group>"; };
 		98C3422E0C2CEFBC005F2925 /* CRDTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDTabView.h; path = Source/CRDTabView.h; sourceTree = "<group>"; };
 		98C3422F0C2CEFBC005F2925 /* CRDTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDTabView.m; path = Source/CRDTabView.m; sourceTree = "<group>"; };
 		98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = Credits.rtf; path = resources/Credits.rtf; sourceTree = "<group>"; };
@@ -235,6 +239,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				986DCF2715A3767D00E70514 /* AppKit.framework in Frameworks */,
 				98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */,
 				9881A4290BE9439D0073D189 /* Cocoa.framework in Frameworks */,
 				98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */,
@@ -242,6 +247,7 @@
 				37D191820FCE69E8008797FD /* Carbon.framework in Frameworks */,
 				991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */,
 				993445C61229F2BB002DF001 /* Quartz.framework in Frameworks */,
+				987CD4D1159CAF0100998CFD /* libmycrypto.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -279,6 +285,8 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				991FE8B01024C71D00EC603C /* SystemConfiguration.framework */,
+				986DCF2615A3767D00E70514 /* AppKit.framework */,
 				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
 				37D191810FCE69E8008797FD /* Carbon.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
@@ -332,6 +340,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				987CD4D0159CAF0100998CFD /* libmycrypto.dylib */,
 				98E70F110D3EC591009731C7 /* Images */,
 				98F2A7C310152DA800E1D5B5 /* CoRD Help */,
 				98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */,
@@ -350,7 +359,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				991FE8B01024C71D00EC603C /* SystemConfiguration.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Included Frameworks */,
 			);
@@ -500,6 +508,7 @@
 				446801890ABF9AAB00FE4069 /* Copy Sparkle Framework */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				987CD4CF159CAC4800998CFD /* Fix libcrypto path */,
 			);
 			buildRules = (
 			);
@@ -574,6 +583,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		987CD4CF159CAC4800998CFD /* Fix libcrypto path */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Fix libcrypto path";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"${TARGET_BUILD_DIR}/${EXECUTABLE_FOLDER_PATH}\"\ninstall_name_tool -change \"/usr/lib/libcrypto.0.9.8.dylib\" \"/usr/lib/libcrypto.dylib\" \"CoRD\"\n\n\n\n\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D11072C0486CEB800E47090 /* Sources */ = {
@@ -709,9 +735,13 @@
 				GCC_WARN_UNUSED_VARIABLE = NO;
 				INFOPLIST_FILE = Resources/Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Resources\"",
+				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "-fnested-functions";
-				OTHER_LDFLAGS = "-lcrypto";
+				OTHER_LDFLAGS = "-lmycrypto";
 				PRODUCT_NAME = Cord;
 				VALID_ARCHS = "i386 x86_64";
 				VERSIONING_SYSTEM = "";
@@ -773,9 +803,13 @@
 				INSTALL_GROUP = "$(GROUP)";
 				INSTALL_OWNER = "$(USER)";
 				INSTALL_PATH = "$(SYMROOT)/Deployment";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/Resources\"",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_CFLAGS = "-fnested-functions";
-				OTHER_LDFLAGS = "-lcrypto";
+				OTHER_LDFLAGS = "-lmycrypto";
 				PRESERVE_DEAD_CODE_INITS_AND_TERMS = NO;
 				PRODUCT_NAME = CoRD;
 				SKIP_INSTALL = YES;

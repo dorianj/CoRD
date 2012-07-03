@@ -632,7 +632,13 @@
     [gui_tabView removeFromSuperviewWithoutNeedingDisplay];
     [gui_unifiedWindow display];
     NSEnableScreenUpdates();
-
+	
+	
+	if (NSFullScreenModeApplicationPresentationOptions == nil)
+	{
+		NSRunAlertPanel(@"Full screen is not supported on Mac OS X 10.5.", @"Please upgrade your OS.", @"OK", @"", @"");
+		return;
+	}
     
 	[gui_tabView enterFullScreenMode:[gui_unifiedWindow screen] withOptions:
             [NSDictionary dictionaryWithObjectsAndKeys:
