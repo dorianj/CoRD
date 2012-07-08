@@ -1862,7 +1862,7 @@
 	
 	for (inst in connectedServers)
 	{
-		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label] action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i", [inst hotkey]]];
+		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label] action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%li", [inst hotkey]]];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
@@ -1874,7 +1874,7 @@
 
 	for (inst in savedServers)
 	{
-		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label] action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i", [inst hotkey]]];
+		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label] action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%li", [inst hotkey]]];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
@@ -2098,7 +2098,7 @@
 			screenHeight = CRDDefaultScreenHeight;
 		}
 		// If the user opens an .rdc file with a resolution that the user doesn't have, nothing will be selected. We're not adding it to the array controller, because we don't want resolutions from .rdc files to be persistent in CoRD prefs
-		NSString *resolutionLabel = [NSString stringWithFormat:@"%dx%d", screenWidth, screenHeight];
+		NSString *resolutionLabel = [NSString stringWithFormat:@"%ldx%ld", screenWidth, screenHeight];
 		[gui_screenResolution selectItemWithTitle:resolutionLabel];
 	}
 	
@@ -2206,7 +2206,7 @@
 											 defaultButton:NSLocalizedString(@"Retry", @"Connection errors -> Retry button") 
 										   alternateButton:NSLocalizedString(@"Cancel",@"Connection errors -> Cancel button") 
 											   otherButton:nil 
-								 informativeTextWithFormat:localizedErrorDescriptions[errorCode]];
+								 informativeTextWithFormat:@"%@", localizedErrorDescriptions[errorCode]];
 			[alert setAlertStyle:NSCriticalAlertStyle];
 			
 			// Retry if requested
