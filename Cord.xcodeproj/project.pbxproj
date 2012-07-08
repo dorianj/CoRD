@@ -12,7 +12,6 @@
 		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
 		3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */; };
 		3E7018311153C7CA004D15CA /* CoRD Quicklook.qlgenerator in Copy Quicklook Item */ = {isa = PBXBuildFile; fileRef = 3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */; };
-		3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E713D501080071800FB7F2D /* CRDDisconnect.png */; };
 		9816F0620BEE48F600E439BE /* Sparkle.framework in Copy Sparkle Framework */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
 		982212001128A03900936745 /* ssl.c in Sources */ = {isa = PBXBuildFile; fileRef = 982211FF1128A03900936745 /* ssl.c */; };
@@ -126,7 +125,6 @@
 		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
 		3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathFormatter.h; path = Source/CRDFilePathFormatter.h; sourceTree = "<group>"; };
 		3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Quicklook.qlgenerator"; path = "Library/Quicklook/CoRD Quicklook.qlgenerator"; sourceTree = SOURCE_ROOT; };
-		3E713D501080071800FB7F2D /* CRDDisconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CRDDisconnect.png; path = Resources/CRDDisconnect.png; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		982211FE1128A03900936745 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = Source/ssl.h; sourceTree = "<group>"; };
@@ -458,7 +456,6 @@
 				9997480C10A3C653000B8061 /* ForwardPrefs.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
-				3E713D501080071800FB7F2D /* CRDDisconnect.png */,
 				98E66D240FF2FF8300736CFA /* CoRD.icns */,
 				98E972BF0BD9DA820041110D /* Disconnect.png */,
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
@@ -575,7 +572,6 @@
 				986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */,
 				9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */,
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
-				3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */,
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
 				9910D95E110C20C20085DCB2 /* next.png in Resources */,
 				9910D95F110C20C20085DCB2 /* previous.png in Resources */,
