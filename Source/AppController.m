@@ -1022,7 +1022,7 @@
 				? NSLocalizedString(@"Windowed", @"Display Mode toolbar item -> Windowed label")
 				: NSLocalizedString(@"Unified", @"Display Mode toolbar item -> Unified label");
 				
-		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
+		[toolbarItem setImage:[NSImage imageNamed:label]];
 		[toolbarItem setValue:localizedLabel forKey:@"label"];	
 	}
 	else if (itemTag == 5)
