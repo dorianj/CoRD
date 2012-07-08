@@ -1035,7 +1035,7 @@
 				? NSLocalizedString(@"Stop", @"Disconnect toolbar item -> Stop label")
 				: NSLocalizedString(@"Disconnect", @"Disconnect toolbar item -> Disconnect label");
 		
-		[toolbarItem setImage:[NSImage imageNamed:[label stringByAppendingString:@".png"]]];
+		[toolbarItem setImage:[NSImage imageNamed:label]];
 		[toolbarItem setValue:localizedLabel forKey:@"label"];
 		return ([inst status] == CRDConnectionConnecting) || ( (viewedInst != nil) && (displayMode == CRDDisplayUnified) );
 	}
