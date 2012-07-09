@@ -59,6 +59,7 @@
 	- (void)validateControls;
 	- (void)loadSavedServers;
 	- (void)parseUrlQueryString:(NSString *)queryString forSession:(CRDSession *)session;
+	- (void)setDisplayMode:(CRDDisplayMode)displayMode;
 @end
 
 
@@ -114,7 +115,7 @@
 	[[[NSApp windowsMenu] itemWithTitle:@"CoRD"] setKeyEquivalentModifierMask:(NSCommandKeyMask|NSAlternateKeyMask)];
 	[[[NSApp windowsMenu] itemWithTitle:@"CoRD"] setKeyEquivalent:@"1"];
 	
-	displayMode = CRDDisplayUnified;
+	[self setDisplayMode:CRDDisplayUnified];
 	
 	[gui_unifiedWindow setAcceptsMouseMovedEvents:YES];
 	windowCascadePoint = CRDWindowCascadeStart;
@@ -154,7 +155,7 @@
 	[gui_unifiedWindow setExcludedFromWindowsMenu:YES];
 
 	// Load a few user defaults that need to be loaded before anything is displayed
-	displayMode = [[userDefaults objectForKey:CRDDefaultsDisplayMode] intValue];
+	[self setDisplayMode:[[userDefaults objectForKey:CRDDefaultsDisplayMode] intValue]];
 
 	// Register for preferences KVO notification
 	[[NSUserDefaults standardUserDefaults] addObserver:self forKeyPath:@"MinimalServerList" options:NSKeyValueObservingOptionNew context:NULL];
@@ -260,6 +261,8 @@
 	else if (action == @selector(selectNext:))
 		return [gui_tabView numberOfItems] > 1;
 	else if (action == @selector(selectPrevious:))
+		return [gui_tabView numberOfItems] > 1;
+	else if (action == @selector(selectAdjacentSession:))
 		return [gui_tabView numberOfItems] > 1;
 	else if (action == @selector(takeScreenCapture:))
 		return viewedInst != nil;
@@ -510,6 +513,15 @@
 	}
 }
 
+- (IBAction)selectAdjacentSession:(id)sender
+{
+	if ([sender tag] == 0) {
+		[self selectPrevious:sender];
+	} else {
+		[self selectNext:sender];
+	}
+}
+
 - (IBAction)selectNext:(id)sender
 {
 	if (_isFilteringSavedServers)
@@ -647,7 +659,7 @@
             nil]];
 	
 	NSEnableScreenUpdates(); // Disable may have been used for slightly deferred fullscreen (see completeConnection:)
-    displayMode = CRDDisplayFullscreen;
+    [self setDisplayMode:CRDDisplayFullscreen];
 }
 
 - (IBAction)endFullscreen:(id)sender
@@ -658,7 +670,7 @@
 		return;
 	    
 	// Misc preparation
-	displayMode = CRDDisplayUnified;
+	[self setDisplayMode:CRDDisplayUnified];
 	[self autosizeUnifiedWindowWithAnimation:NO];
     [gui_tabView exitFullScreenModeWithOptions:nil];
 	
@@ -670,7 +682,7 @@
 	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
 		[self startWindowed:self];
 		
-	displayMode = displayModeBeforeFullscreen;
+	[self setDisplayMode:displayModeBeforeFullscreen];
 	
 	if (displayMode == CRDDisplayUnified)
 		[gui_unifiedWindow makeKeyAndOrderFront:nil];
@@ -703,7 +715,7 @@
 	if (displayMode == CRDDisplayWindowed)
 		return;
 	
-	displayMode = CRDDisplayWindowed;
+	[self setDisplayMode:CRDDisplayWindowed];
 	windowCascadePoint = CRDWindowCascadeStart;
 	
 	if ([connectedServers count] == 0)
@@ -722,7 +734,7 @@
 	if (displayMode == CRDDisplayUnified || displayMode == CRDDisplayFullscreen)
 		return;
 		
-	displayMode = CRDDisplayUnified;
+	[self setDisplayMode:CRDDisplayUnified];
 	
 	if (![connectedServers count])
 		return;
@@ -1112,7 +1124,7 @@
 	{
 		CRDLog(CRDLogLevelDebug, @"Cleaning up Fullscreen Window");
 		[gui_tabView exitFullScreenModeWithOptions:nil];
-		displayMode = displayModeBeforeFullscreen;
+		[self setDisplayMode:displayModeBeforeFullscreen];
 	}
 	[userDefaults setInteger:displayMode forKey:CRDDefaultsDisplayMode];
 	
@@ -1954,6 +1966,11 @@
 		else
 			CRDLog(CRDLogLevelError, @"Invalid Parameter: %@", setting);
 	}
+}
+
+- (void)setDisplayMode:(CRDDisplayMode)newDisplayMode
+{
+	displayMode = newDisplayMode;
 }
 
 #pragma mark -
