@@ -89,6 +89,7 @@
 		9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */; };
 		9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */; };
 		9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */; };
+		9C8C824D15AB187A00A9C5F7 /* ForwardPrefs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -236,6 +237,7 @@
 		9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Stop@2x.png"; path = "Resources/Stop@2x.png"; sourceTree = "<group>"; };
 		9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ConnectionDefaultsIcon@2x.png"; path = "Resources/ConnectionDefaultsIcon@2x.png"; sourceTree = "<group>"; };
 		9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Disconnect@2x.png"; path = "Resources/Disconnect@2x.png"; sourceTree = "<group>"; };
+		9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ForwardPrefs@2x.png"; path = "Resources/ForwardPrefs@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -460,6 +462,7 @@
 				9910D95C110C20C20085DCB2 /* next.png */,
 				9910D95D110C20C20085DCB2 /* previous.png */,
 				9997480C10A3C653000B8061 /* ForwardPrefs.png */,
+				9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
 				98E66D240FF2FF8300736CFA /* CoRD.icns */,
@@ -587,6 +590,7 @@
 				9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */,
 				9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */,
 				9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */,
+				9C8C824D15AB187A00A9C5F7 /* ForwardPrefs@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
