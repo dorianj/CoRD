@@ -87,6 +87,7 @@
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
 		9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */; };
+		9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -232,6 +233,7 @@
 		99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PFMoveApplication.m; path = Source/LetsMove/PFMoveApplication.m; sourceTree = "<group>"; };
 		99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFMoveApplication.h; path = Source/LetsMove/PFMoveApplication.h; sourceTree = "<group>"; };
 		9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Stop@2x.png"; path = "Resources/Stop@2x.png"; sourceTree = "<group>"; };
+		9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ConnectionDefaultsIcon@2x.png"; path = "Resources/ConnectionDefaultsIcon@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -459,6 +461,7 @@
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
 				98E66D240FF2FF8300736CFA /* CoRD.icns */,
+				9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */,
 				98E972BF0BD9DA820041110D /* Disconnect.png */,
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
 				98E972C50BD9DA820041110D /* i Button Face.png */,
@@ -579,6 +582,7 @@
 				9910D95E110C20C20085DCB2 /* next.png in Resources */,
 				9910D95F110C20C20085DCB2 /* previous.png in Resources */,
 				9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */,
+				9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
