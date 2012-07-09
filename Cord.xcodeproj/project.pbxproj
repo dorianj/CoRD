@@ -91,6 +91,7 @@
 		9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */; };
 		9C8C824D15AB187A00A9C5F7 /* ForwardPrefs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */; };
 		9C8C824F15AB6CB400A9C5F7 /* Unified@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824E15AB6CB300A9C5F7 /* Unified@2x.png */; };
+		9C8C825115AB7D1100A9C5F7 /* Windowed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825015AB7D1000A9C5F7 /* Windowed@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -240,6 +241,7 @@
 		9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Disconnect@2x.png"; path = "Resources/Disconnect@2x.png"; sourceTree = "<group>"; };
 		9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ForwardPrefs@2x.png"; path = "Resources/ForwardPrefs@2x.png"; sourceTree = "<group>"; };
 		9C8C824E15AB6CB300A9C5F7 /* Unified@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Unified@2x.png"; path = "Resources/Unified@2x.png"; sourceTree = "<group>"; };
+		9C8C825015AB7D1000A9C5F7 /* Windowed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Windowed@2x.png"; path = "Resources/Windowed@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -481,6 +483,7 @@
 				98E972CC0BD9DA820041110D /* Unified.png */,
 				9C8C824E15AB6CB300A9C5F7 /* Unified@2x.png */,
 				98E972CD0BD9DA820041110D /* Windowed.png */,
+				9C8C825015AB7D1000A9C5F7 /* Windowed@2x.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -595,6 +598,7 @@
 				9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */,
 				9C8C824D15AB187A00A9C5F7 /* ForwardPrefs@2x.png in Resources */,
 				9C8C824F15AB6CB400A9C5F7 /* Unified@2x.png in Resources */,
+				9C8C825115AB7D1100A9C5F7 /* Windowed@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
