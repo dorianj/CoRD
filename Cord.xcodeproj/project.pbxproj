@@ -92,6 +92,7 @@
 		9C8C825115AB7D1100A9C5F7 /* Windowed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825015AB7D1000A9C5F7 /* Windowed@2x.png */; };
 		9C8C825315AB850800A9C5F7 /* Fullscreen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825215AB850800A9C5F7 /* Fullscreen@2x.png */; };
 		9C8C825515AB8BC200A9C5F7 /* i Button Face@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825415AB8BC200A9C5F7 /* i Button Face@2x.png */; };
+		9C8C825715AB92C500A9C5F7 /* Clock icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825615AB92C500A9C5F7 /* Clock icon@2x.png */; };
 		9C8C825915AB99A000A9C5F7 /* Next-Template@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825815AB99A000A9C5F7 /* Next-Template@2x.png */; };
 		9C8C825B15AB9B7600A9C5F7 /* Next-Template.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825A15AB9B7500A9C5F7 /* Next-Template.png */; };
 		9C8C825E15AB9BEA00A9C5F7 /* Previous-Template.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825C15AB9BE900A9C5F7 /* Previous-Template.png */; };
@@ -246,6 +247,7 @@
 		9C8C825015AB7D1000A9C5F7 /* Windowed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Windowed@2x.png"; path = "Resources/Windowed@2x.png"; sourceTree = "<group>"; };
 		9C8C825215AB850800A9C5F7 /* Fullscreen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Fullscreen@2x.png"; path = "Resources/Fullscreen@2x.png"; sourceTree = "<group>"; };
 		9C8C825415AB8BC200A9C5F7 /* i Button Face@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "i Button Face@2x.png"; path = "Resources/i Button Face@2x.png"; sourceTree = "<group>"; };
+		9C8C825615AB92C500A9C5F7 /* Clock icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Clock icon@2x.png"; path = "Resources/Clock icon@2x.png"; sourceTree = "<group>"; };
 		9C8C825815AB99A000A9C5F7 /* Next-Template@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Next-Template@2x.png"; path = "Resources/Next-Template@2x.png"; sourceTree = "<group>"; };
 		9C8C825A15AB9B7500A9C5F7 /* Next-Template.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Next-Template.png"; path = "Resources/Next-Template.png"; sourceTree = "<group>"; };
 		9C8C825C15AB9BE900A9C5F7 /* Previous-Template.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Previous-Template.png"; path = "Resources/Previous-Template.png"; sourceTree = "<group>"; };
@@ -478,6 +480,7 @@
 				9997480C10A3C653000B8061 /* ForwardPrefs.png */,
 				9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
+				9C8C825615AB92C500A9C5F7 /* Clock icon@2x.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
 				98E66D240FF2FF8300736CFA /* CoRD.icns */,
 				9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */,
@@ -611,6 +614,7 @@
 				9C8C825115AB7D1100A9C5F7 /* Windowed@2x.png in Resources */,
 				9C8C825315AB850800A9C5F7 /* Fullscreen@2x.png in Resources */,
 				9C8C825515AB8BC200A9C5F7 /* i Button Face@2x.png in Resources */,
+				9C8C825715AB92C500A9C5F7 /* Clock icon@2x.png in Resources */,
 				9C8C825915AB99A000A9C5F7 /* Next-Template@2x.png in Resources */,
 				9C8C825B15AB9B7600A9C5F7 /* Next-Template.png in Resources */,
 				9C8C825E15AB9BEA00A9C5F7 /* Previous-Template.png in Resources */,
