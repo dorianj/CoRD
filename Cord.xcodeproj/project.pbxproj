@@ -84,6 +84,7 @@
 		9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */ = {isa = PBXBuildFile; fileRef = 9997480C10A3C653000B8061 /* ForwardPrefs.png */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
+		9C1500E415ABB0FE0057D59E /* Servers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C1500E315ABB0FE0057D59E /* Servers@2x.png */; };
 		9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */; };
 		9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */; };
 		9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */; };
@@ -239,6 +240,7 @@
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
 		99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PFMoveApplication.m; path = Source/LetsMove/PFMoveApplication.m; sourceTree = "<group>"; };
 		99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFMoveApplication.h; path = Source/LetsMove/PFMoveApplication.h; sourceTree = "<group>"; };
+		9C1500E315ABB0FE0057D59E /* Servers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Servers@2x.png"; path = "Resources/Servers@2x.png"; sourceTree = "<group>"; };
 		9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Stop@2x.png"; path = "Resources/Stop@2x.png"; sourceTree = "<group>"; };
 		9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ConnectionDefaultsIcon@2x.png"; path = "Resources/ConnectionDefaultsIcon@2x.png"; sourceTree = "<group>"; };
 		9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Disconnect@2x.png"; path = "Resources/Disconnect@2x.png"; sourceTree = "<group>"; };
@@ -493,6 +495,7 @@
 				98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */,
 				9C8C825415AB8BC200A9C5F7 /* i Button Face@2x.png */,
 				98E972CB0BD9DA820041110D /* Servers.png */,
+				9C1500E315ABB0FE0057D59E /* Servers@2x.png */,
 				9816F0BF0BEE506000E439BE /* Stop.png */,
 				9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */,
 				98E972CC0BD9DA820041110D /* Unified.png */,
@@ -619,6 +622,7 @@
 				9C8C825B15AB9B7600A9C5F7 /* Next-Template.png in Resources */,
 				9C8C825E15AB9BEA00A9C5F7 /* Previous-Template.png in Resources */,
 				9C8C825F15AB9BEA00A9C5F7 /* Previous-Template@2x.png in Resources */,
+				9C1500E415ABB0FE0057D59E /* Servers@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
