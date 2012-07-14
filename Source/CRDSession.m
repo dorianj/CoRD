@@ -701,7 +701,7 @@
 
 				[base drawInRect:CRDRectFromSize([cellImage size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];
 			
-				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon.png"];
+				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon"];
 				NSSize clockSize = [clockIcon size], iconSize = [cellImage size];
 				NSRect dest = NSMakeRect(iconSize.width - clockSize.width - 1.0, iconSize.height - clockSize.height, clockSize.width, clockSize.height);
 				[clockIcon drawInRect:dest fromRect:CRDRectFromSize(clockSize) operation:NSCompositeSourceOver fraction:0.9];
