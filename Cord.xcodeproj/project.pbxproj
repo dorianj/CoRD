@@ -18,7 +18,6 @@
 		98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98369D370C050B3D009BF52F /* OpenGL.framework */; };
 		9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */; };
 		98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98520EEB0BFEB77700DD732F /* Defaults.plist */; };
-		98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */; };
 		9860D7120BFFA565007FA463 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9860D7100BFFA565007FA463 /* Localizable.strings */; };
 		986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 986A8BF9100EAE54006AFE36 /* dsa_pub.pem */; };
 		986DCF2715A3767D00E70514 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986DCF2615A3767D00E70514 /* AppKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -68,7 +67,6 @@
 		98E972D30BD9DA820041110D /* Fullscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C40BD9DA820041110D /* Fullscreen.png */; };
 		98E972D40BD9DA820041110D /* i Button Face.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C50BD9DA820041110D /* i Button Face.png */; };
 		98E972D60BD9DA820041110D /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C70BD9DA820041110D /* keymap.txt */; };
-		98E972D90BD9DA820041110D /* RDP Document File.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CA0BD9DA820041110D /* RDP Document File.icns */; };
 		98E972DA0BD9DA820041110D /* Servers.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CB0BD9DA820041110D /* Servers.png */; };
 		98E972DB0BD9DA820041110D /* Unified.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CC0BD9DA820041110D /* Unified.png */; };
 		98E972DC0BD9DA820041110D /* Windowed.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CD0BD9DA820041110D /* Windowed.png */; };
@@ -85,6 +83,8 @@
 		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
 		9C1500E415ABB0FE0057D59E /* Servers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C1500E315ABB0FE0057D59E /* Servers@2x.png */; };
 		9C5D3D8615A9F67500D6A552 /* CoRD.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C5D3D8515A9F67500D6A552 /* CoRD.iconset */; };
+		9C8C824415AA429400A9C5F7 /* RDP Document File.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */; };
+		9C8C824515AA429400A9C5F7 /* RDP Document Gray.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */; };
 		9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */; };
 		9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */; };
 		9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */; };
@@ -144,7 +144,6 @@
 		98369D370C050B3D009BF52F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ConnectionDefaultsIcon.png; path = Resources/ConnectionDefaultsIcon.png; sourceTree = "<group>"; };
 		98520EEB0BFEB77700DD732F /* Defaults.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; fileEncoding = 4; name = Defaults.plist; path = Resources/Defaults.plist; sourceTree = "<group>"; };
-		98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "RDP Document Gray.icns"; path = "Resources/RDP Document Gray.icns"; sourceTree = "<group>"; };
 		9860D7110BFFA565007FA463 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = Resources/English.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9860D7150BFFA56C007FA463 /* French */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = French; path = Resources/French.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9860D7180BFFA575007FA463 /* German */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = German; path = Resources/German.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -222,7 +221,6 @@
 		98E972C50BD9DA820041110D /* i Button Face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "i Button Face.png"; path = "Resources/i Button Face.png"; sourceTree = "<group>"; };
 		98E972C60BD9DA820041110D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
 		98E972C70BD9DA820041110D /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = keymap.txt; path = Resources/keymap.txt; sourceTree = "<group>"; };
-		98E972CA0BD9DA820041110D /* RDP Document File.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "RDP Document File.icns"; path = "Resources/RDP Document File.icns"; sourceTree = "<group>"; };
 		98E972CB0BD9DA820041110D /* Servers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Servers.png; path = Resources/Servers.png; sourceTree = "<group>"; };
 		98E972CC0BD9DA820041110D /* Unified.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Unified.png; path = Resources/Unified.png; sourceTree = "<group>"; };
 		98E972CD0BD9DA820041110D /* Windowed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Windowed.png; path = Resources/Windowed.png; sourceTree = "<group>"; };
@@ -241,6 +239,8 @@
 		99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFMoveApplication.h; path = Source/LetsMove/PFMoveApplication.h; sourceTree = "<group>"; };
 		9C1500E315ABB0FE0057D59E /* Servers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Servers@2x.png"; path = "Resources/Servers@2x.png"; sourceTree = "<group>"; };
 		9C5D3D8515A9F67500D6A552 /* CoRD.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = CoRD.iconset; sourceTree = "<group>"; };
+		9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "RDP Document File.iconset"; path = "Resources/RDP Document File.iconset"; sourceTree = "<group>"; };
+		9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "RDP Document Gray.iconset"; path = "Resources/RDP Document Gray.iconset"; sourceTree = "<group>"; };
 		9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Stop@2x.png"; path = "Resources/Stop@2x.png"; sourceTree = "<group>"; };
 		9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ConnectionDefaultsIcon@2x.png"; path = "Resources/ConnectionDefaultsIcon@2x.png"; sourceTree = "<group>"; };
 		9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Disconnect@2x.png"; path = "Resources/Disconnect@2x.png"; sourceTree = "<group>"; };
@@ -475,6 +475,8 @@
 		98E70F110D3EC591009731C7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */,
+				9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */,
 				9C5D3D8515A9F67500D6A552 /* CoRD.iconset */,
 				9C8C825A15AB9B7500A9C5F7 /* Next-Template.png */,
 				9C8C825815AB99A000A9C5F7 /* Next-Template@2x.png */,
@@ -491,8 +493,6 @@
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
 				9C8C825215AB850800A9C5F7 /* Fullscreen@2x.png */,
 				98E972C50BD9DA820041110D /* i Button Face.png */,
-				98E972CA0BD9DA820041110D /* RDP Document File.icns */,
-				98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */,
 				9C8C825415AB8BC200A9C5F7 /* i Button Face@2x.png */,
 				98E972CB0BD9DA820041110D /* Servers.png */,
 				9C1500E315ABB0FE0057D59E /* Servers@2x.png */,
@@ -592,7 +592,6 @@
 				98E972D30BD9DA820041110D /* Fullscreen.png in Resources */,
 				98E972D40BD9DA820041110D /* i Button Face.png in Resources */,
 				98E972D60BD9DA820041110D /* keymap.txt in Resources */,
-				98E972D90BD9DA820041110D /* RDP Document File.icns in Resources */,
 				98E972DA0BD9DA820041110D /* Servers.png in Resources */,
 				98E972DB0BD9DA820041110D /* Unified.png in Resources */,
 				98E972DC0BD9DA820041110D /* Windowed.png in Resources */,
@@ -603,12 +602,13 @@
 				9860D7120BFFA565007FA463 /* Localizable.strings in Resources */,
 				98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */,
 				993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */,
-				98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */,
 				986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */,
 				9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */,
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
 				9C5D3D8615A9F67500D6A552 /* CoRD.iconset in Resources */,
+				9C8C824415AA429400A9C5F7 /* RDP Document File.iconset in Resources */,
+				9C8C824515AA429400A9C5F7 /* RDP Document Gray.iconset in Resources */,
 				9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */,
 				9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */,
 				9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */,
