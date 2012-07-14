@@ -341,7 +341,7 @@ NSToolbarItem *CRDMakeToolbarItem(NSString *name, NSString *label, NSString *too
 	[item setValue:label forKey:@"label"];
 	[item setToolTip:tooltip];
 	[item setAction:action];
-	[item setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%@.png", name]]];
+	[item setImage:[NSImage imageNamed:name]];
 		
 	return item;
 }

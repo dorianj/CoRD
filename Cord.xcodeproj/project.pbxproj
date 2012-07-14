@@ -12,14 +12,12 @@
 		3E4B676F1019E2D700D3A911 /* CRDFilePathLabelFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676B1019E2D700D3A911 /* CRDFilePathLabelFormatter.m */; };
 		3E4B67701019E2D700D3A911 /* CRDFilePathFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */; };
 		3E7018311153C7CA004D15CA /* CoRD Quicklook.qlgenerator in Copy Quicklook Item */ = {isa = PBXBuildFile; fileRef = 3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */; };
-		3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */ = {isa = PBXBuildFile; fileRef = 3E713D501080071800FB7F2D /* CRDDisconnect.png */; };
 		9816F0620BEE48F600E439BE /* Sparkle.framework in Copy Sparkle Framework */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		9816F0C00BEE506000E439BE /* Stop.png in Resources */ = {isa = PBXBuildFile; fileRef = 9816F0BF0BEE506000E439BE /* Stop.png */; };
 		982212001128A03900936745 /* ssl.c in Sources */ = {isa = PBXBuildFile; fileRef = 982211FF1128A03900936745 /* ssl.c */; };
 		98369D380C050B3D009BF52F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98369D370C050B3D009BF52F /* OpenGL.framework */; };
 		9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */; };
 		98520EEC0BFEB77700DD732F /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 98520EEB0BFEB77700DD732F /* Defaults.plist */; };
-		98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */; };
 		9860D7120BFFA565007FA463 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 9860D7100BFFA565007FA463 /* Localizable.strings */; };
 		986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 986A8BF9100EAE54006AFE36 /* dsa_pub.pem */; };
 		986DCF2715A3767D00E70514 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 986DCF2615A3767D00E70514 /* AppKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -38,7 +36,6 @@
 		98C342310C2CEFBD005F2925 /* CRDTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C3422F0C2CEFBC005F2925 /* CRDTabView.m */; };
 		98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */; };
 		98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */; };
-		98E66D250FF2FF8300736CFA /* CoRD.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98E66D240FF2FF8300736CFA /* CoRD.icns */; };
 		98E972600BD9D9DF0041110D /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972250BD9D9DF0041110D /* AppController.m */; };
 		98E972610BD9D9DF0041110D /* bitmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972260BD9D9DF0041110D /* bitmap.c */; };
 		98E972620BD9D9DF0041110D /* cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972270BD9D9DF0041110D /* cache.c */; };
@@ -70,7 +67,6 @@
 		98E972D30BD9DA820041110D /* Fullscreen.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C40BD9DA820041110D /* Fullscreen.png */; };
 		98E972D40BD9DA820041110D /* i Button Face.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C50BD9DA820041110D /* i Button Face.png */; };
 		98E972D60BD9DA820041110D /* keymap.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98E972C70BD9DA820041110D /* keymap.txt */; };
-		98E972D90BD9DA820041110D /* RDP Document File.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CA0BD9DA820041110D /* RDP Document File.icns */; };
 		98E972DA0BD9DA820041110D /* Servers.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CB0BD9DA820041110D /* Servers.png */; };
 		98E972DB0BD9DA820041110D /* Unified.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CC0BD9DA820041110D /* Unified.png */; };
 		98E972DC0BD9DA820041110D /* Windowed.png in Resources */ = {isa = PBXBuildFile; fileRef = 98E972CD0BD9DA820041110D /* Windowed.png */; };
@@ -79,14 +75,29 @@
 		98E973B10BD9DD670041110D /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98E972B90BD9DA720041110D /* Sparkle.framework */; };
 		98F2A717101527D700E1D5B5 /* CRDScreenResFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = 98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */; };
 		98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */ = {isa = PBXBuildFile; fileRef = 98F2A7C310152DA800E1D5B5 /* CoRD Help */; };
-		9910D95E110C20C20085DCB2 /* next.png in Resources */ = {isa = PBXBuildFile; fileRef = 9910D95C110C20C20085DCB2 /* next.png */; };
-		9910D95F110C20C20085DCB2 /* previous.png in Resources */ = {isa = PBXBuildFile; fileRef = 9910D95D110C20C20085DCB2 /* previous.png */; };
 		991FE8B11024C71D00EC603C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 991FE8B01024C71D00EC603C /* SystemConfiguration.framework */; };
 		993445C61229F2BB002DF001 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 993445C51229F2BB002DF001 /* Quartz.framework */; };
 		993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 993AEC340FB136AB0031B013 /* MainMenu.xib */; };
 		9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */ = {isa = PBXBuildFile; fileRef = 9997480C10A3C653000B8061 /* ForwardPrefs.png */; };
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
+		9C1500E415ABB0FE0057D59E /* Servers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C1500E315ABB0FE0057D59E /* Servers@2x.png */; };
+		9C5D3D8615A9F67500D6A552 /* CoRD.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C5D3D8515A9F67500D6A552 /* CoRD.iconset */; };
+		9C8C824415AA429400A9C5F7 /* RDP Document File.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */; };
+		9C8C824515AA429400A9C5F7 /* RDP Document Gray.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */; };
+		9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */; };
+		9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */; };
+		9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */; };
+		9C8C824D15AB187A00A9C5F7 /* ForwardPrefs@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */; };
+		9C8C824F15AB6CB400A9C5F7 /* Unified@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824E15AB6CB300A9C5F7 /* Unified@2x.png */; };
+		9C8C825115AB7D1100A9C5F7 /* Windowed@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825015AB7D1000A9C5F7 /* Windowed@2x.png */; };
+		9C8C825315AB850800A9C5F7 /* Fullscreen@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825215AB850800A9C5F7 /* Fullscreen@2x.png */; };
+		9C8C825515AB8BC200A9C5F7 /* i Button Face@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825415AB8BC200A9C5F7 /* i Button Face@2x.png */; };
+		9C8C825715AB92C500A9C5F7 /* Clock icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825615AB92C500A9C5F7 /* Clock icon@2x.png */; };
+		9C8C825915AB99A000A9C5F7 /* Next-Template@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825815AB99A000A9C5F7 /* Next-Template@2x.png */; };
+		9C8C825B15AB9B7600A9C5F7 /* Next-Template.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825A15AB9B7500A9C5F7 /* Next-Template.png */; };
+		9C8C825E15AB9BEA00A9C5F7 /* Previous-Template.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825C15AB9BE900A9C5F7 /* Previous-Template.png */; };
+		9C8C825F15AB9BEA00A9C5F7 /* Previous-Template@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C825D15AB9BEA00A9C5F7 /* Previous-Template@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -126,7 +137,6 @@
 		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
 		3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathFormatter.h; path = Source/CRDFilePathFormatter.h; sourceTree = "<group>"; };
 		3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Quicklook.qlgenerator"; path = "Library/Quicklook/CoRD Quicklook.qlgenerator"; sourceTree = SOURCE_ROOT; };
-		3E713D501080071800FB7F2D /* CRDDisconnect.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = CRDDisconnect.png; path = Resources/CRDDisconnect.png; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		982211FE1128A03900936745 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = Source/ssl.h; sourceTree = "<group>"; };
@@ -134,7 +144,6 @@
 		98369D370C050B3D009BF52F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ConnectionDefaultsIcon.png; path = Resources/ConnectionDefaultsIcon.png; sourceTree = "<group>"; };
 		98520EEB0BFEB77700DD732F /* Defaults.plist */ = {isa = PBXFileReference; explicitFileType = text.plist; fileEncoding = 4; name = Defaults.plist; path = Resources/Defaults.plist; sourceTree = "<group>"; };
-		98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "RDP Document Gray.icns"; path = "Resources/RDP Document Gray.icns"; sourceTree = "<group>"; };
 		9860D7110BFFA565007FA463 /* English */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = English; path = Resources/English.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9860D7150BFFA56C007FA463 /* French */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = French; path = Resources/French.lproj/Localizable.strings; sourceTree = "<group>"; };
 		9860D7180BFFA575007FA463 /* German */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = German; path = Resources/German.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -161,7 +170,6 @@
 		98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = Credits.rtf; path = resources/Credits.rtf; sourceTree = "<group>"; };
 		98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSwappedModifiersUtility.m; path = Source/CRDSwappedModifiersUtility.m; sourceTree = "<group>"; };
 		98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSwappedModifiersUtility.h; path = Source/CRDSwappedModifiersUtility.h; sourceTree = "<group>"; };
-		98E66D240FF2FF8300736CFA /* CoRD.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CoRD.icns; path = Resources/CoRD.icns; sourceTree = "<group>"; };
 		98E972240BD9D9DF0041110D /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = Source/AppController.h; sourceTree = "<group>"; };
 		98E972250BD9D9DF0041110D /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = AppController.m; path = Source/AppController.m; sourceTree = "<group>"; };
 		98E972260BD9D9DF0041110D /* bitmap.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = bitmap.c; path = Source/bitmap.c; sourceTree = "<group>"; };
@@ -213,7 +221,6 @@
 		98E972C50BD9DA820041110D /* i Button Face.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "i Button Face.png"; path = "Resources/i Button Face.png"; sourceTree = "<group>"; };
 		98E972C60BD9DA820041110D /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Resources/Info.plist; sourceTree = "<group>"; };
 		98E972C70BD9DA820041110D /* keymap.txt */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = text; name = keymap.txt; path = Resources/keymap.txt; sourceTree = "<group>"; };
-		98E972CA0BD9DA820041110D /* RDP Document File.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "RDP Document File.icns"; path = "Resources/RDP Document File.icns"; sourceTree = "<group>"; };
 		98E972CB0BD9DA820041110D /* Servers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Servers.png; path = Resources/Servers.png; sourceTree = "<group>"; };
 		98E972CC0BD9DA820041110D /* Unified.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Unified.png; path = Resources/Unified.png; sourceTree = "<group>"; };
 		98E972CD0BD9DA820041110D /* Windowed.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Windowed.png; path = Resources/Windowed.png; sourceTree = "<group>"; };
@@ -222,8 +229,6 @@
 		98F2A715101527D700E1D5B5 /* CRDScreenResFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDScreenResFormatter.m; path = Source/CRDScreenResFormatter.m; sourceTree = "<group>"; };
 		98F2A716101527D700E1D5B5 /* CRDScreenResFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDScreenResFormatter.h; path = Source/CRDScreenResFormatter.h; sourceTree = "<group>"; };
 		98F2A7C310152DA800E1D5B5 /* CoRD Help */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Help"; path = "Resources/CoRD Help"; sourceTree = "<group>"; };
-		9910D95C110C20C20085DCB2 /* next.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = next.png; path = Resources/next.png; sourceTree = "<group>"; };
-		9910D95D110C20C20085DCB2 /* previous.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = previous.png; path = Resources/previous.png; sourceTree = "<group>"; };
 		991FE8B01024C71D00EC603C /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = /System/Library/Frameworks/SystemConfiguration.framework; sourceTree = "<absolute>"; };
 		993445C51229F2BB002DF001 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		993AEC350FB136AB0031B013 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = Resources/English.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -232,6 +237,23 @@
 		999A01E20FAA1DC300FA512C /* PreferencesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PreferencesController.m; path = Source/PreferencesController.m; sourceTree = "<group>"; };
 		99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PFMoveApplication.m; path = Source/LetsMove/PFMoveApplication.m; sourceTree = "<group>"; };
 		99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFMoveApplication.h; path = Source/LetsMove/PFMoveApplication.h; sourceTree = "<group>"; };
+		9C1500E315ABB0FE0057D59E /* Servers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Servers@2x.png"; path = "Resources/Servers@2x.png"; sourceTree = "<group>"; };
+		9C5D3D8515A9F67500D6A552 /* CoRD.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = CoRD.iconset; sourceTree = "<group>"; };
+		9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "RDP Document File.iconset"; path = "Resources/RDP Document File.iconset"; sourceTree = "<group>"; };
+		9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "RDP Document Gray.iconset"; path = "Resources/RDP Document Gray.iconset"; sourceTree = "<group>"; };
+		9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Stop@2x.png"; path = "Resources/Stop@2x.png"; sourceTree = "<group>"; };
+		9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ConnectionDefaultsIcon@2x.png"; path = "Resources/ConnectionDefaultsIcon@2x.png"; sourceTree = "<group>"; };
+		9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Disconnect@2x.png"; path = "Resources/Disconnect@2x.png"; sourceTree = "<group>"; };
+		9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ForwardPrefs@2x.png"; path = "Resources/ForwardPrefs@2x.png"; sourceTree = "<group>"; };
+		9C8C824E15AB6CB300A9C5F7 /* Unified@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Unified@2x.png"; path = "Resources/Unified@2x.png"; sourceTree = "<group>"; };
+		9C8C825015AB7D1000A9C5F7 /* Windowed@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Windowed@2x.png"; path = "Resources/Windowed@2x.png"; sourceTree = "<group>"; };
+		9C8C825215AB850800A9C5F7 /* Fullscreen@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Fullscreen@2x.png"; path = "Resources/Fullscreen@2x.png"; sourceTree = "<group>"; };
+		9C8C825415AB8BC200A9C5F7 /* i Button Face@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "i Button Face@2x.png"; path = "Resources/i Button Face@2x.png"; sourceTree = "<group>"; };
+		9C8C825615AB92C500A9C5F7 /* Clock icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Clock icon@2x.png"; path = "Resources/Clock icon@2x.png"; sourceTree = "<group>"; };
+		9C8C825815AB99A000A9C5F7 /* Next-Template@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Next-Template@2x.png"; path = "Resources/Next-Template@2x.png"; sourceTree = "<group>"; };
+		9C8C825A15AB9B7500A9C5F7 /* Next-Template.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Next-Template.png"; path = "Resources/Next-Template.png"; sourceTree = "<group>"; };
+		9C8C825C15AB9BE900A9C5F7 /* Previous-Template.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Previous-Template.png"; path = "Resources/Previous-Template.png"; sourceTree = "<group>"; };
+		9C8C825D15AB9BEA00A9C5F7 /* Previous-Template@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Previous-Template@2x.png"; path = "Resources/Previous-Template@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -453,22 +475,33 @@
 		98E70F110D3EC591009731C7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				9910D95C110C20C20085DCB2 /* next.png */,
-				9910D95D110C20C20085DCB2 /* previous.png */,
+				9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */,
+				9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */,
+				9C5D3D8515A9F67500D6A552 /* CoRD.iconset */,
+				9C8C825A15AB9B7500A9C5F7 /* Next-Template.png */,
+				9C8C825815AB99A000A9C5F7 /* Next-Template@2x.png */,
+				9C8C825C15AB9BE900A9C5F7 /* Previous-Template.png */,
+				9C8C825D15AB9BEA00A9C5F7 /* Previous-Template@2x.png */,
 				9997480C10A3C653000B8061 /* ForwardPrefs.png */,
+				9C8C824C15AB187A00A9C5F7 /* ForwardPrefs@2x.png */,
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
+				9C8C825615AB92C500A9C5F7 /* Clock icon@2x.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
-				3E713D501080071800FB7F2D /* CRDDisconnect.png */,
-				98E66D240FF2FF8300736CFA /* CoRD.icns */,
+				9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */,
 				98E972BF0BD9DA820041110D /* Disconnect.png */,
+				9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */,
 				98E972C40BD9DA820041110D /* Fullscreen.png */,
+				9C8C825215AB850800A9C5F7 /* Fullscreen@2x.png */,
 				98E972C50BD9DA820041110D /* i Button Face.png */,
-				98E972CA0BD9DA820041110D /* RDP Document File.icns */,
-				98555CC0100BBDCD000D4937 /* RDP Document Gray.icns */,
+				9C8C825415AB8BC200A9C5F7 /* i Button Face@2x.png */,
 				98E972CB0BD9DA820041110D /* Servers.png */,
+				9C1500E315ABB0FE0057D59E /* Servers@2x.png */,
 				9816F0BF0BEE506000E439BE /* Stop.png */,
+				9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */,
 				98E972CC0BD9DA820041110D /* Unified.png */,
+				9C8C824E15AB6CB300A9C5F7 /* Unified@2x.png */,
 				98E972CD0BD9DA820041110D /* Windowed.png */,
+				9C8C825015AB7D1000A9C5F7 /* Windowed@2x.png */,
 			);
 			name = Images;
 			sourceTree = "<group>";
@@ -526,7 +559,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Cord" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -559,7 +592,6 @@
 				98E972D30BD9DA820041110D /* Fullscreen.png in Resources */,
 				98E972D40BD9DA820041110D /* i Button Face.png in Resources */,
 				98E972D60BD9DA820041110D /* keymap.txt in Resources */,
-				98E972D90BD9DA820041110D /* RDP Document File.icns in Resources */,
 				98E972DA0BD9DA820041110D /* Servers.png in Resources */,
 				98E972DB0BD9DA820041110D /* Unified.png in Resources */,
 				98E972DC0BD9DA820041110D /* Windowed.png in Resources */,
@@ -570,15 +602,27 @@
 				9860D7120BFFA565007FA463 /* Localizable.strings in Resources */,
 				98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */,
 				993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */,
-				98E66D250FF2FF8300736CFA /* CoRD.icns in Resources */,
-				98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */,
 				986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */,
 				9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */,
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
-				3E713D511080071800FB7F2D /* CRDDisconnect.png in Resources */,
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
-				9910D95E110C20C20085DCB2 /* next.png in Resources */,
-				9910D95F110C20C20085DCB2 /* previous.png in Resources */,
+				9C5D3D8615A9F67500D6A552 /* CoRD.iconset in Resources */,
+				9C8C824415AA429400A9C5F7 /* RDP Document File.iconset in Resources */,
+				9C8C824515AA429400A9C5F7 /* RDP Document Gray.iconset in Resources */,
+				9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */,
+				9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */,
+				9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */,
+				9C8C824D15AB187A00A9C5F7 /* ForwardPrefs@2x.png in Resources */,
+				9C8C824F15AB6CB400A9C5F7 /* Unified@2x.png in Resources */,
+				9C8C825115AB7D1100A9C5F7 /* Windowed@2x.png in Resources */,
+				9C8C825315AB850800A9C5F7 /* Fullscreen@2x.png in Resources */,
+				9C8C825515AB8BC200A9C5F7 /* i Button Face@2x.png in Resources */,
+				9C8C825715AB92C500A9C5F7 /* Clock icon@2x.png in Resources */,
+				9C8C825915AB99A000A9C5F7 /* Next-Template@2x.png in Resources */,
+				9C8C825B15AB9B7600A9C5F7 /* Next-Template.png in Resources */,
+				9C8C825E15AB9BEA00A9C5F7 /* Previous-Template.png in Resources */,
+				9C8C825F15AB9BEA00A9C5F7 /* Previous-Template@2x.png in Resources */,
+				9C1500E415ABB0FE0057D59E /* Servers@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -689,6 +733,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -753,6 +798,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
 				DEPLOYMENT_LOCATION = NO;

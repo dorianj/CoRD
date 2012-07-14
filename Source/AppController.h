@@ -86,6 +86,7 @@
 - (IBAction)fieldEdited:(id)sender;
 - (IBAction)selectNext:(id)sender;
 - (IBAction)selectPrevious:(id)sender;
+- (IBAction)selectAdjacentSession:(id)sender;
 - (IBAction)performStop:(id)sender;
 - (IBAction)stopConnection:(id)sender;
 - (IBAction)showOpen:(id)sender;
