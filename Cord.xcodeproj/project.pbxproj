@@ -37,7 +37,6 @@
 		98C342310C2CEFBD005F2925 /* CRDTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C3422F0C2CEFBC005F2925 /* CRDTabView.m */; };
 		98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */; };
 		98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */; };
-		98E66D250FF2FF8300736CFA /* CoRD.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98E66D240FF2FF8300736CFA /* CoRD.icns */; };
 		98E972600BD9D9DF0041110D /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972250BD9D9DF0041110D /* AppController.m */; };
 		98E972610BD9D9DF0041110D /* bitmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972260BD9D9DF0041110D /* bitmap.c */; };
 		98E972620BD9D9DF0041110D /* cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972270BD9D9DF0041110D /* cache.c */; };
@@ -85,6 +84,7 @@
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
 		9C1500E415ABB0FE0057D59E /* Servers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C1500E315ABB0FE0057D59E /* Servers@2x.png */; };
+		9C5D3D8615A9F67500D6A552 /* CoRD.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C5D3D8515A9F67500D6A552 /* CoRD.iconset */; };
 		9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */; };
 		9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */; };
 		9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */; };
@@ -171,7 +171,6 @@
 		98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = Credits.rtf; path = resources/Credits.rtf; sourceTree = "<group>"; };
 		98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSwappedModifiersUtility.m; path = Source/CRDSwappedModifiersUtility.m; sourceTree = "<group>"; };
 		98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSwappedModifiersUtility.h; path = Source/CRDSwappedModifiersUtility.h; sourceTree = "<group>"; };
-		98E66D240FF2FF8300736CFA /* CoRD.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CoRD.icns; path = Resources/CoRD.icns; sourceTree = "<group>"; };
 		98E972240BD9D9DF0041110D /* AppController.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = AppController.h; path = Source/AppController.h; sourceTree = "<group>"; };
 		98E972250BD9D9DF0041110D /* AppController.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = AppController.m; path = Source/AppController.m; sourceTree = "<group>"; };
 		98E972260BD9D9DF0041110D /* bitmap.c */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.c; name = bitmap.c; path = Source/bitmap.c; sourceTree = "<group>"; };
@@ -241,6 +240,7 @@
 		99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PFMoveApplication.m; path = Source/LetsMove/PFMoveApplication.m; sourceTree = "<group>"; };
 		99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFMoveApplication.h; path = Source/LetsMove/PFMoveApplication.h; sourceTree = "<group>"; };
 		9C1500E315ABB0FE0057D59E /* Servers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Servers@2x.png"; path = "Resources/Servers@2x.png"; sourceTree = "<group>"; };
+		9C5D3D8515A9F67500D6A552 /* CoRD.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = CoRD.iconset; sourceTree = "<group>"; };
 		9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Stop@2x.png"; path = "Resources/Stop@2x.png"; sourceTree = "<group>"; };
 		9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ConnectionDefaultsIcon@2x.png"; path = "Resources/ConnectionDefaultsIcon@2x.png"; sourceTree = "<group>"; };
 		9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Disconnect@2x.png"; path = "Resources/Disconnect@2x.png"; sourceTree = "<group>"; };
@@ -475,6 +475,7 @@
 		98E70F110D3EC591009731C7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				9C5D3D8515A9F67500D6A552 /* CoRD.iconset */,
 				9C8C825A15AB9B7500A9C5F7 /* Next-Template.png */,
 				9C8C825815AB99A000A9C5F7 /* Next-Template@2x.png */,
 				9C8C825C15AB9BE900A9C5F7 /* Previous-Template.png */,
@@ -484,7 +485,6 @@
 				98E972BE0BD9DA820041110D /* Clock icon.png */,
 				9C8C825615AB92C500A9C5F7 /* Clock icon@2x.png */,
 				9837E69A1013C29A0051ACB0 /* ConnectionDefaultsIcon.png */,
-				98E66D240FF2FF8300736CFA /* CoRD.icns */,
 				9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */,
 				98E972BF0BD9DA820041110D /* Disconnect.png */,
 				9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */,
@@ -603,12 +603,12 @@
 				9860D7120BFFA565007FA463 /* Localizable.strings in Resources */,
 				98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */,
 				993AEC360FB136AB0031B013 /* MainMenu.xib in Resources */,
-				98E66D250FF2FF8300736CFA /* CoRD.icns in Resources */,
 				98555CC1100BBDCD000D4937 /* RDP Document Gray.icns in Resources */,
 				986A8BFA100EAE54006AFE36 /* dsa_pub.pem in Resources */,
 				9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */,
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
+				9C5D3D8615A9F67500D6A552 /* CoRD.iconset in Resources */,
 				9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */,
 				9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */,
 				9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */,
