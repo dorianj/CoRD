@@ -73,7 +73,7 @@ NSString * const CRDSavedServersPath = @"savedServersPath";
 
 inline NSString * CRDJoinHostNameAndPort(NSString *host, NSInteger port)
 {
-	return (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", host, port] : [[host copy] autorelease];
+	return (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%ld", host, port] : [[host copy] autorelease];
 }
 
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port)
@@ -284,7 +284,7 @@ inline NSString *CRDTemporaryFile(void)
 	if (baseDir == nil)
 		baseDir = @"/tmp";
 		
-	return [baseDir stringByAppendingPathComponent:[NSString stringWithFormat:@"CoRD-TemporaryFile-%u-%u", time(NULL), rand()]];
+	return [baseDir stringByAppendingPathComponent:[NSString stringWithFormat:@"CoRD-TemporaryFile-%ld-%u", time(NULL), rand()]];
 }
 
 BOOL CRDPathIsHidden(NSString *path)
@@ -341,7 +341,7 @@ NSToolbarItem *CRDMakeToolbarItem(NSString *name, NSString *label, NSString *too
 	[item setValue:label forKey:@"label"];
 	[item setToolTip:tooltip];
 	[item setAction:action];
-	[item setImage:[NSImage imageNamed:[NSString stringWithFormat:@"%@.png", name]]];
+	[item setImage:[NSImage imageNamed:name]];
 		
 	return item;
 }

@@ -587,7 +587,7 @@
 
 - (BOOL)writeToFile:(NSString *)path atomically:(BOOL)atomicFlag updateFilenames:(BOOL)updateNamesFlag
 {
-	#define write_int(n, v)	 [outputBuffer appendString:[NSString stringWithFormat:@"%@:i:%d\r\n", (n), (v)]]
+	#define write_int(n, v)	 [outputBuffer appendString:[NSString stringWithFormat:@"%@:i:%ld\r\n", (n), (v)]]
 	#define write_string(n, v) [outputBuffer appendString:[NSString stringWithFormat:@"%@:s:%@\r\n", (n), (v) ? (v) : @""]]
 	
 	NSString *expandedPath = [path stringByExpandingTildeInPath];
@@ -597,20 +597,20 @@
 
 	NSMutableString *outputBuffer = [[NSMutableString alloc] init];
 	
-	write_int(@"connect to console", consoleSession);
-	write_int(@"redirectdrives", forwardDisks);
-	write_int(@"redirectprinters", forwardPrinters);
-	write_int(@"disable wallpaper", !drawDesktop);
-	write_int(@"disable full window drag", !windowDrags);
-	write_int(@"disable menu anims", !windowAnimation);
-	write_int(@"disable themes", !themes);
-	write_int(@"disable font smoothing", !fontSmoothing);
+	write_int(@"connect to console", (NSInteger)consoleSession);
+	write_int(@"redirectdrives", (NSInteger)forwardDisks);
+	write_int(@"redirectprinters", (NSInteger)forwardPrinters);
+	write_int(@"disable wallpaper", (NSInteger)!drawDesktop);
+	write_int(@"disable full window drag", (NSInteger)!windowDrags);
+	write_int(@"disable menu anims", (NSInteger)!windowAnimation);
+	write_int(@"disable themes", (NSInteger)!themes);
+	write_int(@"disable font smoothing", (NSInteger)!fontSmoothing);
 	write_int(@"audiomode", forwardAudio);
 	write_int(@"desktopwidth", screenWidth);
 	write_int(@"desktopheight", screenHeight);
 	write_int(@"session bpp", screenDepth);
-	write_int(@"cord save password", savePassword);
-	write_int(@"cord fullscreen", fullscreen);
+	write_int(@"cord save password", (NSInteger)savePassword);
+	write_int(@"cord fullscreen", (NSInteger)fullscreen);
 	write_int(@"cord row index", preferredRowIndex);
 	write_int(@"cord hotkey", hotkey);
 	write_int(@"cord displayMode", displayMode);
@@ -672,7 +672,7 @@
 		return [self performSelectorOnMainThread:@selector(updateCellData) withObject:nil waitUntilDone:NO];
 	
 	// Update the text
-	NSString *fullHost = (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", hostName, port] : hostName;
+	NSString *fullHost = (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%ld", hostName, port] : hostName;
 	[cellRepresentation setDisplayedText:label username:username address:fullHost];
 	
 	// Update the image
@@ -701,7 +701,7 @@
 
 				[base drawInRect:CRDRectFromSize([cellImage size]) fromRect:CRDRectFromSize([base size]) operation:NSCompositeSourceOver fraction:1.0];
 			
-				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon.png"];
+				NSImage *clockIcon = [NSImage imageNamed:@"Clock icon"];
 				NSSize clockSize = [clockIcon size], iconSize = [cellImage size];
 				NSRect dest = NSMakeRect(iconSize.width - clockSize.width - 1.0, iconSize.height - clockSize.height, clockSize.width, clockSize.height);
 				[clockIcon drawInRect:dest fromRect:CRDRectFromSize(clockSize) operation:NSCompositeSourceOver fraction:0.9];

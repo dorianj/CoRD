@@ -23,7 +23,7 @@
 - (NSString *)stringForObjectValue:(id)obj
 {
 	if (obj == nil)
-		obj = [NSString stringWithString:@""];
+		obj = @"";
 	
     return obj;
 }
