@@ -34,6 +34,9 @@
 		9881A4290BE9439D0073D189 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		9885D1940BFBBB0800C5451D /* printer.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972470BD9D9DF0041110D /* printer.m */; };
 		98C342310C2CEFBD005F2925 /* CRDTabView.m in Sources */ = {isa = PBXBuildFile; fileRef = 98C3422F0C2CEFBC005F2925 /* CRDTabView.m */; };
+		98D5C67C15B5F5DE00012A4C /* CoRD.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98D5C67B15B5F5DE00012A4C /* CoRD.icns */; };
+		98D5C68015B5F82300012A4C /* RDP Document File.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98D5C67E15B5F82300012A4C /* RDP Document File.icns */; };
+		98D5C68115B5F82300012A4C /* RDP Document Gray.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98D5C67F15B5F82300012A4C /* RDP Document Gray.icns */; };
 		98D8E6CB0D9194D900EF5DC9 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */; };
 		98E1B69A0C07D8AF007077D1 /* CRDSwappedModifiersUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */; };
 		98E972600BD9D9DF0041110D /* AppController.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972250BD9D9DF0041110D /* AppController.m */; };
@@ -82,9 +85,6 @@
 		999A01E30FAA1DC300FA512C /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 999A01E20FAA1DC300FA512C /* PreferencesController.m */; };
 		99EF1FC310A0FB6900295ECF /* PFMoveApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */; };
 		9C1500E415ABB0FE0057D59E /* Servers@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C1500E315ABB0FE0057D59E /* Servers@2x.png */; };
-		9C5D3D8615A9F67500D6A552 /* CoRD.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C5D3D8515A9F67500D6A552 /* CoRD.iconset */; };
-		9C8C824415AA429400A9C5F7 /* RDP Document File.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */; };
-		9C8C824515AA429400A9C5F7 /* RDP Document Gray.iconset in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */; };
 		9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */; };
 		9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */; };
 		9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */; };
@@ -167,6 +167,9 @@
 		987CD4D0159CAF0100998CFD /* libmycrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmycrypto.dylib; path = Resources/libmycrypto.dylib; sourceTree = "<group>"; };
 		98C3422E0C2CEFBC005F2925 /* CRDTabView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDTabView.h; path = Source/CRDTabView.h; sourceTree = "<group>"; };
 		98C3422F0C2CEFBC005F2925 /* CRDTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDTabView.m; path = Source/CRDTabView.m; sourceTree = "<group>"; };
+		98D5C67B15B5F5DE00012A4C /* CoRD.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CoRD.icns; path = Resources/CoRD.icns; sourceTree = "<group>"; };
+		98D5C67E15B5F82300012A4C /* RDP Document File.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "RDP Document File.icns"; path = "Resources/RDP Document File.icns"; sourceTree = "<group>"; };
+		98D5C67F15B5F82300012A4C /* RDP Document Gray.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = "RDP Document Gray.icns"; path = "Resources/RDP Document Gray.icns"; sourceTree = "<group>"; };
 		98D8E6CA0D9194D900EF5DC9 /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = Credits.rtf; path = resources/Credits.rtf; sourceTree = "<group>"; };
 		98E1B6980C07D8AF007077D1 /* CRDSwappedModifiersUtility.m */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.objc; name = CRDSwappedModifiersUtility.m; path = Source/CRDSwappedModifiersUtility.m; sourceTree = "<group>"; };
 		98E1B6990C07D8AF007077D1 /* CRDSwappedModifiersUtility.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = CRDSwappedModifiersUtility.h; path = Source/CRDSwappedModifiersUtility.h; sourceTree = "<group>"; };
@@ -238,9 +241,6 @@
 		99EF1FC110A0FB6800295ECF /* PFMoveApplication.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PFMoveApplication.m; path = Source/LetsMove/PFMoveApplication.m; sourceTree = "<group>"; };
 		99EF1FC210A0FB6800295ECF /* PFMoveApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PFMoveApplication.h; path = Source/LetsMove/PFMoveApplication.h; sourceTree = "<group>"; };
 		9C1500E315ABB0FE0057D59E /* Servers@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Servers@2x.png"; path = "Resources/Servers@2x.png"; sourceTree = "<group>"; };
-		9C5D3D8515A9F67500D6A552 /* CoRD.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; path = CoRD.iconset; sourceTree = "<group>"; };
-		9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "RDP Document File.iconset"; path = "Resources/RDP Document File.iconset"; sourceTree = "<group>"; };
-		9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */ = {isa = PBXFileReference; lastKnownFileType = folder.iconset; name = "RDP Document Gray.iconset"; path = "Resources/RDP Document Gray.iconset"; sourceTree = "<group>"; };
 		9C8C824615AAF6DC00A9C5F7 /* Stop@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Stop@2x.png"; path = "Resources/Stop@2x.png"; sourceTree = "<group>"; };
 		9C8C824815AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "ConnectionDefaultsIcon@2x.png"; path = "Resources/ConnectionDefaultsIcon@2x.png"; sourceTree = "<group>"; };
 		9C8C824A15AB0A4F00A9C5F7 /* Disconnect@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Disconnect@2x.png"; path = "Resources/Disconnect@2x.png"; sourceTree = "<group>"; };
@@ -475,9 +475,9 @@
 		98E70F110D3EC591009731C7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				9C8C824215AA429400A9C5F7 /* RDP Document File.iconset */,
-				9C8C824315AA429400A9C5F7 /* RDP Document Gray.iconset */,
-				9C5D3D8515A9F67500D6A552 /* CoRD.iconset */,
+				98D5C67E15B5F82300012A4C /* RDP Document File.icns */,
+				98D5C67F15B5F82300012A4C /* RDP Document Gray.icns */,
+				98D5C67B15B5F5DE00012A4C /* CoRD.icns */,
 				9C8C825A15AB9B7500A9C5F7 /* Next-Template.png */,
 				9C8C825815AB99A000A9C5F7 /* Next-Template@2x.png */,
 				9C8C825C15AB9BE900A9C5F7 /* Previous-Template.png */,
@@ -606,9 +606,6 @@
 				9837E69B1013C29A0051ACB0 /* ConnectionDefaultsIcon.png in Resources */,
 				98F2A7C410152DA800E1D5B5 /* CoRD Help in Resources */,
 				9997480D10A3C653000B8061 /* ForwardPrefs.png in Resources */,
-				9C5D3D8615A9F67500D6A552 /* CoRD.iconset in Resources */,
-				9C8C824415AA429400A9C5F7 /* RDP Document File.iconset in Resources */,
-				9C8C824515AA429400A9C5F7 /* RDP Document Gray.iconset in Resources */,
 				9C8C824715AAF6DC00A9C5F7 /* Stop@2x.png in Resources */,
 				9C8C824915AAFEC300A9C5F7 /* ConnectionDefaultsIcon@2x.png in Resources */,
 				9C8C824B15AB0A4F00A9C5F7 /* Disconnect@2x.png in Resources */,
@@ -623,6 +620,9 @@
 				9C8C825E15AB9BEA00A9C5F7 /* Previous-Template.png in Resources */,
 				9C8C825F15AB9BEA00A9C5F7 /* Previous-Template@2x.png in Resources */,
 				9C1500E415ABB0FE0057D59E /* Servers@2x.png in Resources */,
+				98D5C67C15B5F5DE00012A4C /* CoRD.icns in Resources */,
+				98D5C68015B5F82300012A4C /* RDP Document File.icns in Resources */,
+				98D5C68115B5F82300012A4C /* RDP Document Gray.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
