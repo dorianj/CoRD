@@ -213,6 +213,10 @@ enum RDP_INPUT_DEVICE
 #define KBD_FLAG_QUIET          0x1000
 #define KBD_FLAG_DOWN           0x4000
 #define KBD_FLAG_UP             0x8000
+// hopscotch:EDIT:INSERT:BEGIN:
+#define KBD_FLAG_CTRL           0x0020
+#define KBD_FLAG_WIN            0x0080
+// hopscotch:EDIT:INSERT:END:
 
 /* These are for synchronization, not for keystrokes */
 #define KBD_FLAG_SCROLL   0x0001
