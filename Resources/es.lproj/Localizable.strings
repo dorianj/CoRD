@@ -1,0 +1,150 @@
+﻿/* r204 */
+
+/* File name for screen captures */
+" Screen Capture" = " Captura de Pantalla";
+
+/* Servers list label 1 */
+"Active sessions" = "Sesiones activas";
+
+/* Delete server confirm alert -> Cancel button */
+"Cancel" = "Cancelar";
+
+/* Disconnect toolbar item -> tooltip */
+"Close selected connection" = "Cierra la conexión seleccionada";
+
+/* Servers menu -> Disconnect/connect item */
+"Connect" = "Conectar";
+
+/* Connection error alert -> Title */
+"Couldn't connect to %@" = "No se pudo conectar a %@";
+
+/* Delete server confirm alert -> Yes button */
+"Delete" = "Borrar";
+
+/* Delete server confirm alert -> Title */
+"Delete saved server" = "Borrar el servidor guardado";
+
+/* Disconnect toolbar item -> label
+   Disconnect toolbar item -> Disconnect label
+   Servers menu -> Disconnect/connect item */
+"Disconnect" = "Desconectar";
+
+/* Disconnect toolbar item -> tool tip */
+"Enter fullscreen mode" = "Entrar en modo pantalla completa";
+
+/* View menu -> Exit Full Screen */
+"Exit Full Screen" = "Salir de Pantalla Completa";
+
+/* Full Screen toolbar item -> label */
+"Full Screen" = "Pantalla Completa";
+
+/* View menu -> Show Inspector */
+"Hide Inspector" = "Ocultar Inspector";
+
+/* View menu -> Show Servers Drawer */
+"Hide Servers Drawer" = "Ocultar Cajón de Servidores";
+
+/* Inspector -> Enabled title */
+"Inspector: " = "Inspector: ";
+
+/* Inspector -> Disabled title */
+"Inspector: No Server Selected" = "Inspector: Ningún Servidor Seleccionado";
+
+/* Name of newly added servers */
+"New Server" = "Nuevo Servidor";
+
+/* Quick Connect toolbar item -> label */
+"Quick Connect" = "Conexión Rápida";
+
+/* Quick Connect toolbar item -> tooltip */
+"Quick Connect Tooltip" = "Conectarse a un ordenador con los parámetros por defecto.
+
+Especifique el número de puerto con hostname:puerto (Opcional, el puerto por defecto es el 3389).
+
+Shift-Return conecta a una Sesión de Consola.";
+
+/* Quick Connect Console toolbar item -> label 
+   Quick Connect Console toolbar item -> paletteLabel */
+"Quick Connect Console" = "Consola";
+
+/* Quick Connect Console toolbar item -> tooltip */
+"Quick Connect Console Tooltip" = "Use Sesión de Consola para una Conexión Rápida (⇧⌘G)";
+
+/* Delete server confirm alert -> Detail text */
+"Really delete" = "Está seguro que desea borrar el servidor guardado '%@'?";
+
+/* Connection errors -> Retry button */
+"Retry" = "Reintentar";
+
+/* Save server dialog -> Title */
+"Save Server As" = "Guardar Servidor Como";
+
+/* Servers list label 2 */
+"Saved Servers" = "Servidores Guardados";
+
+/* Servers list label 3 */
+"Search Results" = "Resultados de la Búsqueda";
+
+/* Hide/show drawer toolbar item -> label */
+"Servers" = "Servidores";
+
+/* View menu -> Hide Inspector */
+"Show Inspector" = "Mostrar Inspector";
+
+/* View menu -> Hide Servers Drawer */
+"Show Servers Drawer" = "Mostrar Cajón de Servidores";
+
+/* View menu -> Start Full Screen */
+"Start Full Screen" = "Iniciar Pantalla Completa";
+
+/* Disconnect toolbar item -> Stop label */
+"Stop" = "Detener";
+
+/* Display Mode toolbar item -> tool tip */
+"Switch between unified and windowed mode" = "Cambiar entra modo unificado o en ventana";
+
+/* Connection errors -> Timeout */
+"The connection timed out." = "La conexión ha dado timeout.";
+
+/* Connection errors -> Host not found */
+"The host name could not be resolved." = "El nombre de host no se pudo resolver.";
+
+/* Connection errors -> Couldn't connect */
+"There was an error connecting." = "Hubo un error al conectar.";
+
+/* Hide/show drawer toolbar item -> tooltip */
+"Toggle Servers Drawer" = "Ocultar o mostrar el cajón de servidores";
+
+/* Display Mode toolbar item -> Unified label */
+"Unified" = "Unificado";
+
+/* Display Mode toolbar item -> label
+   Display Mode toolbar item -> Windowed label */
+"Windowed" = "En Ventana";
+
+/* Connection errors -> User canceled */
+"You canceled the connection." = "Ha cancelado la conexión.";
+
+/* View menu -> Toggle Windowed */
+"Toggle Windowed" = "Modo En Ventana";
+
+/* View menu -> Toggle Unified */
+"Toggle Unified" = "Modo Unificado";
+
+/* Preferences General toolbar item -> tooltip */
+"General Preferences" = "Preferencias Generales";
+
+/* Preferences General toolbar item -> label */
+"General" = "General";
+
+/* Preferences Connections toolbar item -> tooltip */
+"Connections Preferences" = "Preferencias de Conexión";
+
+/* Preferences Connections toolbar item -> label */
+"Connections" = "Conexiones";
+
+/* Preferences Advanced toolbar item -> tooltip */
+"Advanced Preferences" = "Preferencas Avanzadas";
+
+/* Preferences Advanced toolbar item -> label */
+"Advanced" = "Avanzado";

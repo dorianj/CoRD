@@ -137,6 +137,8 @@
 		3E4B676D1019E2D700D3A911 /* CRDFilePathFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CRDFilePathFormatter.m; path = Source/CRDFilePathFormatter.m; sourceTree = "<group>"; };
 		3E4B676E1019E2D700D3A911 /* CRDFilePathFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CRDFilePathFormatter.h; path = Source/CRDFilePathFormatter.h; sourceTree = "<group>"; };
 		3E7018131153C7A9004D15CA /* CoRD Quicklook.qlgenerator */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "CoRD Quicklook.qlgenerator"; path = "Library/Quicklook/CoRD Quicklook.qlgenerator"; sourceTree = SOURCE_ROOT; };
+		5FB0589115FCC55D00EFDC71 /* es */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = es; path = Resources/es.lproj/Localizable.strings; sourceTree = "<group>"; };
+		5FB0589215FCC55D00EFDC71 /* es */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = es; path = Resources/es.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Cord.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cord.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9816F0BF0BEE506000E439BE /* Stop.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stop.png; path = Resources/Stop.png; sourceTree = "<group>"; };
 		982211FE1128A03900936745 /* ssl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ssl.h; path = Source/ssl.h; sourceTree = "<group>"; };
@@ -706,6 +708,7 @@
 				9860D7110BFFA565007FA463 /* English */,
 				9860D7150BFFA56C007FA463 /* French */,
 				9860D7180BFFA575007FA463 /* German */,
+				5FB0589115FCC55D00EFDC71 /* es */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -722,6 +725,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				993AEC350FB136AB0031B013 /* English */,
+				5FB0589215FCC55D00EFDC71 /* es */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
