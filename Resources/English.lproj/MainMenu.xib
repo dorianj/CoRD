@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="8.00">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">12A256</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2809</string>
-		<string key="IBDocument.AppKitVersion">1185</string>
-		<string key="IBDocument.HIToolboxVersion">622.00</string>
+		<string key="IBDocument.SystemVersion">12B19</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2549</string>
+		<string key="IBDocument.AppKitVersion">1187</string>
+		<string key="IBDocument.HIToolboxVersion">624.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2809</string>
+			<string key="NS.object.0">2549</string>
 		</object>
 		<array key="IBDocument.IntegratedClassDependencies">
 			<string>NSArrayController</string>
@@ -963,11 +963,9 @@
 							<string key="NSToolbarItemPaletteLabel">Previous/Next</string>
 							<nil key="NSToolbarItemToolTip"/>
 							<object class="NSSegmentedControl" key="NSToolbarItemView" id="272774763">
-								<reference key="NSNextResponder"/>
+								<nil key="NSNextResponder"/>
 								<int key="NSvFlags">268</int>
 								<string key="NSFrame">{{10, 14}, {63, 25}}</string>
-								<reference key="NSSuperview"/>
-								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<int key="NSTag">6</int>
 								<bool key="NSEnabled">YES</bool>
@@ -1049,11 +1047,9 @@
 							<string key="NSToolbarItemPaletteLabel">Quick Connect</string>
 							<nil key="NSToolbarItemToolTip"/>
 							<object class="NSComboBox" key="NSToolbarItemView" id="390289132">
-								<reference key="NSNextResponder"/>
+								<nil key="NSNextResponder"/>
 								<int key="NSvFlags">258</int>
 								<string key="NSFrame">{{0, 14}, {163, 26}}</string>
-								<reference key="NSSuperview"/>
-								<reference key="NSNextKeyView"/>
 								<int key="NSTag">2</int>
 								<bool key="NSEnabled">YES</bool>
 								<object class="NSComboBoxCell" key="NSCell" id="599274673">
@@ -1089,7 +1085,7 @@
 									<object class="NSComboTableView" key="NSTableView" id="785035436">
 										<reference key="NSNextResponder"/>
 										<int key="NSvFlags">274</int>
-										<string key="NSFrameSize">{15, 0}</string>
+										<string key="NSFrameSize">{13, 0}</string>
 										<reference key="NSSuperview"/>
 										<reference key="NSWindow"/>
 										<bool key="NSEnabled">YES</bool>
@@ -1097,7 +1093,7 @@
 										<bool key="NSControlAllowsExpansionToolTips">YES</bool>
 										<array class="NSMutableArray" key="NSTableColumns">
 											<object class="NSTableColumn">
-												<double key="NSWidth">12</double>
+												<double key="NSWidth">10</double>
 												<double key="NSMinWidth">10</double>
 												<double key="NSMaxWidth">1000</double>
 												<object class="NSTableHeaderCell" key="NSHeaderCell">
@@ -1153,7 +1149,7 @@
 										</object>
 										<double key="NSRowHeight">19</double>
 										<string key="NSAction">tableViewAction:</string>
-										<int key="NSTvFlags">-767524864</int>
+										<int key="NSTvFlags">-765427712</int>
 										<reference key="NSDelegate" ref="599274673"/>
 										<reference key="NSDataSource" ref="599274673"/>
 										<reference key="NSTarget" ref="599274673"/>
@@ -1314,7 +1310,7 @@
 						<reference ref="982084658"/>
 						<reference ref="224147213"/>
 					</array>
-					<array class="NSMutableArray" key="NSToolbarIBDefaultItems">
+					<array key="NSToolbarIBDefaultItems">
 						<reference ref="118323968"/>
 						<reference ref="169181719"/>
 						<reference ref="74199034"/>
@@ -1329,7 +1325,7 @@
 				<nil key="NSUserInterfaceItemIdentifier"/>
 				<string key="NSWindowContentMinSize">{293, 202}</string>
 				<object class="NSView" key="NSWindowView" id="353280161">
-					<reference key="NSNextResponder"/>
+					<nil key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSCustomView" id="616921495">
@@ -1337,13 +1333,11 @@
 							<int key="NSvFlags">274</int>
 							<string key="NSFrameSize">{600, 400}</string>
 							<reference key="NSSuperview" ref="353280161"/>
-							<reference key="NSNextKeyView"/>
 							<string key="NSClassName">CRDTabView</string>
 							<string key="NSExtension">NSView</string>
 						</object>
 					</array>
 					<string key="NSFrameSize">{600, 400}</string>
-					<reference key="NSSuperview"/>
 					<reference key="NSNextKeyView" ref="616921495"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
@@ -1724,7 +1718,7 @@
 				<string key="NSWindowContentMaxSize">{500, 325}</string>
 				<string key="NSWindowContentMinSize">{356, 325}</string>
 				<object class="NSView" key="NSWindowView" id="1025881511">
-					<nil key="NSNextResponder"/>
+					<reference key="NSNextResponder"/>
 					<int key="NSvFlags">256</int>
 					<array class="NSMutableArray" key="NSSubviews">
 						<object class="NSPopUpButton" id="32369771">
@@ -2879,7 +2873,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 								<object class="NSComboTableView" key="NSTableView" id="315291651">
 									<reference key="NSNextResponder"/>
 									<int key="NSvFlags">274</int>
-									<string key="NSFrameSize">{15, 0}</string>
+									<string key="NSFrameSize">{13, 0}</string>
 									<reference key="NSSuperview"/>
 									<reference key="NSWindow"/>
 									<bool key="NSEnabled">YES</bool>
@@ -2887,7 +2881,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 									<bool key="NSControlAllowsExpansionToolTips">YES</bool>
 									<array class="NSMutableArray" key="NSTableColumns">
 										<object class="NSTableColumn">
-											<double key="NSWidth">12</double>
+											<double key="NSWidth">10</double>
 											<double key="NSMinWidth">10</double>
 											<double key="NSMaxWidth">1000</double>
 											<object class="NSTableHeaderCell" key="NSHeaderCell">
@@ -2921,7 +2915,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 									<reference key="NSGridColor" ref="487934723"/>
 									<double key="NSRowHeight">16</double>
 									<string key="NSAction">tableViewAction:</string>
-									<int key="NSTvFlags">-767524864</int>
+									<int key="NSTvFlags">-765427712</int>
 									<reference key="NSDelegate" ref="721779204"/>
 									<reference key="NSDataSource" ref="721779204"/>
 									<reference key="NSTarget" ref="721779204"/>
@@ -2937,6 +2931,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 						</object>
 					</array>
 					<string key="NSFrameSize">{356, 325}</string>
+					<reference key="NSSuperview"/>
 				</object>
 				<string key="NSScreenRect">{{0, 0}, {1440, 878}}</string>
 				<string key="NSMinSize">{356, 341}</string>
@@ -4542,7 +4537,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 				<string key="NSClassName">NSView</string>
 			</object>
 			<object class="NSCustomView" id="96169602">
-				<nil key="NSNextResponder"/>
+				<reference key="NSNextResponder"/>
 				<int key="NSvFlags">256</int>
 				<array class="NSMutableArray" key="NSSubviews">
 					<object class="NSButton" id="336500340">
@@ -4891,7 +4886,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 									<object class="NSTableView" id="772483095">
 										<reference key="NSNextResponder" ref="655243781"/>
 										<int key="NSvFlags">4352</int>
-										<string key="NSFrameSize">{123, 190}</string>
+										<string key="NSFrameSize">{138, 190}</string>
 										<reference key="NSSuperview" ref="655243781"/>
 										<reference key="NSNextKeyView" ref="978312064"/>
 										<bool key="NSEnabled">YES</bool>
@@ -4900,16 +4895,15 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 										<object class="NSTableHeaderView" key="NSHeaderView" id="115852621">
 											<reference key="NSNextResponder" ref="776682604"/>
 											<int key="NSvFlags">256</int>
-											<string key="NSFrameSize">{123, 17}</string>
+											<string key="NSFrameSize">{138, 17}</string>
 											<reference key="NSSuperview" ref="776682604"/>
 											<reference key="NSNextKeyView" ref="1019453279"/>
 											<reference key="NSTableView" ref="772483095"/>
 										</object>
 										<object class="_NSCornerView" key="NSCornerView" id="1019453279">
-											<reference key="NSNextResponder" ref="258383181"/>
+											<nil key="NSNextResponder"/>
 											<int key="NSvFlags">256</int>
 											<string key="NSFrame">{{124, 0}, {16, 17}}</string>
-											<reference key="NSSuperview" ref="258383181"/>
 											<reference key="NSNextKeyView" ref="655243781"/>
 										</object>
 										<array class="NSMutableArray" key="NSTableColumns">
@@ -4953,7 +4947,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 										<reference key="NSBackgroundColor" ref="96652369"/>
 										<reference key="NSGridColor" ref="487934723"/>
 										<double key="NSRowHeight">17</double>
-										<int key="NSTvFlags">448790528</int>
+										<int key="NSTvFlags">446693376</int>
 										<reference key="NSDelegate"/>
 										<reference key="NSDataSource"/>
 										<int key="NSColumnAutoresizingStyle">0</int>
@@ -4964,7 +4958,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 										<int key="NSTableViewGroupRowStyle">1</int>
 									</object>
 								</array>
-								<string key="NSFrame">{{1, 17}, {123, 190}}</string>
+								<string key="NSFrame">{{1, 17}, {138, 190}}</string>
 								<reference key="NSSuperview" ref="258383181"/>
 								<reference key="NSNextKeyView" ref="772483095"/>
 								<reference key="NSDocView" ref="772483095"/>
@@ -4974,7 +4968,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 							<object class="NSScroller" id="1024324334">
 								<reference key="NSNextResponder" ref="258383181"/>
 								<int key="NSvFlags">256</int>
-								<string key="NSFrame">{{124, 17}, {15, 190}}</string>
+								<string key="NSFrame">{{123, 17}, {16, 190}}</string>
 								<reference key="NSSuperview" ref="258383181"/>
 								<reference key="NSNextKeyView" ref="567093040"/>
 								<bool key="NSAllowsLogicalLayoutDirection">NO</bool>
@@ -5000,14 +4994,13 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 								<array class="NSMutableArray" key="NSSubviews">
 									<reference ref="115852621"/>
 								</array>
-								<string key="NSFrame">{{1, 0}, {123, 17}}</string>
+								<string key="NSFrame">{{1, 0}, {138, 17}}</string>
 								<reference key="NSSuperview" ref="258383181"/>
 								<reference key="NSNextKeyView" ref="115852621"/>
 								<reference key="NSDocView" ref="115852621"/>
 								<reference key="NSBGColor" ref="96652369"/>
 								<int key="NScvFlags">4</int>
 							</object>
-							<reference ref="1019453279"/>
 						</array>
 						<string key="NSFrame">{{283, 52}, {140, 208}}</string>
 						<reference key="NSSuperview" ref="96169602"/>
@@ -5157,6 +5150,7 @@ AAMAAAABAAEAAAFTAAMAAAAEAAAFwgAAAAAACAAIAAgACAABAAEAAQABA</bytes>
 					</object>
 				</array>
 				<string key="NSFrameSize">{443, 280}</string>
+				<reference key="NSSuperview"/>
 				<reference key="NSNextKeyView" ref="392124157"/>
 				<string key="NSClassName">NSView</string>
 			</object>
@@ -11072,503 +11066,6 @@ ZW1vdGUgc2VydmVyLiAgV2luLVIsIFdpbi1FLCBldGMuLCB3aWxsIG5vIGxvbmdlciB3b3JrLg</stri
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
 				<object class="IBPartialClassDescription">
-					<string key="className">AppController</string>
-					<string key="superclassName">NSObject</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="addNewSavedServer:">id</string>
-						<string key="clearQuickConnectHistory:">id</string>
-						<string key="closeSessionOrWindow:">id</string>
-						<string key="connect:">id</string>
-						<string key="disconnect:">id</string>
-						<string key="doNothing:">id</string>
-						<string key="duplicateSelectedServer:">id</string>
-						<string key="endFullscreen:">id</string>
-						<string key="fieldEdited:">id</string>
-						<string key="filterServers:">id</string>
-						<string key="helpForConnectionOptions:">id</string>
-						<string key="jumpToFilter:">id</string>
-						<string key="jumpToQuickConnect:">id</string>
-						<string key="keepSelectedServer:">id</string>
-						<string key="performConnectOrDisconnect:">id</string>
-						<string key="performFullScreen:">id</string>
-						<string key="performQuickConnect:">id</string>
-						<string key="performServerMenuItem:">id</string>
-						<string key="performStop:">id</string>
-						<string key="performUnified:">id</string>
-						<string key="removeSelectedSavedServer:">id</string>
-						<string key="reportABug:">id</string>
-						<string key="saveSelectedServer:">id</string>
-						<string key="selectAdjacentSession:">id</string>
-						<string key="selectNext:">id</string>
-						<string key="selectPrevious:">id</string>
-						<string key="showOpen:">id</string>
-						<string key="showServerInFinder:">id</string>
-						<string key="sortSavedServersAlphabetically:">id</string>
-						<string key="startFullscreen:">id</string>
-						<string key="startUnified:">id</string>
-						<string key="startWindowed:">id</string>
-						<string key="stopConnection:">id</string>
-						<string key="takeScreenCapture:">id</string>
-						<string key="toggleDrawer:">id</string>
-						<string key="toggleInspector:">id</string>
-						<string key="togglePerformanceDisclosure:">id</string>
-						<string key="visitDevelopment:">id</string>
-						<string key="visitHomepage:">id</string>
-						<string key="visitSupportForums:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="addNewSavedServer:">
-							<string key="name">addNewSavedServer:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="clearQuickConnectHistory:">
-							<string key="name">clearQuickConnectHistory:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="closeSessionOrWindow:">
-							<string key="name">closeSessionOrWindow:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="connect:">
-							<string key="name">connect:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="disconnect:">
-							<string key="name">disconnect:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="doNothing:">
-							<string key="name">doNothing:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="duplicateSelectedServer:">
-							<string key="name">duplicateSelectedServer:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="endFullscreen:">
-							<string key="name">endFullscreen:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="fieldEdited:">
-							<string key="name">fieldEdited:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="filterServers:">
-							<string key="name">filterServers:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="helpForConnectionOptions:">
-							<string key="name">helpForConnectionOptions:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="jumpToFilter:">
-							<string key="name">jumpToFilter:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="jumpToQuickConnect:">
-							<string key="name">jumpToQuickConnect:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="keepSelectedServer:">
-							<string key="name">keepSelectedServer:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="performConnectOrDisconnect:">
-							<string key="name">performConnectOrDisconnect:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="performFullScreen:">
-							<string key="name">performFullScreen:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="performQuickConnect:">
-							<string key="name">performQuickConnect:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="performServerMenuItem:">
-							<string key="name">performServerMenuItem:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="performStop:">
-							<string key="name">performStop:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="performUnified:">
-							<string key="name">performUnified:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="removeSelectedSavedServer:">
-							<string key="name">removeSelectedSavedServer:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="reportABug:">
-							<string key="name">reportABug:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveSelectedServer:">
-							<string key="name">saveSelectedServer:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selectAdjacentSession:">
-							<string key="name">selectAdjacentSession:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selectNext:">
-							<string key="name">selectNext:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selectPrevious:">
-							<string key="name">selectPrevious:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="showOpen:">
-							<string key="name">showOpen:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="showServerInFinder:">
-							<string key="name">showServerInFinder:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="sortSavedServersAlphabetically:">
-							<string key="name">sortSavedServersAlphabetically:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="startFullscreen:">
-							<string key="name">startFullscreen:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="startUnified:">
-							<string key="name">startUnified:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="startWindowed:">
-							<string key="name">startWindowed:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="stopConnection:">
-							<string key="name">stopConnection:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="takeScreenCapture:">
-							<string key="name">takeScreenCapture:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleDrawer:">
-							<string key="name">toggleDrawer:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="toggleInspector:">
-							<string key="name">toggleInspector:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="togglePerformanceDisclosure:">
-							<string key="name">togglePerformanceDisclosure:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="visitDevelopment:">
-							<string key="name">visitDevelopment:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="visitHomepage:">
-							<string key="name">visitHomepage:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="visitSupportForums:">
-							<string key="name">visitSupportForums:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="gui_addNewButton">NSButton</string>
-						<string key="gui_colorCount">NSPopUpButton</string>
-						<string key="gui_connectButton">NSButton</string>
-						<string key="gui_consoleSession">NSButton</string>
-						<string key="gui_displayDragging">NSButton</string>
-						<string key="gui_domain">NSTextField</string>
-						<string key="gui_drawDesktop">NSButton</string>
-						<string key="gui_enableAnimations">NSButton</string>
-						<string key="gui_enableFontSmoothing">NSButton</string>
-						<string key="gui_enableThemes">NSButton</string>
-						<string key="gui_forwardAudio">NSMatrix</string>
-						<string key="gui_forwardDisks">NSButton</string>
-						<string key="gui_forwardPrinters">NSButton</string>
-						<string key="gui_host">NSTextField</string>
-						<string key="gui_hotkey">NSPopUpButton</string>
-						<string key="gui_inspector">NSWindow</string>
-						<string key="gui_inspectorButton">NSButton</string>
-						<string key="gui_label">NSTextField</string>
-						<string key="gui_password">NSTextField</string>
-						<string key="gui_performanceOptions">NSBox</string>
-						<string key="gui_preferencesWindow">NSWindow</string>
-						<string key="gui_quickConnect">NSComboBox</string>
-						<string key="gui_savePassword">NSButton</string>
-						<string key="gui_screenResolution">NSPopUpButton</string>
-						<string key="gui_searchField">NSSearchField</string>
-						<string key="gui_serverList">CRDServerList</string>
-						<string key="gui_serversDrawer">NSDrawer</string>
-						<string key="gui_serversMenu">NSMenu</string>
-						<string key="gui_tabView">CRDTabView</string>
-						<string key="gui_toolbar">NSToolbar</string>
-						<string key="gui_toolbarDisconnect">NSToolbarItem</string>
-						<string key="gui_toolbarFullscreen">NSToolbarItem</string>
-						<string key="gui_toolbarServers">NSToolbarItem</string>
-						<string key="gui_toolbarWindowed">NSToolbarItem</string>
-						<string key="gui_unifiedWindow">NSWindow</string>
-						<string key="gui_username">NSTextField</string>
-						<string key="userDefaultsController">NSUserDefaultsController</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="gui_addNewButton">
-							<string key="name">gui_addNewButton</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_colorCount">
-							<string key="name">gui_colorCount</string>
-							<string key="candidateClassName">NSPopUpButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_connectButton">
-							<string key="name">gui_connectButton</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_consoleSession">
-							<string key="name">gui_consoleSession</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_displayDragging">
-							<string key="name">gui_displayDragging</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_domain">
-							<string key="name">gui_domain</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_drawDesktop">
-							<string key="name">gui_drawDesktop</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_enableAnimations">
-							<string key="name">gui_enableAnimations</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_enableFontSmoothing">
-							<string key="name">gui_enableFontSmoothing</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_enableThemes">
-							<string key="name">gui_enableThemes</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_forwardAudio">
-							<string key="name">gui_forwardAudio</string>
-							<string key="candidateClassName">NSMatrix</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_forwardDisks">
-							<string key="name">gui_forwardDisks</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_forwardPrinters">
-							<string key="name">gui_forwardPrinters</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_host">
-							<string key="name">gui_host</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_hotkey">
-							<string key="name">gui_hotkey</string>
-							<string key="candidateClassName">NSPopUpButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_inspector">
-							<string key="name">gui_inspector</string>
-							<string key="candidateClassName">NSWindow</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_inspectorButton">
-							<string key="name">gui_inspectorButton</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_label">
-							<string key="name">gui_label</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_password">
-							<string key="name">gui_password</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_performanceOptions">
-							<string key="name">gui_performanceOptions</string>
-							<string key="candidateClassName">NSBox</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_preferencesWindow">
-							<string key="name">gui_preferencesWindow</string>
-							<string key="candidateClassName">NSWindow</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_quickConnect">
-							<string key="name">gui_quickConnect</string>
-							<string key="candidateClassName">NSComboBox</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_savePassword">
-							<string key="name">gui_savePassword</string>
-							<string key="candidateClassName">NSButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_screenResolution">
-							<string key="name">gui_screenResolution</string>
-							<string key="candidateClassName">NSPopUpButton</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_searchField">
-							<string key="name">gui_searchField</string>
-							<string key="candidateClassName">NSSearchField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_serverList">
-							<string key="name">gui_serverList</string>
-							<string key="candidateClassName">CRDServerList</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_serversDrawer">
-							<string key="name">gui_serversDrawer</string>
-							<string key="candidateClassName">NSDrawer</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_serversMenu">
-							<string key="name">gui_serversMenu</string>
-							<string key="candidateClassName">NSMenu</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_tabView">
-							<string key="name">gui_tabView</string>
-							<string key="candidateClassName">CRDTabView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_toolbar">
-							<string key="name">gui_toolbar</string>
-							<string key="candidateClassName">NSToolbar</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_toolbarDisconnect">
-							<string key="name">gui_toolbarDisconnect</string>
-							<string key="candidateClassName">NSToolbarItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_toolbarFullscreen">
-							<string key="name">gui_toolbarFullscreen</string>
-							<string key="candidateClassName">NSToolbarItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_toolbarServers">
-							<string key="name">gui_toolbarServers</string>
-							<string key="candidateClassName">NSToolbarItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_toolbarWindowed">
-							<string key="name">gui_toolbarWindowed</string>
-							<string key="candidateClassName">NSToolbarItem</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_unifiedWindow">
-							<string key="name">gui_unifiedWindow</string>
-							<string key="candidateClassName">NSWindow</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="gui_username">
-							<string key="name">gui_username</string>
-							<string key="candidateClassName">NSTextField</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="userDefaultsController">
-							<string key="name">userDefaultsController</string>
-							<string key="candidateClassName">NSUserDefaultsController</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/AppController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CRDApplication</string>
-					<string key="superclassName">NSApplication</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CRDApplication.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CRDFilePathFormatter</string>
-					<string key="superclassName">NSFormatter</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CRDFilePathFormatter.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CRDFilePathLabelFormatter</string>
-					<string key="superclassName">NSFormatter</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CRDFilePathLabelFormatter.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CRDScreenResFormatter</string>
-					<string key="superclassName">NSFormatter</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CRDScreenResFormatter.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CRDServerList</string>
-					<string key="superclassName">NSTableView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CRDServerList.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CRDServersColumn</string>
-					<string key="superclassName">NSTableColumn</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CRDServersColumn.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">CRDTabView</string>
-					<string key="superclassName">NSView</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="selectFirstItem:">id</string>
-						<string key="selectItem:">id</string>
-						<string key="selectLastItem:">id</string>
-						<string key="selectNextItem:">id</string>
-						<string key="selectPreviousItem:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="selectFirstItem:">
-							<string key="name">selectFirstItem:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selectItem:">
-							<string key="name">selectItem:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selectLastItem:">
-							<string key="name">selectLastItem:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selectNextItem:">
-							<string key="name">selectNextItem:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="selectPreviousItem:">
-							<string key="name">selectPreviousItem:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">delegate</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">delegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">delegate</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/CRDTabView.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
 					<string key="className">FirstResponder</string>
 					<object class="NSMutableDictionary" key="actions">
 						<string key="NS.key.0">:</string>
@@ -11584,188 +11081,6 @@ ZW1vdGUgc2VydmVyLiAgV2luLVIsIFdpbi1FLCBldGMuLCB3aWxsIG5vIGxvbmdlciB3b3JrLg</stri
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBUserSource</string>
 						<string key="minorKey"/>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">NSDocument</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="printDocument:">id</string>
-						<string key="revertDocumentToSaved:">id</string>
-						<string key="runPageLayout:">id</string>
-						<string key="saveDocument:">id</string>
-						<string key="saveDocumentAs:">id</string>
-						<string key="saveDocumentTo:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="printDocument:">
-							<string key="name">printDocument:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="revertDocumentToSaved:">
-							<string key="name">revertDocumentToSaved:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="runPageLayout:">
-							<string key="name">runPageLayout:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocument:">
-							<string key="name">saveDocument:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocumentAs:">
-							<string key="name">saveDocumentAs:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="saveDocumentTo:">
-							<string key="name">saveDocumentTo:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/NSDocument.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">PreferencesController</string>
-					<string key="superclassName">NSObject</string>
-					<dictionary class="NSMutableDictionary" key="actions">
-						<string key="addNewForwardedPath:">id</string>
-						<string key="addNewScreenResolution:">id</string>
-						<string key="addPathPanelOpen:">id</string>
-						<string key="changePanes:">id</string>
-						<string key="restoreAllSettingsToDefault:">id</string>
-						<string key="restoreDefaultScreenResolutions:">id</string>
-						<string key="showPreferencesHelp:">id</string>
-						<string key="sparkleTypeChanged:">id</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="actionInfosByName">
-						<object class="IBActionInfo" key="addNewForwardedPath:">
-							<string key="name">addNewForwardedPath:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="addNewScreenResolution:">
-							<string key="name">addNewScreenResolution:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="addPathPanelOpen:">
-							<string key="name">addPathPanelOpen:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="changePanes:">
-							<string key="name">changePanes:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="restoreAllSettingsToDefault:">
-							<string key="name">restoreAllSettingsToDefault:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="restoreDefaultScreenResolutions:">
-							<string key="name">restoreDefaultScreenResolutions:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="showPreferencesHelp:">
-							<string key="name">showPreferencesHelp:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-						<object class="IBActionInfo" key="sparkleTypeChanged:">
-							<string key="name">sparkleTypeChanged:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="outlets">
-						<string key="advancedView">NSView</string>
-						<string key="connectionView">NSView</string>
-						<string key="forwardedPathsController">NSArrayController</string>
-						<string key="forwardedPathsTableView">NSTableView</string>
-						<string key="forwardingView">NSView</string>
-						<string key="generalView">NSView</string>
-						<string key="preferencesWindow">NSWindow</string>
-						<string key="savedServersPathControl">NSPathControl</string>
-						<string key="screenResolutionsController">NSArrayController</string>
-						<string key="screenResolutionsTableView">NSTableView</string>
-						<string key="toolbar">NSToolbar</string>
-					</dictionary>
-					<dictionary class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<object class="IBToOneOutletInfo" key="advancedView">
-							<string key="name">advancedView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="connectionView">
-							<string key="name">connectionView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="forwardedPathsController">
-							<string key="name">forwardedPathsController</string>
-							<string key="candidateClassName">NSArrayController</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="forwardedPathsTableView">
-							<string key="name">forwardedPathsTableView</string>
-							<string key="candidateClassName">NSTableView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="forwardingView">
-							<string key="name">forwardingView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="generalView">
-							<string key="name">generalView</string>
-							<string key="candidateClassName">NSView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="preferencesWindow">
-							<string key="name">preferencesWindow</string>
-							<string key="candidateClassName">NSWindow</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="savedServersPathControl">
-							<string key="name">savedServersPathControl</string>
-							<string key="candidateClassName">NSPathControl</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="screenResolutionsController">
-							<string key="name">screenResolutionsController</string>
-							<string key="candidateClassName">NSArrayController</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="screenResolutionsTableView">
-							<string key="name">screenResolutionsTableView</string>
-							<string key="candidateClassName">NSTableView</string>
-						</object>
-						<object class="IBToOneOutletInfo" key="toolbar">
-							<string key="name">toolbar</string>
-							<string key="candidateClassName">NSToolbar</string>
-						</object>
-					</dictionary>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/PreferencesController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">SUUpdater</string>
-					<string key="superclassName">NSObject</string>
-					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">checkForUpdates:</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">checkForUpdates:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">checkForUpdates:</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<object class="NSMutableDictionary" key="outlets">
-						<string key="NS.key.0">delegate</string>
-						<string key="NS.object.0">id</string>
-					</object>
-					<object class="NSMutableDictionary" key="toOneOutletInfosByName">
-						<string key="NS.key.0">delegate</string>
-						<object class="IBToOneOutletInfo" key="NS.object.0">
-							<string key="name">delegate</string>
-							<string key="candidateClassName">id</string>
-						</object>
-					</object>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">./Classes/SUUpdater.h</string>
 					</object>
 				</object>
 			</array>

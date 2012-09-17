@@ -124,6 +124,40 @@ static NSDictionary *windowsKeymapTable = nil;
 
 - (void)sendScancode:(uint8)scancode flags:(uint16)flags
 {
+    // hopscotch:EDIT:INSERT:BEGIN:
+    // NORMALIZE THE APPLE AND WINDOWS KEYBOARD
+    
+    // UNCOMMENT IF Suppress ALT key ... as a key.
+    // This avoids invoking the ALT keyboard navigation.
+    // Display > Apperance > Effects > [Ã] Hide underline letters for keyboard navigation...
+    // if ((scancode == SCANCODE_CHAR_LALT) || (scancode == SCANCODE_CHAR_RALT))
+    //     return;
+    
+    // ALT modifier flag is not suppressed or modified.
+    // Some additionals steps are need for CMD-ALT-<key> to properly pass from local to remote machine
+    
+    // Toggle CMD & CTRL.
+    switch (scancode) {
+        case SCANCODE_CHAR_LCTRL:   scancode = SCANCODE_CHAR_LWIN;  break;
+        case SCANCODE_CHAR_RCTRL:   scancode = SCANCODE_CHAR_RWIN;  break;
+        case SCANCODE_CHAR_LWIN:    scancode = SCANCODE_CHAR_LCTRL; break;
+        case SCANCODE_CHAR_RWIN:    scancode = SCANCODE_CHAR_RCTRL; break;
+        default:
+            break;
+    }
+    
+    // swap KBD_FLAG_CTRL (0x20) with KBD_FLAG_WIN (Apple CMD 0x80)
+    if ((flags & (KBD_FLAG_WIN | KBD_FLAG_CTRL)) == (KBD_FLAG_WIN | KBD_FLAG_CTRL)) {
+        ; // if both flags are set then no swap needed
+    } else if (flags & KBD_FLAG_CTRL) {
+        flags &= ~(KBD_FLAG_CTRL); // bitwise clear
+        flags |= KBD_FLAG_WIN; // bitwise set
+    } else if (flags & KBD_FLAG_WIN) {
+        flags &= ~(KBD_FLAG_WIN); // bitwise clear
+        flags |= KBD_FLAG_CTRL; // bitwise set
+    }
+    // hopscotch:EDIT:INSERT:END:
+
 	if ( ((scancode == SCANCODE_CHAR_LWIN) || (scancode == SCANCODE_CHAR_RWIN)) && !CRDPreferenceIsEnabled(CRDDefaultsSendWindowsKey))
 		return;
 	
