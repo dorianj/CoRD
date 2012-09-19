@@ -651,12 +651,13 @@
 		NSRunAlertPanel(@"Full screen is not supported on Mac OS X 10.5.", @"Please upgrade your OS.", @"OK", @"", @"");
 		return;
 	}
-    
 	[gui_tabView enterFullScreenMode:[gui_unifiedWindow screen] withOptions:
             [NSDictionary dictionaryWithObjectsAndKeys:
             [NSNumber numberWithBool:NO], NSFullScreenModeAllScreens,
             [NSNumber numberWithLong:(NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar)], NSFullScreenModeApplicationPresentationOptions,
             nil]];
+	gui_tabView.window.delegate = self;
+    [[gui_tabView window] setAcceptsMouseMovedEvents:YES];
 	
 	NSEnableScreenUpdates(); // Disable may have been used for slightly deferred fullscreen (see completeConnection:)
     [self setDisplayMode:CRDDisplayFullscreen];
@@ -672,12 +673,15 @@
 	// Misc preparation
 	[self setDisplayMode:CRDDisplayUnified];
 	[self autosizeUnifiedWindowWithAnimation:NO];
+	[[gui_tabView window] setAcceptsMouseMovedEvents:NO];
+	
     [gui_tabView exitFullScreenModeWithOptions:nil];
 	
 	[gui_tabView setFrame:CRDRectFromSize([[gui_unifiedWindow contentView] frame].size)];
 	
 	[[gui_unifiedWindow contentView] addSubview:gui_tabView];	
 	[gui_unifiedWindow display];
+	gui_unifiedWindow.delegate = self;
 	
 	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
 		[self startWindowed:self];
