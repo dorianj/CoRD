@@ -657,6 +657,9 @@
             [NSNumber numberWithBool:NO], NSFullScreenModeAllScreens,
             [NSNumber numberWithLong:(NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar)], NSFullScreenModeApplicationPresentationOptions,
             nil]];
+    
+	gui_tabView.window.delegate = self;
+	[[gui_tabView window] setAcceptsMouseMovedEvents:YES];
 	
 	NSEnableScreenUpdates(); // Disable may have been used for slightly deferred fullscreen (see completeConnection:)
     [self setDisplayMode:CRDDisplayFullscreen];
@@ -678,6 +681,7 @@
 	
 	[[gui_unifiedWindow contentView] addSubview:gui_tabView];	
 	[gui_unifiedWindow display];
+	gui_unifiedWindow.delegate = self;
 	
 	if (displayModeBeforeFullscreen == CRDDisplayWindowed)
 		[self startWindowed:self];
