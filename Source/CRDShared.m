@@ -102,7 +102,7 @@ BOOL CRDResolutionStringIsFullscreen(NSString *screenResolution)
 {
 	screenResolution = [[screenResolution strip] lowercaseString];
 		
-	for (NSString *match in [NSArray arrayWithObjects:@"full screen", @"fullscreen", nil])
+	for (NSString *match in [NSArray arrayWithObjects: @"full screen", @"fullscreen", NSLocalizedString(@"Full Screen",  nil), nil])
 		if ([screenResolution isEqualToString:match])
 			return YES;
 		
@@ -131,7 +131,7 @@ void CRDSplitResolutionString(NSString *screenResolution, NSInteger *width, NSIn
 
 NSNumber * CRDNumberForColorsText(NSString *colorsText)
 {
-	// This should be localized. It's being used to translate displayed values.
+	// This shouldn't be localized. It's being used to translate displayed values.
 	
 	colorsText = [colorsText lowercaseString];
 	
