@@ -4,7 +4,7 @@
 " Screen Capture" = " Captura de Pantalla";
 
 /* Servers list label 1 */
-"Active sessions" = "Sesiones activas";
+"Active Sessions" = "Sesiones activas";
 
 /* Delete server confirm alert -> Cancel button */
 "Cancel" = "Cancelar";

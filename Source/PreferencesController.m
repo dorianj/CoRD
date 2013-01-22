@@ -140,7 +140,12 @@
 
 - (IBAction)restoreAllSettingsToDefault:(id)sender
 {
-	NSInteger buttonPressed = NSRunAlertPanel(@"Restore default settings", @"Are you sure you want to restore your CoRD settings to the built-in defaults? Saved servers will not be affected.", @"Restore Defaults", @"Cancel", nil);
+	NSInteger buttonPressed = NSRunAlertPanel(
+		NSLocalizedString(@"Restore default settings", nil),
+		NSLocalizedString(@"Are you sure you want to restore your CoRD settings to the built-in defaults? Saved servers will not be affected.", nil),
+		NSLocalizedString(@"Restore Defaults", nil),
+		NSLocalizedString(@"Cancel", nil),
+		nil);
 
 	if (buttonPressed != 1)
 		return;
@@ -159,7 +164,12 @@
 - (IBAction)restoreDefaultScreenResolutions:(id)sender
 {
 
-	NSInteger buttonPressed = NSRunAlertPanel(@"Restore default resolutions", @"Are you sure you want to restore the default screen resolutions? Any additions you have made will be lost.", @"Restore Defaults", @"Cancel", nil);	
+	NSInteger buttonPressed = NSRunAlertPanel(
+		NSLocalizedString(@"Restore default resolutions", nil), 
+		NSLocalizedString(@"Are you sure you want to restore the default screen resolutions? Any additions you have made will be lost.", nil),
+		NSLocalizedString(@"Restore Defaults", nil),
+		NSLocalizedString(@"Cancel", nil),
+		nil);	
 	if (buttonPressed != 1)
 		return;
 

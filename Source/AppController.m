@@ -203,7 +203,10 @@
 
 		if (!newInst)
 		{
-			NSRunAlertPanel(@"Server not found", @"No server was found with a label matching '%@'.", nil, nil, nil, labelMatch);
+			NSRunAlertPanel(
+				NSLocalizedString(@"Server not found", nil),
+				NSLocalizedString(@"No server was found with a label matching '%@'.", nil),
+				nil, nil, nil, labelMatch);
 			return;
 		}
 	}
@@ -648,7 +651,10 @@
 	
 	if (NSFullScreenModeApplicationPresentationOptions == nil)
 	{
-		NSRunAlertPanel(@"Full screen is not supported on Mac OS X 10.5.", @"Please upgrade your OS.", @"OK", @"", @"");
+		NSRunAlertPanel(
+			NSLocalizedString(@"Full screen is not supported on Mac OS X 10.5.", nil),
+			NSLocalizedString(@"Please upgrade your OS.", nil),
+			@"OK", @"", @"");
 		return;
 	}
 	[gui_tabView enterFullScreenMode:[gui_unifiedWindow screen] withOptions:
