@@ -1010,9 +1010,16 @@
 			
 	if (fileContents == nil)
 		fileContents = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:NULL];
-	
-	NSArray *fileLines = [fileContents componentsSeparatedByString:@"\r\n"];
-
+    
+    NSArray *fileLines;
+    
+    if ([NSString respondsToSelector:@selector(componentsSeparatedByCharactersInSet:)])
+    {
+        fileLines = [fileContents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    } else {
+        fileLines = [fileContents componentsSeparatedByString:@"\r\n"];
+    }
+    
 	if (fileLines == nil)
 	{
 		CRDLog(CRDLogLevelError, @"Couldn't open RDP file '%@'!", path);
