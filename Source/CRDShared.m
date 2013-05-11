@@ -73,7 +73,7 @@ NSString * const CRDSavedServersPath = @"savedServersPath";
 
 inline NSString * CRDJoinHostNameAndPort(NSString *host, NSInteger port)
 {
-	return (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", host, port] : [[host copy] autorelease];
+	return (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%i", host, (int)port] : [[host copy] autorelease];
 }
 
 void CRDSplitHostNameAndPort(NSString *address, NSString **host, NSInteger *port)
@@ -284,7 +284,7 @@ inline NSString *CRDTemporaryFile(void)
 	if (baseDir == nil)
 		baseDir = @"/tmp";
 		
-	return [baseDir stringByAppendingPathComponent:[NSString stringWithFormat:@"CoRD-TemporaryFile-%u-%u", time(NULL), rand()]];
+	return [baseDir stringByAppendingPathComponent:[NSString stringWithFormat:@"CoRD-TemporaryFile-%lu-%u", time(NULL), rand()]];
 }
 
 BOOL CRDPathIsHidden(NSString *path)
