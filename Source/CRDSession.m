@@ -605,15 +605,15 @@
 	write_int(@"disable menu anims", !windowAnimation);
 	write_int(@"disable themes", !themes);
 	write_int(@"disable font smoothing", !fontSmoothing);
-	write_int(@"audiomode", forwardAudio);
-	write_int(@"desktopwidth", screenWidth);
-	write_int(@"desktopheight", screenHeight);
-	write_int(@"session bpp", screenDepth);
+	write_int(@"audiomode", (int)forwardAudio);
+	write_int(@"desktopwidth", (int)screenWidth);
+	write_int(@"desktopheight", (int)screenHeight);
+	write_int(@"session bpp", (int)screenDepth);
 	write_int(@"cord save password", savePassword);
 	write_int(@"cord fullscreen", fullscreen);
-	write_int(@"cord row index", preferredRowIndex);
-	write_int(@"cord hotkey", hotkey);
-	write_int(@"cord displayMode", displayMode);
+	write_int(@"cord row index", (int)preferredRowIndex);
+	write_int(@"cord hotkey", (int)hotkey);
+	write_int(@"cord displayMode", (int)displayMode);
 	
 	write_string(@"full address", CRDJoinHostNameAndPort(hostName, port));
 	write_string(@"username", username);
@@ -625,7 +625,7 @@
 	{
 		id value = [otherAttributes objectForKey:key];
 		if ([value isKindOfClass:[NSNumber class]])
-			write_int(key, [value integerValue]);
+			write_int(key, (int)[value integerValue]);
 		else
 			write_string(key, value);
 	}
@@ -672,7 +672,7 @@
 		return [self performSelectorOnMainThread:@selector(updateCellData) withObject:nil waitUntilDone:NO];
 	
 	// Update the text
-	NSString *fullHost = (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%d", hostName, port] : hostName;
+	NSString *fullHost = (port && port != CRDDefaultPort) ? [NSString stringWithFormat:@"%@:%i", hostName, (int)port] : hostName;
 	[cellRepresentation setDisplayedText:label username:username address:fullHost];
 	
 	// Update the image
