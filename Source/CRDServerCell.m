@@ -202,7 +202,7 @@ static NSColor *static_highlightedBoldColor, *static_normalBoldColor,
 	if ([inst hotkey] > -1) {
 		
 		// Set up badge string and size.
-		NSString *badge = [NSString stringWithFormat:@"%@%d", [NSString stringWithUTF8String:"\xE2\x8C\x98"], [inst hotkey]];
+		NSString *badge = [NSString stringWithFormat:@"%@%i", [NSString stringWithUTF8String:"\xE2\x8C\x98"], (int)[inst hotkey]];
 		NSSize badgeNumSize = [badge sizeWithAttributes:nil];
 		
 		// Calculate the badge's coordinates.
