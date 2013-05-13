@@ -1885,7 +1885,7 @@
 	
 	for (inst in connectedServers)
 	{
-		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label] action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i", [inst hotkey]]];
+		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label] action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i", (int)[inst hotkey]]];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
@@ -1897,7 +1897,7 @@
 
 	for (inst in savedServers)
 	{
-		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label] action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i", [inst hotkey]]];
+		menuItem = [[NSMenuItem alloc] initWithTitle:[inst label] action:@selector(performServerMenuItem:) keyEquivalent:[NSString stringWithFormat:@"%i", (int)[inst hotkey]]];
 		[menuItem setKeyEquivalentModifierMask:NSCommandKeyMask];
 		[menuItem setRepresentedObject:inst];
 		[gui_serversMenu addItem:menuItem];
@@ -2126,7 +2126,7 @@
 			screenHeight = CRDDefaultScreenHeight;
 		}
 		// If the user opens an .rdc file with a resolution that the user doesn't have, nothing will be selected. We're not adding it to the array controller, because we don't want resolutions from .rdc files to be persistent in CoRD prefs
-		NSString *resolutionLabel = [NSString stringWithFormat:@"%dx%d", screenWidth, screenHeight];
+		NSString *resolutionLabel = [NSString stringWithFormat:@"%ix%i", (int)screenWidth, (int)screenHeight];
 		[gui_screenResolution selectItemWithTitle:resolutionLabel];
 	}
 	
