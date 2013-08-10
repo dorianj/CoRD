@@ -1,0 +1,44 @@
+---
+navigation:
+- text: Support
+  url: SITE_BASEURL/support.html
+- text: Development
+  url: SITE_BASEURL/development.html
+- text: Wiki
+  url: https://github.com/dorianj/CoRD/wiki
+---
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>CoRD{% if page.title %} - {{ page.title }}{% endif %}</title>
+	<link rel="shortcut icon" href="{{ site.baseurl }}/favicon.png">
+	<link href="{{ site.baseurl }}/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+	<link href="{{ site.baseurl }}/bootstrap/css/bootstrap-glyphicons.css" rel="stylesheet">
+	<script src="http://code.jquery.com/jquery.js"></script>
+	<script src="{{ site.baseurl }}/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body class="container">
+	<header>
+		<div class="navbar navbar-inverse">
+			<a class="navbar-brand" href="{{ site.baseurl }}/">CoRD</a>
+			<ul class="nav navbar-nav pull-right">
+				{% assign url = page.url | remove: 'index.html' %}
+				{% for link in page.navigation %}
+				{% assign tempURL = link.url | remove: 'SITE_BASEURL' %}
+				<li {% if url == tempURL %}class="active"{% endif %}>
+					<a href="{{ link.url | replace: 'SITE_BASEURL', site.baseurl }}" title="{{ link.title }}">{{ link.text }}</a>
+				</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</header>
+	<div class="well">
+		{{ content }}
+	</div>
+	<div class="text-center clearfix">
+		{% include footer.html %}
+		{% include analytics.html %}
+	</div>
+</body>
+</html>

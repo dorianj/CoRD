@@ -1,0 +1,85 @@
+---
+layout: default
+---
+
+<div class="jumbotron text-center">
+	<p>
+		CoRD is a Mac OS X remote desktop client for Microsoft Windows computers using the RDP protocol. It's easy to use, fast, and free for anyone to use or modify.
+	</p>
+	<a class="btn btn-primary btn-lg" href="https://github.com/dorianj/CoRD/releases/download/v0.5.7/CoRD_0.5.7.zip">Download CoRD 0.5.7</a>
+</div>
+<hr>
+<h3>Announcements</h3>
+2012-07-25: <a href="https://github.com/dorianj/CoRD/releases/download/v0.5.7/CoRD_0.5.7.zip">CoRD 0.5.7</a> is out and supports 10.5-10.8
+<hr>
+
+<h2>CoRD: Simple RDP</h2>
+<p>
+	Macs interact well with Windows, and with CoRD the experience is a bit smoother. Great for working on the office terminal server, administrating servers or any other time you'd like your PC to be a bit closer without leaving your Mac. CoRD allows you to view each session in its own window, or save space with all sessions in one window. Scale session windows to whatever size fits you—the screen is resized automatically. Enter full screen mode and feel like you're actually at the computer. The clipboard is automatically synchronized between CoRD and the server. For system administrators, CoRD creates a simpler workflow by allowing you to save server information, then quickly connect to that server by using HotKeys or the server drawer. This makes quickly connecting to a specific server easy, even when managing many servers.
+</p>
+<div class="text-center">
+	<img src="images/cord-screenshot.png" alt="CoRD connected to Windows 7" title="CoRD connected to Windows 7" style="width:auto;height:396px">
+</div>
+
+<hr>
+<h2>Screenshots</h2>
+<div class="row">
+	<div class="col-lg-3">
+		<a href="#" class="thumbnail" alt="Searching Servers with CoRD" title="Searching Servers with CoRD">
+			<img class="img-responsive" src="images/cord-search-servers.png">
+		</a>
+	</div>
+	<div class="col-lg-3">
+		<a href="#" class="thumbnail" alt="CoRD's Inspector" title="CoRD's Inspector">
+			<img class="img-responsive" src="images/cord-inspector.png">
+		</a>
+	</div>
+	<div class="col-lg-3">
+		<a href="#" class="thumbnail" alt="More Inspector Goodness" title="More Inspector Goodness">
+			<img class="img-responsive" src="images/cord-inspector-2.png">
+		</a>
+	</div>
+	<div class="col-lg-3">
+		<a href="#" class="thumbnail" alt="CoRD General Preferences" title="CoRD General Preferences">
+			<img class="img-responsive" src="images/cord-preferences-1.png">
+		</a>
+	</div>
+</div>
+<div class="row">
+	<div class="col-lg-4">
+		<a href="#" class="thumbnail" alt="CoRD Session Default Preferences" title="CoRD Session Default Preferences">
+			<img class="img-responsive" src="images/cord-preferences-2.png">
+		</a>
+	</div>
+	<div class="col-lg-4">
+		<a href="#" class="thumbnail" alt="CoRD Forwarding Preferences" title="CoRD Forwarding Preferences">
+			<img class="img-responsive" src="images/cord-preferences-3.png">
+		</a>
+	</div>
+	<div class="col-lg-4">
+		<a href="#" class="thumbnail" alt="CoRD Advanced Preferences" title="CoRD Advanced Preferences">
+			<img class="img-responsive" src="images/cord-preferences-4.png">
+		</a>
+
+	</div>
+</div>
+
+<div id="modal" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+  <div class="modal-content">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+		<h3 class="modal-title text-center"></h3>
+	</div>
+	<div class="modal-body text-center"></div>
+   </div>
+  </div>
+</div>
+<script type="text/javascript">
+$('.thumbnail').click(function(){
+  	$('.modal-body').empty();
+  	$('.modal-title').html($(this).attr('title'));
+  	$($(this).html()).appendTo('.modal-body');
+  	$('#modal').modal({show:true});
+});
+</script>
