@@ -660,7 +660,11 @@
 	[gui_tabView enterFullScreenMode:[gui_unifiedWindow screen] withOptions:
             [NSDictionary dictionaryWithObjectsAndKeys:
             [NSNumber numberWithBool:NO], NSFullScreenModeAllScreens,
-            [NSNumber numberWithLong:(NSApplicationPresentationHideDock | NSApplicationPresentationHideMenuBar)], NSFullScreenModeApplicationPresentationOptions,
+            [NSNumber numberWithLong:(
+                NSApplicationPresentationAutoHideDock * CRDPreferenceIsEnabled(CRDPrefsEnableFullScreenMenuDock) +
+                NSApplicationPresentationHideDock * !CRDPreferenceIsEnabled(CRDPrefsEnableFullScreenMenuDock) |
+                NSApplicationPresentationAutoHideMenuBar * CRDPreferenceIsEnabled(CRDPrefsEnableFullScreenMenuDock) +
+                NSApplicationPresentationHideMenuBar * !CRDPreferenceIsEnabled(CRDPrefsEnableFullScreenMenuDock))], NSFullScreenModeApplicationPresentationOptions,
             nil]];
 
 	gui_tabView.window.delegate = self;

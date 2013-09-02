@@ -60,6 +60,7 @@ NSString * const CRDDefaultsSendWindowsKey = @"SendWindowsKey";
 // User-configurable NSUserDefaults keys (preferences)
 NSString * const CRDPrefsReconnectIntoFullScreen = @"reconnectFullScreen";
 NSString * const CRDPrefsReconnectOutOfFullScreen = @"ReconnectWhenLeavingFullScreen";
+NSString * const CRDPrefsEnableFullScreenMenuDock = @"enableFullScreenMenuDock";
 NSString * const CRDPrefsScaleSessions = @"resizeViewToFit";
 NSString * const CRDPrefsMinimalisticServerList = @"MinimalServerList";
 NSString * const CRDPrefsIgnoreCustomModifiers = @"IgnoreModifierKeyCustomizations";
