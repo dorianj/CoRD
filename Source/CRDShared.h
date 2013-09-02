@@ -165,6 +165,7 @@ extern NSString * const CRDDefaultsSendWindowsKey;
 // User-configurable NSUserDefaults keys (preferences)
 extern NSString * const CRDPrefsReconnectIntoFullScreen;
 extern NSString * const CRDPrefsReconnectOutOfFullScreen;
+extern NSString * const CRDPrefsEnableFullScreenMenuDock;
 extern NSString * const CRDPrefsScaleSessions;
 extern NSString * const CRDPrefsMinimalisticServerList;
 extern NSString * const CRDPrefsIgnoreCustomModifiers;
