@@ -660,7 +660,7 @@
 	[gui_tabView enterFullScreenMode:[gui_unifiedWindow screen] withOptions:
             [NSDictionary dictionaryWithObjectsAndKeys:
             [NSNumber numberWithBool:NO], NSFullScreenModeAllScreens,
-            [NSNumber numberWithLong:(NSApplicationPresentationAutoHideDock | NSApplicationPresentationAutoHideMenuBar)], NSFullScreenModeApplicationPresentationOptions,
+            [NSNumber numberWithLong:(NSApplicationPresentationHideDock | NSApplicationPresentationHideMenuBar)], NSFullScreenModeApplicationPresentationOptions,
             nil]];
 
 	gui_tabView.window.delegate = self;
