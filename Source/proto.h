@@ -183,8 +183,8 @@ RD_BOOL rdpdr_abort_io(RDConnectionRef conn, uint32 fd, uint32 major, NTStatus s
 
 #pragma mark -
 #pragma mark rdpsnd.c
-void rdpsnd_send_completion(uint16 tick, uint8 packet_index);
-RD_BOOL rdpsnd_init(void);
+void rdpsnd_send_completion(RDConnectionRef conn, uint16 tick, uint8 packet_index);
+RD_BOOL rdpsnd_init(RDConnectionRef conn);
 
 #pragma mark -
 #pragma mark rdpsnd_oss.c
