@@ -30,8 +30,6 @@
 #define RDPSND_SERVERTICK   6
 #define RDPSND_NEGOTIATE    7
 
-#define RDPSND_DISABLE      2
-
 #define MAX_QUEUE           10
 
 RD_BOOL g_dsp_busy = False;
@@ -135,29 +133,6 @@ rdpsnd_process_negotiate(RDConnectionRef conn, RDStreamRef in)
 	}
 
 	out = rdpsnd_init_packet(conn, RDPSND_NEGOTIATE | 0x200, 20 + 18 * format_count);
-    if (conn->forwardAudio != RDPSND_DISABLE) {
-        out_uint32_le(outStream, 3);	/* flags */
-        out_uint32(outStream, 0xffffffff);	/* volume */
-        out_uint32(outStream, 0);	/* pitch */
-        out_uint16(outStream, 0);	/* UDP port */
-
-        out_uint16_le(outStream, format_count);
-        out_uint8(outStream, 0x95);	/* pad? */
-        out_uint16_le(outStream, 2);	/* status */
-        out_uint8(outStream, 0x77);	/* pad? */
-
-        for (i = 0; i < format_count; i++)
-        {
-            format = &formats[i];
-            out_uint16_le(outStream, format->wFormatTag);
-            out_uint16_le(outStream, format->nChannels);
-            out_uint32_le(outStream, format->nSamplesPerSec);
-            out_uint32_le(outStream, format->nAvgBytesPerSec);
-            out_uint16_le(outStream, format->nBlockAlign);
-            out_uint16_le(outStream, format->wBitsPerSample);
-            out_uint16(out, 0);	/* cbSize */
-        }
-    }
 	s_mark_end(out);
 	rdpsnd_send(conn, out);
 }
