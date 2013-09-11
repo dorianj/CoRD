@@ -18,7 +18,7 @@ CoRD is open source software, licensed under the [GPLv2 License](http://en.wikip
 You can get the very latest code from GitHub: <https://github.com/dorianj/CoRD>.  
 To build CoRD, see [Building](https://github.com/dorianj/CoRD/wiki/Building)
 ### Localizations
-Please submit localized .nibs / .strings as pull requests on Github, we'll gladly merge them.
+Please submit localized .nibs / .strings as pull requests on GitHub, we'll gladly merge them.
 ### Original Graphics
 The [original Photoshop files](http://dorianj.github.io/CoRD/CoRD-Graphics.zip) for all graphics in CoRD. All graphics in CoRD are licensed under the [Creative Commons non-commercial share-alike license](http://creativecommons.org/licenses/by-nc-sa/3.0/us/). The current set of icons were created by Aron Cedercrantz ([rastersize on GitHub](https://github.com/rastersize)).
 
