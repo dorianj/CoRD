@@ -20,7 +20,7 @@ To build CoRD, see [Building](https://github.com/dorianj/CoRD/wiki/Building)
 ### Localizations
 Please submit localized .nibs / .strings as pull requests on Github, we'll gladly merge them.
 ### Original Graphics
-The [original Photoshop files](https://dorianj.github.io/CoRD/CoRD-Graphics.zip) for all graphics in CoRD. All graphics in CoRD are licensed under the [Creative Commons non-commercial share-alike license](http://creativecommons.org/licenses/by-nc-sa/3.0/us/). The current set of icons were created by Aron Cedercrantz ([rastersize on GitHub](https://github.com/rastersize)).
+The [original Photoshop files](http://dorianj.github.io/CoRD/CoRD-Graphics.zip) for all graphics in CoRD. All graphics in CoRD are licensed under the [Creative Commons non-commercial share-alike license](http://creativecommons.org/licenses/by-nc-sa/3.0/us/). The current set of icons were created by Aron Cedercrantz ([rastersize on GitHub](https://github.com/rastersize)).
 
 ## Version History
 A [list](https://github.com/dorianj/CoRD/wiki/Changelog) of all changes for major and minor releases of CoRD.

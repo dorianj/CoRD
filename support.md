@@ -18,4 +18,4 @@ To configure your Windows host, use one of these guides from Microsoft.
 ### Tiger Users
 If you're running OS X 10.4 (Tiger), please see [Tiger and 0.5](https://github.com/dorianj/CoRD/wiki/Tiger-and-0.5).
 ## Only as a last resort...
-If all else fails, you're welcome to send Dorian an email: <arcadiclife@users.sourceforge.net>. Please don't send me bug reports via email: Use Trac instead. This way our whole team will be able to see and respond to your issue.
+If all else fails, you're welcome to send Dorian an email: <arcadiclife@users.sourceforge.net>. Please don't send me bug reports via email: Use GitHub Issues instead. This way our whole team will be able to see and respond to your issue.
