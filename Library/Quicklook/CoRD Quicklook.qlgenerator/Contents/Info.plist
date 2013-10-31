@@ -16,7 +16,7 @@
 			<key>CFBundleTypeName</key>
 			<string>Remote Desktop v1</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>QLGenerator</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>net.sf.cord.rdp</string>
@@ -36,7 +36,7 @@
 			<key>CFBundleTypeName</key>
 			<string>MS Remote Incident File</string>
 			<key>CFBundleTypeRole</key>
-			<string>Viewer</string>
+			<string>QLGenerator</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>net.sf.cord.msrcincident</string>
