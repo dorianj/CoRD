@@ -38,7 +38,7 @@ printer_enum_devices(RDConnectionRef conn)
 	for (int i = 0; i < CFArrayGetCount(printerList); i++, conn->numDevices++)
 	{
 		PMPrinter printer = (void *)CFArrayGetValueAtIndex(printerList, i);
-		const char *printerName = [[NSString stringWithString:(NSString *)PMPrinterGetName(printer)] cString];
+		const char *printerName = [[NSString stringWithString:(NSString *)PMPrinterGetName(printer)] UTF8String];
 
 		RDRedirectedDevice *device = &conn->rdpdrDevice[conn->numDevices];
 		RDPrinterInfo *printerInfo = (RDPrinterInfo *) xmalloc(sizeof(RDPrinterInfo));
