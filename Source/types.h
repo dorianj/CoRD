@@ -283,6 +283,7 @@ struct _RDConnection
 	
 	// State flags
 	int isConnected, useRdp5, useEncryption, useBitmapCompression, rdp5PerformanceFlags, consoleSession, bitmapCache, bitmapCachePersist, bitmapCachePrecache, desktopSave, polygonEllipseOrders, licenseIssued, notifyStamp, pstcacheEnumerated;
+    long forwardAudio;
 	RDP_ORDER_STATE orderState;
 	
 	// Keyboard

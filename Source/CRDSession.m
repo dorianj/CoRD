@@ -369,6 +369,11 @@
 	
 	rdpdr_init(conn);
 	cliprdr_init(conn);
+    
+    if (forwardDisks) {
+        conn->forwardAudio = forwardAudio;
+        rdpsnd_init(conn); // Required per official [MS-RDPEFS] specification
+    }
 
 	// Make the connection
 	BOOL connected = rdp_connect(conn,

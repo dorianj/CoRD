@@ -44,6 +44,7 @@
 		98E972620BD9D9DF0041110D /* cache.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972270BD9D9DF0041110D /* cache.c */; };
 		98E972630BD9D9DF0041110D /* channels.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972280BD9D9DF0041110D /* channels.c */; };
 		98E972640BD9D9DF0041110D /* cliprdr.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972290BD9D9DF0041110D /* cliprdr.c */; };
+        98E972660BD9D9DF0041110D /* rdpsnd.c in Sources */ = {isa = PBXBuildFile; fileRef = 98E972570BD9D9DF0041110D /* rdpsnd.c */; };
 		98E972680BD9D9DF0041110D /* CRDApplication.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E9722D0BD9D9DF0041110D /* CRDApplication.m */; };
 		98E9726C0BD9D9DF0041110D /* CRDLabelCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972310BD9D9DF0041110D /* CRDLabelCell.m */; };
 		98E9726E0BD9D9DF0041110D /* CRDServerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 98E972330BD9D9DF0041110D /* CRDServerCell.m */; };
@@ -664,6 +665,7 @@
 				98E972620BD9D9DF0041110D /* cache.c in Sources */,
 				98E972630BD9D9DF0041110D /* channels.c in Sources */,
 				98E972640BD9D9DF0041110D /* cliprdr.c in Sources */,
+                98E972660BD9D9DF0041110D /* rdpsnd.c in Sources */,
 				98E972680BD9D9DF0041110D /* CRDApplication.m in Sources */,
 				98E9726C0BD9D9DF0041110D /* CRDLabelCell.m in Sources */,
 				98E9726E0BD9D9DF0041110D /* CRDServerCell.m in Sources */,
