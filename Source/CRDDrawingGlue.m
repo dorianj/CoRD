@@ -896,7 +896,7 @@ void ui_draw_text(RDConnectionRef conn, uint8 font, uint8 flags, uint8 opcode, i
 
 			case 0xfe:
 				entry = cache_get_text(conn, text[i + 1]);
-				if (entry != NULL)
+				if (entry != NULL && entry->data != NULL)
 				{
 					if ((((uint8 *) (entry->data))[1] == 0) && (!(flags & TEXT2_IMPLICIT_X)))
 					{
