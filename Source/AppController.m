@@ -2386,7 +2386,7 @@
 		[resizeTarget setFrameUsingName:@"UnifiedWindowFrame"];
 	}
 	else {
-		[gui_unifiedWindow setTitle:[[self viewedServer] label]];
+        [gui_unifiedWindow setTitle:[[self viewedServer] prettyName]];
 		[resizeTarget setFrame:newWindowFrame display:YES];
 	}
 	[NSAnimationContext endGrouping];
