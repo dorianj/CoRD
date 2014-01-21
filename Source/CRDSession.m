@@ -918,6 +918,12 @@
 	return rdpFilename;
 }
 
+- (NSString *)prettyName
+{
+    if (label && ![label isEqualToString:@""]) return label;
+    return [NSString stringWithFormat:@"%@@%@:%ld", username, hostName, (long)port];
+}
+
 - (void)setFilename:(NSString *)path
 {
 	if ([path isEqualToString:rdpFilename])
