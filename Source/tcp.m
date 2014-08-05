@@ -136,68 +136,20 @@ tcp_recv(RDConnectionRef conn, RDStreamRef s, uint32 length)
 RD_BOOL
 tcp_connect(RDConnectionRef conn, const char *server)
 {
-	NSInputStream *is = nil;
-	NSOutputStream *os = nil;
-	NSHost *host = nil;
-	
-	int timedOut = False;
-	time_t start = 0;
-	
-	CFHostRef remoteHost = CFHostCreateWithName(NULL, (CFStringRef)[NSString stringWithUTF8String:server]);
-	RDHostLookupInfo volatile *lookupInfo = calloc(1, sizeof(RDHostLookupInfo));
-	CFHostClientContext *clientContext = calloc(1, sizeof(CFHostClientContext));
-	CFStreamError *streamError = calloc(1, sizeof(CFStreamError));
+	CFReadStreamRef cfrs = NULL;
+	CFWriteStreamRef cfws = NULL;
 
-	clientContext->info = (void*)lookupInfo;
-	
-	CFHostSetClient(remoteHost, tcp_cfhost_lookup_finished, clientContext);	
-	CFHostScheduleWithRunLoop(remoteHost, [[NSRunLoop currentRunLoop] getCFRunLoop], kCFRunLoopDefaultMode);
-	
-	if (!CFHostStartInfoResolution(remoteHost, kCFHostAddresses, streamError))
-	{
-		error("%s: couldn't start CFHost name resolution", __FUNCTION__);
-		conn->errorCode = ConnectionErrorHostResolution;
-		goto Cleanup;
-	}
-	
-	start = time(NULL);
-	NSAutoreleasePool *pool;
-	do
-	{
-		pool = [[NSAutoreleasePool alloc] init];
-		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.01]];
-		timedOut = (time(NULL) - start > TIMEOUT_LENGTH);
-		[pool release];
-	} while (!lookupInfo->finished && !timedOut && (conn->errorCode == ConnectionErrorNone));
-			
-	if (timedOut)
-	{
-		conn->errorCode = ConnectionErrorTimeOut;
-		goto Cleanup;
-	}
-	else if (lookupInfo->finished && !lookupInfo->address)
-	{
-		conn->errorCode = ConnectionErrorHostResolution;
-		goto Cleanup;
-	}
-	else if (conn->errorCode != ConnectionErrorNone)
-		goto Cleanup;
-	
-	if ( !(host = [NSHost hostWithAddress:[NSString stringWithUTF8String:lookupInfo->address]]) )
-	{
-		error("%s: Couldn't transform host address '%@' into NSHost", __FUNCTION__, lookupInfo->address);
-		conn->errorCode = ConnectionErrorHostResolution;
-		goto Cleanup;
-	}
+	CFStreamCreatePairWithSocketToHost(NULL, (CFStringRef)[NSString stringWithUTF8String:server], conn->tcpPort, &cfrs, &cfws);
 
-	[NSStream getStreamsToHost:host port:conn->tcpPort inputStream:&is outputStream:&os];
-	
-	if (!is || !os)
+	if (cfrs == NULL || cfws == NULL)
 	{
 		conn->errorCode = ConnectionErrorGeneral;
 		goto Cleanup;
 	}
 	
+	NSInputStream *is = CFBridgingRelease(cfrs);
+	NSOutputStream *os = CFBridgingRelease(cfws);
+
 	if (CRDPreferenceIsEnabled(CRDUseSocksProxy))
 	{
 		NSDictionary *proxyDict = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
@@ -212,8 +164,8 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	[os open];
 	
 	// Wait until the output socket can be written to (this is the alternative to letting NSOutputStream block later when we do the first write)
-	start = time(NULL);
-	timedOut = false;
+	int timedOut = false;
+	time_t start = time(NULL);
 	while (![os hasSpaceAvailable] && !timedOut && (conn->errorCode != ConnectionErrorCanceled) )
 	{
 		usleep(1000); // one millisecond
@@ -236,12 +188,6 @@ tcp_connect(RDConnectionRef conn, const char *server)
 	conn->outStream.data = xmalloc(conn->outStream.size);
 	
 Cleanup:
-	CFRelease(remoteHost);
-	free(lookupInfo->address);
-	free((void *)lookupInfo);
-	free(streamError);
-	free(clientContext);
-
 	return conn->errorCode == ConnectionErrorNone;
 }
 
