@@ -36,7 +36,7 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <CRDShared.h>
 
-static void tcp_cfhost_lookup_finished(CFHostRef theHost, CFHostInfoType typeInfo, const CFStreamError *error, void *info);
+
 
 @class AppController;
 
