@@ -542,17 +542,26 @@
 	cliprdr_send_data_request(conn, CF_UNICODETEXT);
 }
 
-// Sets the local clipboard to match the server provided data. Only called by server (via CRDMixedGlue) when new data has actually arrived
-- (void)setLocalClipboard:(NSData *)data format:(int)format
+static uint32 getUTF16StringByteCount(uint8 *data,uint32 length)
 {
-	if ( ((format != CF_UNICODETEXT) && (format != CF_AUTODETECT)) || ![data length] )
+	length/=2;
+	int k=0;
+	for(;k!=length && ((uint16*)data)[k]!=0;++k);
+	return k*2;
+}
+
+// Sets the local clipboard to match the server provided data. Only called by server (via CRDMixedGlue) when new data has actually arrived
+- (void)setLocalClipboardWithBytes:(uint8 *)data length:(uint32)length format:(int)format;
+{
+	if ( ((format != CF_UNICODETEXT) && (format != CF_AUTODETECT)) || length==0 )
 		return;
 	
 	unsigned char endiannessMarker[] = {0xFF, 0xFE};
-	
-	NSMutableData *rawClipboardData = [[NSMutableData alloc] initWithCapacity:[data length]];
-	[rawClipboardData appendBytes:endiannessMarker length:2];
-	[rawClipboardData appendBytes:[data bytes] length:[data length]-2];
+
+	uint32 byteCount=getUTF16StringByteCount(data,length);
+	NSMutableData *rawClipboardData = [[NSMutableData alloc] initWithCapacity:byteCount+sizeof(endiannessMarker)];
+	[rawClipboardData appendBytes:endiannessMarker length:sizeof(endiannessMarker)];
+	[rawClipboardData appendBytes:data length:byteCount];
 	NSString *temp = [[NSString alloc] initWithData:rawClipboardData encoding:NSUnicodeStringEncoding];
 	[rawClipboardData release];
 	

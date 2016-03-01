@@ -35,7 +35,7 @@ void ui_clip_format_announce(RDConnectionRef conn, uint8 *data, uint32 length)
 void ui_clip_handle_data(RDConnectionRef conn, uint8 *data, uint32 length) 
 {	
 	CRDSession *inst = (CRDSession *)conn->controller;
-	[inst setLocalClipboard:[NSData dataWithBytes:data length:length] format:conn->clipboardRequestType];
+	[inst setLocalClipboardWithBytes:data length:length format:conn->clipboardRequestType];
 }
 
 void ui_clip_request_data(RDConnectionRef conn, uint32 format) 

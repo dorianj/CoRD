@@ -89,7 +89,7 @@
 // Clipboard
 - (void)announceNewClipboardData;
 - (void)setRemoteClipboard:(int)suggestedFormat;
-- (void)setLocalClipboard:(NSData *)data format:(int)format;
+- (void)setLocalClipboardWithBytes:(uint8 *)data length:(uint32)length format:(int)format;
 - (void)requestRemoteClipboardData;
 - (void)gotNewRemoteClipboardData;
 - (void)informServerOfPasteboardType;
