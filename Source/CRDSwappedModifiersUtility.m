@@ -90,7 +90,7 @@ static NSArray *rawDefaultTable;
 			nil] retain];
 		
 	// xxx: doesn't actually inform us of changes
-	[[NSUserDefaults standardUserDefaults] addObserver:[[[CRDSwappedModifiersUtility alloc] init] autorelease] forKeyPath:SwappedModifiersRootKey options:0 context:NULL];	
+	//[[NSUserDefaults standardUserDefaults] addObserver:[[[CRDSwappedModifiersUtility alloc] init] autorelease] forKeyPath:SwappedModifiersRootKey options:0 context:NULL];
 	[CRDSwappedModifiersUtility loadStandardTranslation];
 }
 
